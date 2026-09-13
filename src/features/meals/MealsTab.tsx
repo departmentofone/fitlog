@@ -4,6 +4,7 @@ import { dailyTotals, useCreateMeal, useMealsForDate } from '../../hooks/useMeal
 import { todayISO } from '../../hooks/useWorkouts'
 import { MealCard } from './MealCard'
 import { TrendsChart } from './TrendsChart'
+import { WaterWidget } from './WaterWidget'
 
 const MEAL_PRESETS = ['Breakfast', 'Lunch', 'Dinner', 'Snack']
 
@@ -37,6 +38,8 @@ export function MealsTab() {
       </div>
 
       {showTrends && <TrendsChart />}
+
+      <WaterWidget />
 
       <div className="rounded-2xl bg-gradient-to-br from-emerald-600/20 to-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-2 text-sm font-medium text-slate-300">Today's totals</h3>

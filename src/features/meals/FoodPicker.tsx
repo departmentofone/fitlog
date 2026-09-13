@@ -70,9 +70,10 @@ function AmountForm({
 }) {
   const [mode, setMode] = useState<'grams' | number>('grams')
   const [grams, setGrams] = useState('100')
+  const [qty, setQty] = useState(1)
 
-  const resolvedGrams =
-    mode === 'grams' ? parseFloat(grams) || 0 : food.common_servings[mode as number]?.grams ?? 0
+  const baseGrams = mode === 'grams' ? parseFloat(grams) || 0 : food.common_servings[mode as number]?.grams ?? 0
+  const resolvedGrams = baseGrams * qty
   const preview = macrosForGrams(food, resolvedGrams)
 
   return (
@@ -118,19 +119,37 @@ function AmountForm({
         />
       )}
 
+      <div className="mb-3 flex items-center justify-between rounded-lg bg-slate-800/60 px-3 py-2">
+        <span className="text-sm text-slate-400">Quantity</span>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setQty((q) => Math.max(1, q - 1))}
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-700 text-white transition hover:bg-slate-600"
+          >
+            −
+          </button>
+          <span className="w-5 text-center text-sm font-medium text-white">{qty}</span>
+          <button
+            onClick={() => setQty((q) => q + 1)}
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-600 text-white transition hover:bg-emerald-500"
+          >
+            +
+          </button>
+        </div>
+      </div>
+
       <p className="mb-4 text-sm text-slate-400">
         {Math.round(preview.calories)} kcal · P {Math.round(preview.protein)}g · C {Math.round(preview.carbs)}g ·
         F {Math.round(preview.fat)}g
       </p>
 
       <button
-        onClick={() =>
-          onAdd({
-            foodId: food.id,
-            grams: resolvedGrams,
-            servingLabel: mode === 'grams' ? null : food.common_servings[mode as number].label,
-          })
-        }
+        onClick={() => {
+          const baseLabel = mode === 'grams' ? null : food.common_servings[mode as number].label
+          const servingLabel =
+            qty > 1 ? `${qty} × ${baseLabel ?? `${baseGrams}g`}` : baseLabel
+          onAdd({ foodId: food.id, grams: resolvedGrams, servingLabel })
+        }}
         disabled={resolvedGrams <= 0}
         className="w-full rounded-lg bg-emerald-600 py-2.5 font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
       >

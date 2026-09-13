@@ -29,7 +29,7 @@ export const MUSCLE_GROUPS: { value: MuscleGroup; label: string }[] = [
 
 export interface Exercise {
   id: string
-  user_id: string
+  user_id: string | null
   name: string
   muscle_group: MuscleGroup
   created_at: string
@@ -86,6 +86,45 @@ export interface MealItem {
   food_id: string
   grams: number
   serving_label: string | null
+  created_at: string
+}
+
+export type DietGoal = 'deficit' | 'maintenance' | 'surplus'
+export type Sex = 'male' | 'female' | 'other'
+export type ActivityLevel = 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active'
+
+export interface UserSettings {
+  user_id: string
+  ask_preworkout: boolean
+  diet_goal: DietGoal
+  calorie_goal: number | null
+  water_goal_ml: number
+  weight_goal: number | null
+  current_weight: number | null
+  height_cm: number | null
+  age: number | null
+  sex: Sex | null
+  activity_level: ActivityLevel | null
+  updated_at: string
+}
+
+export interface WaterLog {
+  id: string
+  user_id: string
+  date: string
+  ml: number
+}
+
+export type GoalCategory = 'workout' | 'custom'
+
+export interface Goal {
+  id: string
+  user_id: string
+  category: GoalCategory
+  title: string
+  notes: string | null
+  target_date: string | null
+  completed: boolean
   created_at: string
 }
 

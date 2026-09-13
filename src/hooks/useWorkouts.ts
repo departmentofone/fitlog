@@ -67,20 +67,20 @@ export function useSetPreworkout() {
   })
 }
 
-/** Ensures today's session exists (auto-creating one) so workouts can be logged without a gate. */
-export function useEnsureTodaySession() {
+/** Auto-creates today's session (silently, no preworkout prompt) once settings say not to ask. */
+export function useAutoStartSession(shouldAutoStart: boolean) {
   const { user } = useAuth()
   const { data: session, isLoading } = useTodaySession()
   const startSession = useStartSession()
 
   useEffect(() => {
-    if (!isLoading && !session && user && !startSession.isPending) {
+    if (shouldAutoStart && !isLoading && !session && user && !startSession.isPending) {
       startSession.mutate({ preworkout: false })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading, session, user])
+  }, [shouldAutoStart, isLoading, session, user])
 
-  return { session, isLoading: isLoading || (!session && startSession.isPending) }
+  return { session, isLoading: isLoading || (shouldAutoStart && !session) }
 }
 
 export interface SetWithExercise extends WorkoutSet {

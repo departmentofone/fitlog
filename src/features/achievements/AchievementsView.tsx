@@ -16,21 +16,9 @@ function StatTile({ label, value }: { label: string; value: string }) {
   )
 }
 
-function BadgeRow({
-  emoji,
-  label,
-  unlocked,
-}: {
-  emoji: string
-  label: string
-  unlocked: boolean
-}) {
+function BadgeRow({ emoji, label, unlocked }: { emoji: string; label: string; unlocked: boolean }) {
   return (
-    <div
-      className={`flex items-center gap-3 rounded-lg px-3 py-2 ${
-        unlocked ? 'bg-emerald-600/10' : 'bg-slate-800/40'
-      }`}
-    >
+    <div className={`flex items-center gap-3 rounded-lg px-3 py-2 ${unlocked ? 'bg-emerald-600/10' : 'bg-slate-800/40'}`}>
       <span className={`text-xl ${unlocked ? '' : 'opacity-30 grayscale'}`}>{emoji}</span>
       <span className={`text-sm ${unlocked ? 'text-white' : 'text-slate-500'}`}>{label}</span>
       {unlocked && <span className="ml-auto text-xs text-emerald-400">Unlocked</span>}
@@ -38,25 +26,42 @@ function BadgeRow({
   )
 }
 
-export function ProgressTab() {
-  const { data: achievements } = useAchievements()
+export function AchievementsView({ onBack }: { onBack: () => void }) {
+  const { data: a } = useAchievements()
   const { data: sessions = [], isLoading } = useSessionHistory()
 
-  const comparison = achievements ? funVolumeComparison(achievements.totalVolumeKg) : null
+  const comparison = a ? funVolumeComparison(a.totalVolumeKg) : null
+
+  const specialBadges = [
+    { emoji: '🧭', label: 'Well-Rounded (trained 6+ muscle groups)', unlocked: (a?.distinctMuscleGroups ?? 0) >= 6 },
+    { emoji: '📚', label: 'Exercise Explorer (10+ different exercises)', unlocked: (a?.distinctExercises ?? 0) >= 10 },
+    { emoji: '🌅', label: 'Early Bird (trained before 7am)', unlocked: a?.earlyBird ?? false },
+    { emoji: '🌙', label: 'Night Owl (trained after 10pm)', unlocked: a?.nightOwl ?? false },
+    { emoji: '🏖️', label: 'Weekend Warrior (Sat + Sun workouts)', unlocked: a?.weekendWarrior ?? false },
+    { emoji: '↩️', label: 'Comeback Kid (returned after a week off)', unlocked: a?.comebackKid ?? false },
+    { emoji: '🥗', label: 'Food Explorer (20+ different foods logged)', unlocked: (a?.distinctFoods ?? 0) >= 20 },
+    { emoji: '📅', label: '7-day nutrition streak', unlocked: (a?.mealStreakBest ?? 0) >= 7 },
+    { emoji: '🍗', label: 'Protein Powerhouse (150g+ protein in a day)', unlocked: (a?.maxDailyProtein ?? 0) >= 150 },
+    { emoji: '💧', label: 'Hydration Hero (water goal 7 days straight)', unlocked: (a?.hydrationStreakBest ?? 0) >= 7 },
+  ]
 
   return (
     <div className="space-y-4 p-4">
+      <button onClick={onBack} className="text-sm text-slate-400 hover:text-slate-200">
+        ← Back
+      </button>
+
       <div className="rounded-2xl bg-gradient-to-br from-emerald-600/20 to-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h2 className="mb-1 text-sm font-medium text-slate-300">Total weight moved</h2>
         <p className="text-3xl font-bold text-white">
-          {Math.round(achievements?.totalVolumeKg ?? 0).toLocaleString()} <span className="text-lg font-medium text-slate-400">kg</span>
+          {Math.round(a?.totalVolumeKg ?? 0).toLocaleString()} <span className="text-lg font-medium text-slate-400">kg</span>
         </p>
         {comparison && <p className="mt-1 text-xs text-slate-400">{comparison}</p>}
 
         <div className="mt-4 grid grid-cols-3 gap-2">
-          <StatTile label="Workouts" value={String(achievements?.totalSessions ?? 0)} />
-          <StatTile label="Current streak" value={`${achievements?.currentStreak ?? 0}d`} />
-          <StatTile label="Best streak" value={`${achievements?.bestStreak ?? 0}d`} />
+          <StatTile label="Workouts" value={String(a?.totalSessions ?? 0)} />
+          <StatTile label="Current streak" value={`${a?.currentStreak ?? 0}d`} />
+          <StatTile label="Best streak" value={`${a?.bestStreak ?? 0}d`} />
         </div>
       </div>
 
@@ -64,28 +69,16 @@ export function ProgressTab() {
         <h3 className="mb-3 font-medium text-white">Badges</h3>
         <div className="space-y-1.5">
           {SESSION_BADGES.map((b) => (
-            <BadgeRow
-              key={b.label}
-              emoji={b.emoji}
-              label={b.label}
-              unlocked={(achievements?.totalSessions ?? 0) >= b.threshold}
-            />
+            <BadgeRow key={b.label} emoji={b.emoji} label={b.label} unlocked={(a?.totalSessions ?? 0) >= b.threshold} />
           ))}
           {STREAK_BADGES.map((b) => (
-            <BadgeRow
-              key={b.label}
-              emoji={b.emoji}
-              label={b.label}
-              unlocked={(achievements?.bestStreak ?? 0) >= b.threshold}
-            />
+            <BadgeRow key={b.label} emoji={b.emoji} label={b.label} unlocked={(a?.bestStreak ?? 0) >= b.threshold} />
           ))}
           {VOLUME_BADGES.map((b) => (
-            <BadgeRow
-              key={b.label}
-              emoji={b.emoji}
-              label={b.label}
-              unlocked={(achievements?.totalVolumeKg ?? 0) >= b.threshold}
-            />
+            <BadgeRow key={b.label} emoji={b.emoji} label={b.label} unlocked={(a?.totalVolumeKg ?? 0) >= b.threshold} />
+          ))}
+          {specialBadges.map((b) => (
+            <BadgeRow key={b.label} emoji={b.emoji} label={b.label} unlocked={b.unlocked} />
           ))}
         </div>
       </div>

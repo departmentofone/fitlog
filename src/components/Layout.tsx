@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react'
 
-export type Tab = 'workouts' | 'meals' | 'progress' | 'settings'
+export type Tab = 'workouts' | 'meals' | 'diet' | 'goals'
 
 const TABS: { key: Tab; label: string; icon: string }[] = [
   { key: 'workouts', label: 'Workouts', icon: '🏋️' },
   { key: 'meals', label: 'Meals', icon: '🍽️' },
-  { key: 'progress', label: 'Progress', icon: '🏆' },
-  { key: 'settings', label: 'Settings', icon: '⚙️' },
+  { key: 'diet', label: 'Diet', icon: '🥗' },
+  { key: 'goals', label: 'Goals', icon: '🎯' },
 ]
 
 function LogoMark() {
@@ -27,22 +27,33 @@ function LogoMark() {
 export function Layout({
   active,
   onChange,
+  onOpenSettings,
   children,
 }: {
   active: Tab
   onChange: (tab: Tab) => void
+  onOpenSettings: () => void
   children: ReactNode
 }) {
   return (
     <div className="flex min-h-svh flex-col bg-gradient-to-b from-slate-950 to-slate-900">
-      <header className="flex items-center gap-2 border-b border-white/5 px-4 py-3">
-        <LogoMark />
-        <h1 className="text-lg font-semibold tracking-tight text-white">FitLog</h1>
+      <header className="flex items-center justify-between gap-2 border-b border-white/5 px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+        <div className="flex items-center gap-2">
+          <LogoMark />
+          <h1 className="text-lg font-semibold tracking-tight text-white">FitLog</h1>
+        </div>
+        <button
+          onClick={onOpenSettings}
+          aria-label="Settings"
+          className="flex h-8 w-8 items-center justify-center rounded-full text-lg text-slate-400 transition hover:bg-white/5 hover:text-slate-200"
+        >
+          ⚙️
+        </button>
       </header>
 
-      <main className="flex-1 overflow-y-auto pb-24">{children}</main>
+      <main className="flex-1 overflow-y-auto pb-[calc(6rem+env(safe-area-inset-bottom))]">{children}</main>
 
-      <nav className="fixed inset-x-0 bottom-0 border-t border-white/5 bg-slate-950/90 backdrop-blur">
+      <nav className="fixed inset-x-0 bottom-0 border-t border-white/5 bg-slate-950/90 pb-[env(safe-area-inset-bottom)] backdrop-blur">
         <div className="mx-auto flex max-w-lg px-2 py-1.5">
           {TABS.map((tab) => {
             const isActive = active === tab.key

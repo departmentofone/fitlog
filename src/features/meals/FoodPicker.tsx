@@ -169,6 +169,17 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
   const [servingLabel, setServingLabel] = useState('')
   const [servingGrams, setServingGrams] = useState('')
 
+  const [showMicros, setShowMicros] = useState(false)
+  const [fiber, setFiber] = useState('')
+  const [sugar, setSugar] = useState('')
+  const [sodium, setSodium] = useState('')
+  const [cholesterol, setCholesterol] = useState('')
+  const [potassium, setPotassium] = useState('')
+  const [calcium, setCalcium] = useState('')
+  const [iron, setIron] = useState('')
+  const [vitaminC, setVitaminC] = useState('')
+  const [vitaminA, setVitaminA] = useState('')
+
   async function handleCreate() {
     if (!name.trim() || !calories) return
     const commonServings =
@@ -182,6 +193,15 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
       carbsPer100g: parseFloat(carbs) || 0,
       fatPer100g: parseFloat(fat) || 0,
       commonServings,
+      fiberG: parseFloat(fiber) || 0,
+      sugarG: parseFloat(sugar) || 0,
+      sodiumMg: parseFloat(sodium) || 0,
+      cholesterolMg: parseFloat(cholesterol) || 0,
+      potassiumMg: parseFloat(potassium) || 0,
+      calciumMg: parseFloat(calcium) || 0,
+      ironMg: parseFloat(iron) || 0,
+      vitaminCMg: parseFloat(vitaminC) || 0,
+      vitaminAMcg: parseFloat(vitaminA) || 0,
     })
     onCreated(food)
   }
@@ -248,6 +268,82 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
             className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
           />
         </div>
+
+        <button
+          onClick={() => setShowMicros((v) => !v)}
+          className="text-xs font-medium text-slate-400 hover:text-slate-200"
+        >
+          {showMicros ? '− Hide micronutrients' : '+ Add micronutrients (optional)'}
+        </button>
+
+        {showMicros && (
+          <div className="grid grid-cols-2 gap-2.5">
+            <input
+              placeholder="Fiber (g)"
+              type="number"
+              value={fiber}
+              onChange={(e) => setFiber(e.target.value)}
+              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            />
+            <input
+              placeholder="Sugar (g)"
+              type="number"
+              value={sugar}
+              onChange={(e) => setSugar(e.target.value)}
+              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            />
+            <input
+              placeholder="Sodium (mg)"
+              type="number"
+              value={sodium}
+              onChange={(e) => setSodium(e.target.value)}
+              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            />
+            <input
+              placeholder="Cholesterol (mg)"
+              type="number"
+              value={cholesterol}
+              onChange={(e) => setCholesterol(e.target.value)}
+              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            />
+            <input
+              placeholder="Potassium (mg)"
+              type="number"
+              value={potassium}
+              onChange={(e) => setPotassium(e.target.value)}
+              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            />
+            <input
+              placeholder="Calcium (mg)"
+              type="number"
+              value={calcium}
+              onChange={(e) => setCalcium(e.target.value)}
+              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            />
+            <input
+              placeholder="Iron (mg)"
+              type="number"
+              value={iron}
+              onChange={(e) => setIron(e.target.value)}
+              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            />
+            <input
+              placeholder="Vitamin C (mg)"
+              type="number"
+              value={vitaminC}
+              onChange={(e) => setVitaminC(e.target.value)}
+              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            />
+            <input
+              placeholder="Vitamin A (mcg)"
+              type="number"
+              value={vitaminA}
+              onChange={(e) => setVitaminA(e.target.value)}
+              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            />
+          </div>
+        )}
+
         <button
           onClick={handleCreate}
           disabled={!name.trim() || !calories || createFood.isPending}

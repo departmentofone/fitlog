@@ -70,6 +70,12 @@ const REGIONS: Region[] = [
     ],
   },
   {
+    group: 'adductors',
+    view: 'front',
+    label: 'Adductors',
+    shapes: [{ shape: 'rect', x: 74, y: 182, width: 12, height: 55, rx: 6 }],
+  },
+  {
     group: 'shoulders',
     view: 'back',
     label: 'Shoulders',
@@ -129,6 +135,15 @@ const REGIONS: Region[] = [
       { shape: 'rect', x: 88, y: 252, width: 22, height: 60, rx: 11 },
     ],
   },
+  {
+    group: 'abductors',
+    view: 'back',
+    label: 'Abductors',
+    shapes: [
+      { shape: 'rect', x: 36, y: 165, width: 12, height: 55, rx: 6 },
+      { shape: 'rect', x: 112, y: 165, width: 12, height: 55, rx: 6 },
+    ],
+  },
 ]
 
 const DECORATIONS: { view: 'front' | 'back'; shapes: Shape[] }[] = [
@@ -175,7 +190,7 @@ function renderShape(shape: Shape, props: ShapeVisualProps) {
 }
 
 interface MuscleDiagramProps {
-  selected?: MuscleGroup | null
+  selected?: MuscleGroup | MuscleGroup[] | null
   onSelect?: (group: MuscleGroup) => void
   size?: number
 }
@@ -187,12 +202,13 @@ function Figure({
   size,
 }: {
   view: 'front' | 'back'
-  selected?: MuscleGroup | null
+  selected?: MuscleGroup | MuscleGroup[] | null
   onSelect?: (group: MuscleGroup) => void
   size: number
 }) {
   const regions = REGIONS.filter((r) => r.view === view)
   const decorations = DECORATIONS.find((d) => d.view === view)
+  const selectedList = Array.isArray(selected) ? selected : selected ? [selected] : []
 
   return (
     <div className="flex flex-col items-center gap-1">
@@ -202,7 +218,7 @@ function Figure({
         ))}
         {regions.map((region) =>
           region.shapes.map((s, i) => {
-            const isActive = selected === region.group || selected === 'cardio'
+            const isActive = selectedList.includes(region.group) || selectedList.includes('cardio')
             return (
               <g key={`${region.group}-${i}`}>
                 {renderShape(s, {

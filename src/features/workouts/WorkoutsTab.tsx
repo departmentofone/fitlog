@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { FireStreak } from '../../components/FireStreak'
+import { MuscleDiagram } from '../../components/MuscleDiagram'
 import { useUserSettings } from '../../hooks/useUserSettings'
 import { useWorkoutStreaks } from '../../hooks/useWorkoutStreaks'
 import {
@@ -12,9 +13,9 @@ import {
 } from '../../hooks/useWorkouts'
 import type { Exercise } from '../../types'
 import { ExercisePicker } from './ExercisePicker'
+import { ExerciseSummaryBox } from './ExerciseSummaryBox'
 import { PreworkoutGate } from './PreworkoutGate'
 import { SetForm } from './SetForm'
-import { SetList } from './SetList'
 
 export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
   const { data: settings } = useUserSettings()
@@ -31,6 +32,19 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
   const [activeExercise, setActiveExercise] = useState<Exercise | null>(null)
   const [picking, setPicking] = useState(false)
 
+  const groupedByExercise = useMemo(() => {
+    const map = new Map<string, (typeof sets)[number][]>()
+    for (const s of sets) {
+      map.set(s.exercise_id, [...(map.get(s.exercise_id) ?? []), s])
+    }
+    return map
+  }, [sets])
+
+  const musclesTrained = useMemo(
+    () => Array.from(new Set(sets.map((s) => s.exercise?.muscle_group).filter(Boolean))),
+    [sets],
+  )
+
   if (sessionLoading) {
     return <p className="p-4 text-slate-400">Loading…</p>
   }
@@ -39,11 +53,13 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
     return <PreworkoutGate loading={startSession.isPending} onAnswer={(pw) => startSession.mutate({ preworkout: pw })} />
   }
 
-  const nextSetNumber = activeExercise
-    ? sets.filter((s) => s.exercise_id === activeExercise.id).length + 1
-    : 1
-
+  const activeSets = activeExercise ? (groupedByExercise.get(activeExercise.id) ?? []) : []
+  const nextSetNumber = activeSets.length + 1
   const totalVolume = sets.reduce((sum, s) => sum + s.weight * s.reps, 0)
+
+  const collapsedExercises = Array.from(groupedByExercise.entries()).filter(
+    ([exerciseId]) => exerciseId !== activeExercise?.id,
+  )
 
   return (
     <div className="space-y-4 p-4">
@@ -79,6 +95,8 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
       {activeExercise ? (
         <SetForm
           exercise={activeExercise}
+          sessionId={session.id}
+          existingSets={activeSets}
           nextSetNumber={nextSetNumber}
           adding={addSet.isPending}
           onAdd={(input) =>
@@ -88,6 +106,7 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
               ...input,
             })
           }
+          onDeleteSet={(id) => deleteSet.mutate(id)}
           onDone={() => setActiveExercise(null)}
         />
       ) : picking ? (
@@ -114,7 +133,25 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
         </button>
       )}
 
-      <SetList sets={sets} onDelete={(id) => deleteSet.mutate(id)} />
+      {collapsedExercises.length > 0 && (
+        <div className="grid grid-cols-2 gap-3">
+          {collapsedExercises.map(([exerciseId, exerciseSets]) => (
+            <ExerciseSummaryBox
+              key={exerciseId}
+              name={exerciseSets[0].exercise?.name ?? 'Exercise'}
+              sets={exerciseSets}
+              onClick={() => setActiveExercise(exerciseSets[0].exercise)}
+            />
+          ))}
+        </div>
+      )}
+
+      {musclesTrained.length > 0 && (
+        <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+          <h3 className="mb-2 text-center text-sm font-medium text-slate-300">Muscle groups worked today</h3>
+          <MuscleDiagram selected={musclesTrained} size={90} />
+        </div>
+      )}
     </div>
   )
 }

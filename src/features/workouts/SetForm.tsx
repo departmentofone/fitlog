@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import type { Exercise } from '../../types'
+import { useLastSetForExercise } from '../../hooks/useWorkouts'
+import type { Exercise, WorkoutSet } from '../../types'
 
 const DIFFICULTY_LABELS: Record<number, string> = {
   1: 'Very easy',
@@ -16,16 +17,29 @@ const DIFFICULTY_LABELS: Record<number, string> = {
 
 interface SetFormProps {
   exercise: Exercise
+  sessionId: string
+  existingSets: WorkoutSet[]
   nextSetNumber: number
   onAdd: (input: { weight: number; reps: number; difficulty: number }) => void
+  onDeleteSet: (id: string) => void
   onDone: () => void
   adding?: boolean
 }
 
-export function SetForm({ exercise, nextSetNumber, onAdd, onDone, adding }: SetFormProps) {
+export function SetForm({
+  exercise,
+  sessionId,
+  existingSets,
+  nextSetNumber,
+  onAdd,
+  onDeleteSet,
+  onDone,
+  adding,
+}: SetFormProps) {
   const [weight, setWeight] = useState('')
   const [reps, setReps] = useState('')
   const [difficulty, setDifficulty] = useState(6)
+  const { data: lastSet } = useLastSetForExercise(exercise.id, sessionId)
 
   function handleAdd() {
     const w = parseFloat(weight)
@@ -37,12 +51,40 @@ export function SetForm({ exercise, nextSetNumber, onAdd, onDone, adding }: SetF
 
   return (
     <div className="rounded-xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-1 flex items-center justify-between">
         <h3 className="font-medium text-white">{exercise.name}</h3>
         <button onClick={onDone} className="text-sm text-slate-400 hover:text-slate-200">
           Done
         </button>
       </div>
+
+      {lastSet && (
+        <p className="mb-3 text-xs text-slate-500">
+          Last time: <span className="text-slate-300">{lastSet.weight}kg × {lastSet.reps} reps</span>
+        </p>
+      )}
+
+      {existingSets.length > 0 && (
+        <div className="mb-3 space-y-1">
+          {existingSets.map((s) => (
+            <div
+              key={s.id}
+              className="flex items-center justify-between rounded-lg bg-slate-800/60 px-3 py-2 text-sm text-slate-300"
+            >
+              <span>
+                Set {s.set_number} · {s.weight} × {s.reps} reps
+              </span>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-slate-500">DIFF {s.difficulty}</span>
+                <button onClick={() => onDeleteSet(s.id)} className="text-red-400 hover:text-red-300">
+                  ×
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       <p className="mb-2 text-xs text-slate-500">Set {nextSetNumber}</p>
       <div className="mb-3 grid grid-cols-2 gap-3">
         <label className="flex flex-col gap-1 text-xs text-slate-400">
@@ -67,7 +109,7 @@ export function SetForm({ exercise, nextSetNumber, onAdd, onDone, adding }: SetF
         </label>
       </div>
       <label className="mb-1 flex justify-between text-xs text-slate-400">
-        <span>Difficulty</span>
+        <span>Difficulty (DIFF)</span>
         <span className="text-slate-300">
           {difficulty} · {DIFFICULTY_LABELS[difficulty]}
         </span>

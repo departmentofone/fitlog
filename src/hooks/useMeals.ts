@@ -70,6 +70,17 @@ export function useAddMealItem() {
   })
 }
 
+export function useSetMealCompleted() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ mealId, completed }: { mealId: string; completed: boolean }) => {
+      const { error } = await supabase.from('meals').update({ completed }).eq('id', mealId)
+      if (error) throw error
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['meals'] }),
+  })
+}
+
 export function useDeleteMealItem() {
   const qc = useQueryClient()
   return useMutation({

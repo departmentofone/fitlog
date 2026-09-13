@@ -20,18 +20,29 @@ export function useFoodSearch(search: string) {
   })
 }
 
+export interface CreateFoodInput {
+  name: string
+  caloriesPer100g: number
+  proteinPer100g: number
+  carbsPer100g: number
+  fatPer100g: number
+  commonServings: CommonServing[]
+  fiberG?: number
+  sugarG?: number
+  sodiumMg?: number
+  cholesterolMg?: number
+  potassiumMg?: number
+  calciumMg?: number
+  ironMg?: number
+  vitaminCMg?: number
+  vitaminAMcg?: number
+}
+
 export function useCreateFood() {
   const { user } = useAuth()
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async (input: {
-      name: string
-      caloriesPer100g: number
-      proteinPer100g: number
-      carbsPer100g: number
-      fatPer100g: number
-      commonServings: CommonServing[]
-    }) => {
+    mutationFn: async (input: CreateFoodInput) => {
       if (!user) throw new Error('Not signed in')
       const { data, error } = await supabase
         .from('foods')
@@ -43,6 +54,15 @@ export function useCreateFood() {
           carbs_per_100g: input.carbsPer100g,
           fat_per_100g: input.fatPer100g,
           common_servings: input.commonServings,
+          fiber_g: input.fiberG ?? 0,
+          sugar_g: input.sugarG ?? 0,
+          sodium_mg: input.sodiumMg ?? 0,
+          cholesterol_mg: input.cholesterolMg ?? 0,
+          potassium_mg: input.potassiumMg ?? 0,
+          calcium_mg: input.calciumMg ?? 0,
+          iron_mg: input.ironMg ?? 0,
+          vitamin_c_mg: input.vitaminCMg ?? 0,
+          vitamin_a_mcg: input.vitaminAMcg ?? 0,
         })
         .select()
         .single()

@@ -6,8 +6,8 @@ import { dailyTotals, useMealsForDate } from '../../hooks/useMeals'
 import { useUpdateSettings, useUserSettings } from '../../hooks/useUserSettings'
 import { todayISO } from '../../hooks/useWorkouts'
 import type { DietGoal } from '../../types'
+import { NutritionBreakdownModal } from '../nutrition/NutritionBreakdownModal'
 import { GoalProjectionChart } from './GoalProjectionChart'
-import { MacroBreakdownModal } from './MacroBreakdownModal'
 
 const GOAL_OPTIONS: { value: DietGoal; label: string }[] = [
   { value: 'deficit', label: 'Deficit' },
@@ -130,9 +130,7 @@ export function DietTab() {
 
       <GoalProjectionChart />
 
-      {showBreakdown && (
-        <MacroBreakdownModal meals={meals} totals={totals} onClose={() => setShowBreakdown(false)} />
-      )}
+      {showBreakdown && <NutritionBreakdownModal meals={meals} onClose={() => setShowBreakdown(false)} />}
     </div>
   )
 }

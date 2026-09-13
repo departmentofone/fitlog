@@ -145,6 +145,26 @@ export function useDeleteSet(sessionId: string | null | undefined) {
   })
 }
 
+/** Most recent previously-logged set for this exercise (from an earlier session), for a "last time" hint. */
+export function useLastSetForExercise(exerciseId: string | undefined, excludeSessionId: string | undefined) {
+  return useQuery({
+    queryKey: ['last-set', exerciseId, excludeSessionId],
+    enabled: !!exerciseId,
+    queryFn: async () => {
+      let query = supabase
+        .from('workout_sets')
+        .select('weight, reps, difficulty, created_at')
+        .eq('exercise_id', exerciseId!)
+        .order('created_at', { ascending: false })
+        .limit(1)
+      if (excludeSessionId) query = query.neq('session_id', excludeSessionId)
+      const { data, error } = await query.maybeSingle()
+      if (error) throw error
+      return data as { weight: number; reps: number; difficulty: number; created_at: string } | null
+    },
+  })
+}
+
 export function useSessionHistory() {
   const { user } = useAuth()
   return useQuery({

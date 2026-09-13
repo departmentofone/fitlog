@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { MacroLine } from '../../components/MacroLine'
 import { dailyTotals, useCreateMeal, useMealsForDate } from '../../hooks/useMeals'
 import { todayISO } from '../../hooks/useWorkouts'
+import { NutritionBreakdownModal } from '../nutrition/NutritionBreakdownModal'
 import { MealCard } from './MealCard'
 import { TrendsChart } from './TrendsChart'
 import { WaterWidget } from './WaterWidget'
@@ -13,6 +14,7 @@ export function MealsTab() {
   const { data: meals = [], isLoading } = useMealsForDate(date)
   const createMeal = useCreateMeal()
   const [showTrends, setShowTrends] = useState(false)
+  const [showBreakdown, setShowBreakdown] = useState(false)
 
   const totals = dailyTotals(meals)
   const usedNames = new Set(meals.map((m) => m.name))
@@ -41,8 +43,14 @@ export function MealsTab() {
 
       <WaterWidget />
 
-      <div className="rounded-2xl bg-gradient-to-br from-emerald-600/20 to-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
-        <h3 className="mb-2 text-sm font-medium text-slate-300">Today's totals</h3>
+      <div
+        onClick={() => setShowBreakdown(true)}
+        className="cursor-pointer rounded-2xl bg-gradient-to-br from-emerald-600/20 to-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5 transition hover:ring-emerald-500/30"
+      >
+        <div className="mb-2 flex items-center justify-between">
+          <h3 className="text-sm font-medium text-slate-300">Today's totals</h3>
+          <span className="text-xs text-slate-500">Tap for breakdown</span>
+        </div>
         <p className="text-2xl font-bold text-emerald-400">{Math.round(totals.calories)} kcal</p>
         <MacroLine macros={totals} className="mt-1 text-sm" />
       </div>
@@ -60,6 +68,8 @@ export function MealsTab() {
       >
         + Add {nextPreset.toLowerCase()}
       </button>
+
+      {showBreakdown && <NutritionBreakdownModal meals={meals} onClose={() => setShowBreakdown(false)} />}
     </div>
   )
 }

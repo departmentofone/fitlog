@@ -6,6 +6,8 @@ import { dailyTotals, useMealsForDate } from '../../hooks/useMeals'
 import { useUpdateSettings, useUserSettings } from '../../hooks/useUserSettings'
 import { todayISO } from '../../hooks/useWorkouts'
 import type { DietGoal } from '../../types'
+import { GoalProjectionChart } from './GoalProjectionChart'
+import { MacroBreakdownModal } from './MacroBreakdownModal'
 
 const GOAL_OPTIONS: { value: DietGoal; label: string }[] = [
   { value: 'deficit', label: 'Deficit' },
@@ -32,6 +34,7 @@ export function DietTab() {
   const [editing, setEditing] = useState(false)
   const [goalDraft, setGoalDraft] = useState(dietGoal)
   const [calorieDraft, setCalorieDraft] = useState(calorieGoal != null ? String(calorieGoal) : '')
+  const [showBreakdown, setShowBreakdown] = useState(false)
 
   function startEditing() {
     setGoalDraft(dietGoal)
@@ -51,18 +54,19 @@ export function DietTab() {
     <div className="space-y-4 p-4">
       <FireStreak count={streak.data?.current ?? 0} label="on-target streak" />
 
-      <div className="rounded-2xl bg-gradient-to-br from-emerald-600/20 to-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div
+        onClick={!editing ? startEditing : undefined}
+        className={`rounded-2xl bg-gradient-to-br from-emerald-600/20 to-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5 transition ${
+          !editing ? 'cursor-pointer hover:ring-emerald-500/30' : ''
+        }`}
+      >
         <div className="mb-2 flex items-center justify-between">
           <h2 className="text-sm font-medium text-slate-300">Diet goal</h2>
-          {!editing && (
-            <button onClick={startEditing} className="text-xs text-slate-400 hover:text-slate-200">
-              Edit
-            </button>
-          )}
+          {!editing && <span className="text-xs text-slate-500">Tap to edit</span>}
         </div>
 
         {editing ? (
-          <div className="space-y-3">
+          <div onClick={(e) => e.stopPropagation()} className="space-y-3">
             <div className="grid grid-cols-3 gap-1.5">
               {GOAL_OPTIONS.map((g) => (
                 <button
@@ -100,7 +104,7 @@ export function DietTab() {
             </div>
           </div>
         ) : calorieGoal == null ? (
-          <p className="text-sm text-slate-400">No calorie goal set yet — tap Edit to set one.</p>
+          <p className="text-sm text-slate-400">No calorie goal set yet — tap here to set one.</p>
         ) : (
           <>
             <p className="text-3xl font-bold text-white">
@@ -112,11 +116,23 @@ export function DietTab() {
         )}
       </div>
 
-      <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
-        <h3 className="mb-2 text-sm font-medium text-slate-300">Consumed today</h3>
+      <div
+        onClick={() => setShowBreakdown(true)}
+        className="cursor-pointer rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5 transition hover:ring-emerald-500/30"
+      >
+        <div className="mb-2 flex items-center justify-between">
+          <h3 className="text-sm font-medium text-slate-300">Consumed today</h3>
+          <span className="text-xs text-slate-500">Tap for breakdown</span>
+        </div>
         <p className="text-2xl font-bold text-emerald-400">{Math.round(totals.calories)} kcal</p>
         <MacroLine macros={totals} className="mt-1 text-sm" />
       </div>
+
+      <GoalProjectionChart />
+
+      {showBreakdown && (
+        <MacroBreakdownModal meals={meals} totals={totals} onClose={() => setShowBreakdown(false)} />
+      )}
     </div>
   )
 }

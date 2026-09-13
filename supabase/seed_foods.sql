@@ -129,4 +129,16 @@ insert into foods (user_id, name, calories_per_100g, protein_per_100g, carbs_per
 (null, 'Eggplant', 25, 1, 6, 0.2, '[{"label":"1 cup cubed","grams":82}]'),
 (null, 'Celery', 16, 0.7, 3, 0.2, '[{"label":"1 stalk","grams":40}]'),
 (null, 'Pumpkin', 26, 1, 6.5, 0.1, '[{"label":"1 cup cubed","grams":116}]'),
-(null, 'Garlic', 149, 6.4, 33, 0.5, '[{"label":"1 clove","grams":3}]');
+(null, 'Garlic', 149, 6.4, 33, 0.5, '[{"label":"1 clove","grams":3}]'),
+
+-- Suhomesnato (dry-cured/smoked meats)
+(null, 'Pršut (dry-cured ham)', 250, 28, 0, 15, '[{"label":"1 kriška","grams":15}]'),
+(null, 'Goveđi pršut (dry-cured beef)', 190, 34, 0, 5, '[{"label":"1 kriška","grams":15}]'),
+(null, 'Suva vešalica', 300, 30, 0, 20, '[{"label":"1 kriška","grams":15}]'),
+(null, 'Stara kolenica (dimljena)', 320, 27, 0, 24, '[{"label":"1 kriška","grams":20}]'),
+(null, 'Pečenica (dry-cured pork loin)', 200, 32, 0, 8, '[{"label":"1 kriška","grams":15}]'),
+(null, 'Slanina, suva (cured pork fat)', 665, 9, 0, 69, '[{"label":"1 kriška","grams":10}]'),
+(null, 'Čvarci (pork cracklings)', 600, 15, 0, 60, '[{"label":"1 kašika","grams":15}]'),
+(null, 'Sudžuk', 450, 24, 1, 38, '[{"label":"1 kriška","grams":15}]'),
+(null, 'Domaća kobasica, suva', 430, 22, 1, 37, '[{"label":"1 kriška","grams":15}]'),
+(null, 'Zimska salama', 400, 20, 1, 35, '[{"label":"1 kriška","grams":15}]');

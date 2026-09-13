@@ -36,7 +36,7 @@ export function Layout({
   children: ReactNode
 }) {
   return (
-    <div className="flex min-h-svh flex-col bg-gradient-to-b from-slate-950 to-slate-900">
+    <div className="flex h-dvh flex-col overflow-hidden bg-gradient-to-b from-slate-950 to-slate-900">
       <header className="flex items-center justify-between gap-2 border-b border-white/5 px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
         <div className="flex items-center gap-2">
           <LogoMark />

@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
 import type { DietGoal, Food } from '../types'
 import { useAuth } from './useAuth'
-import { computeDayStreaks } from './useAchievements'
+import { computeDayStreaks } from '../lib/streaks'
 
 function meetsGoal(consumed: number, goal: number, type: DietGoal): boolean {
   if (type === 'deficit') return consumed <= goal

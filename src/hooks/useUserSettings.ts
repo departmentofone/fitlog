@@ -14,6 +14,7 @@ export const DEFAULT_SETTINGS: Omit<UserSettings, 'user_id' | 'updated_at'> = {
   age: null,
   sex: null,
   activity_level: null,
+  unit_system: 'metric',
 }
 
 export function useUserSettings() {

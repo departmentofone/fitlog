@@ -16,26 +16,30 @@ export function WaterWidget() {
 
   return (
     <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
-      <div className="mb-2 flex items-center justify-between">
-        <h3 className="text-sm font-medium text-slate-300">💧 Water</h3>
-        <button
+      {editingGoal ? (
+        <div className="mb-2 flex items-center justify-between">
+          <h3 className="text-sm font-medium text-slate-300">💧 Water</h3>
+        </div>
+      ) : (
+        <div
           onClick={() => {
             setGoalDraft((goal / 1000).toString())
             setEditingGoal(true)
           }}
-          className="text-xs text-slate-400 hover:text-slate-200"
+          className="mb-3 -m-1 cursor-pointer rounded-xl p-1 transition hover:bg-white/5"
         >
-          Edit goal
-        </button>
-      </div>
-
-      <p className="mb-2 text-2xl font-bold text-blue-400">
-        {(mlToday / 1000).toFixed(2)} <span className="text-sm font-medium text-slate-400">/ {(goal / 1000).toFixed(1)} L</span>
-      </p>
-
-      <div className="mb-3 h-2 w-full overflow-hidden rounded-full bg-slate-800">
-        <div className="h-full rounded-full bg-blue-500 transition-all" style={{ width: `${pct}%` }} />
-      </div>
+          <div className="mb-2 flex items-center justify-between">
+            <h3 className="text-sm font-medium text-slate-300">💧 Water</h3>
+            <span className="text-xs text-slate-500">Tap to edit goal</span>
+          </div>
+          <p className="mb-2 text-2xl font-bold text-blue-400">
+            {(mlToday / 1000).toFixed(2)} <span className="text-sm font-medium text-slate-400">/ {(goal / 1000).toFixed(1)} L</span>
+          </p>
+          <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
+            <div className="h-full rounded-full bg-blue-500 transition-all" style={{ width: `${pct}%` }} />
+          </div>
+        </div>
+      )}
 
       {editingGoal ? (
         <div className="flex gap-2">

@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { useCreateGoal, useDeleteGoal, useGoals, useToggleGoal } from '../../hooks/useGoals'
 import { useUpdateSettings, useUserSettings } from '../../hooks/useUserSettings'
+import { cmToIn, inToCm, kgToLb, lbToKg } from '../../lib/units'
 import type { ActivityLevel, GoalCategory, Sex } from '../../types'
+import { ProgressCalendar } from './ProgressCalendar'
 
 const ACTIVITY_OPTIONS: { value: ActivityLevel; label: string }[] = [
   { value: 'sedentary', label: 'Sedentary' },
@@ -89,10 +91,16 @@ export function GoalsTab() {
   const [activity, setActivity] = useState<ActivityLevel | ''>('')
   const [editingStats, setEditingStats] = useState(false)
 
+  const imperial = settings?.unit_system === 'imperial'
+  const weightUnit = imperial ? 'lb' : 'kg'
+  const heightUnit = imperial ? 'in' : 'cm'
+  const displayWeight = (kg: number) => Math.round((imperial ? kgToLb(kg) : kg) * 10) / 10
+  const displayHeight = (cm: number) => Math.round((imperial ? cmToIn(cm) : cm) * 10) / 10
+
   function startEditing() {
-    setWeight(settings?.current_weight != null ? String(settings.current_weight) : '')
-    setWeightGoal(settings?.weight_goal != null ? String(settings.weight_goal) : '')
-    setHeight(settings?.height_cm != null ? String(settings.height_cm) : '')
+    setWeight(settings?.current_weight != null ? String(displayWeight(settings.current_weight)) : '')
+    setWeightGoal(settings?.weight_goal != null ? String(displayWeight(settings.weight_goal)) : '')
+    setHeight(settings?.height_cm != null ? String(displayHeight(settings.height_cm)) : '')
     setAge(settings?.age != null ? String(settings.age) : '')
     setSex(settings?.sex ?? '')
     setActivity(settings?.activity_level ?? '')
@@ -100,10 +108,12 @@ export function GoalsTab() {
   }
 
   function saveStats() {
+    const toKg = (v: string) => (imperial ? lbToKg(parseFloat(v)) : parseFloat(v))
+    const toCm = (v: string) => (imperial ? inToCm(parseFloat(v)) : parseFloat(v))
     updateSettings.mutate({
-      current_weight: weight ? parseFloat(weight) : null,
-      weight_goal: weightGoal ? parseFloat(weightGoal) : null,
-      height_cm: height ? parseFloat(height) : null,
+      current_weight: weight ? toKg(weight) : null,
+      weight_goal: weightGoal ? toKg(weightGoal) : null,
+      height_cm: height ? toCm(height) : null,
       age: age ? parseInt(age, 10) : null,
       sex: sex || null,
       activity_level: activity || null,
@@ -113,35 +123,36 @@ export function GoalsTab() {
 
   return (
     <div className="space-y-4 p-4">
-      <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div
+        onClick={!editingStats ? startEditing : undefined}
+        className={`rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5 transition ${
+          !editingStats ? 'cursor-pointer hover:ring-emerald-500/30' : ''
+        }`}
+      >
         <div className="mb-3 flex items-center justify-between">
           <h3 className="font-medium text-white">Personal info & weight goal</h3>
-          {!editingStats && (
-            <button onClick={startEditing} className="text-xs text-slate-400 hover:text-slate-200">
-              Edit
-            </button>
-          )}
+          {!editingStats && <span className="text-xs text-slate-500">Tap to edit</span>}
         </div>
 
         {editingStats ? (
-          <div className="space-y-2.5">
+          <div onClick={(e) => e.stopPropagation()} className="space-y-2.5">
             <div className="grid grid-cols-2 gap-2.5">
               <input
-                placeholder="Current weight (kg)"
+                placeholder={`Current weight (${weightUnit})`}
                 type="number"
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
                 className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
               />
               <input
-                placeholder="Goal weight (kg)"
+                placeholder={`Goal weight (${weightUnit})`}
                 type="number"
                 value={weightGoal}
                 onChange={(e) => setWeightGoal(e.target.value)}
                 className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
               />
               <input
-                placeholder="Height (cm)"
+                placeholder={`Height (${heightUnit})`}
                 type="number"
                 value={height}
                 onChange={(e) => setHeight(e.target.value)}
@@ -188,13 +199,15 @@ export function GoalsTab() {
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-2 text-sm text-slate-300">
-            <p>Weight: {settings?.current_weight ?? '—'} kg</p>
-            <p>Goal: {settings?.weight_goal ?? '—'} kg</p>
-            <p>Height: {settings?.height_cm ?? '—'} cm</p>
+            <p>Weight: {settings?.current_weight != null ? `${displayWeight(settings.current_weight)} ${weightUnit}` : '—'}</p>
+            <p>Goal: {settings?.weight_goal != null ? `${displayWeight(settings.weight_goal)} ${weightUnit}` : '—'}</p>
+            <p>Height: {settings?.height_cm != null ? `${displayHeight(settings.height_cm)} ${heightUnit}` : '—'}</p>
             <p>Age: {settings?.age ?? '—'}</p>
           </div>
         )}
       </div>
+
+      <ProgressCalendar />
 
       <GoalList category="workout" title="Workout goals" />
       <GoalList category="custom" title="Custom goals" />

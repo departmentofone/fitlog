@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { FireStreak } from '../../components/FireStreak'
-import { useAchievements } from '../../hooks/useAchievements'
 import { useUserSettings } from '../../hooks/useUserSettings'
+import { useWorkoutStreaks } from '../../hooks/useWorkoutStreaks'
 import {
   useAddSet,
   useAutoStartSession,
@@ -16,7 +16,7 @@ import { PreworkoutGate } from './PreworkoutGate'
 import { SetForm } from './SetForm'
 import { SetList } from './SetList'
 
-export function WorkoutsTab({ onOpenAchievements }: { onOpenAchievements: () => void }) {
+export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
   const { data: settings } = useUserSettings()
   const askPreworkout = settings?.ask_preworkout ?? true
 
@@ -26,7 +26,7 @@ export function WorkoutsTab({ onOpenAchievements }: { onOpenAchievements: () => 
   const { data: sets = [] } = useSessionSets(session?.id)
   const addSet = useAddSet(session?.id)
   const deleteSet = useDeleteSet(session?.id)
-  const { data: achievements } = useAchievements()
+  const { data: streaks } = useWorkoutStreaks()
 
   const [activeExercise, setActiveExercise] = useState<Exercise | null>(null)
   const [picking, setPicking] = useState(false)
@@ -48,12 +48,12 @@ export function WorkoutsTab({ onOpenAchievements }: { onOpenAchievements: () => 
   return (
     <div className="space-y-4 p-4">
       <div className="flex items-center justify-between gap-2">
-        <FireStreak count={achievements?.currentStreak ?? 0} label="day streak" />
+        <FireStreak count={streaks?.currentStreak ?? 0} label="day streak" />
         <button
-          onClick={onOpenAchievements}
+          onClick={onOpenHistory}
           className="rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700"
         >
-          🏆 Achievements
+          📖 History
         </button>
       </div>
 

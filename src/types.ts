@@ -93,6 +93,8 @@ export type DietGoal = 'deficit' | 'maintenance' | 'surplus'
 export type Sex = 'male' | 'female' | 'other'
 export type ActivityLevel = 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active'
 
+export type UnitSystem = 'metric' | 'imperial'
+
 export interface UserSettings {
   user_id: string
   ask_preworkout: boolean
@@ -105,7 +107,18 @@ export interface UserSettings {
   age: number | null
   sex: Sex | null
   activity_level: ActivityLevel | null
+  unit_system: UnitSystem
   updated_at: string
+}
+
+export interface ProgressEntry {
+  id: string
+  user_id: string
+  date: string
+  weight: number | null
+  notes: string | null
+  photo_path: string | null
+  created_at: string
 }
 
 export interface WaterLog {

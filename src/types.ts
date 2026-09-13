@@ -144,6 +144,22 @@ export interface WaterLog {
 
 export type GoalCategory = 'workout' | 'custom'
 
+export interface WorkoutPresetItem {
+  id: string
+  preset_id: string
+  exercise_id: string
+  set_number: number
+  weight: number
+  reps: number
+}
+
+export interface WorkoutPreset {
+  id: string
+  user_id: string
+  name: string
+  created_at: string
+}
+
 export interface Goal {
   id: string
   user_id: string

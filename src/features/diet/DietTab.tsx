@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { CircularProgress } from '../../components/CircularProgress'
 import { FireStreak } from '../../components/FireStreak'
 import { MacroLine } from '../../components/MacroLine'
 import { remainingCaloriesInfo, useDietStreak } from '../../hooks/useDiet'
@@ -106,13 +107,22 @@ export function DietTab() {
         ) : calorieGoal == null ? (
           <p className="text-sm text-slate-400">No calorie goal set yet — tap here to set one.</p>
         ) : (
-          <>
-            <p className="text-3xl font-bold text-white">
-              {calorieGoal} <span className="text-lg font-medium text-slate-400">kcal</span>
-            </p>
-            <p className="mb-3 text-xs capitalize text-slate-500">{dietGoal} target</p>
-            {info && <p className={`text-sm font-medium ${TONE_CLASSES[info.tone]}`}>{info.text}</p>}
-          </>
+          <div className="flex items-center gap-4">
+            <div className="flex-1">
+              <p className="text-3xl font-bold text-white">
+                {calorieGoal} <span className="text-lg font-medium text-slate-400">kcal</span>
+              </p>
+              <p className="mb-3 text-xs capitalize text-slate-500">{dietGoal} target</p>
+              {info && <p className={`text-sm font-medium ${TONE_CLASSES[info.tone]}`}>{info.text}</p>}
+            </div>
+            {info && (
+              <CircularProgress
+                percent={(totals.calories / calorieGoal) * 100}
+                tone={info.tone === 'warn' ? 'warn' : info.tone === 'neutral' ? 'neutral' : 'good'}
+                label="of goal"
+              />
+            )}
+          </div>
         )}
       </div>
 

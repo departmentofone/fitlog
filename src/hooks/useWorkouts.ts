@@ -8,9 +8,8 @@ export function todayISO() {
   return new Date().toISOString().slice(0, 10)
 }
 
-export function useTodaySession() {
+export function useSessionForDate(date: string) {
   const { user } = useAuth()
-  const date = todayISO()
   return useQuery({
     queryKey: ['session', user?.id, date],
     enabled: !!user,
@@ -28,15 +27,19 @@ export function useTodaySession() {
   })
 }
 
+export function useTodaySession() {
+  return useSessionForDate(todayISO())
+}
+
 export function useStartSession() {
   const { user } = useAuth()
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async ({ preworkout }: { preworkout: boolean }) => {
+    mutationFn: async ({ preworkout, date }: { preworkout: boolean; date?: string }) => {
       if (!user) throw new Error('Not signed in')
       const { data, error } = await supabase
         .from('workout_sessions')
-        .insert({ user_id: user.id, date: todayISO(), preworkout })
+        .insert({ user_id: user.id, date: date ?? todayISO(), preworkout })
         .select()
         .single()
       if (error) throw error
@@ -67,18 +70,22 @@ export function useSetPreworkout() {
   })
 }
 
-/** Auto-creates today's session (silently, no preworkout prompt) once settings say not to ask. */
-export function useAutoStartSession(shouldAutoStart: boolean) {
+/**
+ * Auto-creates a session for `date` (silently, no preworkout prompt) once `shouldAutoStart`
+ * is true — either because settings say not to ask, or because the date isn't today (the
+ * preworkout gate only makes sense for "today").
+ */
+export function useAutoStartSession(date: string, shouldAutoStart: boolean) {
   const { user } = useAuth()
-  const { data: session, isLoading } = useTodaySession()
+  const { data: session, isLoading } = useSessionForDate(date)
   const startSession = useStartSession()
 
   useEffect(() => {
     if (shouldAutoStart && !isLoading && !session && user && !startSession.isPending) {
-      startSession.mutate({ preworkout: false })
+      startSession.mutate({ preworkout: false, date })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shouldAutoStart, isLoading, session, user])
+  }, [shouldAutoStart, isLoading, session, user, date])
 
   return { session, isLoading: isLoading || (shouldAutoStart && !session) }
 }
@@ -128,6 +135,27 @@ export function useAddSet(sessionId: string | null | undefined) {
         reps,
         difficulty,
       })
+      if (error) throw error
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['sets', sessionId] }),
+  })
+}
+
+export function useUpdateSet(sessionId: string | null | undefined) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({
+      setId,
+      weight,
+      reps,
+      difficulty,
+    }: {
+      setId: string
+      weight: number
+      reps: number
+      difficulty: number
+    }) => {
+      const { error } = await supabase.from('workout_sets').update({ weight, reps, difficulty }).eq('id', setId)
       if (error) throw error
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['sets', sessionId] }),

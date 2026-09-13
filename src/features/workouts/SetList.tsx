@@ -19,7 +19,7 @@ export function SetList({ sets, onDelete }: SetListProps) {
   return (
     <div className="space-y-4">
       {Array.from(grouped.entries()).map(([name, exerciseSets]) => (
-        <div key={name} className="rounded-xl bg-slate-900 p-3">
+        <div key={name} className="rounded-xl bg-slate-900 p-3 shadow-lg shadow-black/20 ring-1 ring-white/5">
           <h4 className="mb-2 text-sm font-medium text-white">{name}</h4>
           <div className="space-y-1">
             {exerciseSets.map((s) => (

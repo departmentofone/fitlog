@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { MacroLine } from '../../components/MacroLine'
 import { useAddMealItem, useDeleteMealItem, type MealWithItems } from '../../hooks/useMeals'
 import { macrosForGrams, sumMacros } from '../../types'
 import { FoodPicker } from './FoodPicker'
@@ -11,10 +12,10 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
   const totals = sumMacros(meal.meal_items.map((i) => macrosForGrams(i.food, i.grams)))
 
   return (
-    <div className="rounded-xl bg-slate-900 p-4">
+    <div className="rounded-xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <div className="mb-2 flex items-center justify-between">
         <h3 className="font-medium text-white">{meal.name}</h3>
-        <span className="text-xs text-slate-400">{Math.round(totals.calories)} kcal</span>
+        <span className="text-xs text-emerald-400">{Math.round(totals.calories)} kcal</span>
       </div>
 
       <div className="mb-3 space-y-1">
@@ -40,9 +41,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
         {meal.meal_items.length === 0 && <p className="text-sm text-slate-500">No items yet.</p>}
       </div>
 
-      <p className="mb-3 text-xs text-slate-500">
-        P {Math.round(totals.protein)}g · C {Math.round(totals.carbs)}g · F {Math.round(totals.fat)}g
-      </p>
+      <MacroLine macros={totals} className="mb-3" />
 
       {adding ? (
         <FoodPicker
@@ -55,7 +54,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
       ) : (
         <button
           onClick={() => setAdding(true)}
-          className="w-full rounded-lg border border-dashed border-slate-700 py-2 text-sm font-medium text-slate-300 hover:border-emerald-500 hover:text-emerald-400"
+          className="w-full rounded-lg border border-dashed border-slate-700 py-2 text-sm font-medium text-slate-300 transition hover:border-emerald-500 hover:text-emerald-400"
         >
           + Add food
         </button>

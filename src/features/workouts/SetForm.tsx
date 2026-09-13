@@ -36,7 +36,7 @@ export function SetForm({ exercise, nextSetNumber, onAdd, onDone, adding }: SetF
   }
 
   return (
-    <div className="rounded-xl bg-slate-900 p-4">
+    <div className="rounded-xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-medium text-white">{exercise.name}</h3>
         <button onClick={onDone} className="text-sm text-slate-400 hover:text-slate-200">

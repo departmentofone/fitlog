@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Exercise, WorkoutSession, WorkoutSet } from '../types'
 import { useAuth } from './useAuth'
@@ -45,16 +46,41 @@ export function useStartSession() {
   })
 }
 
-export function useTogglePreworkout() {
+/** Creates today's session (if missing) or updates its preworkout flag. Used from Settings. */
+export function useSetPreworkout() {
   const { user } = useAuth()
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async ({ sessionId, preworkout }: { sessionId: string; preworkout: boolean }) => {
-      const { error } = await supabase.from('workout_sessions').update({ preworkout }).eq('id', sessionId)
+    mutationFn: async ({ sessionId, preworkout }: { sessionId?: string | null; preworkout: boolean }) => {
+      if (!user) throw new Error('Not signed in')
+      if (sessionId) {
+        const { error } = await supabase.from('workout_sessions').update({ preworkout }).eq('id', sessionId)
+        if (error) throw error
+        return
+      }
+      const { error } = await supabase
+        .from('workout_sessions')
+        .insert({ user_id: user.id, date: todayISO(), preworkout })
       if (error) throw error
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['session', user?.id] }),
   })
+}
+
+/** Ensures today's session exists (auto-creating one) so workouts can be logged without a gate. */
+export function useEnsureTodaySession() {
+  const { user } = useAuth()
+  const { data: session, isLoading } = useTodaySession()
+  const startSession = useStartSession()
+
+  useEffect(() => {
+    if (!isLoading && !session && user && !startSession.isPending) {
+      startSession.mutate({ preworkout: false })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading, session, user])
+
+  return { session, isLoading: isLoading || (!session && startSession.isPending) }
 }
 
 export interface SetWithExercise extends WorkoutSet {

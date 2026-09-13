@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { AuthScreen } from './components/Auth'
 import { Layout, type Tab } from './components/Layout'
-import { HistoryTab } from './features/history/HistoryTab'
 import { MealsTab } from './features/meals/MealsTab'
+import { ProgressTab } from './features/progress/ProgressTab'
+import { SettingsTab } from './features/settings/SettingsTab'
 import { WorkoutsTab } from './features/workouts/WorkoutsTab'
 import { useAuth } from './hooks/useAuth'
 
@@ -26,7 +27,8 @@ function App() {
     <Layout active={tab} onChange={setTab}>
       {tab === 'workouts' && <WorkoutsTab />}
       {tab === 'meals' && <MealsTab />}
-      {tab === 'history' && <HistoryTab />}
+      {tab === 'progress' && <ProgressTab />}
+      {tab === 'settings' && <SettingsTab />}
     </Layout>
   )
 }

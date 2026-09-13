@@ -22,7 +22,7 @@ export function FoodPicker({ onAdd, onCancel }: FoodPickerProps) {
   }
 
   return (
-    <div className="rounded-xl bg-slate-900 p-4">
+    <div className="rounded-xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-medium text-white">Add food</h3>
         <button onClick={onCancel} className="text-sm text-slate-400 hover:text-slate-200">
@@ -76,7 +76,7 @@ function AmountForm({
   const preview = macrosForGrams(food, resolvedGrams)
 
   return (
-    <div className="rounded-xl bg-slate-900 p-4">
+    <div className="rounded-xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-medium text-white">{food.name}</h3>
         <button onClick={onBack} className="text-sm text-slate-400 hover:text-slate-200">
@@ -168,7 +168,7 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
   }
 
   return (
-    <div className="rounded-xl bg-slate-900 p-4">
+    <div className="rounded-xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-medium text-white">New food</h3>
         <button onClick={onCancel} className="text-sm text-slate-400 hover:text-slate-200">

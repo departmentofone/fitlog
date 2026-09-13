@@ -32,7 +32,7 @@ export function ExercisePicker({ onPick }: ExercisePickerProps) {
 
   if (creating) {
     return (
-      <div className="rounded-xl bg-slate-900 p-4">
+      <div className="rounded-xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-3 font-medium text-white">New exercise</h3>
         <input
           autoFocus

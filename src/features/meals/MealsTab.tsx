@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { MacroLine } from '../../components/MacroLine'
 import { dailyTotals, useCreateMeal, useMealsForDate } from '../../hooks/useMeals'
 import { todayISO } from '../../hooks/useWorkouts'
 import { MealCard } from './MealCard'
@@ -27,7 +28,7 @@ export function MealsTab() {
         />
         <button
           onClick={() => setShowTrends((v) => !v)}
-          className={`rounded-lg px-3 py-2 text-sm font-medium ${
+          className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
             showTrends ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
           }`}
         >
@@ -37,12 +38,10 @@ export function MealsTab() {
 
       {showTrends && <TrendsChart />}
 
-      <div className="rounded-xl bg-slate-900 p-4">
+      <div className="rounded-2xl bg-gradient-to-br from-emerald-600/20 to-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-2 text-sm font-medium text-slate-300">Today's totals</h3>
-        <p className="text-2xl font-semibold text-white">{Math.round(totals.calories)} kcal</p>
-        <p className="mt-1 text-sm text-slate-400">
-          P {Math.round(totals.protein)}g · C {Math.round(totals.carbs)}g · F {Math.round(totals.fat)}g
-        </p>
+        <p className="text-2xl font-bold text-emerald-400">{Math.round(totals.calories)} kcal</p>
+        <MacroLine macros={totals} className="mt-1 text-sm" />
       </div>
 
       {isLoading && <p className="text-slate-400">Loading…</p>}
@@ -54,7 +53,7 @@ export function MealsTab() {
       <button
         onClick={() => createMeal.mutate({ date, name: nextPreset })}
         disabled={createMeal.isPending}
-        className="w-full rounded-xl border border-dashed border-slate-700 py-3 font-medium text-slate-300 hover:border-emerald-500 hover:text-emerald-400"
+        className="w-full rounded-xl border border-dashed border-slate-700 py-3 font-medium text-slate-300 transition hover:border-emerald-500 hover:text-emerald-400"
       >
         + Add {nextPreset.toLowerCase()}
       </button>

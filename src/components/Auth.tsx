@@ -19,9 +19,13 @@ export function AuthScreen() {
         const { error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
       } else {
-        const { error } = await supabase.auth.signUp({ email, password })
+        const { data, error } = await supabase.auth.signUp({ email, password })
         if (error) throw error
-        setInfo('Account created. Check your email if confirmation is required, then sign in.')
+        // If email confirmation is on, signUp won't return a session — fall back to asking them to check email.
+        if (!data.session) {
+          setInfo('Account created. Check your email to confirm it, then sign in.')
+        }
+        // Otherwise the auth state listener picks up the new session and logs them in automatically.
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')

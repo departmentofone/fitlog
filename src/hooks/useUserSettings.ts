@@ -15,6 +15,8 @@ export const DEFAULT_SETTINGS: Omit<UserSettings, 'user_id' | 'updated_at'> = {
   sex: null,
   activity_level: null,
   unit_system: 'metric',
+  theme: 'system',
+  color_palette: 'emerald',
 }
 
 export function useUserSettings() {

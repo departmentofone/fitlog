@@ -44,13 +44,14 @@ export function Layout({
         <button
           onClick={() => setMenuOpen(true)}
           aria-label="Menu"
-          className="flex h-8 w-8 items-center justify-center rounded-full text-slate-300 transition hover:bg-white/5"
+          className="flex h-8 items-center gap-1.5 rounded-full pl-1 pr-2.5 text-slate-300 transition hover:bg-white/5"
         >
-          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <line x1="4" y1="7" x2="20" y2="7" />
             <line x1="4" y1="12" x2="20" y2="12" />
             <line x1="4" y1="17" x2="20" y2="17" />
           </svg>
+          <span className="text-xs font-medium">Menu</span>
         </button>
 
         <div className="flex items-center gap-2">

@@ -111,6 +111,7 @@ export type Sex = 'male' | 'female' | 'other'
 export type ActivityLevel = 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active'
 
 export type UnitSystem = 'metric' | 'imperial'
+export type ThemePreference = 'light' | 'dark' | 'system'
 
 export interface UserSettings {
   user_id: string
@@ -125,6 +126,8 @@ export interface UserSettings {
   sex: Sex | null
   activity_level: ActivityLevel | null
   unit_system: UnitSystem
+  theme: ThemePreference
+  color_palette: string
   updated_at: string
 }
 

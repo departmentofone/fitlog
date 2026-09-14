@@ -70,6 +70,47 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
       </div>
 
       <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+        <h3 className="mb-2 font-medium text-white">Appearance</h3>
+        <p className="mb-1.5 text-xs text-slate-500">Theme</p>
+        <div className="mb-3 grid grid-cols-3 gap-1.5">
+          {(['system', 'light', 'dark'] as const).map((t) => (
+            <button
+              key={t}
+              onClick={() => updateSettings.mutate({ theme: t })}
+              className={`rounded-lg px-3 py-2 text-sm font-medium capitalize transition ${
+                (settings?.theme ?? 'system') === t ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+              }`}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+        <p className="mb-1.5 text-xs text-slate-500">Color palette</p>
+        <div className="grid grid-cols-3 gap-1.5">
+          {[
+            { value: 'emerald', label: 'Emerald', dot: '#34d399' },
+            { value: 'violet', label: 'Violet', dot: '#a78bfa' },
+            { value: 'cyan', label: 'Cyan', dot: '#22d3ee' },
+            { value: 'rose', label: 'Rose', dot: '#fb7185' },
+            { value: 'amber', label: 'Amber', dot: '#fbbf24' },
+          ].map((p) => (
+            <button
+              key={p.value}
+              onClick={() => updateSettings.mutate({ color_palette: p.value })}
+              className={`flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-medium transition ${
+                (settings?.color_palette ?? 'emerald') === p.value
+                  ? 'bg-slate-700 text-white ring-1 ring-white/20'
+                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+              }`}
+            >
+              <span className="h-2.5 w-2.5 rounded-full" style={{ background: p.dot }} />
+              {p.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-2 font-medium text-white">Units</h3>
         <div className="grid grid-cols-2 gap-1.5">
           {(['metric', 'imperial'] as const).map((u) => (

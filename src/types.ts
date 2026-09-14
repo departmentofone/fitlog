@@ -128,7 +128,7 @@ export type ActivityLevel = 'sedentary' | 'light' | 'moderate' | 'active' | 'ver
 
 export type UnitSystem = 'metric' | 'imperial'
 export type ThemePreference = 'light' | 'dark' | 'system'
-export type Tab = 'workouts' | 'meals' | 'diet' | 'goals' | 'misc'
+export type Tab = 'workouts' | 'meals' | 'diet' | 'goals' | 'misc' | 'achievements'
 
 export interface UserSettings {
   user_id: string

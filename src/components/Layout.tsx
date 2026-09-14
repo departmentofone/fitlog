@@ -10,9 +10,11 @@ const TABS: { key: Tab; label: string; icon: string }[] = [
   { key: 'meals', label: 'Meals', icon: '🍽️' },
   { key: 'diet', label: 'Diet', icon: '🥗' },
   { key: 'goals', label: 'Goals', icon: '🎯' },
+  { key: 'achievements', label: 'Achievements', icon: '🏆' },
   { key: 'misc', label: 'Miscellaneous', icon: '🧩' },
 ]
 
+const SHORT_LABELS: Partial<Record<Tab, string>> = { misc: 'Misc', achievements: 'Awards' }
 const PINNED_TABS: Tab[] = ['workouts', 'meals']
 export const BOTTOM_NAV_CHOICES = TABS.filter((t) => !PINNED_TABS.includes(t.key))
 export const MAX_BOTTOM_NAV_EXTRAS = 2
@@ -97,7 +99,7 @@ export function Layout({
               }`}
             >
               <span className="text-lg">{tab.icon}</span>
-              {tab.key === 'misc' ? 'Misc' : tab.label}
+              {SHORT_LABELS[tab.key] ?? tab.label}
             </button>
           )
         })}

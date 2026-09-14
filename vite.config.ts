@@ -21,6 +21,13 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
+      // Switched from the default generateSW (fully auto-generated, no room for custom
+      // event listeners) to injectManifest so src/sw.ts can handle `push`/`notificationclick`
+      // for web push notifications (see PUSH_NOTIFICATIONS.md). Precaching behavior is
+      // unchanged - src/sw.ts calls precacheAndRoute itself with the same file list.
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
       includeAssets: ['apple-touch-icon.png', 'favicon.svg'],
       manifest: {
         name: 'FitLog',
@@ -36,7 +43,7 @@ export default defineConfig({
           { src: '/icon-512-maskable.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
-      workbox: {
+      injectManifest: {
         globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
       },
     }),

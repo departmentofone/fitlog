@@ -5,6 +5,7 @@ import { useUpdateSettings, useUserSettings } from '../../hooks/useUserSettings'
 import { exportUserData } from '../../lib/exportData'
 import { supabase } from '../../lib/supabase'
 import type { Tab } from '../../types'
+import { PushNotificationsCard } from './PushNotificationsCard'
 
 export function SettingsTab({ onBack }: { onBack: () => void }) {
   const { user } = useAuth()
@@ -142,6 +143,8 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
           })}
         </div>
       </div>
+
+      <PushNotificationsCard />
 
       <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-2 font-medium text-white">Units</h3>

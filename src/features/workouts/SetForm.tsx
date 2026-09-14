@@ -20,7 +20,7 @@ interface SetFormProps {
   sessionId: string
   existingSets: WorkoutSet[]
   nextSetNumber: number
-  onAdd: (input: { weight: number; reps: number; difficulty: number }) => void
+  onAdd: (input: { weight: number; reps: number; difficulty: number; isWarmup: boolean }) => void
   onDeleteSet: (id: string) => void
   onUpdateSet: (input: { setId: string; weight: number; reps: number; difficulty: number }) => void
   onDone: () => void
@@ -105,6 +105,7 @@ export function SetForm({
   const [weight, setWeight] = useState('')
   const [reps, setReps] = useState('')
   const [difficulty, setDifficulty] = useState(6)
+  const [isWarmup, setIsWarmup] = useState(false)
   const [editingSetId, setEditingSetId] = useState<string | null>(null)
   const { data: lastSet } = useLastSetForExercise(exercise.id, sessionId)
 
@@ -112,8 +113,9 @@ export function SetForm({
     const w = parseFloat(weight)
     const r = parseInt(reps, 10)
     if (Number.isNaN(w) || Number.isNaN(r)) return
-    onAdd({ weight: w, reps: r, difficulty })
+    onAdd({ weight: w, reps: r, difficulty, isWarmup })
     setReps('')
+    setIsWarmup(false)
   }
 
   return (
@@ -156,6 +158,7 @@ export function SetForm({
               >
                 <span>
                   Set {s.set_number} · {s.weight} × {s.reps} reps
+                  {s.is_warmup && <span className="ml-1.5 text-amber-400">(warm-up)</span>}
                 </span>
                 <span className="text-xs text-slate-500">DIFF {s.difficulty}</span>
               </button>
@@ -164,7 +167,18 @@ export function SetForm({
         </div>
       )}
 
-      <p className="mb-2 text-xs text-slate-500">Set {nextSetNumber}</p>
+      <div className="mb-2 flex items-center justify-between">
+        <p className="text-xs text-slate-500">Set {nextSetNumber}</p>
+        <label className="flex items-center gap-1.5 text-xs text-slate-400">
+          <input
+            type="checkbox"
+            checked={isWarmup}
+            onChange={(e) => setIsWarmup(e.target.checked)}
+            className="h-3.5 w-3.5 accent-amber-500"
+          />
+          Warm-up
+        </label>
+      </div>
       <div className="mb-3 grid grid-cols-2 gap-3">
         <label className="flex flex-col gap-1 text-xs text-slate-400">
           Weight

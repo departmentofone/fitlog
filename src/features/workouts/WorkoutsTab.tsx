@@ -11,17 +11,21 @@ import {
   useAddSet,
   useAutoStartSession,
   useDeleteSet,
+  useExerciseHistory,
   useSessionSets,
   useSetPreworkout,
   useStartSession,
   useUpdateSet,
 } from '../../hooks/useWorkouts'
+import { estimate1RM } from '../../lib/oneRepMax'
 import type { Exercise } from '../../types'
+import { ExerciseDetailModal } from './ExerciseDetailModal'
 import { ExercisePicker } from './ExercisePicker'
 import { ExerciseSummaryBox } from './ExerciseSummaryBox'
 import { PresetsView } from './PresetsView'
 import { PreworkoutGate } from './PreworkoutGate'
 import { SetForm } from './SetForm'
+import { WeeklyVolumeCard } from './WeeklyVolumeCard'
 
 export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
   const { data: settings } = useUserSettings()
@@ -38,11 +42,13 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
   const updateSet = useUpdateSet(session?.id)
   const deleteSet = useDeleteSet(session?.id)
   const { data: streaks } = useWorkoutStreaks()
-  const { undoable } = useToast()
+  const { undoable, show } = useToast()
 
   const [activeExercise, setActiveExercise] = useState<Exercise | null>(null)
   const [picking, setPicking] = useState(false)
   const [showPresets, setShowPresets] = useState(false)
+  const [detailExercise, setDetailExercise] = useState<Exercise | null>(null)
+  const { data: activeExerciseHistory = [] } = useExerciseHistory(activeExercise?.id)
 
   const groupedByExercise = useMemo(() => {
     const map = new Map<string, (typeof sets)[number][]>()
@@ -130,7 +136,19 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
               nextSetNumber={(groupedByExercise.get(activeExercise.id)?.length ?? 0) + 1}
               adding={addSet.isPending}
               onAdd={(input) => {
-                haptics.tap()
+                const priorBest = activeExerciseHistory
+                  .filter((h) => !h.is_warmup)
+                  .reduce((max, h) => Math.max(max, estimate1RM(h.weight, h.reps)), 0)
+                const newOneRm = estimate1RM(input.weight, input.reps)
+                const isPr = !input.isWarmup && priorBest > 0 && newOneRm > priorBest
+
+                if (isPr) {
+                  haptics.pr()
+                  show(`🎉 New PR on ${activeExercise.name}!`, { duration: 4000 })
+                } else {
+                  haptics.tap()
+                }
+
                 addSet.mutate({
                   exerciseId: activeExercise.id,
                   setNumber: (groupedByExercise.get(activeExercise.id)?.length ?? 0) + 1,
@@ -153,6 +171,7 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
                       weight: target.weight,
                       reps: target.reps,
                       difficulty: target.difficulty,
+                      isWarmup: target.is_warmup,
                     }),
                 )
               }}
@@ -193,6 +212,7 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
                     name={exerciseSets[0].exercise?.name ?? 'Exercise'}
                     sets={exerciseSets}
                     onClick={() => setActiveExercise(exerciseSets[0].exercise)}
+                    onOpenDetail={() => setDetailExercise(exerciseSets[0].exercise)}
                   />
                 ))}
             </div>
@@ -204,8 +224,12 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
               <MuscleDiagram selected={musclesTrained} size={90} />
             </div>
           )}
+
+          <WeeklyVolumeCard />
         </>
       )}
+
+      {detailExercise && <ExerciseDetailModal exercise={detailExercise} onClose={() => setDetailExercise(null)} />}
     </div>
   )
 }

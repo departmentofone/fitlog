@@ -56,6 +56,7 @@ export interface WorkoutSet {
   weight: number
   reps: number
   difficulty: number
+  is_warmup: boolean
   created_at: string
 }
 

@@ -119,12 +119,14 @@ export function useAddSet(sessionId: string | null | undefined) {
       weight,
       reps,
       difficulty,
+      isWarmup,
     }: {
       exerciseId: string
       setNumber: number
       weight: number
       reps: number
       difficulty: number
+      isWarmup?: boolean
     }) => {
       if (!sessionId) throw new Error('No active session')
       const { error } = await supabase.from('workout_sets').insert({
@@ -133,6 +135,7 @@ export function useAddSet(sessionId: string | null | undefined) {
         set_number: setNumber,
         weight,
         reps,
+        is_warmup: isWarmup ?? false,
         difficulty,
       })
       if (error) throw error
@@ -222,6 +225,69 @@ export function useSessionDetailForDate(date: string | null) {
         .maybeSingle()
       if (error) throw error
       return data as unknown as (WorkoutSession & { workout_sets: SetWithExercise[] }) | null
+    },
+  })
+}
+
+export interface ExerciseHistoryPoint {
+  date: string
+  weight: number
+  reps: number
+  is_warmup: boolean
+}
+
+/** All non-warmup sets ever logged for an exercise, with the session date — for PRs, 1RM, and progress charts. */
+export function useExerciseHistory(exerciseId: string | undefined) {
+  return useQuery({
+    queryKey: ['exercise-history', exerciseId],
+    enabled: !!exerciseId,
+    queryFn: async (): Promise<ExerciseHistoryPoint[]> => {
+      const { data, error } = await supabase
+        .from('workout_sets')
+        .select('weight, reps, is_warmup, session:workout_sessions!inner(date)')
+        .eq('exercise_id', exerciseId!)
+        .order('created_at', { ascending: true })
+      if (error) throw error
+      type Row = { weight: number; reps: number; is_warmup: boolean | null; session: { date: string } }
+      return ((data as unknown as Row[]) ?? []).map((r) => ({
+        date: r.session.date,
+        weight: r.weight,
+        reps: r.reps,
+        is_warmup: r.is_warmup ?? false,
+      }))
+    },
+  })
+}
+
+export interface MuscleVolume {
+  muscleGroup: string
+  volume: number
+}
+
+/** Total volume (weight x reps) per muscle group over the last N days. */
+export function useWeeklyVolumeByMuscleGroup(days = 7) {
+  const { user } = useAuth()
+  return useQuery({
+    queryKey: ['weekly-volume', user?.id, days],
+    enabled: !!user,
+    queryFn: async (): Promise<MuscleVolume[]> => {
+      const start = new Date()
+      start.setDate(start.getDate() - (days - 1))
+      const startISO = start.toISOString().slice(0, 10)
+
+      const { data, error } = await supabase
+        .from('workout_sets')
+        .select('weight, reps, exercise:exercises(muscle_group), session:workout_sessions!inner(date)')
+        .gte('session.date', startISO)
+      if (error) throw error
+
+      type Row = { weight: number; reps: number; exercise: { muscle_group: string } | null }
+      const totals = new Map<string, number>()
+      for (const row of (data as unknown as Row[]) ?? []) {
+        const group = row.exercise?.muscle_group ?? 'other'
+        totals.set(group, (totals.get(group) ?? 0) + row.weight * row.reps)
+      }
+      return Array.from(totals.entries()).map(([muscleGroup, volume]) => ({ muscleGroup, volume }))
     },
   })
 }

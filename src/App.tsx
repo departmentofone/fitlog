@@ -9,6 +9,7 @@ const MealsTab = lazy(() => import('./features/meals/MealsTab').then((m) => ({ d
 const DietTab = lazy(() => import('./features/diet/DietTab').then((m) => ({ default: m.DietTab })))
 const GoalsTab = lazy(() => import('./features/goals/GoalsTab').then((m) => ({ default: m.GoalsTab })))
 const AchievementsTab = lazy(() => import('./features/achievements/AchievementsTab').then((m) => ({ default: m.AchievementsTab })))
+const ProgramsTab = lazy(() => import('./features/programs/ProgramsTab').then((m) => ({ default: m.ProgramsTab })))
 const MiscTab = lazy(() => import('./features/misc/MiscTab').then((m) => ({ default: m.MiscTab })))
 const HistoryView = lazy(() => import('./features/history/HistoryView').then((m) => ({ default: m.HistoryView })))
 const SettingsTab = lazy(() => import('./features/settings/SettingsTab').then((m) => ({ default: m.SettingsTab })))
@@ -27,7 +28,7 @@ function App() {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center bg-slate-950">
+      <div className="flex h-dvh items-center justify-center bg-slate-950">
         <p className="text-slate-400">Loading…</p>
       </div>
     )
@@ -52,6 +53,7 @@ function App() {
         {!overlay && tab === 'diet' && <DietTab />}
         {!overlay && tab === 'goals' && <GoalsTab />}
         {!overlay && tab === 'achievements' && <AchievementsTab />}
+        {!overlay && tab === 'programs' && <ProgramsTab />}
         {!overlay && tab === 'misc' && <MiscTab />}
       </Suspense>
     </Layout>

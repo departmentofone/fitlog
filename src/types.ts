@@ -128,7 +128,7 @@ export type ActivityLevel = 'sedentary' | 'light' | 'moderate' | 'active' | 'ver
 
 export type UnitSystem = 'metric' | 'imperial'
 export type ThemePreference = 'light' | 'dark' | 'system'
-export type Tab = 'workouts' | 'meals' | 'diet' | 'goals' | 'misc' | 'achievements'
+export type Tab = 'workouts' | 'meals' | 'diet' | 'goals' | 'misc' | 'achievements' | 'programs'
 
 export interface UserSettings {
   user_id: string
@@ -192,6 +192,60 @@ export interface Recipe {
   name: string
   servings: number
   is_shared: boolean
+  created_at: string
+}
+
+/**
+ * Program contents are self-contained snapshots - exercises/foods are embedded by name and
+ * macros rather than by id, so a program built on one account can be imported into a
+ * completely different account (find-or-create by name at import time; see usePrograms.ts).
+ */
+export interface ProgramWorkoutItem {
+  exerciseName: string
+  muscleGroup: MuscleGroup
+  setNumber: number
+  weight: number
+  reps: number
+}
+
+export interface ProgramWorkout {
+  name: string
+  items: ProgramWorkoutItem[]
+}
+
+export interface ProgramFoodSnapshot {
+  foodName: string
+  caloriesPer100g: number
+  proteinPer100g: number
+  carbsPer100g: number
+  fatPer100g: number
+  grams: number
+  servingLabel: string | null
+}
+
+export interface ProgramRecipe {
+  name: string
+  servings: number
+  ingredients: ProgramFoodSnapshot[]
+}
+
+export interface ProgramMealPreset {
+  name: string
+  items: ProgramFoodSnapshot[]
+}
+
+export interface Program {
+  id: string
+  user_id: string
+  name: string
+  description: string
+  is_shared: boolean
+  diet_goal: DietGoal | null
+  calorie_goal: number | null
+  water_goal_ml: number | null
+  workouts: ProgramWorkout[]
+  recipes: ProgramRecipe[]
+  meal_presets: ProgramMealPreset[]
   created_at: string
 }
 

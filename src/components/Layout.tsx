@@ -11,6 +11,7 @@ const TABS: { key: Tab; label: string; icon: string }[] = [
   { key: 'diet', label: 'Diet', icon: '🥗' },
   { key: 'goals', label: 'Goals', icon: '🎯' },
   { key: 'achievements', label: 'Achievements', icon: '🏆' },
+  { key: 'programs', label: 'Programs', icon: '🗂️' },
   { key: 'misc', label: 'Miscellaneous', icon: '🧩' },
 ]
 
@@ -54,7 +55,7 @@ export function Layout({
     .filter((t): t is (typeof TABS)[number] => !!t)
 
   return (
-    <div className="flex h-full flex-col overflow-hidden bg-gradient-to-b from-slate-950 to-slate-900">
+    <div className="flex h-dvh flex-col overflow-hidden overscroll-none bg-gradient-to-b from-slate-950 to-slate-900">
       <header className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 border-b border-white/5 px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
         <button
           onClick={() => setMenuOpen(true)}
@@ -85,7 +86,7 @@ export function Layout({
 
       <OfflineBanner />
 
-      <main className="flex-1 overflow-y-auto overscroll-contain">{children}</main>
+      <main className="flex-1 overflow-y-auto overscroll-none">{children}</main>
 
       <nav className="flex shrink-0 border-t border-white/5 bg-slate-950/80 pb-[env(safe-area-inset-bottom)] backdrop-blur">
         {bottomBarTabs.map((tab) => {

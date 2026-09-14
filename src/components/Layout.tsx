@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react'
+import { OfflineBanner } from './OfflineBanner'
 
 export type Tab = 'workouts' | 'meals' | 'diet' | 'goals' | 'misc'
 
@@ -67,6 +68,8 @@ export function Layout({
           ⚙️
         </button>
       </header>
+
+      <OfflineBanner />
 
       <main className="flex-1 overflow-y-auto pb-[env(safe-area-inset-bottom)]">{children}</main>
 

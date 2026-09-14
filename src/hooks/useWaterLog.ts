@@ -26,6 +26,9 @@ export function useAddWater() {
   const qc = useQueryClient()
   const date = todayISO()
   return useMutation({
+    // Serializes queued taps (e.g. several +250ml presses while offline) so each one reads the
+    // previous tap's committed total instead of racing on the same stale cached value.
+    scope: { id: 'water-log' },
     mutationFn: async (deltaMl: number) => {
       if (!user) throw new Error('Not signed in')
       const current = qc.getQueryData<number>(['water', user.id, date]) ?? 0

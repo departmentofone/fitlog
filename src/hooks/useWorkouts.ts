@@ -235,7 +235,8 @@ export function useSessionDates() {
     queryKey: ['session-dates', user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase.from('workout_sessions').select('date')
+      // !inner excludes sessions with no logged sets (e.g. auto-created just by viewing a date).
+      const { data, error } = await supabase.from('workout_sessions').select('date, workout_sets!inner(id)')
       if (error) throw error
       return (data ?? []).map((s) => s.date)
     },

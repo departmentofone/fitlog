@@ -30,9 +30,10 @@ export function useWeeklyDigest() {
       const endLastWeek = new Date(today)
       endLastWeek.setDate(today.getDate() - 7)
 
+      // !inner excludes sessions with no logged sets (e.g. auto-created just by viewing a date).
       const [sessionsThis, sessionsLast, meals, setsRes, progress] = await Promise.all([
-        supabase.from('workout_sessions').select('id').gte('date', iso(startThisWeek)).lte('date', iso(today)),
-        supabase.from('workout_sessions').select('id').gte('date', iso(startLastWeek)).lte('date', iso(endLastWeek)),
+        supabase.from('workout_sessions').select('id, workout_sets!inner(id)').gte('date', iso(startThisWeek)).lte('date', iso(today)),
+        supabase.from('workout_sessions').select('id, workout_sets!inner(id)').gte('date', iso(startLastWeek)).lte('date', iso(endLastWeek)),
         supabase
           .from('meals')
           .select('date, meal_items(grams, food:foods(calories_per_100g, protein_per_100g))')

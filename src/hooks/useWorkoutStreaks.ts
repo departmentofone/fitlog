@@ -15,7 +15,8 @@ export function useWorkoutStreaks() {
     queryKey: ['workout-streaks', user?.id],
     enabled: !!user,
     queryFn: async (): Promise<WorkoutStreaks> => {
-      const { data, error } = await supabase.from('workout_sessions').select('date')
+      // !inner excludes sessions with no logged sets (e.g. auto-created just by viewing a date).
+      const { data, error } = await supabase.from('workout_sessions').select('date, workout_sets!inner(id)')
       if (error) throw error
       const dates = (data ?? []).map((s) => s.date)
       const { current, best } = computeDayStreaks(dates)

@@ -2,6 +2,11 @@
 
 :root {
   color-scheme: light dark;
+  /* Overridden by src/lib/viewportHeight.ts with the real measured height as soon as JS runs -
+     100dvh is just the pre-JS fallback. iOS standalone-PWA mode has a WebKit bug where 100dvh
+     under-reports the true screen height by a small amount, leaving a gap of the page's own
+     background below anything sized to it (the bottom nav, in this app's case). */
+  --app-height: 100dvh;
 }
 
 html, body, #root {
@@ -16,8 +21,8 @@ html, body, #root {
  * which goes stale when the browser's own chrome (address bar, gesture bar) resizes the *real*
  * visible area afterward - that's what left a gap below the bottom nav with no way to correct
  * it. overscroll-behavior + overflow:hidden achieves the same "can't scroll past the end"
- * result without that fixed-size trap, and h-dvh (on the Layout root) keeps tracking the real
- * visible height reactively instead of a cached one.
+ * result without that fixed-size trap, and --app-height (on the Layout root, see above) keeps
+ * tracking the real visible height reactively instead of a cached one.
  */
 html, body {
   overflow: hidden;

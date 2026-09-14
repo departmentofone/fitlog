@@ -7,6 +7,7 @@ import { ToastProvider } from './components/ToastProvider.tsx'
 import { AuthProvider } from './hooks/useAuth.tsx'
 import { offlinePersister, PERSIST_MAX_AGE, shouldDehydrateQuery } from './lib/offlinePersister'
 import { queryClient } from './lib/queryClient'
+import './lib/viewportHeight'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

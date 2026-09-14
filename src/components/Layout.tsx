@@ -55,7 +55,7 @@ export function Layout({
     .filter((t): t is (typeof TABS)[number] => !!t)
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden overscroll-none bg-gradient-to-b from-slate-950 to-slate-900">
+    <div className="flex h-[var(--app-height)] flex-col overflow-hidden overscroll-none bg-gradient-to-b from-slate-950 to-slate-900">
       <header className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 border-b border-white/5 px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
         <button
           onClick={() => setMenuOpen(true)}

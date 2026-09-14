@@ -28,7 +28,7 @@ function App() {
 
   if (loading) {
     return (
-      <div className="flex h-dvh items-center justify-center bg-slate-950">
+      <div className="flex h-[var(--app-height)] items-center justify-center bg-slate-950">
         <p className="text-slate-400">Loading…</p>
       </div>
     )

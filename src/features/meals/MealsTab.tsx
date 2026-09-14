@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { DateNav } from '../../components/DateNav'
 import { MacroLine } from '../../components/MacroLine'
 import { dailyTotals, useCreateMeal, useMealsForDate } from '../../hooks/useMeals'
 import { todayISO } from '../../hooks/useWorkouts'
@@ -22,22 +23,16 @@ export function MealsTab() {
 
   return (
     <div className="space-y-4 p-4">
-      <div className="flex items-center justify-between gap-2">
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:outline-none"
-        />
-        <button
-          onClick={() => setShowTrends((v) => !v)}
-          className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
-            showTrends ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-          }`}
-        >
-          Trends
-        </button>
-      </div>
+      <DateNav date={date} max={todayISO()} onChange={setDate} />
+
+      <button
+        onClick={() => setShowTrends((v) => !v)}
+        className={`w-full rounded-lg px-3 py-2 text-sm font-medium transition ${
+          showTrends ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+        }`}
+      >
+        Trends
+      </button>
 
       {showTrends && <TrendsChart />}
 

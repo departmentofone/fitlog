@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { MacroLine } from '../../components/MacroLine'
+import { useToast } from '../../components/ToastProvider'
 import { useAddMealItem, useDeleteMealItem, useSetMealCompleted, type MealWithItems } from '../../hooks/useMeals'
+import { haptics } from '../../lib/haptics'
 import { macrosForGrams, microsForGrams, sumMacros, sumMicros } from '../../types'
 import { FoodPicker } from './FoodPicker'
 
@@ -9,6 +11,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
   const addItem = useAddMealItem()
   const deleteItem = useDeleteMealItem()
   const setCompleted = useSetMealCompleted()
+  const { undoable } = useToast()
 
   const totals = sumMacros(meal.meal_items.map((i) => macrosForGrams(i.food, i.grams)))
   const micros = sumMicros(meal.meal_items.map((i) => microsForGrams(i.food, i.grams)))
@@ -55,7 +58,22 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
               </span>
               <div className="flex items-center gap-3">
                 <span className="text-xs text-slate-500">{Math.round(m.calories)} kcal</span>
-                <button onClick={() => deleteItem.mutate(item.id)} className="text-red-400 hover:text-red-300">
+                <button
+                  onClick={() =>
+                    undoable(
+                      `Removed ${item.food.name}`,
+                      () => deleteItem.mutate(item.id),
+                      () =>
+                        addItem.mutate({
+                          mealId: meal.id,
+                          foodId: item.food_id,
+                          grams: item.grams,
+                          servingLabel: item.serving_label,
+                        }),
+                    )
+                  }
+                  className="text-red-400 hover:text-red-300"
+                >
                   ×
                 </button>
               </div>
@@ -71,6 +89,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
         <FoodPicker
           onCancel={() => setAdding(false)}
           onAdd={(input) => {
+            haptics.tap()
             addItem.mutate({ mealId: meal.id, ...input })
             setAdding(false)
           }}
@@ -85,7 +104,10 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
           </button>
           {meal.meal_items.length > 0 && (
             <button
-              onClick={() => setCompleted.mutate({ mealId: meal.id, completed: true })}
+              onClick={() => {
+                haptics.success()
+                setCompleted.mutate({ mealId: meal.id, completed: true })
+              }}
               className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-500"
             >
               Done

@@ -1,7 +1,9 @@
+import { useMemo, useState } from 'react'
 import { FireStreak } from '../../components/FireStreak'
+import { MonthCalendar } from '../../components/MonthCalendar'
 import { useDietStreak } from '../../hooks/useDiet'
 import { useUserSettings } from '../../hooks/useUserSettings'
-import { useSessionHistory } from '../../hooks/useWorkouts'
+import { useSessionDates, useSessionDetailForDate } from '../../hooks/useWorkouts'
 import { useWorkoutStreaks } from '../../hooks/useWorkoutStreaks'
 
 function StatTile({ label, value }: { label: string; value: string }) {
@@ -13,11 +15,51 @@ function StatTile({ label, value }: { label: string; value: string }) {
   )
 }
 
+function DayDetail({ date }: { date: string }) {
+  const { data: session, isLoading } = useSessionDetailForDate(date)
+
+  if (isLoading) return <p className="text-sm text-slate-400">Loading…</p>
+  if (!session || session.workout_sets.length === 0) {
+    return <p className="text-sm text-slate-500">No sets logged this day.</p>
+  }
+
+  const grouped = new Map<string, typeof session.workout_sets>()
+  for (const s of session.workout_sets) {
+    const key = s.exercise?.name ?? 'Unknown'
+    grouped.set(key, [...(grouped.get(key) ?? []), s])
+  }
+
+  return (
+    <div className="rounded-xl bg-slate-800/50 p-3">
+      <div className="mb-1.5 flex items-center justify-between">
+        <h4 className="text-sm font-medium text-white">
+          {new Date(date + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
+        </h4>
+        {session.preworkout && (
+          <span className="rounded-full bg-emerald-600/20 px-2 py-0.5 text-xs text-emerald-400">Preworkout</span>
+        )}
+      </div>
+      <div className="space-y-1">
+        {Array.from(grouped.entries()).map(([name, sets]) => (
+          <div key={name} className="text-xs text-slate-300">
+            <span className="font-medium text-slate-200">{name}</span>{' '}
+            <span className="text-slate-500">· {sets.map((s) => `${s.weight}×${s.reps}`).join(', ')}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export function HistoryView({ onBack }: { onBack: () => void }) {
   const { data: streaks } = useWorkoutStreaks()
   const { data: settings } = useUserSettings()
   const dietStreak = useDietStreak(settings?.calorie_goal ?? null, settings?.diet_goal ?? 'deficit')
-  const { data: sessions = [], isLoading } = useSessionHistory()
+  const { data: dates = [] } = useSessionDates()
+
+  const [month, setMonth] = useState(() => new Date(new Date().getFullYear(), new Date().getMonth(), 1))
+  const [selectedDate, setSelectedDate] = useState<string | null>(null)
+  const markedDates = useMemo(() => new Set(dates), [dates])
 
   return (
     <div className="space-y-4 p-4">
@@ -45,51 +87,20 @@ export function HistoryView({ onBack }: { onBack: () => void }) {
       </div>
 
       <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
-        <h3 className="mb-3 font-medium text-white">History</h3>
-        {isLoading && <p className="text-sm text-slate-400">Loading…</p>}
-        {!isLoading && sessions.length === 0 && <p className="text-sm text-slate-500">No workout history yet.</p>}
-        <div className="space-y-3">
-          {sessions.map((session) => {
-            const grouped = new Map<string, typeof session.workout_sets>()
-            for (const s of session.workout_sets) {
-              const key = s.exercise?.name ?? 'Unknown'
-              grouped.set(key, [...(grouped.get(key) ?? []), s])
-            }
-
-            return (
-              <div key={session.id} className="rounded-xl bg-slate-800/50 p-3">
-                <div className="mb-1.5 flex items-center justify-between">
-                  <h4 className="text-sm font-medium text-white">
-                    {new Date(session.date + 'T00:00:00').toLocaleDateString(undefined, {
-                      weekday: 'short',
-                      month: 'short',
-                      day: 'numeric',
-                    })}
-                  </h4>
-                  {session.preworkout && (
-                    <span className="rounded-full bg-emerald-600/20 px-2 py-0.5 text-xs text-emerald-400">
-                      Preworkout
-                    </span>
-                  )}
-                </div>
-                {grouped.size === 0 ? (
-                  <p className="text-xs text-slate-500">No sets logged.</p>
-                ) : (
-                  <div className="space-y-1">
-                    {Array.from(grouped.entries()).map(([name, sets]) => (
-                      <div key={name} className="text-xs text-slate-300">
-                        <span className="font-medium text-slate-200">{name}</span>{' '}
-                        <span className="text-slate-500">
-                          · {sets.map((s) => `${s.weight}×${s.reps}`).join(', ')}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )
-          })}
-        </div>
+        <h3 className="mb-3 font-medium text-white">Workout history</h3>
+        <MonthCalendar
+          month={month}
+          onMonthChange={setMonth}
+          markedDates={markedDates}
+          selectedDate={selectedDate}
+          onSelectDate={setSelectedDate}
+          maxDate={new Date().toISOString().slice(0, 10)}
+        />
+        {selectedDate && (
+          <div className="mt-3">
+            <DayDetail date={selectedDate} />
+          </div>
+        )}
       </div>
     </div>
   )

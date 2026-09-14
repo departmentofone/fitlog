@@ -5,6 +5,7 @@ import { DietTab } from './features/diet/DietTab'
 import { GoalsTab } from './features/goals/GoalsTab'
 import { HistoryView } from './features/history/HistoryView'
 import { MealsTab } from './features/meals/MealsTab'
+import { MiscTab } from './features/misc/MiscTab'
 import { SettingsTab } from './features/settings/SettingsTab'
 import { WorkoutsTab } from './features/workouts/WorkoutsTab'
 import { useAuth } from './hooks/useAuth'
@@ -41,6 +42,7 @@ function App() {
       {!overlay && tab === 'meals' && <MealsTab />}
       {!overlay && tab === 'diet' && <DietTab />}
       {!overlay && tab === 'goals' && <GoalsTab />}
+      {!overlay && tab === 'misc' && <MiscTab />}
     </Layout>
   )
 }

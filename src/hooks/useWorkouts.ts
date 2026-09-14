@@ -193,6 +193,39 @@ export function useLastSetForExercise(exerciseId: string | undefined, excludeSes
   })
 }
 
+/** All session dates (cheap query) for marking a calendar with ticks. */
+export function useSessionDates() {
+  const { user } = useAuth()
+  return useQuery({
+    queryKey: ['session-dates', user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase.from('workout_sessions').select('date')
+      if (error) throw error
+      return (data ?? []).map((s) => s.date)
+    },
+  })
+}
+
+export function useSessionDetailForDate(date: string | null) {
+  const { user } = useAuth()
+  return useQuery({
+    queryKey: ['session-detail', user?.id, date],
+    enabled: !!user && !!date,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('workout_sessions')
+        .select('*, workout_sets(*, exercise:exercises(*))')
+        .eq('date', date!)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      if (error) throw error
+      return data as unknown as (WorkoutSession & { workout_sets: SetWithExercise[] }) | null
+    },
+  })
+}
+
 export function useSessionHistory() {
   const { user } = useAuth()
   return useQuery({

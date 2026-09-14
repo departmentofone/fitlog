@@ -1,6 +1,9 @@
 import { useMemo, useState } from 'react'
+import { DateNav } from '../../components/DateNav'
 import { FireStreak } from '../../components/FireStreak'
 import { MuscleDiagram } from '../../components/MuscleDiagram'
+import { useToast } from '../../components/ToastProvider'
+import { haptics } from '../../lib/haptics'
 import { useUserSettings } from '../../hooks/useUserSettings'
 import { useWorkoutStreaks } from '../../hooks/useWorkoutStreaks'
 import {
@@ -35,6 +38,7 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
   const updateSet = useUpdateSet(session?.id)
   const deleteSet = useDeleteSet(session?.id)
   const { data: streaks } = useWorkoutStreaks()
+  const { undoable } = useToast()
 
   const [activeExercise, setActiveExercise] = useState<Exercise | null>(null)
   const [picking, setPicking] = useState(false)
@@ -66,31 +70,28 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
 
   return (
     <div className="space-y-4 p-4">
-      <div className="flex items-center justify-between gap-2">
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => {
-            setDate(e.target.value)
-            setActiveExercise(null)
-          }}
-          max={todayISO()}
-          className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:outline-none"
-        />
-        <div className="flex gap-2">
-          <button
-            onClick={() => setShowPresets(true)}
-            className="rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700"
-          >
-            📋 Presets
-          </button>
-          <button
-            onClick={onOpenHistory}
-            className="rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700"
-          >
-            📖 History
-          </button>
-        </div>
+      <DateNav
+        date={date}
+        max={todayISO()}
+        onChange={(next) => {
+          setDate(next)
+          setActiveExercise(null)
+        }}
+      />
+
+      <div className="flex gap-2">
+        <button
+          onClick={() => setShowPresets(true)}
+          className="flex-1 rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700"
+        >
+          📋 Presets
+        </button>
+        <button
+          onClick={onOpenHistory}
+          className="flex-1 rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700"
+        >
+          📖 History
+        </button>
       </div>
 
       <FireStreak count={streaks?.currentStreak ?? 0} label="day streak" />
@@ -128,14 +129,33 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
               existingSets={groupedByExercise.get(activeExercise.id) ?? []}
               nextSetNumber={(groupedByExercise.get(activeExercise.id)?.length ?? 0) + 1}
               adding={addSet.isPending}
-              onAdd={(input) =>
+              onAdd={(input) => {
+                haptics.tap()
                 addSet.mutate({
                   exerciseId: activeExercise.id,
                   setNumber: (groupedByExercise.get(activeExercise.id)?.length ?? 0) + 1,
                   ...input,
                 })
-              }
-              onDeleteSet={(id) => deleteSet.mutate(id)}
+              }}
+              onDeleteSet={(id) => {
+                const target = sets.find((s) => s.id === id)
+                if (!target) {
+                  deleteSet.mutate(id)
+                  return
+                }
+                undoable(
+                  `Removed set ${target.set_number}`,
+                  () => deleteSet.mutate(id),
+                  () =>
+                    addSet.mutate({
+                      exerciseId: target.exercise_id,
+                      setNumber: target.set_number,
+                      weight: target.weight,
+                      reps: target.reps,
+                      difficulty: target.difficulty,
+                    }),
+                )
+              }}
               onUpdateSet={(input) => updateSet.mutate(input)}
               onDone={() => setActiveExercise(null)}
             />

@@ -81,6 +81,42 @@ export function useSetMealCompleted() {
   })
 }
 
+export function useCopyMealsDay() {
+  const { user } = useAuth()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ fromDate, toDate }: { fromDate: string; toDate: string }) => {
+      if (!user) throw new Error('Not signed in')
+      const { data: meals, error } = await supabase
+        .from('meals')
+        .select('*, meal_items(*)')
+        .eq('date', fromDate)
+      if (error) throw error
+
+      for (const meal of (meals as unknown as (Meal & { meal_items: MealItem[] })[]) ?? []) {
+        const { data: newMeal, error: mealError } = await supabase
+          .from('meals')
+          .insert({ user_id: user.id, date: toDate, name: meal.name })
+          .select()
+          .single()
+        if (mealError) throw mealError
+
+        if (meal.meal_items.length > 0) {
+          const items = meal.meal_items.map((i) => ({
+            meal_id: newMeal.id,
+            food_id: i.food_id,
+            grams: i.grams,
+            serving_label: i.serving_label,
+          }))
+          const { error: itemsError } = await supabase.from('meal_items').insert(items)
+          if (itemsError) throw itemsError
+        }
+      }
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['meals'] }),
+  })
+}
+
 export function useDeleteMealItem() {
   const qc = useQueryClient()
   return useMutation({

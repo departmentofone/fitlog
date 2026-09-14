@@ -1,10 +1,13 @@
 import { useState } from 'react'
+import { CopyDayButton } from '../../components/CopyDayButton'
 import { DateNav } from '../../components/DateNav'
 import { MacroLine } from '../../components/MacroLine'
-import { dailyTotals, useCreateMeal, useMealsForDate } from '../../hooks/useMeals'
+import { useToast } from '../../components/ToastProvider'
+import { useCopyMealsDay, dailyTotals, useCreateMeal, useMealsForDate } from '../../hooks/useMeals'
 import { todayISO } from '../../hooks/useWorkouts'
 import { NutritionBreakdownModal } from '../nutrition/NutritionBreakdownModal'
 import { MealCard } from './MealCard'
+import { MealPresetsView } from './MealPresetsView'
 import { TrendsChart } from './TrendsChart'
 import { WaterWidget } from './WaterWidget'
 
@@ -14,25 +17,47 @@ export function MealsTab() {
   const [date, setDate] = useState(todayISO())
   const { data: meals = [], isLoading } = useMealsForDate(date)
   const createMeal = useCreateMeal()
+  const copyDay = useCopyMealsDay()
+  const { show } = useToast()
   const [showTrends, setShowTrends] = useState(false)
   const [showBreakdown, setShowBreakdown] = useState(false)
+  const [showPresets, setShowPresets] = useState(false)
 
   const totals = dailyTotals(meals)
   const usedNames = new Set(meals.map((m) => m.name))
   const nextPreset = MEAL_PRESETS.find((p) => !usedNames.has(p)) ?? 'Meal'
 
+  if (showPresets) {
+    return <MealPresetsView date={date} currentMeals={meals} onBack={() => setShowPresets(false)} onLoaded={() => setShowPresets(false)} />
+  }
+
   return (
     <div className="space-y-4 p-4">
       <DateNav date={date} max={todayISO()} onChange={setDate} />
 
-      <button
-        onClick={() => setShowTrends((v) => !v)}
-        className={`w-full rounded-lg px-3 py-2 text-sm font-medium transition ${
-          showTrends ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-        }`}
-      >
-        Trends
-      </button>
+      <div className="flex gap-2">
+        <button
+          onClick={() => setShowTrends((v) => !v)}
+          className={`flex-1 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+            showTrends ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+          }`}
+        >
+          Trends
+        </button>
+        <button
+          onClick={() => setShowPresets(true)}
+          className="flex-1 rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700"
+        >
+          📋 Presets
+        </button>
+        <CopyDayButton
+          disabled={meals.length === 0}
+          onCopy={(targetDate) => {
+            copyDay.mutate({ fromDate: date, toDate: targetDate })
+            show(`Copying to ${targetDate}…`)
+          }}
+        />
+      </div>
 
       {showTrends && <TrendsChart />}
 

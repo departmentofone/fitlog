@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useCreateFood, useFoodSearch } from '../../hooks/useFoods'
+import { useFrequentFoods } from '../../hooks/useFrequentFoods'
 import { macrosForGrams, type Food } from '../../types'
 
 interface FoodPickerProps {
@@ -10,6 +11,7 @@ interface FoodPickerProps {
 export function FoodPicker({ onAdd, onCancel }: FoodPickerProps) {
   const [search, setSearch] = useState('')
   const { data: foods = [] } = useFoodSearch(search)
+  const { data: frequent = [] } = useFrequentFoods()
   const [selected, setSelected] = useState<Food | null>(null)
   const [creating, setCreating] = useState(false)
 
@@ -36,6 +38,22 @@ export function FoodPicker({ onAdd, onCancel }: FoodPickerProps) {
         onChange={(e) => setSearch(e.target.value)}
         className="mb-3 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
       />
+      {!search.trim() && frequent.length > 0 && (
+        <div className="mb-3">
+          <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-slate-500">Frequently used</p>
+          <div className="flex flex-wrap gap-1.5">
+            {frequent.map((food) => (
+              <button
+                key={food.id}
+                onClick={() => setSelected(food)}
+                className="rounded-full bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-200 hover:bg-slate-700"
+              >
+                {food.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="mb-3 max-h-64 space-y-1.5 overflow-y-auto">
         {foods.map((food) => (
           <button

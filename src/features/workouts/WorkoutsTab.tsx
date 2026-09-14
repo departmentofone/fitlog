@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { CopyDayButton } from '../../components/CopyDayButton'
 import { DateNav } from '../../components/DateNav'
 import { FireStreak } from '../../components/FireStreak'
 import { MuscleDiagram } from '../../components/MuscleDiagram'
@@ -10,6 +11,7 @@ import {
   todayISO,
   useAddSet,
   useAutoStartSession,
+  useCopyWorkoutDay,
   useDeleteSet,
   useExerciseHistory,
   useSessionSets,
@@ -43,6 +45,7 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
   const deleteSet = useDeleteSet(session?.id)
   const { data: streaks } = useWorkoutStreaks()
   const { undoable, show } = useToast()
+  const copyDay = useCopyWorkoutDay()
 
   const [activeExercise, setActiveExercise] = useState<Exercise | null>(null)
   const [picking, setPicking] = useState(false)
@@ -98,6 +101,13 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
         >
           📖 History
         </button>
+        <CopyDayButton
+          disabled={sets.length === 0}
+          onCopy={(targetDate) => {
+            copyDay.mutate({ fromDate: date, toDate: targetDate })
+            show(`Copying to ${targetDate}…`)
+          }}
+        />
       </div>
 
       <FireStreak count={streaks?.currentStreak ?? 0} label="day streak" />

@@ -292,6 +292,60 @@ export function useWeeklyVolumeByMuscleGroup(days = 7) {
   })
 }
 
+export function useCopyWorkoutDay() {
+  const { user } = useAuth()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ fromDate, toDate }: { fromDate: string; toDate: string }) => {
+      if (!user) throw new Error('Not signed in')
+      const { data: fromSession, error: fromError } = await supabase
+        .from('workout_sessions')
+        .select('*, workout_sets(*)')
+        .eq('date', fromDate)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      if (fromError) throw fromError
+      if (!fromSession || fromSession.workout_sets.length === 0) return
+
+      const { data: existingTo, error: toError } = await supabase
+        .from('workout_sessions')
+        .select('*')
+        .eq('date', toDate)
+        .maybeSingle()
+      if (toError) throw toError
+
+      let toSessionId = existingTo?.id
+      if (!toSessionId) {
+        const { data: created, error: createError } = await supabase
+          .from('workout_sessions')
+          .insert({ user_id: user.id, date: toDate, preworkout: false })
+          .select()
+          .single()
+        if (createError) throw createError
+        toSessionId = created.id
+      }
+
+      const rows = (fromSession.workout_sets as WorkoutSet[]).map((s) => ({
+        session_id: toSessionId,
+        exercise_id: s.exercise_id,
+        set_number: s.set_number,
+        weight: s.weight,
+        reps: s.reps,
+        difficulty: s.difficulty,
+        is_warmup: s.is_warmup,
+      }))
+      const { error: insertError } = await supabase.from('workout_sets').insert(rows)
+      if (insertError) throw insertError
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['sets'] })
+      qc.invalidateQueries({ queryKey: ['session'] })
+      qc.invalidateQueries({ queryKey: ['session-dates'] })
+    },
+  })
+}
+
 export function useSessionHistory() {
   const { user } = useAuth()
   return useQuery({

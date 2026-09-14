@@ -26,6 +26,7 @@ import { ExercisePicker } from './ExercisePicker'
 import { ExerciseSummaryBox } from './ExerciseSummaryBox'
 import { PresetsView } from './PresetsView'
 import { PreworkoutGate } from './PreworkoutGate'
+import { SessionTimer } from './SessionTimer'
 import { SetForm } from './SetForm'
 import { WeeklyVolumeCard } from './WeeklyVolumeCard'
 
@@ -137,6 +138,8 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
               ⚡ Preworkout
             </button>
           </div>
+
+          <SessionTimer session={session} />
 
           {activeExercise ? (
             <SetForm

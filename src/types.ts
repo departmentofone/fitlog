@@ -45,6 +45,8 @@ export interface WorkoutSession {
   date: string
   preworkout: boolean
   notes: string | null
+  started_at: string | null
+  duration_seconds: number | null
   created_at: string
 }
 

@@ -90,6 +90,38 @@ export function useAutoStartSession(date: string, shouldAutoStart: boolean) {
   return { session, isLoading: isLoading || (shouldAutoStart && !session) }
 }
 
+export function useStartWorkoutTimer(sessionId: string | undefined) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async () => {
+      if (!sessionId) throw new Error('No active session')
+      const { error } = await supabase
+        .from('workout_sessions')
+        .update({ started_at: new Date().toISOString(), duration_seconds: null })
+        .eq('id', sessionId)
+      if (error) throw error
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['session'] }),
+  })
+}
+
+export function useStopWorkoutTimer(sessionId: string | undefined) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (startedAt: string) => {
+      if (!sessionId) throw new Error('No active session')
+      const durationSeconds = Math.round((Date.now() - new Date(startedAt).getTime()) / 1000)
+      const { error } = await supabase
+        .from('workout_sessions')
+        .update({ started_at: null, duration_seconds: durationSeconds })
+        .eq('id', sessionId)
+      if (error) throw error
+      return durationSeconds
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['session'] }),
+  })
+}
+
 export interface SetWithExercise extends WorkoutSet {
   exercise: Exercise
 }

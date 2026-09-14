@@ -9,28 +9,29 @@ html, body, #root {
   background: #020617;
 }
 
-html {
-  overflow: hidden;
-}
-
 /*
- * Locks the page itself in place so only elements that opt in (main, className
- * "overflow-y-auto") can scroll. Without this, iOS Safari lets the whole document rubber-band
- * past its own bounds, which is what caused the bottom nav to visibly jump/leave a gap until
- * you scrolled back - the browser was momentarily showing you past-the-end of a page that
- * isn't actually meant to move at all.
+ * Blocks the page itself from scrolling/rubber-banding - only elements that opt in (main,
+ * className "overflow-y-auto") can scroll. `position: fixed` on body looked like the standard
+ * fix for this, but on Android Chrome it pins body to a snapshot of the viewport taken once,
+ * which goes stale when the browser's own chrome (address bar, gesture bar) resizes the *real*
+ * visible area afterward - that's what left a gap below the bottom nav with no way to correct
+ * it. overscroll-behavior + overflow:hidden achieves the same "can't scroll past the end"
+ * result without that fixed-size trap, and h-dvh (on the Layout root) keeps tracking the real
+ * visible height reactively instead of a cached one.
  */
-body {
-  position: fixed;
-  inset: 0;
-  margin: 0;
+html, body {
   overflow: hidden;
   overscroll-behavior: none;
+}
+
+body {
+  margin: 0;
   -webkit-tap-highlight-color: transparent;
 }
 
 #root {
   height: 100%;
+  overflow: hidden;
 }
 
 input, select, textarea, button {

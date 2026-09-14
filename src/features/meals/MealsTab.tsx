@@ -8,6 +8,7 @@ import { todayISO } from '../../hooks/useWorkouts'
 import { NutritionBreakdownModal } from '../nutrition/NutritionBreakdownModal'
 import { MealCard } from './MealCard'
 import { MealPresetsView } from './MealPresetsView'
+import { RecipeBuilderView } from './RecipeBuilder'
 import { TrendsChart } from './TrendsChart'
 import { WaterWidget } from './WaterWidget'
 
@@ -22,6 +23,7 @@ export function MealsTab() {
   const [showTrends, setShowTrends] = useState(false)
   const [showBreakdown, setShowBreakdown] = useState(false)
   const [showPresets, setShowPresets] = useState(false)
+  const [showRecipes, setShowRecipes] = useState(false)
 
   const totals = dailyTotals(meals)
   const usedNames = new Set(meals.map((m) => m.name))
@@ -30,12 +32,13 @@ export function MealsTab() {
   if (showPresets) {
     return <MealPresetsView date={date} currentMeals={meals} onBack={() => setShowPresets(false)} onLoaded={() => setShowPresets(false)} />
   }
+  if (showRecipes) return <RecipeBuilderView date={date} currentMeals={meals} onBack={() => setShowRecipes(false)} />
 
   return (
     <div className="space-y-4 p-4">
       <DateNav date={date} max={todayISO()} onChange={setDate} />
 
-      <div className="flex gap-2">
+      <div className="grid grid-cols-2 gap-2">
         <button
           onClick={() => setShowTrends((v) => !v)}
           className={`flex-1 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
@@ -49,6 +52,12 @@ export function MealsTab() {
           className="flex-1 rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700"
         >
           📋 Presets
+        </button>
+        <button
+          onClick={() => setShowRecipes(true)}
+          className="rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700"
+        >
+          🍳 Recipes
         </button>
         <CopyDayButton
           disabled={meals.length === 0}

@@ -167,6 +167,24 @@ export interface WorkoutPreset {
   created_at: string
 }
 
+export interface Recipe {
+  id: string
+  user_id: string
+  name: string
+  servings: number
+  is_shared: boolean
+  created_at: string
+}
+
+export interface RecipeIngredient {
+  id: string
+  recipe_id: string
+  food_id: string
+  grams: number
+  serving_label: string | null
+  created_at: string
+}
+
 export interface Goal {
   id: string
   user_id: string

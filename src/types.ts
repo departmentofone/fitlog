@@ -160,6 +160,7 @@ export interface WorkoutPreset {
   id: string
   user_id: string
   name: string
+  is_shared: boolean
   created_at: string
 }
 
@@ -171,6 +172,9 @@ export interface Goal {
   notes: string | null
   target_date: string | null
   completed: boolean
+  target_exercise_id: string | null
+  target_weight: number | null
+  target_reps: number | null
   created_at: string
 }
 

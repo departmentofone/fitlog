@@ -24,13 +24,23 @@ export function useCreateGoal() {
   const { user } = useAuth()
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async (input: { category: GoalCategory; title: string; targetDate?: string | null }) => {
+    mutationFn: async (input: {
+      category: GoalCategory
+      title: string
+      targetDate?: string | null
+      targetExerciseId?: string | null
+      targetWeight?: number | null
+      targetReps?: number | null
+    }) => {
       if (!user) throw new Error('Not signed in')
       const { error } = await supabase.from('goals').insert({
         user_id: user.id,
         category: input.category,
         title: input.title,
         target_date: input.targetDate ?? null,
+        target_exercise_id: input.targetExerciseId ?? null,
+        target_weight: input.targetWeight ?? null,
+        target_reps: input.targetReps ?? null,
       })
       if (error) throw error
     },

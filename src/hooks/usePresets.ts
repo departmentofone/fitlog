@@ -57,6 +57,18 @@ export function useCreatePresetFromSets() {
   })
 }
 
+export function useSetPresetShared() {
+  const { user } = useAuth()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ presetId, isShared }: { presetId: string; isShared: boolean }) => {
+      const { error } = await supabase.from('workout_presets').update({ is_shared: isShared }).eq('id', presetId)
+      if (error) throw error
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['presets', user?.id] }),
+  })
+}
+
 export function useDeletePreset() {
   const { user } = useAuth()
   const qc = useQueryClient()

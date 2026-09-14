@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useCreateGoal, useDeleteGoal, useGoals, useToggleGoal } from '../../hooks/useGoals'
 import { useUpdateSettings, useUserSettings } from '../../hooks/useUserSettings'
+import { useExercises } from '../../hooks/useExercises'
+import { useExerciseHistory } from '../../hooks/useWorkouts'
 import { cmToIn, inToCm, kgToLb, lbToKg } from '../../lib/units'
-import type { ActivityLevel, GoalCategory, Sex } from '../../types'
+import type { ActivityLevel, Goal, GoalCategory, Sex } from '../../types'
 import { ProgressCalendar } from './ProgressCalendar'
 
 const ACTIVITY_OPTIONS: { value: ActivityLevel; label: string }[] = [
@@ -13,59 +15,163 @@ const ACTIVITY_OPTIONS: { value: ActivityLevel; label: string }[] = [
   { value: 'very_active', label: 'Very active' },
 ]
 
+function AutoTrackedGoalRow({ goal, exerciseName, onDelete }: { goal: Goal; exerciseName: string; onDelete: () => void }) {
+  const { data: history = [] } = useExerciseHistory(goal.target_exercise_id ?? undefined)
+  const toggleGoal = useToggleGoal()
+
+  const achieved = history.some(
+    (h) => !h.is_warmup && h.weight >= (goal.target_weight ?? 0) && h.reps >= (goal.target_reps ?? 1),
+  )
+
+  useEffect(() => {
+    if (achieved && !goal.completed) toggleGoal.mutate({ id: goal.id, completed: true })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [achieved, goal.completed, goal.id])
+
+  return (
+    <div className="flex items-center gap-3 rounded-lg bg-slate-800/60 px-3 py-2">
+      <span className={`flex-1 text-sm ${goal.completed ? 'text-slate-500 line-through' : 'text-white'}`}>
+        {exerciseName} · {goal.target_weight}kg{goal.target_reps ? ` × ${goal.target_reps}` : ''}
+      </span>
+      {goal.completed && <span className="shrink-0 text-xs text-emerald-400">✓ Hit!</span>}
+      <button onClick={onDelete} className="text-red-400 hover:text-red-300">
+        ×
+      </button>
+    </div>
+  )
+}
+
 function GoalList({ category, title }: { category: GoalCategory; title: string }) {
   const { data: goals = [] } = useGoals()
+  const { data: exercises = [] } = useExercises()
   const createGoal = useCreateGoal()
   const toggleGoal = useToggleGoal()
   const deleteGoal = useDeleteGoal()
-  const [title_, setTitleInput] = useState('')
+  const [titleInput, setTitleInput] = useState('')
   const [adding, setAdding] = useState(false)
+  const [autoTrack, setAutoTrack] = useState(false)
+  const [exerciseId, setExerciseId] = useState('')
+  const [targetWeight, setTargetWeight] = useState('')
+  const [targetReps, setTargetReps] = useState('')
 
   const filtered = goals.filter((g) => g.category === category)
 
-  function handleAdd() {
-    if (!title_.trim()) return
-    createGoal.mutate({ category, title: title_.trim() })
+  function reset() {
     setTitleInput('')
+    setAutoTrack(false)
+    setExerciseId('')
+    setTargetWeight('')
+    setTargetReps('')
     setAdding(false)
+  }
+
+  function handleAdd() {
+    if (autoTrack) {
+      if (!exerciseId || !targetWeight) return
+      const exName = exercises.find((e) => e.id === exerciseId)?.name ?? 'Exercise'
+      createGoal.mutate({
+        category,
+        title: `${exName} ${targetWeight}kg`,
+        targetExerciseId: exerciseId,
+        targetWeight: parseFloat(targetWeight),
+        targetReps: targetReps ? parseInt(targetReps, 10) : null,
+      })
+    } else {
+      if (!titleInput.trim()) return
+      createGoal.mutate({ category, title: titleInput.trim() })
+    }
+    reset()
   }
 
   return (
     <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <h3 className="mb-3 font-medium text-white">{title}</h3>
       <div className="mb-3 space-y-1.5">
-        {filtered.map((g) => (
-          <div key={g.id} className="flex items-center gap-3 rounded-lg bg-slate-800/60 px-3 py-2">
-            <input
-              type="checkbox"
-              checked={g.completed}
-              onChange={(e) => toggleGoal.mutate({ id: g.id, completed: e.target.checked })}
-              className="h-5 w-5 shrink-0 accent-emerald-500"
+        {filtered.map((g) =>
+          g.target_exercise_id ? (
+            <AutoTrackedGoalRow
+              key={g.id}
+              goal={g}
+              exerciseName={exercises.find((e) => e.id === g.target_exercise_id)?.name ?? g.title}
+              onDelete={() => deleteGoal.mutate(g.id)}
             />
-            <span className={`flex-1 text-sm ${g.completed ? 'text-slate-500 line-through' : 'text-white'}`}>
-              {g.title}
-            </span>
-            <button onClick={() => deleteGoal.mutate(g.id)} className="text-red-400 hover:text-red-300">
-              ×
-            </button>
-          </div>
-        ))}
+          ) : (
+            <div key={g.id} className="flex items-center gap-3 rounded-lg bg-slate-800/60 px-3 py-2">
+              <input
+                type="checkbox"
+                checked={g.completed}
+                onChange={(e) => toggleGoal.mutate({ id: g.id, completed: e.target.checked })}
+                className="h-5 w-5 shrink-0 accent-emerald-500"
+              />
+              <span className={`flex-1 text-sm ${g.completed ? 'text-slate-500 line-through' : 'text-white'}`}>
+                {g.title}
+              </span>
+              <button onClick={() => deleteGoal.mutate(g.id)} className="text-red-400 hover:text-red-300">
+                ×
+              </button>
+            </div>
+          ),
+        )}
         {filtered.length === 0 && <p className="text-sm text-slate-500">No goals yet.</p>}
       </div>
 
       {adding ? (
-        <div className="flex gap-2">
-          <input
-            autoFocus
-            value={title_}
-            onChange={(e) => setTitleInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-            placeholder="Goal…"
-            className="flex-1 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
-          />
-          <button onClick={handleAdd} className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500">
-            Add
-          </button>
+        <div className="space-y-2">
+          {category === 'workout' && (
+            <label className="flex items-center gap-1.5 text-xs text-slate-400">
+              <input type="checkbox" checked={autoTrack} onChange={(e) => setAutoTrack(e.target.checked)} className="h-3.5 w-3.5 accent-emerald-500" />
+              Auto-track from an exercise
+            </label>
+          )}
+          {autoTrack ? (
+            <>
+              <select
+                value={exerciseId}
+                onChange={(e) => setExerciseId(e.target.value)}
+                className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:outline-none"
+              >
+                <option value="">Pick an exercise…</option>
+                {exercises.map((ex) => (
+                  <option key={ex.id} value={ex.id}>
+                    {ex.name}
+                  </option>
+                ))}
+              </select>
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="number"
+                  placeholder="Target weight (kg)"
+                  value={targetWeight}
+                  onChange={(e) => setTargetWeight(e.target.value)}
+                  className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                />
+                <input
+                  type="number"
+                  placeholder="Reps (optional)"
+                  value={targetReps}
+                  onChange={(e) => setTargetReps(e.target.value)}
+                  className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                />
+              </div>
+            </>
+          ) : (
+            <input
+              autoFocus
+              value={titleInput}
+              onChange={(e) => setTitleInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+              placeholder="Goal…"
+              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            />
+          )}
+          <div className="flex gap-2">
+            <button onClick={reset} className="flex-1 rounded-lg bg-slate-800 py-2 text-sm text-slate-300 hover:bg-slate-700">
+              Cancel
+            </button>
+            <button onClick={handleAdd} className="flex-1 rounded-lg bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500">
+              Add
+            </button>
+          </div>
         </div>
       ) : (
         <button

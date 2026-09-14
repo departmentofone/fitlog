@@ -4,7 +4,9 @@ import {
   useDeleteMealPreset,
   useLoadMealPreset,
   useMealPresets,
+  useSetMealPresetShared,
 } from '../../hooks/useMealPresets'
+import { useAuth } from '../../hooks/useAuth'
 import type { MealWithItems } from '../../hooks/useMeals'
 
 export function MealPresetsView({
@@ -18,10 +20,12 @@ export function MealPresetsView({
   onBack: () => void
   onLoaded: () => void
 }) {
+  const { user } = useAuth()
   const { data: presets = [], isLoading } = useMealPresets()
   const createFromMeal = useCreateMealPresetFromMeal()
   const deletePreset = useDeleteMealPreset()
   const loadPreset = useLoadMealPreset()
+  const setShared = useSetMealPresetShared()
 
   const [savingMealId, setSavingMealId] = useState<string | null>(null)
   const [name, setName] = useState('')
@@ -91,15 +95,27 @@ export function MealPresetsView({
           {presets.map((preset) => (
             <div key={preset.id} className="rounded-lg bg-slate-800/60 p-3">
               <div className="mb-1 flex items-center justify-between">
-                <h4 className="text-sm font-medium text-white">
-                  {preset.name}
-                  {preset.is_shared && <span className="ml-1.5 text-xs text-emerald-400">· shared</span>}
-                </h4>
-                <button onClick={() => deletePreset.mutate(preset.id)} className="text-red-400 hover:text-red-300">
-                  ×
-                </button>
+                <h4 className="text-sm font-medium text-white">{preset.name}</h4>
+                {preset.user_id === user?.id && (
+                  <button onClick={() => deletePreset.mutate(preset.id)} className="text-red-400 hover:text-red-300">
+                    ×
+                  </button>
+                )}
               </div>
               <p className="mb-2 text-xs text-slate-400">{preset.meal_preset_items.map((i) => i.food.name).join(', ')}</p>
+              {preset.user_id === user?.id ? (
+                <label className="mb-2 flex items-center gap-1.5 text-xs text-slate-400">
+                  <input
+                    type="checkbox"
+                    checked={preset.is_shared}
+                    onChange={(e) => setShared.mutate({ presetId: preset.id, isShared: e.target.checked })}
+                    className="h-3.5 w-3.5 accent-emerald-500"
+                  />
+                  Shared with friend
+                </label>
+              ) : (
+                <p className="mb-2 text-xs text-emerald-400">Shared by a friend</p>
+              )}
               <button
                 onClick={() => {
                   loadPreset.mutate({ preset, date })

@@ -5,6 +5,7 @@ import { useDietStreak } from '../../hooks/useDiet'
 import { useUserSettings } from '../../hooks/useUserSettings'
 import { useSessionDates, useSessionDetailForDate } from '../../hooks/useWorkouts'
 import { useWorkoutStreaks } from '../../hooks/useWorkoutStreaks'
+import { WeeklyDigestCard } from './WeeklyDigestCard'
 
 function StatTile({ label, value }: { label: string; value: string }) {
   return (
@@ -66,6 +67,8 @@ export function HistoryView({ onBack }: { onBack: () => void }) {
       <button onClick={onBack} className="text-sm text-slate-400 hover:text-slate-200">
         ← Back
       </button>
+
+      <WeeklyDigestCard />
 
       <div className="rounded-2xl bg-gradient-to-br from-emerald-600/20 to-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h2 className="mb-3 text-sm font-medium text-slate-300">Streaks</h2>

@@ -67,6 +67,18 @@ export function useCreateMealPresetFromMeal() {
   })
 }
 
+export function useSetMealPresetShared() {
+  const { user } = useAuth()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ presetId, isShared }: { presetId: string; isShared: boolean }) => {
+      const { error } = await supabase.from('meal_presets').update({ is_shared: isShared }).eq('id', presetId)
+      if (error) throw error
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['meal-presets', user?.id] }),
+  })
+}
+
 export function useDeleteMealPreset() {
   const { user } = useAuth()
   const qc = useQueryClient()

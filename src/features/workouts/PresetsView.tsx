@@ -1,5 +1,13 @@
 import { useState } from 'react'
-import { useCreatePresetFromSets, useDeletePreset, useLoadPreset, usePresets, type PresetWithItems } from '../../hooks/usePresets'
+import {
+  useCreatePresetFromSets,
+  useDeletePreset,
+  useLoadPreset,
+  usePresets,
+  useSetPresetShared,
+  type PresetWithItems,
+} from '../../hooks/usePresets'
+import { useAuth } from '../../hooks/useAuth'
 import type { SetWithExercise } from '../../hooks/useWorkouts'
 
 function summarize(preset: PresetWithItems) {
@@ -23,10 +31,12 @@ export function PresetsView({
   onBack: () => void
   onLoaded: () => void
 }) {
+  const { user } = useAuth()
   const { data: presets = [], isLoading } = usePresets()
   const createFromSets = useCreatePresetFromSets()
   const deletePreset = useDeletePreset()
   const loadPreset = useLoadPreset(sessionId)
+  const setShared = useSetPresetShared()
 
   const [showSaveForm, setShowSaveForm] = useState(false)
   const [name, setName] = useState('')
@@ -93,11 +103,27 @@ export function PresetsView({
             <div key={preset.id} className="rounded-lg bg-slate-800/60 p-3">
               <div className="mb-1 flex items-center justify-between">
                 <h4 className="text-sm font-medium text-white">{preset.name}</h4>
-                <button onClick={() => deletePreset.mutate(preset.id)} className="text-red-400 hover:text-red-300">
-                  ×
-                </button>
+                {preset.user_id === user?.id && (
+                  <button onClick={() => deletePreset.mutate(preset.id)} className="text-red-400 hover:text-red-300">
+                    ×
+                  </button>
+                )}
               </div>
               <p className="mb-2 text-xs text-slate-400">{summarize(preset)}</p>
+              {preset.user_id === user?.id && (
+                <label className="mb-2 flex items-center gap-1.5 text-xs text-slate-400">
+                  <input
+                    type="checkbox"
+                    checked={preset.is_shared}
+                    onChange={(e) => setShared.mutate({ presetId: preset.id, isShared: e.target.checked })}
+                    className="h-3.5 w-3.5 accent-emerald-500"
+                  />
+                  Shared with friend
+                </label>
+              )}
+              {preset.user_id !== user?.id && (
+                <p className="mb-2 text-xs text-emerald-400">Shared by a friend</p>
+              )}
               <button
                 onClick={() => {
                   loadPreset.mutate(preset)

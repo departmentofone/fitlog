@@ -1,11 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
-import { macrosForGrams, sumMacros, type Food, type MacroTotals, type Recipe, type RecipeIngredient } from '../types'
+import type { Recipe } from '../types'
 import { useAuth } from './useAuth'
 
-export interface RecipeIngredientWithFood extends RecipeIngredient {
-  food: Food
-}
+export { computeRecipeMacros, type RecipeIngredientWithFood } from '../lib/recipeMacros'
+import type { RecipeIngredientWithFood } from '../lib/recipeMacros'
 
 export interface RecipeWithIngredients extends Recipe {
   recipe_ingredients: RecipeIngredientWithFood[]
@@ -165,23 +164,4 @@ export function useAddRecipeToMeal() {
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['meals'] }),
   })
-}
-
-export function computeRecipeMacros(ingredients: RecipeIngredientWithFood[]): {
-  total: MacroTotals
-  perServing: (servings: number) => MacroTotals
-} {
-  const total = sumMacros(ingredients.map((i) => macrosForGrams(i.food, i.grams)))
-  return {
-    total,
-    perServing: (servings: number) => {
-      if (servings <= 0) return total
-      return {
-        calories: total.calories / servings,
-        protein: total.protein / servings,
-        carbs: total.carbs / servings,
-        fat: total.fat / servings,
-      }
-    },
-  }
 }

@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
@@ -7,6 +8,13 @@ import { VitePWA } from 'vite-plugin-pwa'
 export default defineConfig({
   server: {
     host: true,
+  },
+  test: {
+    // Most tests are pure logic and don't need a DOM — component tests opt into jsdom
+    // individually with a `// @vitest-environment jsdom` comment, which keeps the suite fast.
+    environment: 'node',
+    globals: true,
+    setupFiles: ['./src/test/setup.ts'],
   },
   plugins: [
     react(),

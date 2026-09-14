@@ -1,7 +1,15 @@
 export type MuscleGroup =
   | 'chest'
+  | 'upper_chest'
+  | 'lower_chest'
   | 'back'
+  | 'lats'
+  | 'traps'
+  | 'lower_back'
   | 'shoulders'
+  | 'front_delts'
+  | 'side_delts'
+  | 'rear_delts'
   | 'biceps'
   | 'triceps'
   | 'forearms'
@@ -16,8 +24,16 @@ export type MuscleGroup =
 
 export const MUSCLE_GROUPS: { value: MuscleGroup; label: string }[] = [
   { value: 'chest', label: 'Chest' },
-  { value: 'back', label: 'Back' },
-  { value: 'shoulders', label: 'Shoulders' },
+  { value: 'upper_chest', label: 'Upper chest' },
+  { value: 'lower_chest', label: 'Lower chest' },
+  { value: 'back', label: 'Back (general)' },
+  { value: 'lats', label: 'Lats' },
+  { value: 'traps', label: 'Traps' },
+  { value: 'lower_back', label: 'Lower back' },
+  { value: 'shoulders', label: 'Shoulders (general)' },
+  { value: 'front_delts', label: 'Front delts' },
+  { value: 'side_delts', label: 'Side delts' },
+  { value: 'rear_delts', label: 'Rear delts' },
   { value: 'biceps', label: 'Biceps' },
   { value: 'triceps', label: 'Triceps' },
   { value: 'forearms', label: 'Forearms' },

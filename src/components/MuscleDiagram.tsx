@@ -1,5 +1,17 @@
 import type { MuscleGroup } from '../types'
 
+/** Subgroups reuse their parent region's artwork - no new shapes needed to highlight correctly. */
+const SUBGROUPS: Partial<Record<MuscleGroup, MuscleGroup>> = {
+  lats: 'back',
+  traps: 'back',
+  lower_back: 'back',
+  front_delts: 'shoulders',
+  side_delts: 'shoulders',
+  rear_delts: 'shoulders',
+  upper_chest: 'chest',
+  lower_chest: 'chest',
+}
+
 type Shape =
   | { shape: 'rect'; x: number; y: number; width: number; height: number; rx: number }
   | { shape: 'circle'; cx: number; cy: number; r: number }
@@ -218,7 +230,8 @@ function Figure({
         ))}
         {regions.map((region) =>
           region.shapes.map((s, i) => {
-            const isActive = selectedList.includes(region.group) || selectedList.includes('cardio')
+            const isActive =
+              selectedList.some((g) => g === region.group || SUBGROUPS[g] === region.group) || selectedList.includes('cardio')
             return (
               <g key={`${region.group}-${i}`}>
                 {renderShape(s, {

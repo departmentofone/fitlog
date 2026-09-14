@@ -9,10 +9,28 @@ html, body, #root {
   background: #020617;
 }
 
+html {
+  overflow: hidden;
+}
+
+/*
+ * Locks the page itself in place so only elements that opt in (main, className
+ * "overflow-y-auto") can scroll. Without this, iOS Safari lets the whole document rubber-band
+ * past its own bounds, which is what caused the bottom nav to visibly jump/leave a gap until
+ * you scrolled back - the browser was momentarily showing you past-the-end of a page that
+ * isn't actually meant to move at all.
+ */
 body {
+  position: fixed;
+  inset: 0;
   margin: 0;
-  overscroll-behavior-y: none;
+  overflow: hidden;
+  overscroll-behavior: none;
   -webkit-tap-highlight-color: transparent;
+}
+
+#root {
+  height: 100%;
 }
 
 input, select, textarea, button {

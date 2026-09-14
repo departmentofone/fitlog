@@ -1,8 +1,10 @@
 import { useState } from 'react'
+import { BOTTOM_NAV_CHOICES, MAX_BOTTOM_NAV_EXTRAS } from '../../components/Layout'
 import { useAuth } from '../../hooks/useAuth'
 import { useUpdateSettings, useUserSettings } from '../../hooks/useUserSettings'
 import { exportUserData } from '../../lib/exportData'
 import { supabase } from '../../lib/supabase'
+import type { Tab } from '../../types'
 
 export function SettingsTab({ onBack }: { onBack: () => void }) {
   const { user } = useAuth()
@@ -107,6 +109,37 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
               {p.label}
             </button>
           ))}
+        </div>
+      </div>
+
+      <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+        <h3 className="mb-1 font-medium text-white">Bottom bar</h3>
+        <p className="mb-3 text-xs text-slate-500">
+          Workouts and Meals are always there. Pick up to {MAX_BOTTOM_NAV_EXTRAS} more for one-tap access — everything else
+          stays in the menu.
+        </p>
+        <div className="grid grid-cols-3 gap-1.5">
+          {BOTTOM_NAV_CHOICES.map((choice) => {
+            const extras = settings?.bottom_nav_tabs ?? []
+            const isSelected = extras.includes(choice.key)
+            const atMax = extras.length >= MAX_BOTTOM_NAV_EXTRAS
+            return (
+              <button
+                key={choice.key}
+                disabled={!isSelected && atMax}
+                onClick={() => {
+                  const next: Tab[] = isSelected ? extras.filter((t) => t !== choice.key) : [...extras, choice.key]
+                  updateSettings.mutate({ bottom_nav_tabs: next })
+                }}
+                className={`flex flex-col items-center gap-1 rounded-lg px-2 py-2.5 text-xs font-medium transition disabled:opacity-30 ${
+                  isSelected ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                }`}
+              >
+                <span className="text-base">{choice.icon}</span>
+                {choice.key === 'misc' ? 'Misc' : choice.label}
+              </button>
+            )
+          })}
         </div>
       </div>
 

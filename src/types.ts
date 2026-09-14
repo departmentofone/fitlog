@@ -112,6 +112,7 @@ export type ActivityLevel = 'sedentary' | 'light' | 'moderate' | 'active' | 'ver
 
 export type UnitSystem = 'metric' | 'imperial'
 export type ThemePreference = 'light' | 'dark' | 'system'
+export type Tab = 'workouts' | 'meals' | 'diet' | 'goals' | 'misc'
 
 export interface UserSettings {
   user_id: string
@@ -128,6 +129,8 @@ export interface UserSettings {
   unit_system: UnitSystem
   theme: ThemePreference
   color_palette: string
+  /** Extra bottom-nav shortcuts beyond the always-pinned Workouts/Meals (max 2). */
+  bottom_nav_tabs: Tab[]
   updated_at: string
 }
 

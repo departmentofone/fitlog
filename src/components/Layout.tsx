@@ -1,7 +1,9 @@
 import { useState, type ReactNode } from 'react'
+import { useUserSettings } from '../hooks/useUserSettings'
+import type { Tab } from '../types'
 import { OfflineBanner } from './OfflineBanner'
 
-export type Tab = 'workouts' | 'meals' | 'diet' | 'goals' | 'misc'
+export type { Tab }
 
 const TABS: { key: Tab; label: string; icon: string }[] = [
   { key: 'workouts', label: 'Workouts', icon: '🏋️' },
@@ -10,6 +12,10 @@ const TABS: { key: Tab; label: string; icon: string }[] = [
   { key: 'goals', label: 'Goals', icon: '🎯' },
   { key: 'misc', label: 'Miscellaneous', icon: '🧩' },
 ]
+
+const PINNED_TABS: Tab[] = ['workouts', 'meals']
+export const BOTTOM_NAV_CHOICES = TABS.filter((t) => !PINNED_TABS.includes(t.key))
+export const MAX_BOTTOM_NAV_EXTRAS = 2
 
 function LogoMark() {
   return (
@@ -38,6 +44,12 @@ export function Layout({
   children: ReactNode
 }) {
   const [menuOpen, setMenuOpen] = useState(false)
+  const { data: settings } = useUserSettings()
+
+  const extras = (settings?.bottom_nav_tabs ?? []).filter((t) => !PINNED_TABS.includes(t)).slice(0, MAX_BOTTOM_NAV_EXTRAS)
+  const bottomBarTabs = [...PINNED_TABS, ...extras]
+    .map((key) => TABS.find((t) => t.key === key))
+    .filter((t): t is (typeof TABS)[number] => !!t)
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-gradient-to-b from-slate-950 to-slate-900">
@@ -71,7 +83,25 @@ export function Layout({
 
       <OfflineBanner />
 
-      <main className="flex-1 overflow-y-auto pb-[env(safe-area-inset-bottom)]">{children}</main>
+      <main className="flex-1 overflow-y-auto">{children}</main>
+
+      <nav className="flex shrink-0 border-t border-white/5 bg-slate-950/80 pb-[env(safe-area-inset-bottom)] backdrop-blur">
+        {bottomBarTabs.map((tab) => {
+          const isActive = active === tab.key
+          return (
+            <button
+              key={tab.key}
+              onClick={() => onChange(tab.key)}
+              className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 text-xs font-medium transition ${
+                isActive ? 'text-emerald-400' : 'text-slate-500 hover:text-slate-300'
+              }`}
+            >
+              <span className="text-lg">{tab.icon}</span>
+              {tab.key === 'misc' ? 'Misc' : tab.label}
+            </button>
+          )
+        })}
+      </nav>
 
       {menuOpen && (
         <div className="fixed inset-0 z-50 flex" onClick={() => setMenuOpen(false)}>

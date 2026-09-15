@@ -84,7 +84,7 @@ function EntryEditor({
         )}
         <label className="flex-1 cursor-pointer rounded-lg border border-dashed border-slate-600 px-3 py-2 text-center text-xs font-medium text-slate-300 hover:border-emerald-500 hover:text-emerald-400">
           {uploading ? 'Uploading…' : entry?.photo_path ? 'Replace photo' : 'Add photo'}
-          <input type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFile} disabled={uploading} />
+          <input type="file" accept="image/*" className="hidden" onChange={handleFile} disabled={uploading} />
         </label>
       </div>
 

@@ -20,7 +20,11 @@ const TABS: { key: Tab; label: string; icon: string }[] = [
 
 const SHORT_LABELS: Partial<Record<Tab, string>> = { achievements: 'Awards' }
 const PINNED_TABS: Tab[] = ['workouts', 'meals']
-export const BOTTOM_NAV_CHOICES = TABS.filter((t) => !PINNED_TABS.includes(t.key))
+// About lives permanently at the bottom of the menu (see below) - it's not a candidate for
+// the bottom nav bar, and not part of the regular scrollable tab list either.
+const MENU_TABS = TABS.filter((t) => t.key !== 'about')
+const ABOUT_TAB = TABS.find((t) => t.key === 'about')!
+export const BOTTOM_NAV_CHOICES = MENU_TABS.filter((t) => !PINNED_TABS.includes(t.key))
 export const MAX_BOTTOM_NAV_EXTRAS = 2
 
 function LogoMark() {
@@ -121,7 +125,7 @@ export function Layout({
               <h2 className="text-lg font-semibold text-white">FitLog</h2>
             </div>
             <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-              {TABS.map((tab) => {
+              {MENU_TABS.map((tab) => {
                 const isActive = active === tab.key
                 return (
                   <button
@@ -140,9 +144,22 @@ export function Layout({
                 )
               })}
             </nav>
-            <p className="border-t border-white/5 px-3 py-2 text-center text-[10px] text-slate-600">
-              Build {formatBuildTime()}
-            </p>
+
+            <div className="shrink-0 border-t border-white/5 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <button
+                onClick={() => {
+                  onChange('about')
+                  setMenuOpen(false)
+                }}
+                className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-medium transition ${
+                  active === 'about' ? 'bg-emerald-500/10 text-emerald-400' : 'text-slate-300 hover:bg-white/5'
+                }`}
+              >
+                <span className="text-xl">{ABOUT_TAB.icon}</span>
+                {ABOUT_TAB.label}
+              </button>
+              <p className="mt-2 text-center text-[10px] text-slate-600">Build {formatBuildTime()}</p>
+            </div>
           </div>
         </div>
       )}

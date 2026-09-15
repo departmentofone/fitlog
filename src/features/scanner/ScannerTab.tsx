@@ -151,6 +151,14 @@ export function ScannerTab() {
     void handleLookup(code)
   })
 
+  // Ask for camera access as soon as the tab opens rather than waiting for an extra tap - one
+  // less step for the common case. The permission prompt is still the browser's own, and typing
+  // a barcode manually keeps working exactly the same if it's denied or unsupported.
+  useEffect(() => {
+    void camera.start()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   function reset() {
     setBarcode('')
     setReviewing(false)

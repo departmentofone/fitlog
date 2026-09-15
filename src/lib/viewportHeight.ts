@@ -15,7 +15,14 @@
  *    delayed re-check catch that late settle without needing to poll indefinitely.
  */
 function measure() {
-  const height = window.visualViewport?.height ?? window.innerHeight
+  // Deliberately using the full physical screen height here, not visualViewport/innerHeight
+  // (both of which already matched document.documentElement.clientHeight exactly in on-device
+  // diagnostics - that's WebKit's own independently-computed usable height, not something our
+  // CSS influences, so it was very unlikely to be the gap's cause). Trying screen.height anyway
+  // since it's cheap to test and to rule out: the nav bar is pinned with its own `position:
+  // fixed; bottom: 0` regardless of this value, so worst case this just leaves some inert empty
+  // space at the very end of the scrollable area rather than reintroducing the gap.
+  const height = window.screen.height
   document.documentElement.style.setProperty('--app-height', `${height}px`)
 }
 

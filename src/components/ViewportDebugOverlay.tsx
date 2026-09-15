@@ -1,16 +1,12 @@
 import { useEffect, useState } from 'react'
 
-const STORAGE_KEY = 'fitlog-debug-viewport'
-
+// A ?debug=viewport flag saved to localStorage doesn't work for diagnosing the home-screen
+// icon specifically: iOS gives a "Add to Home Screen" web app its own storage container,
+// separate from the Safari tab that created it, so a flag set in Safari never reaches the
+// installed icon's own storage. Unconditionally on for now while we're chasing the iOS
+// standalone-mode bottom-gap bug - pull this back behind a real gate once it's fixed.
 function readFlag() {
-  const params = new URLSearchParams(window.location.search)
-  const debugParam = params.get('debug')
-  if (debugParam === 'viewport') {
-    localStorage.setItem(STORAGE_KEY, '1')
-  } else if (debugParam === 'off') {
-    localStorage.removeItem(STORAGE_KEY)
-  }
-  return localStorage.getItem(STORAGE_KEY) === '1'
+  return true
 }
 
 function measure() {

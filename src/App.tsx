@@ -1,7 +1,6 @@
 import { lazy, Suspense, useState } from 'react'
 import { AuthScreen } from './components/Auth'
 import { Layout, type Tab } from './components/Layout'
-import { ViewportDebugOverlay } from './components/ViewportDebugOverlay'
 import { useApplyTheme } from './hooks/useApplyTheme'
 import { useAuth } from './hooks/useAuth'
 
@@ -31,18 +30,12 @@ function App() {
     return (
       <div className="flex h-[var(--app-height)] items-center justify-center bg-slate-950">
         <p className="text-slate-400">Loading…</p>
-        <ViewportDebugOverlay />
       </div>
     )
   }
 
   if (!user) {
-    return (
-      <>
-        <AuthScreen />
-        <ViewportDebugOverlay />
-      </>
-    )
+    return <AuthScreen />
   }
 
   function handleTabChange(next: Tab) {
@@ -51,22 +44,19 @@ function App() {
   }
 
   return (
-    <>
-      <Layout active={tab} onChange={handleTabChange} onOpenSettings={() => setOverlay('settings')}>
-        <Suspense fallback={<TabFallback />}>
-          {overlay === 'settings' && <SettingsTab onBack={() => setOverlay(null)} />}
-          {overlay === 'history' && <HistoryView onBack={() => setOverlay(null)} />}
-          {!overlay && tab === 'workouts' && <WorkoutsTab onOpenHistory={() => setOverlay('history')} />}
-          {!overlay && tab === 'meals' && <MealsTab />}
-          {!overlay && tab === 'diet' && <DietTab />}
-          {!overlay && tab === 'goals' && <GoalsTab />}
-          {!overlay && tab === 'achievements' && <AchievementsTab />}
-          {!overlay && tab === 'programs' && <ProgramsTab />}
-          {!overlay && tab === 'misc' && <MiscTab />}
-        </Suspense>
-      </Layout>
-      <ViewportDebugOverlay />
-    </>
+    <Layout active={tab} onChange={handleTabChange} onOpenSettings={() => setOverlay('settings')}>
+      <Suspense fallback={<TabFallback />}>
+        {overlay === 'settings' && <SettingsTab onBack={() => setOverlay(null)} />}
+        {overlay === 'history' && <HistoryView onBack={() => setOverlay(null)} />}
+        {!overlay && tab === 'workouts' && <WorkoutsTab onOpenHistory={() => setOverlay('history')} />}
+        {!overlay && tab === 'meals' && <MealsTab />}
+        {!overlay && tab === 'diet' && <DietTab />}
+        {!overlay && tab === 'goals' && <GoalsTab />}
+        {!overlay && tab === 'achievements' && <AchievementsTab />}
+        {!overlay && tab === 'programs' && <ProgramsTab />}
+        {!overlay && tab === 'misc' && <MiscTab />}
+      </Suspense>
+    </Layout>
   )
 }
 

@@ -197,14 +197,69 @@ export function useUpdateSet(sessionId: string | null | undefined) {
   })
 }
 
-export function useDeleteSet(sessionId: string | null | undefined) {
+function invalidateAfterSessionChange(qc: ReturnType<typeof useQueryClient>) {
+  qc.invalidateQueries({ queryKey: ['session'] })
+  qc.invalidateQueries({ queryKey: ['sets'] })
+  qc.invalidateQueries({ queryKey: ['session-dates'] })
+  qc.invalidateQueries({ queryKey: ['session-detail'] })
+  qc.invalidateQueries({ queryKey: ['session-history'] })
+}
+
+export function useDeleteSet(_sessionId: string | null | undefined) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (setId: string) => {
       const { error } = await supabase.from('workout_sets').delete().eq('id', setId)
       if (error) throw error
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['sets', sessionId] }),
+    // A set can be deleted from views keyed by session id (`['sets', id]`) or by date
+    // (History's `session-detail`/`session-dates`) - invalidate both broadly rather than
+    // threading the right key through every call site.
+    onSuccess: () => invalidateAfterSessionChange(qc),
+  })
+}
+
+/** Deletes an entire session; workout_sets cascade-delete with it (FK ON DELETE CASCADE). */
+export function useDeleteSession() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (sessionId: string) => {
+      const { error } = await supabase.from('workout_sessions').delete().eq('id', sessionId)
+      if (error) throw error
+    },
+    onSuccess: () => invalidateAfterSessionChange(qc),
+  })
+}
+
+/** Recreates a session + its sets from a snapshot — used to undo a whole-workout delete. */
+export function useRestoreSession() {
+  const { user } = useAuth()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (snapshot: WorkoutSession & { workout_sets: WorkoutSet[] }) => {
+      if (!user) throw new Error('Not signed in')
+      const { data: created, error: sessionError } = await supabase
+        .from('workout_sessions')
+        .insert({ user_id: user.id, date: snapshot.date, preworkout: snapshot.preworkout })
+        .select()
+        .single()
+      if (sessionError) throw sessionError
+
+      if (snapshot.workout_sets.length > 0) {
+        const rows = snapshot.workout_sets.map((s) => ({
+          session_id: created.id,
+          exercise_id: s.exercise_id,
+          set_number: s.set_number,
+          weight: s.weight,
+          reps: s.reps,
+          difficulty: s.difficulty,
+          is_warmup: s.is_warmup,
+        }))
+        const { error: setsError } = await supabase.from('workout_sets').insert(rows)
+        if (setsError) throw setsError
+      }
+    },
+    onSuccess: () => invalidateAfterSessionChange(qc),
   })
 }
 

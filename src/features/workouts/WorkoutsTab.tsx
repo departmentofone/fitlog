@@ -12,8 +12,10 @@ import {
   useAddSet,
   useAutoStartSession,
   useCopyWorkoutDay,
+  useDeleteSession,
   useDeleteSet,
   useExerciseHistory,
+  useRestoreSession,
   useSessionSets,
   useSetPreworkout,
   useStartSession,
@@ -44,6 +46,8 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
   const addSet = useAddSet(session?.id)
   const updateSet = useUpdateSet(session?.id)
   const deleteSet = useDeleteSet(session?.id)
+  const deleteSession = useDeleteSession()
+  const restoreSession = useRestoreSession()
   const { data: streaks } = useWorkoutStreaks()
   const { undoable, show } = useToast()
   const copyDay = useCopyWorkoutDay()
@@ -52,6 +56,7 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
   const [picking, setPicking] = useState(false)
   const [showPresets, setShowPresets] = useState(false)
   const [detailExercise, setDetailExercise] = useState<Exercise | null>(null)
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
   const { data: activeExerciseHistory = [] } = useExerciseHistory(activeExercise?.id)
 
   const groupedByExercise = useMemo(() => {
@@ -86,6 +91,7 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
         onChange={(next) => {
           setDate(next)
           setActiveExercise(null)
+          setConfirmingDelete(false)
         }}
       />
 
@@ -127,16 +133,45 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
                 <span className="text-sm font-medium text-slate-400">kg</span>
               </p>
             </div>
-            <button
-              onClick={() => setPreworkout.mutate({ sessionId: session.id, preworkout: !session.preworkout })}
-              className={`rounded-full px-3 py-1 text-xs font-medium transition ${
-                session.preworkout
-                  ? 'bg-emerald-600/20 text-emerald-400'
-                  : 'bg-slate-800 text-slate-500 hover:text-slate-300'
-              }`}
-            >
-              ⚡ Preworkout
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPreworkout.mutate({ sessionId: session.id, preworkout: !session.preworkout })}
+                className={`rounded-full px-3 py-1 text-xs font-medium transition ${
+                  session.preworkout
+                    ? 'bg-emerald-600/20 text-emerald-400'
+                    : 'bg-slate-800 text-slate-500 hover:text-slate-300'
+                }`}
+              >
+                ⚡ Preworkout
+              </button>
+              {sets.length > 0 && (
+                <button
+                  onClick={() => {
+                    if (!confirmingDelete) {
+                      setConfirmingDelete(true)
+                      return
+                    }
+                    const snapshot = { ...session, workout_sets: sets }
+                    setConfirmingDelete(false)
+                    setActiveExercise(null)
+                    undoable(
+                      'Workout deleted',
+                      () => deleteSession.mutate(session.id),
+                      () => restoreSession.mutate(snapshot),
+                    )
+                  }}
+                  onBlur={() => setConfirmingDelete(false)}
+                  aria-label="Delete workout"
+                  className={`rounded-full px-3 py-1 text-xs font-medium transition ${
+                    confirmingDelete
+                      ? 'bg-red-600 text-white'
+                      : 'bg-slate-800 text-slate-500 hover:text-red-400'
+                  }`}
+                >
+                  {confirmingDelete ? 'Tap to confirm' : '🗑️'}
+                </button>
+              )}
+            </div>
           </div>
 
           <SessionTimer session={session} />

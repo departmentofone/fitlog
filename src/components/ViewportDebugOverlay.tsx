@@ -9,22 +9,40 @@ function readFlag() {
   return true
 }
 
+// Reads what a raw CSS unit resolves to, independent of anything window.innerHeight or
+// visualViewport.height report - those two could plausibly be downstream of the same
+// (possibly buggy) internal viewport value, so agreeing with each other doesn't actually
+// prove either is correct. A probe element sized with the unit is the only way to see what
+// the CSS layout engine itself resolves it to.
+function probeUnit(unit: string): number {
+  const el = document.createElement('div')
+  el.style.cssText = `position:absolute;visibility:hidden;width:0;height:100${unit};`
+  document.body.appendChild(el)
+  const height = el.offsetHeight
+  document.body.removeChild(el)
+  return height
+}
+
 function measure() {
   const html = document.documentElement
   const style = getComputedStyle(html)
+  const nav = document.querySelector('nav')
+  const navRect = nav?.getBoundingClientRect()
   return {
     innerHeight: window.innerHeight,
-    innerWidth: window.innerWidth,
     visualViewportHeight: window.visualViewport?.height ?? null,
-    visualViewportOffsetTop: window.visualViewport?.offsetTop ?? null,
     screenHeight: window.screen.height,
-    devicePixelRatio: window.devicePixelRatio,
     appHeightVar: style.getPropertyValue('--app-height').trim(),
-    safeAreaBottom: getComputedStyle(document.body).paddingBottom || 'n/a',
-    standalone: (window.navigator as Navigator & { standalone?: boolean }).standalone ?? 'n/a',
-    displayModeStandalone: window.matchMedia('(display-mode: standalone)').matches,
+    cssDvh: probeUnit('dvh'),
+    cssSvh: probeUnit('svh'),
+    cssLvh: probeUnit('lvh'),
+    cssVh: probeUnit('vh'),
+    cssPercent: probeUnit('%'),
+    navBottom: navRect?.bottom ?? 'no nav',
+    navTop: navRect?.top ?? 'no nav',
+    navHeight: navRect?.height ?? 'no nav',
     htmlClientHeight: html.clientHeight,
-    docElementScrollHeight: html.scrollHeight,
+    standalone: (window.navigator as Navigator & { standalone?: boolean }).standalone ?? 'n/a',
   }
 }
 

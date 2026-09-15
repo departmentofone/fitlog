@@ -107,23 +107,6 @@ export function Layout({
         })}
       </nav>
 
-      {/*
-       * Every attempt to calculate the exact iOS standalone-mode bottom inset precisely has
-       * left a residual visible gap on the affected device, across dvh, JS-measured
-       * innerHeight/visualViewport, position:fixed, and screen.height/lvh/vh - all of which
-       * cross-checked as internally consistent yet still didn't match reality. Instead of
-       * computing the exact number, this just bleeds the nav's own background color a fixed
-       * 80px past wherever we think the bottom is - guaranteed to cover the gap regardless of
-       * its actual size, at the cost of a little unreachable dead space if the real gap is
-       * smaller than that. z-20 (not fixed's default stacking) so it paints over the nav's own
-       * safe-area padding rather than under it; the slide-out menu (z-50) still stays on top.
-       */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed inset-x-0 z-20 bg-slate-950"
-        style={{ bottom: -80, height: 100 }}
-      />
-
       {menuOpen && (
         <div className="fixed inset-0 z-50 flex" onClick={() => setMenuOpen(false)}>
           <div className="absolute inset-0 bg-black/60" />

@@ -1,35 +1,15 @@
 /**
- * iOS's WebKit reserves space for a hideable browser toolbar in its "dynamic viewport" height
- * (window.innerHeight, visualViewport.height, and CSS dvh/svh all agree on this shrunk value)
- * even in standalone/home-screen mode, where no such toolbar exists or can ever appear. On-device
- * measurement confirmed this directly: in standalone mode, innerHeight/visualViewport.height/dvh
- * all under-report by exactly the gap's size, while window.screen.height and the CSS lvh/vh units
- * agree on the true full height - so anything sized off the dynamic-viewport value is left short,
- * leaving a gap of the page's own background below it (e.g. the bottom nav).
- *
- * In a regular browser tab this reservation is correct and wanted (it's what stops content from
- * getting hidden behind the browser's own address bar as it shows/hides), so only bypass it in
- * standalone mode specifically, where screen.height is the right source of truth instead.
+ * iOS standalone-PWA mode has a known WebKit bug where 100dvh (and historically 100vh) doesn't
+ * reliably equal the real usable screen height - it can under-report by a small amount, leaving
+ * a gap of the page's own background color below anything sized to it (e.g. a bottom nav bar).
+ * This measures the actual visible height in JS and exposes it as --app-height, which every
+ * full-height container uses instead of the dvh unit. Recomputed on resize/orientation change
+ * (covers rotation and the keyboard showing/hiding).
  */
-function isStandalone() {
-  return (
-    window.matchMedia('(display-mode: standalone)').matches ||
-    (window.navigator as Navigator & { standalone?: boolean }).standalone === true
-  )
+function setAppHeight() {
+  document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
 }
 
-function measure() {
-  const height = isStandalone() ? window.screen.height : (window.visualViewport?.height ?? window.innerHeight)
-  document.documentElement.style.setProperty('--app-height', `${height}px`)
-}
-
-measure()
-window.addEventListener('resize', measure)
-window.addEventListener('orientationchange', measure)
-window.addEventListener('pageshow', measure)
-window.visualViewport?.addEventListener('resize', measure)
-
-// Catch any late-settling height on cold launch.
-requestAnimationFrame(() => requestAnimationFrame(measure))
-setTimeout(measure, 300)
-setTimeout(measure, 1000)
+setAppHeight()
+window.addEventListener('resize', setAppHeight)
+window.addEventListener('orientationchange', setAppHeight)

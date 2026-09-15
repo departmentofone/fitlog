@@ -1,12 +1,26 @@
 /// <reference lib="webworker" />
 import { clientsClaim } from 'workbox-core'
 import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching'
+import { NavigationRoute, registerRoute } from 'workbox-routing'
+import { NetworkFirst } from 'workbox-strategies'
 
 declare let self: ServiceWorkerGlobalScope
 
 self.skipWaiting()
 clientsClaim()
 cleanupOutdatedCaches()
+
+// index.html is deliberately excluded from the precache manifest (see injectManifest's
+// globPatterns in vite.config.ts) so navigations go through this network-first route instead
+// of precacheAndRoute's default cache-first handling. A big part of why the iOS bottom-gap fix
+// took this many rounds to actually reach the phone: cache-first on the HTML shell meant a
+// stale service worker could keep serving its own old bundle indefinitely, even across a real
+// cold process restart, since only a genuinely new deploy check (which nothing was forcing)
+// could ever replace it. Network-first means every normal launch/reload picks up the latest
+// deploy when a connection is available, falling back to the last cached shell only when
+// offline - exactly the tradeoff a workout logger should make.
+registerRoute(new NavigationRoute(new NetworkFirst({ cacheName: 'pages' })))
+
 precacheAndRoute(self.__WB_MANIFEST)
 
 interface PushPayload {

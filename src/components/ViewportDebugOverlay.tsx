@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { formatBuildTime } from '../lib/buildInfo'
 
 // A ?debug=viewport flag saved to localStorage doesn't work for diagnosing the home-screen
 // icon specifically: iOS gives a "Add to Home Screen" web app its own storage container,
@@ -28,21 +29,26 @@ function measure() {
   const style = getComputedStyle(html)
   const nav = document.querySelector('nav')
   const navRect = nav?.getBoundingClientRect()
+  const rootDiv = document.getElementById('root')?.firstElementChild
+  const isStandaloneMedia = window.matchMedia('(display-mode: standalone)').matches
+  const isStandaloneNav = (window.navigator as Navigator & { standalone?: boolean }).standalone === true
   return {
+    build: formatBuildTime(),
     innerHeight: window.innerHeight,
-    visualViewportHeight: window.visualViewport?.height ?? null,
     screenHeight: window.screen.height,
     appHeightVar: style.getPropertyValue('--app-height').trim(),
+    isStandaloneMedia,
+    isStandaloneNav,
     cssDvh: probeUnit('dvh'),
-    cssSvh: probeUnit('svh'),
-    cssLvh: probeUnit('lvh'),
     cssVh: probeUnit('vh'),
-    cssPercent: probeUnit('%'),
     navBottom: navRect?.bottom ?? 'no nav',
-    navTop: navRect?.top ?? 'no nav',
     navHeight: navRect?.height ?? 'no nav',
+    navChildCount: nav?.children.length ?? 'no nav',
+    navTextLen: nav?.textContent?.length ?? 'no nav',
+    navOverflow: nav ? getComputedStyle(nav).overflow : 'no nav',
+    rootDivHeight: rootDiv ? rootDiv.getBoundingClientRect().height : 'no root div',
+    rootDivOverflow: rootDiv ? getComputedStyle(rootDiv).overflow : 'no root div',
     htmlClientHeight: html.clientHeight,
-    standalone: (window.navigator as Navigator & { standalone?: boolean }).standalone ?? 'n/a',
   }
 }
 

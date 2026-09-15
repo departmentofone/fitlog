@@ -6,6 +6,13 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
+  // Baked into the bundle at build time and shown in the app's menu - a cheap, permanent way
+  // to tell at a glance whether an installed PWA is actually running the latest deploy, instead
+  // of guessing from symptoms (this exact ambiguity cost several rounds chasing the iOS
+  // bottom-gap bug, where "does force-quit even load new code" turned out to be its own bug).
+  define: {
+    __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+  },
   server: {
     host: true,
   },
@@ -44,7 +51,10 @@ export default defineConfig({
         ],
       },
       injectManifest: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
+        // .html deliberately excluded - src/sw.ts routes navigations through a network-first
+        // strategy instead of precaching's default cache-first, so a stale shell can't get
+        // stuck serving indefinitely (see the comment in sw.ts for why this mattered).
+        globPatterns: ['**/*.{js,css,svg,png,ico}'],
       },
     }),
   ],

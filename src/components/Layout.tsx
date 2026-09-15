@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react'
 import { useUserSettings } from '../hooks/useUserSettings'
+import { formatBuildTime } from '../lib/buildInfo'
 import type { Tab } from '../types'
 import { OfflineBanner } from './OfflineBanner'
 
@@ -137,6 +138,9 @@ export function Layout({
                 )
               })}
             </nav>
+            <p className="border-t border-white/5 px-3 py-2 text-center text-[10px] text-slate-600">
+              Build {formatBuildTime()}
+            </p>
           </div>
         </div>
       )}

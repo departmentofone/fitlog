@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useUserSettings } from '../hooks/useUserSettings'
 import type { Tab } from '../types'
 import { OfflineBanner } from './OfflineBanner'
@@ -48,11 +48,28 @@ export function Layout({
 }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const { data: settings } = useUserSettings()
+  const navRef = useRef<HTMLElement>(null)
+  const [navHeight, setNavHeight] = useState(0)
 
   const extras = (settings?.bottom_nav_tabs ?? []).filter((t) => !PINNED_TABS.includes(t)).slice(0, MAX_BOTTOM_NAV_EXTRAS)
   const bottomBarTabs = [...PINNED_TABS, ...extras]
     .map((key) => TABS.find((t) => t.key === key))
     .filter((t): t is (typeof TABS)[number] => !!t)
+
+  // The nav is pinned with `fixed bottom-0` (true screen bottom, whatever that measures out
+  // to) rather than being the last flex child of a --app-height-sized column - that sidesteps
+  // any viewport-height math entirely instead of depending on it being exactly right. `main`
+  // needs the nav's real rendered height as scroll padding so its content doesn't end up
+  // hidden behind the now out-of-flow bar.
+  useEffect(() => {
+    const el = navRef.current
+    if (!el) return
+    const measure = () => setNavHeight(el.getBoundingClientRect().height)
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [bottomBarTabs.length])
 
   return (
     <div className="flex h-[var(--app-height)] flex-col overflow-hidden overscroll-none bg-gradient-to-b from-slate-950 to-slate-900">
@@ -86,9 +103,14 @@ export function Layout({
 
       <OfflineBanner />
 
-      <main className="flex-1 overflow-y-auto overscroll-none">{children}</main>
+      <main className="flex-1 overflow-y-auto overscroll-none" style={{ paddingBottom: navHeight }}>
+        {children}
+      </main>
 
-      <nav className="flex shrink-0 border-t border-white/5 bg-slate-950/80 pb-[env(safe-area-inset-bottom)] backdrop-blur">
+      <nav
+        ref={navRef}
+        className="fixed inset-x-0 bottom-0 z-30 flex border-t border-white/5 bg-slate-950/80 pb-[env(safe-area-inset-bottom)] backdrop-blur"
+      >
         {bottomBarTabs.map((tab) => {
           const isActive = active === tab.key
           return (

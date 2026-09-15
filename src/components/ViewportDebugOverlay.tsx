@@ -81,26 +81,44 @@ export function ViewportDebugOverlay() {
   if (!enabled) return null
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 999999,
-        background: '#fbbf24',
-        color: '#000',
-        fontFamily: 'monospace',
-        fontSize: 10,
-        lineHeight: 1.4,
-        padding: '4px 6px',
-        pointerEvents: 'none',
-        whiteSpace: 'pre-wrap',
-      }}
-    >
-      {Object.entries(data)
-        .map(([k, v]) => `${k}: ${v}`)
-        .join('  |  ')}
-    </div>
+    <>
+      {/* Numbers go at the TOP - a bar at the bottom would sit exactly where the gap we're
+          trying to see lives, hiding the one thing a screenshot needs to show. */}
+      <div
+        style={{
+          position: 'fixed',
+          left: 0,
+          right: 0,
+          top: 0,
+          zIndex: 999999,
+          background: '#fbbf24',
+          color: '#000',
+          fontFamily: 'monospace',
+          fontSize: 10,
+          lineHeight: 1.4,
+          padding: '4px 6px',
+          pointerEvents: 'none',
+          whiteSpace: 'pre-wrap',
+        }}
+      >
+        {Object.entries(data)
+          .map(([k, v]) => `${k}: ${v}`)
+          .join('  |  ')}
+      </div>
+      {/* A thin marker line at the literal true bottom edge (position: fixed; bottom: 0) -
+          thin enough to not cover whatever is or isn't there above it. */}
+      <div
+        style={{
+          position: 'fixed',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: 4,
+          zIndex: 999999,
+          background: '#ef4444',
+          pointerEvents: 'none',
+        }}
+      />
+    </>
   )
 }

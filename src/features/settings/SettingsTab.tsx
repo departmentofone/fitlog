@@ -137,7 +137,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
                 }`}
               >
                 <span className="text-base">{choice.icon}</span>
-                {choice.key === 'misc' ? 'Misc' : choice.label}
+                {choice.label}
               </button>
             )
           })}

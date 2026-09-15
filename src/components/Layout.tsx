@@ -9,14 +9,16 @@ export type { Tab }
 const TABS: { key: Tab; label: string; icon: string }[] = [
   { key: 'workouts', label: 'Workouts', icon: '🏋️' },
   { key: 'meals', label: 'Meals', icon: '🍽️' },
+  { key: 'scanner', label: 'Scanner', icon: '📷' },
   { key: 'diet', label: 'Diet', icon: '🥗' },
+  { key: 'fasting', label: 'Fasting', icon: '⏱️' },
   { key: 'goals', label: 'Goals', icon: '🎯' },
   { key: 'achievements', label: 'Achievements', icon: '🏆' },
   { key: 'programs', label: 'Programs', icon: '🗂️' },
-  { key: 'misc', label: 'Miscellaneous', icon: '🧩' },
+  { key: 'about', label: 'About', icon: 'ℹ️' },
 ]
 
-const SHORT_LABELS: Partial<Record<Tab, string>> = { misc: 'Misc', achievements: 'Awards' }
+const SHORT_LABELS: Partial<Record<Tab, string>> = { achievements: 'Awards' }
 const PINNED_TABS: Tab[] = ['workouts', 'meals']
 export const BOTTOM_NAV_CHOICES = TABS.filter((t) => !PINNED_TABS.includes(t.key))
 export const MAX_BOTTOM_NAV_EXTRAS = 2

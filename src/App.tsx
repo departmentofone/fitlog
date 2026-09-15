@@ -1,16 +1,19 @@
 import { lazy, Suspense, useState } from 'react'
 import { AuthScreen } from './components/Auth'
 import { Layout, type Tab } from './components/Layout'
+import { OnboardingTour } from './components/OnboardingTour'
 import { useApplyTheme } from './hooks/useApplyTheme'
 import { useAuth } from './hooks/useAuth'
 
 const WorkoutsTab = lazy(() => import('./features/workouts/WorkoutsTab').then((m) => ({ default: m.WorkoutsTab })))
 const MealsTab = lazy(() => import('./features/meals/MealsTab').then((m) => ({ default: m.MealsTab })))
+const ScannerTab = lazy(() => import('./features/scanner/ScannerTab').then((m) => ({ default: m.ScannerTab })))
 const DietTab = lazy(() => import('./features/diet/DietTab').then((m) => ({ default: m.DietTab })))
+const FastingTab = lazy(() => import('./features/fasting/FastingTab').then((m) => ({ default: m.FastingTab })))
 const GoalsTab = lazy(() => import('./features/goals/GoalsTab').then((m) => ({ default: m.GoalsTab })))
 const AchievementsTab = lazy(() => import('./features/achievements/AchievementsTab').then((m) => ({ default: m.AchievementsTab })))
 const ProgramsTab = lazy(() => import('./features/programs/ProgramsTab').then((m) => ({ default: m.ProgramsTab })))
-const MiscTab = lazy(() => import('./features/misc/MiscTab').then((m) => ({ default: m.MiscTab })))
+const AboutTab = lazy(() => import('./features/about/AboutTab').then((m) => ({ default: m.AboutTab })))
 const HistoryView = lazy(() => import('./features/history/HistoryView').then((m) => ({ default: m.HistoryView })))
 const SettingsTab = lazy(() => import('./features/settings/SettingsTab').then((m) => ({ default: m.SettingsTab })))
 
@@ -44,19 +47,24 @@ function App() {
   }
 
   return (
-    <Layout active={tab} onChange={handleTabChange} onOpenSettings={() => setOverlay('settings')}>
-      <Suspense fallback={<TabFallback />}>
-        {overlay === 'settings' && <SettingsTab onBack={() => setOverlay(null)} />}
-        {overlay === 'history' && <HistoryView onBack={() => setOverlay(null)} />}
-        {!overlay && tab === 'workouts' && <WorkoutsTab onOpenHistory={() => setOverlay('history')} />}
-        {!overlay && tab === 'meals' && <MealsTab />}
-        {!overlay && tab === 'diet' && <DietTab />}
-        {!overlay && tab === 'goals' && <GoalsTab />}
-        {!overlay && tab === 'achievements' && <AchievementsTab />}
-        {!overlay && tab === 'programs' && <ProgramsTab />}
-        {!overlay && tab === 'misc' && <MiscTab />}
-      </Suspense>
-    </Layout>
+    <>
+      <Layout active={tab} onChange={handleTabChange} onOpenSettings={() => setOverlay('settings')}>
+        <Suspense fallback={<TabFallback />}>
+          {overlay === 'settings' && <SettingsTab onBack={() => setOverlay(null)} />}
+          {overlay === 'history' && <HistoryView onBack={() => setOverlay(null)} />}
+          {!overlay && tab === 'workouts' && <WorkoutsTab onOpenHistory={() => setOverlay('history')} />}
+          {!overlay && tab === 'meals' && <MealsTab />}
+          {!overlay && tab === 'scanner' && <ScannerTab />}
+          {!overlay && tab === 'diet' && <DietTab />}
+          {!overlay && tab === 'fasting' && <FastingTab />}
+          {!overlay && tab === 'goals' && <GoalsTab />}
+          {!overlay && tab === 'achievements' && <AchievementsTab />}
+          {!overlay && tab === 'programs' && <ProgramsTab />}
+          {!overlay && tab === 'about' && <AboutTab />}
+        </Suspense>
+      </Layout>
+      <OnboardingTour />
+    </>
   )
 }
 

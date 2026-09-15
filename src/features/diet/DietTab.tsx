@@ -8,6 +8,7 @@ import { useUpdateSettings, useUserSettings } from '../../hooks/useUserSettings'
 import { todayISO } from '../../hooks/useWorkouts'
 import type { DietGoal } from '../../types'
 import { NutritionBreakdownModal } from '../nutrition/NutritionBreakdownModal'
+import { AlcoholSection } from './AlcoholSection'
 import { GoalProjectionChart } from './GoalProjectionChart'
 
 const GOAL_OPTIONS: { value: DietGoal; label: string }[] = [
@@ -139,6 +140,8 @@ export function DietTab() {
       </div>
 
       <GoalProjectionChart />
+
+      <AlcoholSection />
 
       {showBreakdown && <NutritionBreakdownModal meals={meals} onClose={() => setShowBreakdown(false)} />}
     </div>

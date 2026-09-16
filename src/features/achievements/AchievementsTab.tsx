@@ -58,7 +58,7 @@ export function AchievementsTab() {
 
   return (
     <div className="space-y-4 p-4">
-      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
         <h3 className="mb-3 font-medium text-white">Firsts</h3>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {firsts.map((f) => (
@@ -67,7 +67,7 @@ export function AchievementsTab() {
         </div>
       </div>
 
-      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-3 font-medium text-white">Streaks</h3>
         <div className="mb-4">
           <p className="mb-1.5 text-xs text-slate-500">Workout streak · best {data.bestWorkoutStreak}d</p>
@@ -79,13 +79,13 @@ export function AchievementsTab() {
         </div>
       </div>
 
-      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-1 font-medium text-white">PR milestones</h3>
         <p className="mb-3 text-xs text-slate-500">{prCount} genuine PR{prCount === 1 ? '' : 's'} set (beating your own prior best - the first time you log a lift never counts)</p>
         <TierPills tiers={tierProgress(prCount, PR_COUNT_TIERS, ' PRs')} />
       </div>
 
-      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-1 font-medium text-white">Strength milestones</h3>
         <p className="mb-3 text-xs text-slate-500">
           Rough bodyweight-ratio milestones for the big 3, not an official standards chart.

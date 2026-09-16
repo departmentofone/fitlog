@@ -237,7 +237,7 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
               onDone={() => setActiveExercise(null)}
             />
           ) : picking ? (
-            <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+            <div className="rounded-2xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="font-medium text-white">Pick an exercise</h3>
                 <button onClick={() => setPicking(false)} className="text-sm text-slate-400 hover:text-slate-200">
@@ -277,7 +277,7 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
           )}
 
           {musclesTrained.length > 0 && (
-            <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+            <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
               <h3 className="mb-2 text-center text-sm font-medium text-slate-300">Muscle groups worked</h3>
               <MuscleDiagram selected={musclesTrained} size={90} />
             </div>

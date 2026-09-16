@@ -35,7 +35,7 @@ export function ExerciseDetailModal({ exercise, onClose }: { exercise: Exercise;
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-4 sm:items-center" onClick={onClose}>
       <div
-        className="max-h-[85vh] w-full max-w-sm overflow-y-auto rounded-3xl bg-slate-900 p-4 shadow-xl shadow-[var(--glow-shadow)] ring-1 ring-white/10"
+        className="max-h-[85vh] w-full max-w-sm overflow-y-auto rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-xl shadow-[var(--glow-shadow)] ring-1 ring-white/10"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-3 flex items-center justify-between">

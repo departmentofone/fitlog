@@ -139,7 +139,7 @@ export function ProgressCalendar() {
   }
 
   return (
-    <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-medium text-white">Progress log</h3>
         {photoEntries.length >= 2 && (

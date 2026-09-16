@@ -55,7 +55,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
         ← Back
       </button>
 
-      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <div className="flex items-center justify-between gap-4">
           <div>
             <h3 className="font-medium text-white">Ask about preworkout</h3>
@@ -72,7 +72,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
         </div>
       </div>
 
-      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-2 font-medium text-white">Appearance</h3>
         <p className="mb-1.5 text-xs text-slate-500">Theme</p>
         <div className="mb-3 grid grid-cols-3 gap-1.5">
@@ -113,7 +113,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
         </div>
       </div>
 
-      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-1 font-medium text-white">Bottom bar</h3>
         <p className="mb-3 text-xs text-slate-500">
           Workouts and Meals are always there. Pick up to {MAX_BOTTOM_NAV_EXTRAS} more for one-tap access — everything else
@@ -145,7 +145,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
 
       <PushNotificationsCard />
 
-      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-2 font-medium text-white">Units</h3>
         <div className="grid grid-cols-2 gap-1.5">
           {(['metric', 'imperial'] as const).map((u) => (
@@ -164,7 +164,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
         </div>
       </div>
 
-      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <p className="mb-1 text-xs text-slate-500">Signed in as</p>
         <p className="mb-4 truncate text-sm text-white">{user?.email}</p>
 

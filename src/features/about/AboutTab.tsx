@@ -5,12 +5,12 @@ const FEEDBACK_EMAIL = 'msolarovsocial@gmail.com'
 export function AboutTab() {
   return (
     <div className="space-y-4 p-4">
-      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h2 className="text-xl font-bold text-white">FitLog</h2>
         <p className="mt-1 text-sm text-slate-400">A combined workout and meal/macro tracker.</p>
       </div>
 
-      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-2 text-sm font-medium text-white">What this app does</h3>
         <p className="text-sm leading-relaxed text-slate-400">
           FitLog logs your workouts — sets, reps, weight, muscle groups, and personal records — alongside your meals,
@@ -19,14 +19,14 @@ export function AboutTab() {
         </p>
       </div>
 
-      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <p className="text-sm text-slate-400">
           <span className="font-medium text-white">Free, no ads, nothing paywalled.</span> Every feature is
           available to everyone.
         </p>
       </div>
 
-      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-2 text-sm font-medium text-white">Tip: customize your tabs</h3>
         <p className="text-sm leading-relaxed text-slate-400">
           There are a lot of tabs these days — Workouts, Meals, Scanner, Diet, Fasting, Goals, Achievements,
@@ -36,7 +36,7 @@ export function AboutTab() {
         </p>
       </div>
 
-      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-2 text-sm font-medium text-white">Data & privacy</h3>
         <p className="text-sm leading-relaxed text-slate-400">
           Your data is private to your account — it isn't shared or sold. This is a small personal project without
@@ -44,7 +44,7 @@ export function AboutTab() {
         </p>
       </div>
 
-      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-2 text-sm font-medium text-white">Send feedback</h3>
         <p className="mb-3 text-sm text-slate-400">
           Found a bug, or have an idea for something to add? It goes straight to the developer.

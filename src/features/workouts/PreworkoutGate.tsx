@@ -1,7 +1,7 @@
 export function PreworkoutGate({ onAnswer, loading }: { onAnswer: (preworkout: boolean) => void; loading?: boolean }) {
   return (
     <div className="p-4">
-      <div className="rounded-3xl bg-slate-900 p-5 text-center shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-5 text-center shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
         <h2 className="mb-2 text-lg font-semibold text-white">Start today's workout</h2>
         <p className="mb-4 text-sm text-slate-400">Did you take preworkout?</p>
         <div className="flex justify-center gap-3">

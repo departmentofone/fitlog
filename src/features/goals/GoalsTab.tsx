@@ -84,7 +84,7 @@ function GoalList({ category, title }: { category: GoalCategory; title: string }
   }
 
   return (
-    <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <h3 className="mb-3 font-medium text-white">{title}</h3>
       <div className="mb-3 space-y-1.5">
         {filtered.map((g) =>
@@ -231,7 +231,7 @@ export function GoalsTab() {
     <div className="space-y-4 p-4">
       <div
         onClick={!editingStats ? startEditing : undefined}
-        className={`rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5 transition ${
+        className={`rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5 transition ${
           !editingStats ? 'cursor-pointer hover:ring-emerald-500/30' : ''
         }`}
       >

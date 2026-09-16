@@ -191,7 +191,7 @@ export function ScannerTab() {
 
   return (
     <div className="space-y-4 p-4">
-      <div className="rounded-3xl bg-slate-900 p-4 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
         <h3 className="mb-1 font-medium text-white">Barcode scanner</h3>
         <p className="mb-3 text-sm text-slate-400">
           Look up a packaged food by its barcode against the Open Food Facts database, review the nutrition
@@ -258,7 +258,7 @@ export function ScannerTab() {
       </div>
 
       {reviewing && (
-        <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+        <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
           <div className="mb-3 flex items-center justify-between">
             <h3 className="font-medium text-white">Review</h3>
             <button onClick={reset} className="text-sm text-slate-400 hover:text-slate-200">

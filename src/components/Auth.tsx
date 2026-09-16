@@ -36,7 +36,7 @@ export function AuthScreen() {
 
   return (
     <div className="flex h-[var(--app-height)] items-center justify-center overflow-y-auto overscroll-none bg-slate-950 px-4">
-      <div className="w-full max-w-sm rounded-3xl bg-slate-900 p-6 shadow-xl shadow-[var(--glow-shadow)]">
+      <div className="w-full max-w-sm rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-6 shadow-xl shadow-[var(--glow-shadow)]">
         <h1 className="mb-1 text-2xl font-semibold text-white">FitLog</h1>
         <p className="mb-6 text-sm text-slate-400">
           {mode === 'sign-in' ? 'Sign in to your log' : 'Create your account'}

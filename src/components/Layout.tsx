@@ -15,6 +15,7 @@ const TABS: { key: Tab; label: string; icon: string }[] = [
   { key: 'goals', label: 'Goals', icon: '🎯' },
   { key: 'achievements', label: 'Achievements', icon: '🏆' },
   { key: 'programs', label: 'Programs', icon: '🗂️' },
+  { key: 'calculator', label: 'Calculator', icon: '🧮' },
   { key: 'about', label: 'About', icon: 'ℹ️' },
 ]
 
@@ -24,7 +25,12 @@ const PINNED_TABS: Tab[] = ['workouts', 'meals']
 // the bottom nav bar, and not part of the regular scrollable tab list either.
 const MENU_TABS = TABS.filter((t) => t.key !== 'about')
 const ABOUT_TAB = TABS.find((t) => t.key === 'about')!
-export const BOTTOM_NAV_CHOICES = MENU_TABS.filter((t) => !PINNED_TABS.includes(t.key))
+// Achievements is a look-back/celebration screen, not something worth a one-tap slot -
+// excluded from the bottom-bar customization options (still reachable from the menu as usual).
+const EXCLUDED_FROM_BOTTOM_NAV: Tab[] = ['achievements']
+export const BOTTOM_NAV_CHOICES = MENU_TABS.filter(
+  (t) => !PINNED_TABS.includes(t.key) && !EXCLUDED_FROM_BOTTOM_NAV.includes(t.key),
+)
 export const MAX_BOTTOM_NAV_EXTRAS = 2
 
 function SettingsIcon() {
@@ -65,14 +71,22 @@ export function Layout({
   const [menuOpen, setMenuOpen] = useState(false)
   const { data: settings } = useUserSettings()
 
-  const extras = (settings?.bottom_nav_tabs ?? []).filter((t) => !PINNED_TABS.includes(t)).slice(0, MAX_BOTTOM_NAV_EXTRAS)
+  const validExtraKeys = new Set(BOTTOM_NAV_CHOICES.map((t) => t.key))
+  const extras = (settings?.bottom_nav_tabs ?? [])
+    .filter((t) => !PINNED_TABS.includes(t) && validExtraKeys.has(t))
+    .slice(0, MAX_BOTTOM_NAV_EXTRAS)
   const bottomBarTabs = [...PINNED_TABS, ...extras]
     .map((key) => TABS.find((t) => t.key === key))
     .filter((t): t is (typeof TABS)[number] => !!t)
 
   return (
-    <div className="flex h-[var(--app-height)] flex-col overflow-hidden overscroll-none bg-slate-950">
-      <header className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 border-b border-white/5 px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+    <div className="relative flex h-[var(--app-height)] flex-col overflow-hidden overscroll-none bg-slate-950">
+      {/* Ambient glow blobs - fixed behind the whole app so scrolling glass cards (backdrop-blur)
+          pick up a soft frosted color from whatever's behind them, instead of a flat void. */}
+      <div className="pointer-events-none fixed -left-16 -top-16 z-0 h-64 w-64 rounded-full bg-emerald-400/40 blur-[90px]" />
+      <div className="pointer-events-none fixed -bottom-24 -right-16 z-0 h-64 w-64 rounded-full bg-amber-400/25 blur-[90px]" />
+
+      <header className="relative z-10 grid grid-cols-[1fr_auto_1fr] items-center gap-2 border-b border-white/10 bg-slate-950/40 px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur-xl">
         <button
           onClick={() => setMenuOpen(true)}
           aria-label="Menu"
@@ -100,11 +114,13 @@ export function Layout({
         </button>
       </header>
 
-      <OfflineBanner />
+      <div className="relative z-10">
+        <OfflineBanner />
+      </div>
 
-      <main className="flex-1 overflow-y-auto overscroll-none">{children}</main>
+      <main className="relative z-10 flex-1 overflow-y-auto overscroll-none">{children}</main>
 
-      <nav className="flex shrink-0 gap-1 border-t border-white/10 bg-slate-950/80 px-2 pb-[env(safe-area-inset-bottom)] pt-1 backdrop-blur">
+      <nav className="relative z-10 flex shrink-0 gap-1 border-t border-white/10 bg-slate-950/60 px-2 pb-[env(safe-area-inset-bottom)] pt-1 backdrop-blur-xl">
         {bottomBarTabs.map((tab) => {
           const isActive = active === tab.key
           return (
@@ -127,7 +143,7 @@ export function Layout({
           <div className="absolute inset-0 bg-black/60" />
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative flex h-full w-72 max-w-[80vw] flex-col bg-slate-950 pt-[env(safe-area-inset-top)] shadow-2xl"
+            className="relative flex h-full w-72 max-w-[80vw] flex-col border-r border-white/10 bg-slate-950/85 pt-[env(safe-area-inset-top)] shadow-2xl backdrop-blur-xl"
           >
             <div className="flex items-center gap-2 border-b border-white/5 px-4 py-4">
               <LogoMark />

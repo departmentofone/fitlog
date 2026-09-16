@@ -137,6 +137,7 @@ export type Tab =
   | 'goals'
   | 'achievements'
   | 'programs'
+  | 'calculator'
   | 'about'
 
 export interface UserSettings {

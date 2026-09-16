@@ -20,7 +20,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
     return (
       <button
         onClick={() => setCompleted.mutate({ mealId: meal.id, completed: false })}
-        className="w-full rounded-2xl bg-slate-900/70 p-4 text-left shadow-lg shadow-black/20 ring-1 ring-white/5 transition hover:ring-emerald-500/30"
+        className="w-full rounded-2xl bg-slate-900/70 backdrop-blur-xl border-t border-white/10 p-4 text-left shadow-lg shadow-black/20 ring-1 ring-white/5 transition hover:ring-emerald-500/30"
       >
         <div className="mb-1 flex items-center justify-between">
           <h3 className="font-medium text-white">{meal.name}</h3>
@@ -39,7 +39,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
   }
 
   return (
-    <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-2xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <div className="mb-2 flex items-center justify-between">
         <h3 className="font-medium text-white">{meal.name}</h3>
         <span className="text-xs text-emerald-400">{Math.round(totals.calories)} kcal</span>

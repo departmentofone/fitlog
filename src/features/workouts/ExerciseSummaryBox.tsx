@@ -14,7 +14,7 @@ export function ExerciseSummaryBox({
   const topSet = sets.reduce((max, s) => (s.weight > max.weight ? s : max), sets[0])
 
   return (
-    <div className="relative rounded-2xl bg-slate-900 shadow-lg shadow-black/20 ring-1 ring-white/5 transition hover:ring-emerald-500/30">
+    <div className="relative rounded-2xl bg-slate-900 backdrop-blur-xl border-t border-white/10 shadow-lg shadow-black/20 ring-1 ring-white/5 transition hover:ring-emerald-500/30">
       <button onClick={onClick} className="w-full p-3 text-left">
         <p className="mb-1 truncate pr-6 text-sm font-medium text-white">{name}</p>
         <p className="text-xs text-slate-400">

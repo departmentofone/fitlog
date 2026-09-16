@@ -39,7 +39,7 @@ export function MealPresetsView({
       </button>
 
       {savableMeals.length > 0 && (
-        <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+        <div className="rounded-2xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
           <h3 className="mb-3 font-medium text-white">Save a meal as preset</h3>
           <div className="space-y-2">
             {savableMeals.map((meal) =>
@@ -85,7 +85,7 @@ export function MealPresetsView({
         </div>
       )}
 
-      <div className="rounded-3xl bg-slate-900 p-4 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
         <h3 className="mb-3 font-medium text-white">Your meal presets</h3>
         {isLoading && <p className="text-sm text-slate-400">Loading…</p>}
         {!isLoading && presets.length === 0 && (

@@ -109,7 +109,7 @@ export function OnboardingTour() {
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/70" />
       <div
-        className={`relative w-full max-w-sm rounded-3xl bg-slate-900 p-5 shadow-2xl shadow-black/40 ring-1 transition ${
+        className={`relative w-full max-w-sm rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-5 shadow-2xl shadow-black/40 ring-1 transition ${
           slide.emphasize
             ? 'shadow-[var(--glow-shadow)] ring-2 ring-emerald-500 bg-gradient-to-b from-emerald-500/10 to-slate-900'
             : 'ring-white/5'

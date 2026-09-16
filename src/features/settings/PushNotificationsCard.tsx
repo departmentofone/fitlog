@@ -37,7 +37,7 @@ export function PushNotificationsCard() {
   }
 
   return (
-    <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <h3 className="mb-1 font-medium text-white">Notifications</h3>
       <p className="mb-3 text-xs text-slate-500">
         Get your weekly digest as a push notification instead of only seeing it in the app.

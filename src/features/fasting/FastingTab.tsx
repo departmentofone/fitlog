@@ -40,7 +40,7 @@ export function FastingTab() {
           const remaining = targetMs - elapsedMs
 
           return (
-            <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+            <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
               <h3 className="mb-3 font-medium text-white">Current fast</h3>
               <div className="flex items-center gap-4">
                 <CircularProgress percent={pct} tone={pct >= 100 ? 'good' : 'neutral'} size={84} />
@@ -61,7 +61,7 @@ export function FastingTab() {
           )
         })()
       ) : (
-        <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+        <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
           <h3 className="mb-3 font-medium text-white">Start a fast</h3>
           <p className="mb-2 text-sm text-slate-400">Pick a fasting window and start the timer.</p>
           <div className="mb-2 grid grid-cols-2 gap-1.5">
@@ -93,7 +93,7 @@ export function FastingTab() {
       )}
 
       {history.length > 0 && (
-        <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+        <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
           <p className="mb-2 text-sm font-medium text-white">Recent fasts</p>
           <div className="space-y-1.5">
             {history.map((f) => {

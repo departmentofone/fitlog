@@ -81,7 +81,7 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
   }
 
   return (
-    <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-2xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <h3 className="mb-3 font-medium text-white">New program</h3>
       <div className="mb-3 space-y-2.5">
         <input
@@ -233,7 +233,7 @@ export function ProgramsTab() {
 
   return (
     <div className="space-y-4 p-4">
-      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
         <p className="mb-3 text-sm text-slate-400">
           Bundle workout presets, recipes, meal presets, and diet goals into one package you or a friend can import in a
           single batch instead of preset-by-preset.
@@ -250,7 +250,7 @@ export function ProgramsTab() {
         )}
       </div>
 
-      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-3 font-medium text-white">Programs</h3>
         {isLoading && <p className="text-sm text-slate-400">Loading…</p>}
         {!isLoading && programs.length === 0 && <p className="text-sm text-slate-500">No programs yet - build one above.</p>}

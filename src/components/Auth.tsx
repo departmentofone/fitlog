@@ -36,7 +36,7 @@ export function AuthScreen() {
 
   return (
     <div className="flex h-[var(--app-height)] items-center justify-center overflow-y-auto overscroll-none bg-slate-950 px-4">
-      <div className="w-full max-w-sm rounded-2xl bg-slate-900 p-6 shadow-xl">
+      <div className="w-full max-w-sm rounded-3xl bg-slate-900 p-6 shadow-xl shadow-[var(--glow-shadow)]">
         <h1 className="mb-1 text-2xl font-semibold text-white">FitLog</h1>
         <p className="mb-6 text-sm text-slate-400">
           {mode === 'sign-in' ? 'Sign in to your log' : 'Create your account'}
@@ -48,7 +48,7 @@ export function AuthScreen() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
           />
           <input
             type="password"
@@ -57,14 +57,14 @@ export function AuthScreen() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
           />
           {error && <p className="text-sm text-red-400">{error}</p>}
           {info && <p className="text-sm text-emerald-400">{info}</p>}
           <button
             type="submit"
             disabled={loading}
-            className="mt-2 rounded-lg bg-emerald-600 py-2.5 font-medium text-white transition hover:bg-emerald-500 disabled:opacity-50"
+            className="mt-2 rounded-xl bg-emerald-600 py-2.5 font-medium text-white transition hover:bg-emerald-500 disabled:opacity-50"
           >
             {loading ? 'Please wait…' : mode === 'sign-in' ? 'Sign in' : 'Sign up'}
           </button>

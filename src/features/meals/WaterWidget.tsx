@@ -15,10 +15,10 @@ export function WaterWidget() {
   const pct = Math.min(100, (mlToday / goal) * 100)
 
   return (
-    <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       {editingGoal ? (
         <div className="mb-2 flex items-center justify-between">
-          <h3 className="text-sm font-medium text-slate-300">💧 Water</h3>
+          <h3 className="text-sm font-medium text-slate-300">Water</h3>
         </div>
       ) : (
         <div
@@ -26,10 +26,10 @@ export function WaterWidget() {
             setGoalDraft((goal / 1000).toString())
             setEditingGoal(true)
           }}
-          className="mb-3 -m-1 cursor-pointer rounded-xl p-1 transition hover:bg-white/5"
+          className="mb-3 -m-1 cursor-pointer rounded-2xl p-1 transition hover:bg-white/5"
         >
           <div className="mb-2 flex items-center justify-between">
-            <h3 className="text-sm font-medium text-slate-300">💧 Water</h3>
+            <h3 className="text-sm font-medium text-slate-300">Water</h3>
             <span className="text-xs text-slate-500">Tap to edit goal</span>
           </div>
           <p className="mb-2 text-2xl font-bold text-blue-400">
@@ -50,7 +50,7 @@ export function WaterWidget() {
             placeholder="Liters/day"
             value={goalDraft}
             onChange={(e) => setGoalDraft(e.target.value)}
-            className="flex-1 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="flex-1 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
           />
           <button
             onClick={() => {
@@ -58,7 +58,7 @@ export function WaterWidget() {
               if (!Number.isNaN(liters) && liters > 0) updateSettings.mutate({ water_goal_ml: liters * 1000 })
               setEditingGoal(false)
             }}
-            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500"
+            className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500"
           >
             Save
           </button>
@@ -67,20 +67,20 @@ export function WaterWidget() {
         <div className="flex gap-2">
           <button
             onClick={() => addWater.mutate(250)}
-            className="flex-1 rounded-lg bg-slate-800 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-700"
+            className="flex-1 rounded-xl bg-slate-800 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-700"
           >
             + 250ml
           </button>
           <button
             onClick={() => addWater.mutate(500)}
-            className="flex-1 rounded-lg bg-slate-800 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-700"
+            className="flex-1 rounded-xl bg-slate-800 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-700"
           >
             + 500ml
           </button>
           <button
             onClick={() => addWater.mutate(-250)}
             disabled={mlToday <= 0}
-            className="rounded-lg bg-slate-800 px-3 py-2 text-sm text-slate-400 transition hover:bg-slate-700 disabled:opacity-30"
+            className="rounded-xl bg-slate-800 px-3 py-2 text-sm text-slate-400 transition hover:bg-slate-700 disabled:opacity-30"
           >
             −
           </button>

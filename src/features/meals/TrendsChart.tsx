@@ -28,7 +28,7 @@ export function TrendsChart() {
   }))
 
   return (
-    <div className="rounded-xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-medium text-white">Trends</h3>
         <div className="flex gap-1.5">
@@ -36,7 +36,7 @@ export function TrendsChart() {
             <button
               key={r}
               onClick={() => setRange(r as 7 | 30)}
-              className={`rounded-lg px-2.5 py-1 text-xs font-medium ${
+              className={`rounded-xl px-2.5 py-1 text-xs font-medium ${
                 range === r ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
               }`}
             >
@@ -51,7 +51,7 @@ export function TrendsChart() {
           <button
             key={m.key}
             onClick={() => setMetric(m.key)}
-            className={`rounded-lg px-2.5 py-1 text-xs font-medium ${
+            className={`rounded-xl px-2.5 py-1 text-xs font-medium ${
               metric === m.key ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
             }`}
           >

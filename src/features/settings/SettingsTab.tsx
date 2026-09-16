@@ -55,7 +55,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
         ← Back
       </button>
 
-      <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <div className="flex items-center justify-between gap-4">
           <div>
             <h3 className="font-medium text-white">Ask about preworkout</h3>
@@ -72,7 +72,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
         </div>
       </div>
 
-      <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-2 font-medium text-white">Appearance</h3>
         <p className="mb-1.5 text-xs text-slate-500">Theme</p>
         <div className="mb-3 grid grid-cols-3 gap-1.5">
@@ -80,7 +80,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
             <button
               key={t}
               onClick={() => updateSettings.mutate({ theme: t })}
-              className={`rounded-lg px-3 py-2 text-sm font-medium capitalize transition ${
+              className={`rounded-xl px-3 py-2 text-sm font-medium capitalize transition ${
                 (settings?.theme ?? 'system') === t ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
               }`}
             >
@@ -100,7 +100,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
             <button
               key={p.value}
               onClick={() => updateSettings.mutate({ color_palette: p.value })}
-              className={`flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-medium transition ${
+              className={`flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-xs font-medium transition ${
                 (settings?.color_palette ?? 'emerald') === p.value
                   ? 'bg-slate-700 text-white ring-1 ring-white/20'
                   : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
@@ -113,7 +113,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
         </div>
       </div>
 
-      <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-1 font-medium text-white">Bottom bar</h3>
         <p className="mb-3 text-xs text-slate-500">
           Workouts and Meals are always there. Pick up to {MAX_BOTTOM_NAV_EXTRAS} more for one-tap access — everything else
@@ -132,11 +132,10 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
                   const next: Tab[] = isSelected ? extras.filter((t) => t !== choice.key) : [...extras, choice.key]
                   updateSettings.mutate({ bottom_nav_tabs: next })
                 }}
-                className={`flex flex-col items-center gap-1 rounded-lg px-2 py-2.5 text-xs font-medium transition disabled:opacity-30 ${
+                className={`flex flex-col items-center gap-1 rounded-xl px-2 py-2.5 text-xs font-medium transition disabled:opacity-30 ${
                   isSelected ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                 }`}
               >
-                <span className="text-base">{choice.icon}</span>
                 {choice.label}
               </button>
             )
@@ -146,14 +145,14 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
 
       <PushNotificationsCard />
 
-      <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-2 font-medium text-white">Units</h3>
         <div className="grid grid-cols-2 gap-1.5">
           {(['metric', 'imperial'] as const).map((u) => (
             <button
               key={u}
               onClick={() => updateSettings.mutate({ unit_system: u })}
-              className={`rounded-lg px-3 py-2 text-sm font-medium transition capitalize ${
+              className={`rounded-xl px-3 py-2 text-sm font-medium transition capitalize ${
                 (settings?.unit_system ?? 'metric') === u
                   ? 'bg-emerald-600 text-white'
                   : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
@@ -165,7 +164,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
         </div>
       </div>
 
-      <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <p className="mb-1 text-xs text-slate-500">Signed in as</p>
         <p className="mb-4 truncate text-sm text-white">{user?.email}</p>
 
@@ -176,26 +175,26 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
               placeholder="New password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
             />
             <input
               type="password"
               placeholder="Confirm new password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
             />
             {passwordMessage && <p className="text-xs text-slate-400">{passwordMessage}</p>}
             <div className="flex gap-2">
               <button
                 onClick={() => setChangingPassword(false)}
-                className="flex-1 rounded-lg bg-slate-800 py-2 text-sm text-slate-300 hover:bg-slate-700"
+                className="flex-1 rounded-xl bg-slate-800 py-2 text-sm text-slate-300 hover:bg-slate-700"
               >
                 Cancel
               </button>
               <button
                 onClick={handleChangePassword}
-                className="flex-1 rounded-lg bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500"
+                className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500"
               >
                 Update
               </button>
@@ -204,7 +203,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
         ) : (
           <button
             onClick={() => setChangingPassword(true)}
-            className="mb-2 w-full rounded-lg bg-slate-800 py-2.5 font-medium text-slate-200 transition hover:bg-slate-700"
+            className="mb-2 w-full rounded-xl bg-slate-800 py-2.5 font-medium text-slate-200 transition hover:bg-slate-700"
           >
             Change password
           </button>
@@ -213,14 +212,14 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
         <button
           onClick={handleExport}
           disabled={exporting}
-          className="mb-2 w-full rounded-lg bg-slate-800 py-2.5 font-medium text-slate-200 transition hover:bg-slate-700 disabled:opacity-50"
+          className="mb-2 w-full rounded-xl bg-slate-800 py-2.5 font-medium text-slate-200 transition hover:bg-slate-700 disabled:opacity-50"
         >
           {exporting ? 'Preparing export…' : 'Export my data'}
         </button>
 
         <button
           onClick={() => supabase.auth.signOut()}
-          className="w-full rounded-lg bg-slate-800 py-2.5 font-medium text-slate-200 transition hover:bg-red-600/80 hover:text-white"
+          className="w-full rounded-xl bg-slate-800 py-2.5 font-medium text-slate-200 transition hover:bg-red-600/80 hover:text-white"
         >
           Sign out
         </button>

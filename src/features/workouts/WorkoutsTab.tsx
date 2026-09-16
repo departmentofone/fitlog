@@ -98,15 +98,15 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
       <div className="flex gap-2">
         <button
           onClick={() => setShowPresets(true)}
-          className="flex-1 rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700"
+          className="flex-1 rounded-xl bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700"
         >
-          📋 Presets
+          Presets
         </button>
         <button
           onClick={onOpenHistory}
-          className="flex-1 rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700"
+          className="flex-1 rounded-xl bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700"
         >
-          📖 History
+          History
         </button>
         <CopyDayButton
           disabled={sets.length === 0}
@@ -125,7 +125,7 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
         <PreworkoutGate loading={startSession.isPending} onAnswer={(pw) => startSession.mutate({ preworkout: pw, date })} />
       ) : (
         <>
-          <div className="flex items-center justify-between rounded-2xl bg-gradient-to-br from-emerald-600/20 to-slate-900 px-4 py-3 shadow-lg shadow-black/20 ring-1 ring-white/5">
+          <div className="flex items-center justify-between rounded-3xl bg-gradient-to-br from-emerald-600/20 to-slate-900 px-4 py-3 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
             <div>
               <p className="text-xs text-slate-400">{isToday ? "Today's" : 'Total'} moved</p>
               <p className="text-2xl font-bold text-white">
@@ -142,7 +142,7 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
                     : 'bg-slate-800 text-slate-500 hover:text-slate-300'
                 }`}
               >
-                ⚡ Preworkout
+                Preworkout
               </button>
               {sets.length > 0 && (
                 <button
@@ -168,7 +168,17 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
                       : 'bg-slate-800 text-slate-500 hover:text-red-400'
                   }`}
                 >
-                  {confirmingDelete ? 'Tap to confirm' : '🗑️'}
+                  {confirmingDelete ? (
+                    'Tap to confirm'
+                  ) : (
+                    <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 6h18" />
+                      <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                      <line x1="10" y1="11" x2="10" y2="17" />
+                      <line x1="14" y1="11" x2="14" y2="17" />
+                    </svg>
+                  )}
                 </button>
               )}
             </div>
@@ -192,7 +202,7 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
 
                 if (isPr) {
                   haptics.pr()
-                  show(`🎉 New PR on ${activeExercise.name}!`, { duration: 4000 })
+                  show(`New PR on ${activeExercise.name}!`, { duration: 4000 })
                 } else {
                   haptics.tap()
                 }
@@ -227,7 +237,7 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
               onDone={() => setActiveExercise(null)}
             />
           ) : picking ? (
-            <div className="rounded-xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+            <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="font-medium text-white">Pick an exercise</h3>
                 <button onClick={() => setPicking(false)} className="text-sm text-slate-400 hover:text-slate-200">
@@ -244,7 +254,7 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
           ) : (
             <button
               onClick={() => setPicking(true)}
-              className="w-full rounded-xl border border-dashed border-slate-700 py-3 font-medium text-slate-300 transition hover:border-emerald-500 hover:text-emerald-400"
+              className="w-full rounded-2xl border border-dashed border-slate-700 py-3 font-medium text-slate-300 transition hover:border-emerald-500 hover:text-emerald-400"
             >
               + Add exercise
             </button>
@@ -267,7 +277,7 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
           )}
 
           {musclesTrained.length > 0 && (
-            <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+            <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
               <h3 className="mb-2 text-center text-sm font-medium text-slate-300">Muscle groups worked</h3>
               <MuscleDiagram selected={musclesTrained} size={90} />
             </div>

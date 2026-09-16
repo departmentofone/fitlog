@@ -20,7 +20,7 @@ export function DateNav({
       <button
         onClick={() => shift(-1)}
         aria-label="Previous day"
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-800 text-slate-300 transition hover:bg-slate-700"
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-800 text-slate-300 transition hover:bg-slate-700"
       >
         ‹
       </button>
@@ -29,13 +29,13 @@ export function DateNav({
         value={date}
         max={max}
         onChange={(e) => onChange(e.target.value)}
-        className="min-w-0 flex-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-2 text-sm text-white focus:border-emerald-500 focus:outline-none"
+        className="min-w-0 flex-1 rounded-xl border border-slate-700 bg-slate-800 px-2 py-2 text-sm text-white focus:border-emerald-500 focus:outline-none"
       />
       <button
         onClick={() => shift(1)}
         disabled={atMax}
         aria-label="Next day"
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-800 text-slate-300 transition hover:bg-slate-700 disabled:opacity-30"
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-800 text-slate-300 transition hover:bg-slate-700 disabled:opacity-30"
       >
         ›
       </button>

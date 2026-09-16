@@ -8,9 +8,9 @@ function Slot({ entry, label }: { entry: ProgressEntry | undefined; label: strin
     <div className="flex-1">
       <p className="mb-1 text-center text-xs text-slate-500">{label}</p>
       {url ? (
-        <img src={url} alt={label} className="aspect-[3/4] w-full rounded-lg object-cover" />
+        <img src={url} alt={label} className="aspect-[3/4] w-full rounded-xl object-cover" />
       ) : (
-        <div className="flex aspect-[3/4] w-full items-center justify-center rounded-lg bg-slate-800 text-3xl">📷</div>
+        <div className="flex aspect-[3/4] w-full items-center justify-center rounded-xl bg-slate-800" />
       )}
       {entry && (
         <p className="mt-1 text-center text-xs text-slate-400">
@@ -43,7 +43,7 @@ export function PhotoCompare({ entries, onBack }: { entries: ProgressEntry[]; on
         <select
           value={leftId}
           onChange={(e) => setLeftId(e.target.value)}
-          className="rounded-lg border border-slate-700 bg-slate-800 px-2 py-2 text-xs text-white focus:border-emerald-500 focus:outline-none"
+          className="rounded-xl border border-slate-700 bg-slate-800 px-2 py-2 text-xs text-white focus:border-emerald-500 focus:outline-none"
         >
           {sorted.map((e) => (
             <option key={e.id} value={e.id}>
@@ -54,7 +54,7 @@ export function PhotoCompare({ entries, onBack }: { entries: ProgressEntry[]; on
         <select
           value={rightId}
           onChange={(e) => setRightId(e.target.value)}
-          className="rounded-lg border border-slate-700 bg-slate-800 px-2 py-2 text-xs text-white focus:border-emerald-500 focus:outline-none"
+          className="rounded-xl border border-slate-700 bg-slate-800 px-2 py-2 text-xs text-white focus:border-emerald-500 focus:outline-none"
         >
           {sorted.map((e) => (
             <option key={e.id} value={e.id}>

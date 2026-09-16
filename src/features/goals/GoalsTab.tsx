@@ -29,7 +29,7 @@ function AutoTrackedGoalRow({ goal, exerciseName, onDelete }: { goal: Goal; exer
   }, [achieved, goal.completed, goal.id])
 
   return (
-    <div className="flex items-center gap-3 rounded-lg bg-slate-800/60 px-3 py-2">
+    <div className="flex items-center gap-3 rounded-xl bg-slate-800/60 px-3 py-2">
       <span className={`flex-1 text-sm ${goal.completed ? 'text-slate-500 line-through' : 'text-white'}`}>
         {exerciseName} · {goal.target_weight}kg{goal.target_reps ? ` × ${goal.target_reps}` : ''}
       </span>
@@ -84,7 +84,7 @@ function GoalList({ category, title }: { category: GoalCategory; title: string }
   }
 
   return (
-    <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <h3 className="mb-3 font-medium text-white">{title}</h3>
       <div className="mb-3 space-y-1.5">
         {filtered.map((g) =>
@@ -96,7 +96,7 @@ function GoalList({ category, title }: { category: GoalCategory; title: string }
               onDelete={() => deleteGoal.mutate(g.id)}
             />
           ) : (
-            <div key={g.id} className="flex items-center gap-3 rounded-lg bg-slate-800/60 px-3 py-2">
+            <div key={g.id} className="flex items-center gap-3 rounded-xl bg-slate-800/60 px-3 py-2">
               <input
                 type="checkbox"
                 checked={g.completed}
@@ -128,7 +128,7 @@ function GoalList({ category, title }: { category: GoalCategory; title: string }
               <select
                 value={exerciseId}
                 onChange={(e) => setExerciseId(e.target.value)}
-                className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:outline-none"
+                className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:outline-none"
               >
                 <option value="">Pick an exercise…</option>
                 {exercises.map((ex) => (
@@ -143,14 +143,14 @@ function GoalList({ category, title }: { category: GoalCategory; title: string }
                   placeholder="Target weight (kg)"
                   value={targetWeight}
                   onChange={(e) => setTargetWeight(e.target.value)}
-                  className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                  className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
                 />
                 <input
                   type="number"
                   placeholder="Reps (optional)"
                   value={targetReps}
                   onChange={(e) => setTargetReps(e.target.value)}
-                  className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                  className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
                 />
               </div>
             </>
@@ -161,14 +161,14 @@ function GoalList({ category, title }: { category: GoalCategory; title: string }
               onChange={(e) => setTitleInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
               placeholder="Goal…"
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
             />
           )}
           <div className="flex gap-2">
-            <button onClick={reset} className="flex-1 rounded-lg bg-slate-800 py-2 text-sm text-slate-300 hover:bg-slate-700">
+            <button onClick={reset} className="flex-1 rounded-xl bg-slate-800 py-2 text-sm text-slate-300 hover:bg-slate-700">
               Cancel
             </button>
-            <button onClick={handleAdd} className="flex-1 rounded-lg bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500">
+            <button onClick={handleAdd} className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500">
               Add
             </button>
           </div>
@@ -176,7 +176,7 @@ function GoalList({ category, title }: { category: GoalCategory; title: string }
       ) : (
         <button
           onClick={() => setAdding(true)}
-          className="w-full rounded-lg border border-dashed border-slate-700 py-2 text-sm font-medium text-slate-300 transition hover:border-emerald-500 hover:text-emerald-400"
+          className="w-full rounded-xl border border-dashed border-slate-700 py-2 text-sm font-medium text-slate-300 transition hover:border-emerald-500 hover:text-emerald-400"
         >
           + Add goal
         </button>
@@ -231,7 +231,7 @@ export function GoalsTab() {
     <div className="space-y-4 p-4">
       <div
         onClick={!editingStats ? startEditing : undefined}
-        className={`rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5 transition ${
+        className={`rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5 transition ${
           !editingStats ? 'cursor-pointer hover:ring-emerald-500/30' : ''
         }`}
       >
@@ -248,34 +248,34 @@ export function GoalsTab() {
                 type="number"
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
-                className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
               />
               <input
                 placeholder={`Goal weight (${weightUnit})`}
                 type="number"
                 value={weightGoal}
                 onChange={(e) => setWeightGoal(e.target.value)}
-                className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
               />
               <input
                 placeholder={`Height (${heightUnit})`}
                 type="number"
                 value={height}
                 onChange={(e) => setHeight(e.target.value)}
-                className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
               />
               <input
                 placeholder="Age"
                 type="number"
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
-                className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
               />
             </div>
             <select
               value={sex}
               onChange={(e) => setSex(e.target.value as Sex | '')}
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none"
+              className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none"
             >
               <option value="">Sex (optional)</option>
               <option value="male">Male</option>
@@ -285,7 +285,7 @@ export function GoalsTab() {
             <select
               value={activity}
               onChange={(e) => setActivity(e.target.value as ActivityLevel | '')}
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none"
+              className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none"
             >
               <option value="">Activity level (optional)</option>
               {ACTIVITY_OPTIONS.map((a) => (
@@ -295,10 +295,10 @@ export function GoalsTab() {
               ))}
             </select>
             <div className="flex gap-2">
-              <button onClick={() => setEditingStats(false)} className="flex-1 rounded-lg bg-slate-800 py-2 text-sm text-slate-300 hover:bg-slate-700">
+              <button onClick={() => setEditingStats(false)} className="flex-1 rounded-xl bg-slate-800 py-2 text-sm text-slate-300 hover:bg-slate-700">
                 Cancel
               </button>
-              <button onClick={saveStats} className="flex-1 rounded-lg bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500">
+              <button onClick={saveStats} className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500">
                 Save
               </button>
             </div>

@@ -35,7 +35,7 @@ export function ExerciseDetailModal({ exercise, onClose }: { exercise: Exercise;
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-4 sm:items-center" onClick={onClose}>
       <div
-        className="max-h-[85vh] w-full max-w-sm overflow-y-auto rounded-2xl bg-slate-900 p-4 shadow-xl ring-1 ring-white/10"
+        className="max-h-[85vh] w-full max-w-sm overflow-y-auto rounded-3xl bg-slate-900 p-4 shadow-xl shadow-[var(--glow-shadow)] ring-1 ring-white/10"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-3 flex items-center justify-between">
@@ -52,11 +52,11 @@ export function ExerciseDetailModal({ exercise, onClose }: { exercise: Exercise;
         ) : (
           <>
             <div className="mb-3 grid grid-cols-2 gap-2">
-              <div className="rounded-xl bg-slate-800/60 p-3 text-center">
+              <div className="rounded-2xl bg-slate-800/60 p-3 text-center">
                 <p className="text-lg font-semibold text-white">{bestWeight}kg</p>
                 <p className="text-xs text-slate-500">Heaviest set</p>
               </div>
-              <div className="rounded-xl bg-slate-800/60 p-3 text-center">
+              <div className="rounded-2xl bg-slate-800/60 p-3 text-center">
                 <p className="text-lg font-semibold text-white">{Math.round(bestOneRm)}kg</p>
                 <p className="text-xs text-slate-500">Est. 1RM</p>
               </div>
@@ -103,10 +103,10 @@ export function ExerciseDetailModal({ exercise, onClose }: { exercise: Exercise;
                 onChange={(e) => setNoteDraft(e.target.value)}
                 placeholder="Seat height, grip width, cues…"
                 rows={3}
-                className="mb-2 w-full resize-none rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="mb-2 w-full resize-none rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
               />
               <div className="flex gap-2">
-                <button onClick={() => setEditingNote(false)} className="flex-1 rounded-lg bg-slate-800 py-1.5 text-sm text-slate-300 hover:bg-slate-700">
+                <button onClick={() => setEditingNote(false)} className="flex-1 rounded-xl bg-slate-800 py-1.5 text-sm text-slate-300 hover:bg-slate-700">
                   Cancel
                 </button>
                 <button
@@ -114,7 +114,7 @@ export function ExerciseDetailModal({ exercise, onClose }: { exercise: Exercise;
                     setNote.mutate({ exerciseId: exercise.id, notes: noteDraft.trim() })
                     setEditingNote(false)
                   }}
-                  className="flex-1 rounded-lg bg-emerald-600 py-1.5 text-sm font-medium text-white hover:bg-emerald-500"
+                  className="flex-1 rounded-xl bg-emerald-600 py-1.5 text-sm font-medium text-white hover:bg-emerald-500"
                 >
                   Save
                 </button>

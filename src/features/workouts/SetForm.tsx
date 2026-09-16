@@ -43,21 +43,21 @@ function EditableSetRow({
   const [difficulty, setDifficulty] = useState(set.difficulty)
 
   return (
-    <div className="rounded-lg bg-slate-800 px-3 py-2.5">
+    <div className="rounded-xl bg-slate-800 px-3 py-2.5">
       <div className="mb-2 grid grid-cols-2 gap-2">
         <input
           type="number"
           inputMode="decimal"
           value={weight}
           onChange={(e) => setWeight(e.target.value)}
-          className="rounded-lg border border-slate-700 bg-slate-900 px-2 py-1.5 text-sm text-white focus:border-emerald-500 focus:outline-none"
+          className="rounded-xl border border-slate-700 bg-slate-900 px-2 py-1.5 text-sm text-white focus:border-emerald-500 focus:outline-none"
         />
         <input
           type="number"
           inputMode="numeric"
           value={reps}
           onChange={(e) => setReps(e.target.value)}
-          className="rounded-lg border border-slate-700 bg-slate-900 px-2 py-1.5 text-sm text-white focus:border-emerald-500 focus:outline-none"
+          className="rounded-xl border border-slate-700 bg-slate-900 px-2 py-1.5 text-sm text-white focus:border-emerald-500 focus:outline-none"
         />
       </div>
       <input
@@ -69,10 +69,10 @@ function EditableSetRow({
         className="mb-2 w-full accent-emerald-500"
       />
       <div className="flex gap-2">
-        <button onClick={onDelete} className="rounded-lg bg-red-600/20 px-3 py-1.5 text-xs font-medium text-red-400 hover:bg-red-600/30">
+        <button onClick={onDelete} className="rounded-xl bg-red-600/20 px-3 py-1.5 text-xs font-medium text-red-400 hover:bg-red-600/30">
           Delete
         </button>
-        <button onClick={onCancel} className="flex-1 rounded-lg bg-slate-700 py-1.5 text-xs text-slate-300 hover:bg-slate-600">
+        <button onClick={onCancel} className="flex-1 rounded-xl bg-slate-700 py-1.5 text-xs text-slate-300 hover:bg-slate-600">
           Cancel
         </button>
         <button
@@ -82,7 +82,7 @@ function EditableSetRow({
             if (Number.isNaN(w) || Number.isNaN(r)) return
             onSave({ weight: w, reps: r, difficulty })
           }}
-          className="flex-1 rounded-lg bg-emerald-600 py-1.5 text-xs font-medium text-white hover:bg-emerald-500"
+          className="flex-1 rounded-xl bg-emerald-600 py-1.5 text-xs font-medium text-white hover:bg-emerald-500"
         >
           Save
         </button>
@@ -119,7 +119,7 @@ export function SetForm({
   }
 
   return (
-    <div className="rounded-xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <div className="mb-1 flex items-center justify-between">
         <h3 className="font-medium text-white">{exercise.name}</h3>
         <button onClick={onDone} className="text-sm text-slate-400 hover:text-slate-200">
@@ -154,7 +154,7 @@ export function SetForm({
               <button
                 key={s.id}
                 onClick={() => setEditingSetId(s.id)}
-                className="flex w-full items-center justify-between rounded-lg bg-slate-800/60 px-3 py-2 text-left text-sm text-slate-300 transition hover:bg-slate-800"
+                className="flex w-full items-center justify-between rounded-xl bg-slate-800/60 px-3 py-2 text-left text-sm text-slate-300 transition hover:bg-slate-800"
               >
                 <span>
                   Set {s.set_number} · {s.weight} × {s.reps} reps
@@ -187,7 +187,7 @@ export function SetForm({
             inputMode="decimal"
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none"
+            className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none"
           />
         </label>
         <label className="flex flex-col gap-1 text-xs text-slate-400">
@@ -197,7 +197,7 @@ export function SetForm({
             inputMode="numeric"
             value={reps}
             onChange={(e) => setReps(e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none"
+            className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none"
           />
         </label>
       </div>
@@ -218,7 +218,7 @@ export function SetForm({
       <button
         onClick={handleAdd}
         disabled={!weight || !reps || adding}
-        className="w-full rounded-lg bg-emerald-600 py-2.5 font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+        className="w-full rounded-xl bg-emerald-600 py-2.5 font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
       >
         Add set
       </button>

@@ -40,8 +40,8 @@ export function FastingTab() {
           const remaining = targetMs - elapsedMs
 
           return (
-            <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
-              <h3 className="mb-3 font-medium text-white">⏱️ Current fast</h3>
+            <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+              <h3 className="mb-3 font-medium text-white">Current fast</h3>
               <div className="flex items-center gap-4">
                 <CircularProgress percent={pct} tone={pct >= 100 ? 'good' : 'neutral'} size={84} />
                 <div className="flex-1">
@@ -53,7 +53,7 @@ export function FastingTab() {
               </div>
               <button
                 onClick={() => endFast.mutate(active.id)}
-                className="mt-3 w-full rounded-lg bg-red-600/20 py-2 text-sm font-medium text-red-400 hover:bg-red-600/30"
+                className="mt-3 w-full rounded-xl bg-red-600/20 py-2 text-sm font-medium text-red-400 hover:bg-red-600/30"
               >
                 End fast
               </button>
@@ -61,7 +61,7 @@ export function FastingTab() {
           )
         })()
       ) : (
-        <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+        <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
           <h3 className="mb-3 font-medium text-white">Start a fast</h3>
           <p className="mb-2 text-sm text-slate-400">Pick a fasting window and start the timer.</p>
           <div className="mb-2 grid grid-cols-2 gap-1.5">
@@ -69,7 +69,7 @@ export function FastingTab() {
               <button
                 key={p.label}
                 onClick={() => startFast.mutate(p.hours)}
-                className="rounded-lg bg-slate-800 px-3 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700"
+                className="rounded-xl bg-slate-800 px-3 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700"
               >
                 {p.label}
               </button>
@@ -80,11 +80,11 @@ export function FastingTab() {
               type="number"
               value={customHours}
               onChange={(e) => setCustomHours(e.target.value)}
-              className="w-20 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:outline-none"
+              className="w-20 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:outline-none"
             />
             <button
               onClick={() => startFast.mutate(parseFloat(customHours) || 16)}
-              className="flex-1 rounded-lg bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500"
+              className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500"
             >
               Start custom fast
             </button>
@@ -93,13 +93,13 @@ export function FastingTab() {
       )}
 
       {history.length > 0 && (
-        <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+        <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
           <p className="mb-2 text-sm font-medium text-white">Recent fasts</p>
           <div className="space-y-1.5">
             {history.map((f) => {
               const durationH = (new Date(f.end_time!).getTime() - new Date(f.start_time).getTime()) / 3_600_000
               return (
-                <div key={f.id} className="flex items-center justify-between rounded-lg bg-slate-800/60 px-3 py-2 text-sm">
+                <div key={f.id} className="flex items-center justify-between rounded-xl bg-slate-800/60 px-3 py-2 text-sm">
                   <span className="text-slate-300">
                     {new Date(f.start_time).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                   </span>

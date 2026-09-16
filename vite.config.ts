@@ -40,8 +40,8 @@ export default defineConfig({
         name: 'FitLog',
         short_name: 'FitLog',
         description: 'Workout and meal tracker',
-        theme_color: '#0f172a',
-        background_color: '#0f172a',
+        theme_color: '#000000',
+        background_color: '#000000',
         display: 'standalone',
         start_url: '/',
         icons: [

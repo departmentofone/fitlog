@@ -14,7 +14,7 @@ export function ExerciseSummaryBox({
   const topSet = sets.reduce((max, s) => (s.weight > max.weight ? s : max), sets[0])
 
   return (
-    <div className="relative rounded-xl bg-slate-900 shadow-lg shadow-black/20 ring-1 ring-white/5 transition hover:ring-emerald-500/30">
+    <div className="relative rounded-2xl bg-slate-900 shadow-lg shadow-black/20 ring-1 ring-white/5 transition hover:ring-emerald-500/30">
       <button onClick={onClick} className="w-full p-3 text-left">
         <p className="mb-1 truncate pr-6 text-sm font-medium text-white">{name}</p>
         <p className="text-xs text-slate-400">
@@ -30,7 +30,10 @@ export function ExerciseSummaryBox({
           aria-label="View progress"
           className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full text-slate-500 hover:bg-white/5 hover:text-emerald-400"
         >
-          📈
+          <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="3 17 9 11 13 15 21 7" />
+            <polyline points="14 7 21 7 21 14" />
+          </svg>
         </button>
       )}
     </div>

@@ -56,26 +56,26 @@ export function PresetsView({
 
       {currentSets.length > 0 &&
         (showSaveForm ? (
-          <div className="rounded-xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+          <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
             <h3 className="mb-3 font-medium text-white">Save as preset</h3>
             <input
               autoFocus
               placeholder="Preset name (e.g. Leg Day)"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mb-3 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="mb-3 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
             />
             <div className="flex gap-2">
               <button
                 onClick={() => setShowSaveForm(false)}
-                className="flex-1 rounded-lg bg-slate-800 py-2 text-sm text-slate-300 hover:bg-slate-700"
+                className="flex-1 rounded-xl bg-slate-800 py-2 text-sm text-slate-300 hover:bg-slate-700"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
                 disabled={!name.trim() || createFromSets.isPending}
-                className="flex-1 rounded-lg bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+                className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
               >
                 Save
               </button>
@@ -84,13 +84,13 @@ export function PresetsView({
         ) : (
           <button
             onClick={() => setShowSaveForm(true)}
-            className="w-full rounded-xl border border-dashed border-slate-700 py-3 font-medium text-slate-300 transition hover:border-emerald-500 hover:text-emerald-400"
+            className="w-full rounded-2xl border border-dashed border-slate-700 py-3 font-medium text-slate-300 transition hover:border-emerald-500 hover:text-emerald-400"
           >
             + Save this workout as a preset
           </button>
         ))}
 
-      <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
         <h3 className="mb-3 font-medium text-white">Your presets</h3>
         {isLoading && <p className="text-sm text-slate-400">Loading…</p>}
         {!isLoading && presets.length === 0 && (
@@ -100,7 +100,7 @@ export function PresetsView({
         )}
         <div className="space-y-2">
           {presets.map((preset) => (
-            <div key={preset.id} className="rounded-lg bg-slate-800/60 p-3">
+            <div key={preset.id} className="rounded-xl bg-slate-800/60 p-3">
               <div className="mb-1 flex items-center justify-between">
                 <h4 className="text-sm font-medium text-white">{preset.name}</h4>
                 {preset.user_id === user?.id && (
@@ -130,7 +130,7 @@ export function PresetsView({
                   onLoaded()
                 }}
                 disabled={!sessionId || loadPreset.isPending}
-                className="w-full rounded-lg bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+                className="w-full rounded-xl bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
               >
                 Load
               </button>

@@ -39,20 +39,20 @@ export function MealPresetsView({
       </button>
 
       {savableMeals.length > 0 && (
-        <div className="rounded-xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+        <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
           <h3 className="mb-3 font-medium text-white">Save a meal as preset</h3>
           <div className="space-y-2">
             {savableMeals.map((meal) =>
               savingMealId === meal.id ? (
-                <div key={meal.id} className="rounded-lg bg-slate-800/60 p-3">
+                <div key={meal.id} className="rounded-xl bg-slate-800/60 p-3">
                   <input
                     autoFocus
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="mb-2 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:outline-none"
+                    className="mb-2 w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:outline-none"
                   />
                   <div className="flex gap-2">
-                    <button onClick={() => setSavingMealId(null)} className="flex-1 rounded-lg bg-slate-700 py-1.5 text-xs text-slate-300 hover:bg-slate-600">
+                    <button onClick={() => setSavingMealId(null)} className="flex-1 rounded-xl bg-slate-700 py-1.5 text-xs text-slate-300 hover:bg-slate-600">
                       Cancel
                     </button>
                     <button
@@ -61,7 +61,7 @@ export function MealPresetsView({
                         createFromMeal.mutate({ name: name.trim(), meal })
                         setSavingMealId(null)
                       }}
-                      className="flex-1 rounded-lg bg-emerald-600 py-1.5 text-xs font-medium text-white hover:bg-emerald-500"
+                      className="flex-1 rounded-xl bg-emerald-600 py-1.5 text-xs font-medium text-white hover:bg-emerald-500"
                     >
                       Save
                     </button>
@@ -74,7 +74,7 @@ export function MealPresetsView({
                     setSavingMealId(meal.id)
                     setName(meal.name)
                   }}
-                  className="flex w-full items-center justify-between rounded-lg bg-slate-800/60 px-3 py-2 text-left text-sm text-slate-200 hover:bg-slate-800"
+                  className="flex w-full items-center justify-between rounded-xl bg-slate-800/60 px-3 py-2 text-left text-sm text-slate-200 hover:bg-slate-800"
                 >
                   <span>{meal.name}</span>
                   <span className="text-xs text-slate-500">{meal.meal_items.length} items</span>
@@ -85,7 +85,7 @@ export function MealPresetsView({
         </div>
       )}
 
-      <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 p-4 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
         <h3 className="mb-3 font-medium text-white">Your meal presets</h3>
         {isLoading && <p className="text-sm text-slate-400">Loading…</p>}
         {!isLoading && presets.length === 0 && (
@@ -93,7 +93,7 @@ export function MealPresetsView({
         )}
         <div className="space-y-2">
           {presets.map((preset) => (
-            <div key={preset.id} className="rounded-lg bg-slate-800/60 p-3">
+            <div key={preset.id} className="rounded-xl bg-slate-800/60 p-3">
               <div className="mb-1 flex items-center justify-between">
                 <h4 className="text-sm font-medium text-white">{preset.name}</h4>
                 {preset.user_id === user?.id && (
@@ -122,7 +122,7 @@ export function MealPresetsView({
                   onLoaded()
                 }}
                 disabled={loadPreset.isPending}
-                className="w-full rounded-lg bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+                className="w-full rounded-xl bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
               >
                 Load
               </button>

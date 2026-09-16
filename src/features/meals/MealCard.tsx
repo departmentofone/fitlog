@@ -20,7 +20,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
     return (
       <button
         onClick={() => setCompleted.mutate({ mealId: meal.id, completed: false })}
-        className="w-full rounded-xl bg-slate-900/70 p-4 text-left shadow-lg shadow-black/20 ring-1 ring-white/5 transition hover:ring-emerald-500/30"
+        className="w-full rounded-2xl bg-slate-900/70 p-4 text-left shadow-lg shadow-black/20 ring-1 ring-white/5 transition hover:ring-emerald-500/30"
       >
         <div className="mb-1 flex items-center justify-between">
           <h3 className="font-medium text-white">{meal.name}</h3>
@@ -39,7 +39,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
   }
 
   return (
-    <div className="rounded-xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <div className="mb-2 flex items-center justify-between">
         <h3 className="font-medium text-white">{meal.name}</h3>
         <span className="text-xs text-emerald-400">{Math.round(totals.calories)} kcal</span>
@@ -51,7 +51,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
           return (
             <div
               key={item.id}
-              className="flex items-center justify-between rounded-lg bg-slate-800/60 px-3 py-2 text-sm text-slate-300"
+              className="flex items-center justify-between rounded-xl bg-slate-800/60 px-3 py-2 text-sm text-slate-300"
             >
               <span>
                 {item.food.name} · {item.serving_label ?? `${item.grams}g`}
@@ -98,7 +98,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
         <div className="flex gap-2">
           <button
             onClick={() => setAdding(true)}
-            className="flex-1 rounded-lg border border-dashed border-slate-700 py-2 text-sm font-medium text-slate-300 transition hover:border-emerald-500 hover:text-emerald-400"
+            className="flex-1 rounded-xl border border-dashed border-slate-700 py-2 text-sm font-medium text-slate-300 transition hover:border-emerald-500 hover:text-emerald-400"
           >
             + Add food
           </button>
@@ -108,7 +108,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
                 haptics.success()
                 setCompleted.mutate({ mealId: meal.id, completed: true })
               }}
-              className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-500"
+              className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-500"
             >
               Done
             </button>

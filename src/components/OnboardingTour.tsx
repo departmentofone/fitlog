@@ -40,7 +40,7 @@ const SLIDES: Slide[] = [
     body: (
       <div className="space-y-3 text-sm text-slate-300">
         <p>
-          <span className="font-semibold text-white">☰ Menu</span> (top-left) — everything lives here: all 9 tabs,
+          <span className="font-semibold text-white">Menu</span> (top-left) — everything lives here: all 9 tabs,
           including Workouts, Meals, Scanner, Diet, Fasting, Goals, Achievements, Programs, and About.
         </p>
         <p>
@@ -62,7 +62,7 @@ const SLIDES: Slide[] = [
         </p>
         <p>
           Head to <span className="font-semibold text-white">Settings</span> (the{' '}
-          <span className="font-semibold text-white">⚙️ icon</span>, top-right) and choose your extras under{' '}
+          <span className="font-semibold text-white">icon</span>, top-right) and choose your extras under{' '}
           <span className="font-semibold text-white">&ldquo;Bottom bar&rdquo;</span>.
         </p>
       </div>
@@ -109,8 +109,10 @@ export function OnboardingTour() {
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/70" />
       <div
-        className={`relative w-full max-w-sm rounded-2xl bg-slate-900 p-5 shadow-2xl shadow-black/40 ring-1 transition ${
-          slide.emphasize ? 'ring-2 ring-emerald-500 bg-gradient-to-b from-emerald-500/10 to-slate-900' : 'ring-white/5'
+        className={`relative w-full max-w-sm rounded-3xl bg-slate-900 p-5 shadow-2xl shadow-black/40 ring-1 transition ${
+          slide.emphasize
+            ? 'shadow-[var(--glow-shadow)] ring-2 ring-emerald-500 bg-gradient-to-b from-emerald-500/10 to-slate-900'
+            : 'ring-white/5'
         }`}
       >
         <div className="mb-4 flex items-center justify-between">
@@ -135,7 +137,7 @@ export function OnboardingTour() {
 
         <button
           onClick={next}
-          className="w-full rounded-xl bg-emerald-600 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-500"
+          className="w-full rounded-2xl bg-emerald-600 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-500"
         >
           {isLast ? "Let's go" : step === SLIDES.length - 2 ? 'Got it' : 'Next'}
         </button>

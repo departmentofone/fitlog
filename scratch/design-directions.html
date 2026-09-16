@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FitLog — 10 Visual Design Directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Fraunces:ital,wght@0,500;0,600;1,500;1,600&family=Work+Sans:wght@400;500;600;700&family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&family=Sora:wght@400;500;600;700;800&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+<style>
+  /* ============ PAGE CHROME ============ */
+  * { box-sizing: border-box; }
+  body {
+    background: #eceef1;
+    color: #14161a;
+    font-family: 'Inter', system-ui, sans-serif;
+    padding-bottom: 80px;
+  }
+  .page-intro {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 20px 16px;
+  }
+  .page-intro h1 { font-size: 26px; margin: 0 0 8px; letter-spacing: -0.01em; }
+  .page-intro p { font-size: 14px; line-height: 1.55; color: #4b5160; max-width: 68ch; }
+
+  .jumpnav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #d9dce2;
+    padding: 10px 16px;
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  .jumpnav a {
+    flex: none;
+    font-size: 12px;
+    font-weight: 600;
+    color: #383c45;
+    text-decoration: none;
+    background: #fff;
+    border: 1px solid #d9dce2;
+    padding: 7px 12px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .jumpnav a:hover { border-color: #9aa1af; }
+
+  .direction {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 56px 20px 8px;
+    scroll-margin-top: 64px;
+  }
+  .direction-head {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    margin-bottom: 26px;
+    max-width: 920px;
+  }
+  .direction-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: #9aa1af;
+    background: #fff;
+    border: 1px solid #d9dce2;
+    border-radius: 8px;
+    padding: 5px 9px;
+    flex: none;
+  }
+  .direction-head h2 { margin: 0 0 6px; font-size: 21px; letter-spacing: -0.01em; }
+  .direction-head .rationale { margin: 0; font-size: 13.5px; line-height: 1.55; color: #4b5160; }
+  .direction-head .tag { display:inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #6b7280; background: #eef0f3; border: 1px solid #d9dce2; padding: 2px 8px; border-radius: 999px; margin-bottom: 8px; }
+
+  .stage {
+    background: repeating-linear-gradient(45deg, #e3e5ea 0 10px, #dfe1e7 10px 20px);
+    border-radius: 20px;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* ============ SHARED APP-COMPONENT SYSTEM ============ */
+  /* Every direction below sets these custom properties on its #dN wrapper;
+     the structural rules underneath read only the variables, so the same
+     markup renders ten genuinely different systems. */
+  .phone {
+    width: 390px;
+    max-width: 100%;
+    background: var(--bg);
+    border-radius: var(--phone-radius, 36px);
+    overflow: hidden;
+    box-shadow: 0 24px 60px -24px rgba(0,0,0,.45);
+    font-family: var(--font-body);
+    color: var(--text);
+    position: relative;
+  }
+  .app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 16px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    z-index: 2;
+  }
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font: inherit;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 9px;
+    border-radius: 999px;
+  }
+  .ic { width: 18px; height: 18px; display: block; }
+  .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-family: var(--font-display); font-size: 16px; color: var(--text); }
+  .brand-mark { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--surface-2); flex: none; }
+  .brand-mark .ic { width: 17px; height: 17px; color: var(--accent); }
+
+  .phone-body { padding: 16px; display: flex; flex-direction: column; gap: 16px; min-height: 480px; position: relative; z-index: 2; }
+
+  .chip-row { display: flex; gap: 8px; }
+  .chip { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 10px; border-radius: var(--radius-md); background: var(--surface-2); color: var(--muted); font-size: 11.5px; font-weight: 700; border: 1px solid var(--border); cursor: pointer; font-family: var(--font-body); }
+  .chip .ic { width: 14px; height: 14px; }
+
+  .stat-card { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 17px; border-radius: var(--radius-lg); background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow); }
+  .stat-label { font-size: 11.5px; color: var(--muted); margin: 0 0 5px; font-weight: 600; }
+  .stat-value { font-family: var(--font-display); font-size: 30px; font-weight: 800; margin: 0; color: var(--text); line-height: 1; }
+  .stat-value span { font-size: 13px; font-weight: 600; color: var(--muted); }
+  .stat-actions { display: flex; align-items: center; gap: 8px; flex: none; }
+  .pill-toggle { display: flex; align-items: center; gap: 5px; padding: 7px 12px; border-radius: 999px; font-size: 10.5px; font-weight: 700; border: 1px solid var(--border); background: var(--surface-2); color: var(--muted); cursor: pointer; font-family: var(--font-body); }
+  .pill-toggle.active { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }
+  .pill-toggle .ic { width: 11px; height: 11px; }
+  .danger-icon { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); flex: none; }
+  .danger-icon .ic { width: 15px; height: 15px; }
+
+  .btn-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .btn-primary, .btn-secondary, .btn-destructive {
+    flex: 1; min-width: 108px; padding: 11px 12px; border-radius: var(--radius-md);
+    font-weight: 700; font-size: 12.5px; border: 1px solid transparent; cursor: pointer; font-family: var(--font-body);
+  }
+  .btn-primary { background: var(--accent); color: var(--accent-contrast); }
+  .btn-secondary { background: var(--surface-2); color: var(--text); border-color: var(--border); }
+  .btn-destructive { background: transparent; color: var(--danger); border-color: var(--danger); }
+
+  .list-item { display: flex; align-items: center; justify-content: space-between; padding: 14px; border-radius: var(--radius-lg); background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow); }
+  .list-name { margin: 0 0 4px; font-weight: 700; font-size: 13.5px; }
+  .list-stats { margin: 0; font-size: 12px; color: var(--muted); font-family: var(--font-mono, var(--font-body)); }
+  .muscle-tag { display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; font-size: 10.5px; font-weight: 700; color: var(--muted); }
+  .muscle-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+  .trend-icon { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--surface-2); color: var(--accent); border: 1px solid var(--border); flex: none; }
+  .trend-icon .ic { width: 15px; height: 15px; }
+
+  .input-block { display: flex; flex-direction: column; gap: 10px; }
+  .text-input { width: 100%; padding: 11px 13px; border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--surface-2); color: var(--text); font-size: 13px; font-family: var(--font-body); }
+  .text-input::placeholder { color: var(--muted); }
+  .segmented { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; }
+  .seg-option { padding: 9px 6px; border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--surface-2); color: var(--muted); font-size: 11.5px; font-weight: 700; cursor: pointer; font-family: var(--font-body); }
+  .seg-option.active { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }
+
+  .bottom-nav { display: flex; border-top: 1px solid var(--border); background: var(--nav-bg, var(--surface)); position: relative; z-index: 2; }
+  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 4px 13px; font-size: 10px; font-weight: 700; color: var(--muted); background: none; border: none; cursor: pointer; font-family: var(--font-body); }
+  .nav-item.active { color: var(--accent); }
+  .nav-icon { font-size: 17px; line-height: 1; }
+  .nav-icon .ic { width: 19px; height: 19px; }
+
+  .section-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 2px 0 -6px; }
+
+  /* ============================================================ */
+  /* 1 — BLACKOUT (Whoop)                                          */
+  /* ============================================================ */
+  #d1 {
+    --bg:#000; --surface:#0a0a0a; --surface-2:#151515; --text:#f2f2f2; --muted:#7a7a7a;
+    --accent:#10b981; --accent-contrast:#00190f; --danger:#ef4444; --border:rgba(255,255,255,.09);
+    --radius-lg:14px; --radius-md:10px; --shadow:none;
+    --font-display:'IBM Plex Mono', monospace; --font-body:'Inter', sans-serif; --font-mono:'IBM Plex Mono', monospace;
+  }
+  #d1 .stat-value { letter-spacing: -0.02em; }
+  #d1 .list-stats, #d1 .stat-label { letter-spacing: .02em; }
+
+  /* ============================================================ */
+  /* 2 — LEDGER (Strong)                                           */
+  /* ============================================================ */
+  #d2 {
+    --bg:#fff; --surface:#fff; --surface-2:#f2f3f5; --text:#0b0c0f; --muted:#6b7280;
+    --accent:#ea580c; --accent-contrast:#fff; --danger:#dc2626; --border:#e6e8ec;
+    --radius-lg:10px; --radius-md:8px; --shadow:0 1px 2px rgba(0,0,0,.05);
+    --font-display:'Inter', sans-serif; --font-body:'Inter', sans-serif; --font-mono:'Inter', sans-serif;
+  }
+  #d2 .phone { box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 24px 60px -30px rgba(0,0,0,.3); }
+  #d2 .list-stats, #d2 .stat-value { font-variant-numeric: tabular-nums; }
+  #d2 .phone-body { gap: 12px; }
+  #d2 .stat-card, #d2 .list-item { padding: 13px 14px; }
+
+  /* ============================================================ */
+  /* 3 — RECOVERY MAP (Fitbod)                                     */
+  /* ============================================================ */
+  #d3 {
+    --bg:#0f1115; --surface:#171a20; --surface-2:#1f232b; --text:#f2f3f5; --muted:#8b93a1;
+    --accent:#22c55e; --accent-contrast:#04170b; --danger:#fb7185; --border:rgba(255,255,255,.07);
+    --radius-lg:20px; --radius-md:12px; --shadow:0 14px 32px -16px rgba(0,0,0,.6);
+    --font-display:'Manrope', sans-serif; --font-body:'Manrope', sans-serif; --font-mono:'Manrope', sans-serif;
+  }
+  #d3 .stat-card { background: linear-gradient(160deg, rgba(34,197,94,.14), var(--surface) 60%); }
+  #d3 .nav-icon-chip { width: 26px; height: 26px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+
+  /* ============================================================ */
+  /* 4 — RING SYSTEM (Apple Fitness)                               */
+  /* ============================================================ */
+  #d4 {
+    --bg:#000; --surface:#111113; --surface-2:#1c1c1f; --text:#fff; --muted:#98989d;
+    --accent:#30d158; --accent-contrast:#001a0a; --danger:#ff453a; --border:rgba(255,255,255,.09);
+    --radius-lg:24px; --radius-md:16px; --shadow:0 0 44px -14px rgba(48,209,88,.4);
+    --font-display:'Nunito', sans-serif; --font-body:'Nunito', sans-serif; --font-mono:'Nunito', sans-serif;
+    --phone-radius:44px;
+  }
+  #d4 .stat-value { font-weight: 900; }
+  #d4 .rings { display: flex; gap: 6px; margin-top: 8px; }
+  #d4 .rings svg { width: 30px; height: 30px; transform: rotate(-90deg); }
+  #d4 .nav-ring { width: 20px; height: 20px; }
+
+  /* ============================================================ */
+  /* 5 — FIELD NOTES (Oura, palette shifted away from cream+terracotta) */
+  /* ============================================================ */
+  #d5 {
+    --bg:#f3efe6; --surface:#faf7f1; --surface-2:#ece5d6; --text:#251f19; --muted:#7d7263;
+    --accent:#28374d; --accent-contrast:#faf7f1; --danger:#8a3a2a; --border:#e2d9c6;
+    --radius-lg:10px; --radius-md:9px; --shadow:none;
+    --font-display:'Fraunces', serif; --font-body:'Work Sans', sans-serif; --font-mono:'Work Sans', sans-serif;
+  }
+  #d5 .stat-value { font-style: italic; font-weight: 600; font-size: 32px; }
+  #d5 .brand { font-family: 'Fraunces', serif; font-style: italic; font-weight: 600; }
+  #d5 .nav-item { text-transform: uppercase; letter-spacing: .09em; font-size: 9px; font-weight: 700; }
+  #d5 .nav-item.active { text-decoration: underline; text-underline-offset: 5px; }
+
+  /* ============================================================ */
+  /* 6 — CLINICAL (Cronometer)                                     */
+  /* ============================================================ */
+  #d6 {
+    --bg:#eef1f4; --surface:#fff; --surface-2:#e6ebf0; --text:#101820; --muted:#5b6b7a;
+    --accent:#0f766e; --accent-contrast:#fff; --danger:#b91c1c; --border:#ccd6de;
+    --radius-lg:6px; --radius-md:6px; --shadow:none;
+    --font-display:'IBM Plex Sans', sans-serif; --font-body:'IBM Plex Sans', sans-serif; --font-mono:'IBM Plex Mono', monospace;
+  }
+  #d6 .stat-label, #d6 .list-stats, #d6 .muscle-tag { text-transform: uppercase; letter-spacing: .07em; font-size: 10px; }
+  #d6 .stat-value, #d6 .list-stats { font-family: var(--font-mono); }
+  #d6 .stat-card, #d6 .list-item { border-radius: var(--radius-lg); }
+  #d6 .phone-body { gap: 10px; }
+
+  /* ============================================================ */
+  /* 7 — SIGNAL (bold / neo-brutalist)                             */
+  /* ============================================================ */
+  #d7 {
+    --bg:#0d0d0d; --surface:#fff; --surface-2:#fff; --text:#0d0d0d; --muted:#4b4b4b;
+    --accent:#ff4d00; --accent-contrast:#0d0d0d; --danger:#ff1e3c; --border:#0d0d0d;
+    --radius-lg:0px; --radius-md:0px; --shadow:6px 6px 0 #0d0d0d;
+    --font-display:'Archivo Black', sans-serif; --font-body:'Space Grotesk', sans-serif; --font-mono:'Space Grotesk', monospace;
+    --phone-radius:0px;
+  }
+  #d7 .stat-card, #d7 .list-item, #d7 .chip, #d7 .text-input { border-width: 3px; }
+  #d7 .btn-primary, #d7 .btn-secondary, #d7 .btn-destructive, #d7 .seg-option { border-width: 3px; border-color: #0d0d0d; text-transform: uppercase; letter-spacing: .03em; box-shadow: 4px 4px 0 #0d0d0d; }
+  #d7 .btn-destructive { background: var(--danger); color: #fff; border-color: #0d0d0d; }
+  #d7 .stat-label, #d7 .list-stats { text-transform: uppercase; letter-spacing: .04em; font-weight: 700; }
+  #d7 .brand { text-transform: uppercase; letter-spacing: -0.01em; }
+  #d7 .brand-mark { border-radius: 0; background: var(--accent); border: 3px solid #0d0d0d; }
+  #d7 .brand-mark .ic { color: #0d0d0d; }
+  #d7 .app-header { border-bottom: 3px solid #0d0d0d; }
+  #d7 .bottom-nav { border-top: 3px solid #0d0d0d; }
+  #d7 .nav-item.active { background: #0d0d0d; color: #fff; }
+  #d7 .ic { stroke-width: 2.6; }
+  #d7 .danger-icon, #d7 .trend-icon { border-width: 3px; border-radius: 0; }
+  #d7 .pill-toggle { border-radius: 0; border-width: 3px; }
+  #d7 .app-header { background: var(--bg); color: #fff; }
+  #d7 .app-header .icon-btn { color: #fff; }
+  #d7 .app-header .brand { color: #fff; }
+  #d7 .app-header .brand-mark { background: var(--accent); }
+
+  /* ============================================================ */
+  /* 8 — TRACKSIDE (Swiss / athletic scoreboard)                   */
+  /* ============================================================ */
+  #d8 {
+    --bg:#fff; --surface:#fff; --surface-2:#f4f4f4; --text:#111; --muted:#6b6b6b;
+    --accent:#e0102b; --accent-contrast:#fff; --danger:#111; --border:#111;
+    --radius-lg:2px; --radius-md:2px; --shadow:none;
+    --font-display:'Barlow Condensed', sans-serif; --font-body:'Barlow', sans-serif; --font-mono:'Barlow Condensed', monospace;
+    --phone-radius:8px;
+  }
+  #d8 .stat-value, #d8 .brand, #d8 .btn-primary, #d8 .btn-secondary, #d8 .btn-destructive, #d8 .seg-option, #d8 .stat-label, #d8 .chip {
+    font-family: 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: .02em; font-weight: 700;
+  }
+  #d8 .stat-label { letter-spacing: .1em; font-size: 12px; }
+  #d8 .app-header { border-bottom: 2px solid #111; }
+  #d8 .stat-card, #d8 .list-item { border-radius: 0; border: none; border-top: 2px solid #111; border-bottom: 2px solid #111; }
+  #d8 .btn-destructive { border-width: 2px; color: var(--accent); border-color: var(--accent); }
+  #d8 .bottom-nav { border-top: 2px solid #111; }
+  #d8 .nav-item.active { box-shadow: inset 0 4px 0 var(--accent); }
+  #d8 .track-num { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 15px; }
+
+  /* ============================================================ */
+  /* 9 — AURORA GLASS (glassmorphism)                              */
+  /* ============================================================ */
+  #d9 {
+    --bg:#0b0f1e; --surface:rgba(255,255,255,.07); --surface-2:rgba(255,255,255,.09);
+    --text:#f4f6fb; --muted:#a8b0c4; --accent:#34d399; --accent-contrast:#04231a;
+    --danger:#fb7185; --border:rgba(255,255,255,.14); --radius-lg:22px; --radius-md:14px;
+    --shadow:0 10px 34px rgba(0,0,0,.4); --font-display:'Sora', sans-serif; --font-body:'Sora', sans-serif; --font-mono:'Sora', sans-serif;
+    --phone-radius:40px;
+  }
+  #d9 .phone::before, #d9 .phone::after {
+    content: ""; position: absolute; border-radius: 50%; filter: blur(46px); z-index: 0; opacity: .55;
+  }
+  #d9 .phone::before { width: 220px; height: 220px; background: #34d399; top: -60px; left: -60px; }
+  #d9 .phone::after { width: 220px; height: 220px; background: #fbbf24; bottom: 40px; right: -70px; opacity: .35; }
+  #d9 .stat-card, #d9 .list-item, #d9 .chip, #d9 .text-input, #d9 .seg-option, #d9 .pill-toggle, #d9 .danger-icon, #d9 .trend-icon {
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-top: 1px solid rgba(255,255,255,.28);
+  }
+  #d9 .brand-mark { background: rgba(255,255,255,.1); backdrop-filter: blur(8px); }
+  #d9 .nav-icon-chip { width: 30px; height: 30px; border-radius: 999px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16); }
+  #d9 .nav-item.active .nav-icon-chip { background: rgba(52,211,153,.22); border-color: rgba(52,211,153,.5); }
+
+  /* ============================================================ */
+  /* 10 — PODIUM (gamified / energetic)                            */
+  /* ============================================================ */
+  #d10 {
+    --bg:#10141f; --surface:#171d2c; --surface-2:#1f2637; --text:#f6f7fb; --muted:#8891a5;
+    --accent:#22d46b; --accent-contrast:#041c0c; --danger:#ff5d73; --border:rgba(255,255,255,.06);
+    --radius-lg:28px; --radius-md:18px; --shadow:0 14px 30px -12px rgba(34,212,107,.35);
+    --font-display:'Baloo 2', cursive; --font-body:'Nunito', sans-serif; --font-mono:'Nunito', sans-serif;
+    --phone-radius:44px;
+  }
+  #d10 .stat-card { background: linear-gradient(135deg,#1c4d34,#132a1f); border: none; }
+  #d10 .stat-value { font-weight: 700; }
+  #d10 .brand { font-family: 'Baloo 2', cursive; font-weight: 700; }
+  #d10 .btn-primary { box-shadow: 0 8px 18px -6px rgba(34,212,107,.55); }
+  #d10 .pill-toggle.active { box-shadow: 0 6px 14px -4px rgba(34,212,107,.5); }
+  #d10 .nav-icon-chip { width: 30px; height: 30px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: var(--surface-2); }
+  #d10 .nav-item.active .nav-icon-chip { background: var(--accent); }
+  #d10 .nav-icon-chip.gold { background: #ffb703; opacity: .55; }
+  #d10 .nav-item.active .nav-icon-chip.gold { background: #ffb703; opacity: 1; }
+
+  /* ============ FOOTER NOTE ============ */
+  .closing { max-width: 900px; margin: 40px auto 0; padding: 0 20px; font-size: 13px; color: #6b7280; }
+</style>
+</head>
+<body>
+
+<!-- reusable icon sprite -->
+<svg style="display:none" aria-hidden="true">
+  <symbol id="ic-hamburger" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></symbol>
+  <symbol id="ic-gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+  <symbol id="ic-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></symbol>
+  <symbol id="ic-trending" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></symbol>
+  <symbol id="ic-bolt" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h7l-1 8 11-14h-7l0-6z"/></symbol>
+  <symbol id="ic-clipboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="15" y2="16"/></symbol>
+  <symbol id="ic-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></symbol>
+  <symbol id="ic-barbell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/><line x1="7" y1="8" x2="7" y2="16"/><line x1="17" y1="8" x2="17" y2="16"/><line x1="4" y1="10" x2="4" y2="14"/><line x1="20" y1="10" x2="20" y2="14"/></symbol>
+  <symbol id="ic-fork" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2v8a2 2 0 0 1-2 2 2 2 0 0 1-2-2V2"/><line x1="5" y1="12" x2="5" y2="22"/><path d="M17 2c-1.8 1.6-1.8 6.4 0 8 .6.5 1 1.2 1 2v10"/></symbol>
+  <symbol id="ic-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21c9 0 14-5 14-14 0-1 0-2-.5-3-6 0-13.5 3-13.5 12 0 1.5.5 4 0 5z"/><path d="M5 21c2-4 5-7 9-10"/></symbol>
+</svg>
+
+<div class="page-intro">
+  <h1>FitLog — 10 Visual Design Directions</h1>
+  <p>Same six components mocked up ten different ways: app header, bottom nav, stat/summary card, button set, exercise list item, and goal input + segmented control. Emoji is retired everywhere except where a direction deliberately keeps it in the bottom nav as an intentional choice. Grounded in specific traits from Whoop, Oura, Fitbod, Strong, Apple Fitness, Cronometer and Hevy — synthesized into original systems, not copies.</p>
+</div>
+
+<nav class="jumpnav">
+  <a href="#d1">01 Blackout</a>
+  <a href="#d2">02 Ledger</a>
+  <a href="#d3">03 Recovery Map</a>
+  <a href="#d4">04 Ring System</a>
+  <a href="#d5">05 Field Notes</a>
+  <a href="#d6">06 Clinical</a>
+  <a href="#d7">07 Signal</a>
+  <a href="#d8">08 Trackside</a>
+  <a href="#d9">09 Aurora Glass</a>
+  <a href="#d10">10 Podium</a>
+</nav>
+
+<!-- ============================================================ -->
+<!-- 1 — BLACKOUT                                                  -->
+<!-- ============================================================ -->
+<section class="direction" id="d1">
+  <div class="direction-head">
+    <span class="direction-num">01</span>
+    <div>
+      <span class="tag">Inspired by Whoop</span>
+      <h2>Blackout</h2>
+      <p class="rationale">Whoop runs true black with a flat, borderless-feeling card system and lets a single strain/recovery color carry all the meaning — no shadows, no decoration, just huge glanceable numerals over hairline dividers. Applied here as an almost-instrument-panel reading for lifters who want the number, not the chrome: monospace digits, emerald as the only "good" signal, red reserved strictly for destructive action.</p>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="phone">
+      <header class="app-header">
+        <button class="icon-btn"><svg class="ic"><use href="#ic-hamburger"/></svg>Menu</button>
+        <div class="brand"><span class="brand-mark"><svg class="ic"><use href="#ic-barbell"/></svg></span>FitLog</div>
+        <button class="icon-btn" aria-label="Settings"><svg class="ic"><use href="#ic-gear"/></svg></button>
+      </header>
+      <div class="phone-body">
+        <div class="chip-row">
+          <button class="chip"><svg class="ic"><use href="#ic-clipboard"/></svg>Presets</button>
+          <button class="chip"><svg class="ic"><use href="#ic-book"/></svg>History</button>
+        </div>
+        <div class="stat-card">
+          <div>
+            <p class="stat-label">TODAY'S MOVED</p>
+            <p class="stat-value">965<span> kg</span></p>
+          </div>
+          <div class="stat-actions">
+            <button class="pill-toggle active"><svg class="ic"><use href="#ic-bolt"/></svg>PREWORKOUT</button>
+            <button class="danger-icon" aria-label="Delete workout"><svg class="ic"><use href="#ic-trash"/></svg></button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary">+ Add Exercise</button>
+          <button class="btn-secondary">Cancel</button>
+          <button class="btn-destructive">Delete Workout</button>
+        </div>
+        <div class="list-item">
+          <div>
+            <p class="list-name">Barbell Bench Press</p>
+            <p class="list-stats">S3 · R8 · 80KG</p>
+          </div>
+          <button class="trend-icon" aria-label="View progress"><svg class="ic"><use href="#ic-trending"/></svg></button>
+        </div>
+        <div class="input-block">
+          <input class="text-input" placeholder="Daily calorie target" />
+          <div class="segmented">
+            <button class="seg-option">Deficit</button>
+            <button class="seg-option active">Maintenance</button>
+            <button class="seg-option">Surplus</button>
+          </div>
+        </div>
+      </div>
+      <nav class="bottom-nav">
+        <button class="nav-item active"><span class="nav-icon"><svg class="ic"><use href="#ic-barbell"/></svg></span>Workouts</button>
+        <button class="nav-item"><span class="nav-icon"><svg class="ic"><use href="#ic-fork"/></svg></span>Meals</button>
+        <button class="nav-item"><span class="nav-icon"><svg class="ic"><use href="#ic-leaf"/></svg></span>Diet</button>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 2 — LEDGER                                                    -->
+<!-- ============================================================ -->
+<section class="direction" id="d2">
+  <div class="direction-head">
+    <span class="direction-num">02</span>
+    <div>
+      <span class="tag">Inspired by Strong</span>
+      <h2>Ledger</h2>
+      <p class="rationale">Strong's whole reputation is "does one thing, gets out of the way" — a superclean, function-first Inter layout with almost no chromatic decoration, tight 8px spacing, and tabular numerals so sets line up like a spreadsheet. This direction takes FitLog fully light and utilitarian: one working accent color (a data-terminal orange, not the house emerald) used only for the one thing that matters on screen at a time.</p>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="phone">
+      <header class="app-header">
+        <button class="icon-btn"><svg class="ic"><use href="#ic-hamburger"/></svg>Menu</button>
+        <div class="brand"><span class="brand-mark"><svg class="ic"><use href="#ic-barbell"/></svg></span>FitLog</div>
+        <button class="icon-btn" aria-label="Settings"><svg class="ic"><use href="#ic-gear"/></svg></button>
+      </header>
+      <div class="phone-body">
+        <div class="chip-row">
+          <button class="chip"><svg class="ic"><use href="#ic-clipboard"/></svg>Presets</button>
+          <button class="chip"><svg class="ic"><use href="#ic-book"/></svg>History</button>
+        </div>
+        <div class="stat-card">
+          <div>
+            <p class="stat-label">Today's moved</p>
+            <p class="stat-value">965<span> kg</span></p>
+          </div>
+          <div class="stat-actions">
+            <button class="pill-toggle active"><svg class="ic"><use href="#ic-bolt"/></svg>Preworkout</button>
+            <button class="danger-icon" aria-label="Delete workout"><svg class="ic"><use href="#ic-trash"/></svg></button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary">+ Add Exercise</button>
+          <button class="btn-secondary">Cancel</button>
+          <button class="btn-destructive">Delete Workout</button>
+        </div>
+        <div class="list-item">
+          <div>
+            <p class="list-name">Barbell Bench Press</p>
+            <p class="list-stats">S3 · R8 · 80kg</p>
+          </div>
+          <button class="trend-icon" aria-label="View progress"><svg class="ic"><use href="#ic-trending"/></svg></button>
+        </div>
+        <div class="input-block">
+          <input class="text-input" placeholder="Daily calorie target" />
+          <div class="segmented">
+            <button class="seg-option">Deficit</button>
+            <button class="seg-option active">Maintenance</button>
+            <button class="seg-option">Surplus</button>
+          </div>
+        </div>
+      </div>
+      <nav class="bottom-nav">
+        <button class="nav-item active"><span class="nav-icon"><svg class="ic"><use href="#ic-barbell"/></svg></span>Workouts</button>
+        <button class="nav-item"><span class="nav-icon"><svg class="ic"><use href="#ic-fork"/></svg></span>Meals</button>
+        <button class="nav-item"><span class="nav-icon"><svg class="ic"><use href="#ic-leaf"/></svg></span>Diet</button>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 3 — RECOVERY MAP                                              -->
+<!-- ============================================================ -->
+<section class="direction" id="d3">
+  <div class="direction-head">
+    <span class="direction-num">03</span>
+    <div>
+      <span class="tag">Inspired by Fitbod</span>
+      <h2>Recovery Map</h2>
+      <p class="rationale">Fitbod's signature move is color as information — the muscle-recovery heatmap tells you what's ready to train at a glance. Here that becomes a system-wide habit: every list item carries a small colored status dot (not an emoji) tying it back to a muscle group or readiness state, cards get a soft directional glow instead of a flat fill, and nav icons sit in tinted rounded chips rather than floating loose.</p>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="phone">
+      <header class="app-header">
+        <button class="icon-btn"><svg class="ic"><use href="#ic-hamburger"/></svg>Menu</button>
+        <div class="brand"><span class="brand-mark"><svg class="ic"><use href="#ic-barbell"/></svg></span>FitLog</div>
+        <button class="icon-btn" aria-label="Settings"><svg class="ic"><use href="#ic-gear"/></svg></button>
+      </header>
+      <div class="phone-body">
+        <div class="chip-row">
+          <button class="chip"><svg class="ic"><use href="#ic-clipboard"/></svg>Presets</button>
+          <button class="chip"><svg class="ic"><use href="#ic-book"/></svg>History</button>
+        </div>
+        <div class="stat-card">
+          <div>
+            <p class="stat-label">Today's moved</p>
+            <p class="stat-value">965<span> kg</span></p>
+          </div>
+          <div class="stat-actions">
+            <button class="pill-toggle active"><svg class="ic"><use href="#ic-bolt"/></svg>Preworkout</button>
+            <button class="danger-icon" aria-label="Delete workout"><svg class="ic"><use href="#ic-trash"/></svg></button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary">+ Add Exercise</button>
+          <button class="btn-secondary">Cancel</button>
+          <button class="btn-destructive">Delete Workout</button>
+        </div>
+        <div class="list-item">
+          <div>
+            <p class="list-name">Barbell Bench Press</p>
+            <p class="list-stats">S3 · R8 · 80kg</p>
+            <p class="muscle-tag"><span class="muscle-dot"></span>Chest · Recovered</p>
+          </div>
+          <button class="trend-icon" aria-label="View progress"><svg class="ic"><use href="#ic-trending"/></svg></button>
+        </div>
+        <div class="input-block">
+          <input class="text-input" placeholder="Daily calorie target" />
+          <div class="segmented">
+            <button class="seg-option">Deficit</button>
+            <button class="seg-option active">Maintenance</button>
+            <button class="seg-option">Surplus</button>
+          </div>
+        </div>
+      </div>
+      <nav class="bottom-nav">
+        <button class="nav-item active"><span class="nav-icon-chip" style="background:rgba(34,197,94,.22)">🏋️</span>Workouts</button>
+        <button class="nav-item"><span class="nav-icon-chip" style="background:rgba(96,165,250,.16)">🍽️</span>Meals</button>
+        <button class="nav-item"><span class="nav-icon-chip" style="background:rgba(245,158,11,.16)">🥗</span>Diet</button>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 4 — RING SYSTEM                                               -->
+<!-- ============================================================ -->
+<section class="direction" id="d4">
+  <div class="direction-head">
+    <span class="direction-num">04</span>
+    <div>
+      <span class="tag">Inspired by Apple Fitness</span>
+      <h2>Ring System</h2>
+      <p class="rationale">Apple Fitness pairs true black with SF Rounded's friendly geometry and expresses everything through colored rings rather than icons or emoji. This direction borrows the rounded-everything warmth and the ring-as-primary-glyph idea — sub-metrics under the headline number get their own tiny arc, and the bottom nav trades tab icons for miniature progress rings in each tab's own color.</p>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="phone">
+      <header class="app-header">
+        <button class="icon-btn"><svg class="ic"><use href="#ic-hamburger"/></svg>Menu</button>
+        <div class="brand"><span class="brand-mark"><svg class="ic"><use href="#ic-barbell"/></svg></span>FitLog</div>
+        <button class="icon-btn" aria-label="Settings"><svg class="ic"><use href="#ic-gear"/></svg></button>
+      </header>
+      <div class="phone-body">
+        <div class="chip-row">
+          <button class="chip"><svg class="ic"><use href="#ic-clipboard"/></svg>Presets</button>
+          <button class="chip"><svg class="ic"><use href="#ic-book"/></svg>History</button>
+        </div>
+        <div class="stat-card">
+          <div>
+            <p class="stat-label">Today's moved</p>
+            <p class="stat-value">965<span> kg</span></p>
+            <div class="rings">
+              <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="4"/><circle cx="18" cy="18" r="15" fill="none" stroke="#ff375f" stroke-width="4" stroke-dasharray="70 100" stroke-linecap="round"/></svg>
+              <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="4"/><circle cx="18" cy="18" r="15" fill="none" stroke="#c6ff00" stroke-width="4" stroke-dasharray="50 100" stroke-linecap="round"/></svg>
+              <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="4"/><circle cx="18" cy="18" r="15" fill="none" stroke="#00e5ff" stroke-width="4" stroke-dasharray="90 100" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+          <div class="stat-actions">
+            <button class="pill-toggle active"><svg class="ic"><use href="#ic-bolt"/></svg>Preworkout</button>
+            <button class="danger-icon" aria-label="Delete workout"><svg class="ic"><use href="#ic-trash"/></svg></button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary">+ Add Exercise</button>
+          <button class="btn-secondary">Cancel</button>
+          <button class="btn-destructive">Delete Workout</button>
+        </div>
+        <div class="list-item">
+          <div>
+            <p class="list-name">Barbell Bench Press</p>
+            <p class="list-stats">S3 · R8 · 80kg</p>
+          </div>
+          <button class="trend-icon" aria-label="View progress"><svg class="ic"><use href="#ic-trending"/></svg></button>
+        </div>
+        <div class="input-block">
+          <input class="text-input" placeholder="Daily calorie target" />
+          <div class="segmented">
+            <button class="seg-option">Deficit</button>
+            <button class="seg-option active">Maintenance</button>
+            <button class="seg-option">Surplus</button>
+          </div>
+        </div>
+      </div>
+      <nav class="bottom-nav">
+        <button class="nav-item active"><span class="nav-icon"><svg class="nav-ring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="5"/><circle cx="18" cy="18" r="15" fill="none" stroke="#ff375f" stroke-width="5" stroke-dasharray="80 100" stroke-linecap="round" transform="rotate(-90 18 18)"/></svg></span>Workouts</button>
+        <button class="nav-item"><span class="nav-icon"><svg class="nav-ring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="5"/><circle cx="18" cy="18" r="15" fill="none" stroke="#c6ff00" stroke-width="5" stroke-dasharray="45 100" stroke-linecap="round" transform="rotate(-90 18 18)"/></svg></span>Meals</button>
+        <button class="nav-item"><span class="nav-icon"><svg class="nav-ring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="5"/><circle cx="18" cy="18" r="15" fill="none" stroke="#00e5ff" stroke-width="5" stroke-dasharray="60 100" stroke-linecap="round" transform="rotate(-90 18 18)"/></svg></span>Diet</button>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 5 — FIELD NOTES                                               -->
+<!-- ============================================================ -->
+<section class="direction" id="d5">
+  <div class="direction-head">
+    <span class="direction-num">05</span>
+    <div>
+      <span class="tag">Inspired by Oura</span>
+      <h2>Field Notes</h2>
+      <p class="rationale">Oura's real trick isn't the color — it's the restraint: one chromatic accent, hairline borders, and an editorial serif reserved just for the numbers that matter, so they read as considered rather than shouted. To avoid the cliché cream-plus-terracotta combo this look often gets flattened into, Field Notes keeps Oura's paper warmth but pairs it with a cool ink-navy accent and drops decoration from the nav entirely — tab labels alone, underlined when active.</p>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="phone">
+      <header class="app-header">
+        <button class="icon-btn"><svg class="ic"><use href="#ic-hamburger"/></svg>Menu</button>
+        <div class="brand"><span class="brand-mark"><svg class="ic"><use href="#ic-barbell"/></svg></span>FitLog</div>
+        <button class="icon-btn" aria-label="Settings"><svg class="ic"><use href="#ic-gear"/></svg></button>
+      </header>
+      <div class="phone-body">
+        <div class="chip-row">
+          <button class="chip"><svg class="ic"><use href="#ic-clipboard"/></svg>Presets</button>
+          <button class="chip"><svg class="ic"><use href="#ic-book"/></svg>History</button>
+        </div>
+        <div class="stat-card">
+          <div>
+            <p class="stat-label">Today's moved</p>
+            <p class="stat-value">965<span> kg</span></p>
+          </div>
+          <div class="stat-actions">
+            <button class="pill-toggle active"><svg class="ic"><use href="#ic-bolt"/></svg>Preworkout</button>
+            <button class="danger-icon" aria-label="Delete workout"><svg class="ic"><use href="#ic-trash"/></svg></button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary">+ Add Exercise</button>
+          <button class="btn-secondary">Cancel</button>
+          <button class="btn-destructive">Delete Workout</button>
+        </div>
+        <div class="list-item">
+          <div>
+            <p class="list-name">Barbell Bench Press</p>
+            <p class="list-stats">S3 · R8 · 80kg</p>
+          </div>
+          <button class="trend-icon" aria-label="View progress"><svg class="ic"><use href="#ic-trending"/></svg></button>
+        </div>
+        <div class="input-block">
+          <input class="text-input" placeholder="Daily calorie target" />
+          <div class="segmented">
+            <button class="seg-option">Deficit</button>
+            <button class="seg-option active">Maintenance</button>
+            <button class="seg-option">Surplus</button>
+          </div>
+        </div>
+      </div>
+      <nav class="bottom-nav">
+        <button class="nav-item active">Workouts</button>
+        <button class="nav-item">Meals</button>
+        <button class="nav-item">Diet</button>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 6 — CLINICAL                                                  -->
+<!-- ============================================================ -->
+<section class="direction" id="d6">
+  <div class="direction-head">
+    <span class="direction-num">06</span>
+    <div>
+      <span class="tag">Inspired by Cronometer</span>
+      <h2>Clinical</h2>
+      <p class="rationale">Cronometer leans into being a precision instrument rather than a lifestyle app — dense grids, monospace figures, uppercase micro-labels, muted teal instead of anything celebratory. This direction treats FitLog's data the same way: sharp 6px corners, no shadows, small-caps tracked labels everywhere, and every numeral set in a monospace face so columns of sets and reps actually align.</p>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="phone">
+      <header class="app-header">
+        <button class="icon-btn"><svg class="ic"><use href="#ic-hamburger"/></svg>Menu</button>
+        <div class="brand"><span class="brand-mark"><svg class="ic"><use href="#ic-barbell"/></svg></span>FitLog</div>
+        <button class="icon-btn" aria-label="Settings"><svg class="ic"><use href="#ic-gear"/></svg></button>
+      </header>
+      <div class="phone-body">
+        <div class="chip-row">
+          <button class="chip"><svg class="ic"><use href="#ic-clipboard"/></svg>Presets</button>
+          <button class="chip"><svg class="ic"><use href="#ic-book"/></svg>History</button>
+        </div>
+        <div class="stat-card">
+          <div>
+            <p class="stat-label">Today's moved</p>
+            <p class="stat-value">965<span> kg</span></p>
+          </div>
+          <div class="stat-actions">
+            <button class="pill-toggle active"><svg class="ic"><use href="#ic-bolt"/></svg>Preworkout</button>
+            <button class="danger-icon" aria-label="Delete workout"><svg class="ic"><use href="#ic-trash"/></svg></button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary">+ Add Exercise</button>
+          <button class="btn-secondary">Cancel</button>
+          <button class="btn-destructive">Delete Workout</button>
+        </div>
+        <div class="list-item">
+          <div>
+            <p class="list-name">Barbell Bench Press</p>
+            <p class="list-stats">S3 · R8 · 80KG</p>
+          </div>
+          <button class="trend-icon" aria-label="View progress"><svg class="ic"><use href="#ic-trending"/></svg></button>
+        </div>
+        <div class="input-block">
+          <input class="text-input" placeholder="Daily calorie target" />
+          <div class="segmented">
+            <button class="seg-option">Deficit</button>
+            <button class="seg-option active">Maintenance</button>
+            <button class="seg-option">Surplus</button>
+          </div>
+        </div>
+      </div>
+      <nav class="bottom-nav">
+        <button class="nav-item active"><span class="nav-icon"><svg class="ic" style="stroke-width:1.5"><use href="#ic-barbell"/></svg></span>Workouts</button>
+        <button class="nav-item"><span class="nav-icon"><svg class="ic" style="stroke-width:1.5"><use href="#ic-fork"/></svg></span>Meals</button>
+        <button class="nav-item"><span class="nav-icon"><svg class="ic" style="stroke-width:1.5"><use href="#ic-leaf"/></svg></span>Diet</button>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 7 — SIGNAL                                                    -->
+<!-- ============================================================ -->
+<section class="direction" id="d7">
+  <div class="direction-head">
+    <span class="direction-num">07</span>
+    <div>
+      <span class="tag">Bold & unconventional — the "go crazy" direction</span>
+      <h2>Signal</h2>
+      <p class="rationale">None of the reference apps do this — which is the point. This is the direct answer to "go crazy": neo-brutalist construction, thick 3px black borders, hard offset shadows instead of blur, safety-orange as the only color, zero corner radius. It reframes destructive actions and PR moments as unmissable rather than polite, which suits the adrenaline of a training session far more than a soft rounded card ever could.</p>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="phone">
+      <header class="app-header">
+        <button class="icon-btn"><svg class="ic"><use href="#ic-hamburger"/></svg>Menu</button>
+        <div class="brand"><span class="brand-mark"><svg class="ic"><use href="#ic-barbell"/></svg></span>FitLog</div>
+        <button class="icon-btn" aria-label="Settings"><svg class="ic"><use href="#ic-gear"/></svg></button>
+      </header>
+      <div class="phone-body">
+        <div class="chip-row">
+          <button class="chip"><svg class="ic"><use href="#ic-clipboard"/></svg>Presets</button>
+          <button class="chip"><svg class="ic"><use href="#ic-book"/></svg>History</button>
+        </div>
+        <div class="stat-card">
+          <div>
+            <p class="stat-label">Today's moved</p>
+            <p class="stat-value">965<span> kg</span></p>
+          </div>
+          <div class="stat-actions">
+            <button class="pill-toggle active"><svg class="ic"><use href="#ic-bolt"/></svg>Preworkout</button>
+            <button class="danger-icon" aria-label="Delete workout"><svg class="ic"><use href="#ic-trash"/></svg></button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary">+ Add Exercise</button>
+          <button class="btn-secondary">Cancel</button>
+          <button class="btn-destructive">Delete Workout</button>
+        </div>
+        <div class="list-item">
+          <div>
+            <p class="list-name">Barbell Bench Press</p>
+            <p class="list-stats">S3 · R8 · 80kg</p>
+          </div>
+          <button class="trend-icon" aria-label="View progress"><svg class="ic"><use href="#ic-trending"/></svg></button>
+        </div>
+        <div class="input-block">
+          <input class="text-input" placeholder="Daily calorie target" />
+          <div class="segmented">
+            <button class="seg-option">Deficit</button>
+            <button class="seg-option active">Maintenance</button>
+            <button class="seg-option">Surplus</button>
+          </div>
+        </div>
+      </div>
+      <nav class="bottom-nav">
+        <button class="nav-item active"><span class="nav-icon"><svg class="ic"><use href="#ic-barbell"/></svg></span>Workouts</button>
+        <button class="nav-item"><span class="nav-icon"><svg class="ic"><use href="#ic-fork"/></svg></span>Meals</button>
+        <button class="nav-item"><span class="nav-icon"><svg class="ic"><use href="#ic-leaf"/></svg></span>Diet</button>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 8 — TRACKSIDE                                                 -->
+<!-- ============================================================ -->
+<section class="direction" id="d8">
+  <div class="direction-head">
+    <span class="direction-num">08</span>
+    <div>
+      <span class="tag">Swiss grid × athletic scoreboard</span>
+      <h2>Trackside</h2>
+      <p class="rationale">Borrows the International Typographic Style discipline that underlies good sports-timing displays — bold condensed grotesque set in all caps, hairline black rule lines instead of cards-on-cards, a single race-red accent. The bottom nav swaps icons for numbered tabs (01/02/03), like a heat sheet, which reads as confident and sport-specific rather than generic-app.</p>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="phone">
+      <header class="app-header">
+        <button class="icon-btn"><svg class="ic"><use href="#ic-hamburger"/></svg>Menu</button>
+        <div class="brand"><span class="brand-mark"><svg class="ic"><use href="#ic-barbell"/></svg></span>FitLog</div>
+        <button class="icon-btn" aria-label="Settings"><svg class="ic"><use href="#ic-gear"/></svg></button>
+      </header>
+      <div class="phone-body">
+        <div class="chip-row">
+          <button class="chip"><svg class="ic"><use href="#ic-clipboard"/></svg>Presets</button>
+          <button class="chip"><svg class="ic"><use href="#ic-book"/></svg>History</button>
+        </div>
+        <div class="stat-card">
+          <div>
+            <p class="stat-label">01 — Today's moved</p>
+            <p class="stat-value">965<span> kg</span></p>
+          </div>
+          <div class="stat-actions">
+            <button class="pill-toggle active"><svg class="ic"><use href="#ic-bolt"/></svg>Preworkout</button>
+            <button class="danger-icon" aria-label="Delete workout"><svg class="ic"><use href="#ic-trash"/></svg></button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary">+ Add Exercise</button>
+          <button class="btn-secondary">Cancel</button>
+          <button class="btn-destructive">Delete Workout</button>
+        </div>
+        <div class="list-item">
+          <div>
+            <p class="list-name">Barbell Bench Press</p>
+            <p class="list-stats">S3 · R8 · 80kg</p>
+          </div>
+          <button class="trend-icon" aria-label="View progress"><svg class="ic"><use href="#ic-trending"/></svg></button>
+        </div>
+        <div class="input-block">
+          <input class="text-input" placeholder="Daily calorie target" />
+          <div class="segmented">
+            <button class="seg-option">Deficit</button>
+            <button class="seg-option active">Maintenance</button>
+            <button class="seg-option">Surplus</button>
+          </div>
+        </div>
+      </div>
+      <nav class="bottom-nav">
+        <button class="nav-item active"><span class="track-num">01</span>Workouts</button>
+        <button class="nav-item"><span class="track-num">02</span>Meals</button>
+        <button class="nav-item"><span class="track-num">03</span>Diet</button>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 9 — AURORA GLASS                                              -->
+<!-- ============================================================ -->
+<section class="direction" id="d9">
+  <div class="direction-head">
+    <span class="direction-num">09</span>
+    <div>
+      <span class="tag">Glassmorphism, tuned to fitness</span>
+      <h2>Aurora Glass</h2>
+      <p class="rationale">Takes the layered, floating-depth feeling several premium wellness apps use for their hero surfaces — frosted translucent cards over soft ambient glow — but deliberately swaps the usual purple-to-blue gradient for an emerald/amber duotone so it still reads as "training," not "meditation app." Real elevation comes from backdrop blur and a top highlight border rather than a drop shadow.</p>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="phone">
+      <header class="app-header">
+        <button class="icon-btn"><svg class="ic"><use href="#ic-hamburger"/></svg>Menu</button>
+        <div class="brand"><span class="brand-mark"><svg class="ic"><use href="#ic-barbell"/></svg></span>FitLog</div>
+        <button class="icon-btn" aria-label="Settings"><svg class="ic"><use href="#ic-gear"/></svg></button>
+      </header>
+      <div class="phone-body">
+        <div class="chip-row">
+          <button class="chip"><svg class="ic"><use href="#ic-clipboard"/></svg>Presets</button>
+          <button class="chip"><svg class="ic"><use href="#ic-book"/></svg>History</button>
+        </div>
+        <div class="stat-card">
+          <div>
+            <p class="stat-label">Today's moved</p>
+            <p class="stat-value">965<span> kg</span></p>
+          </div>
+          <div class="stat-actions">
+            <button class="pill-toggle active"><svg class="ic"><use href="#ic-bolt"/></svg>Preworkout</button>
+            <button class="danger-icon" aria-label="Delete workout"><svg class="ic"><use href="#ic-trash"/></svg></button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary">+ Add Exercise</button>
+          <button class="btn-secondary">Cancel</button>
+          <button class="btn-destructive">Delete Workout</button>
+        </div>
+        <div class="list-item">
+          <div>
+            <p class="list-name">Barbell Bench Press</p>
+            <p class="list-stats">S3 · R8 · 80kg</p>
+          </div>
+          <button class="trend-icon" aria-label="View progress"><svg class="ic"><use href="#ic-trending"/></svg></button>
+        </div>
+        <div class="input-block">
+          <input class="text-input" placeholder="Daily calorie target" />
+          <div class="segmented">
+            <button class="seg-option">Deficit</button>
+            <button class="seg-option active">Maintenance</button>
+            <button class="seg-option">Surplus</button>
+          </div>
+        </div>
+      </div>
+      <nav class="bottom-nav">
+        <button class="nav-item active"><span class="nav-icon-chip">🏋️</span>Workouts</button>
+        <button class="nav-item"><span class="nav-icon-chip">🍽️</span>Meals</button>
+        <button class="nav-item"><span class="nav-icon-chip">🥗</span>Diet</button>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 10 — PODIUM                                                   -->
+<!-- ============================================================ -->
+<section class="direction" id="d10">
+  <div class="direction-head">
+    <span class="direction-num">10</span>
+    <div>
+      <span class="tag">Gamified & energetic — NTC-style</span>
+      <h2>Podium</h2>
+      <p class="rationale">Where most of the other directions restrain color to one accent, Podium goes the other way on purpose: a multi-color system (green for effort, gold for streaks/achievements, coral for danger) across big chunky rounded shapes and a bold rounded display face, closer to a training-club app that wants logging a set to feel like a small win. Kept emoji in the nav deliberately here — bold color chips make them feel chosen, not left over.</p>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="phone">
+      <header class="app-header">
+        <button class="icon-btn"><svg class="ic"><use href="#ic-hamburger"/></svg>Menu</button>
+        <div class="brand"><span class="brand-mark"><svg class="ic"><use href="#ic-barbell"/></svg></span>FitLog</div>
+        <button class="icon-btn" aria-label="Settings"><svg class="ic"><use href="#ic-gear"/></svg></button>
+      </header>
+      <div class="phone-body">
+        <div class="chip-row">
+          <button class="chip"><svg class="ic"><use href="#ic-clipboard"/></svg>Presets</button>
+          <button class="chip"><svg class="ic"><use href="#ic-book"/></svg>History</button>
+        </div>
+        <div class="stat-card">
+          <div>
+            <p class="stat-label">Today's moved</p>
+            <p class="stat-value">965<span> kg</span></p>
+          </div>
+          <div class="stat-actions">
+            <button class="pill-toggle active"><svg class="ic"><use href="#ic-bolt"/></svg>Preworkout</button>
+            <button class="danger-icon" aria-label="Delete workout"><svg class="ic"><use href="#ic-trash"/></svg></button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary">+ Add Exercise</button>
+          <button class="btn-secondary">Cancel</button>
+          <button class="btn-destructive">Delete Workout</button>
+        </div>
+        <div class="list-item">
+          <div>
+            <p class="list-name">Barbell Bench Press</p>
+            <p class="list-stats">S3 · R8 · 80kg</p>
+          </div>
+          <button class="trend-icon" aria-label="View progress"><svg class="ic"><use href="#ic-trending"/></svg></button>
+        </div>
+        <div class="input-block">
+          <input class="text-input" placeholder="Daily calorie target" />
+          <div class="segmented">
+            <button class="seg-option">Deficit</button>
+            <button class="seg-option active">Maintenance</button>
+            <button class="seg-option">Surplus</button>
+          </div>
+        </div>
+      </div>
+      <nav class="bottom-nav">
+        <button class="nav-item active"><span class="nav-icon-chip">🏋️</span>Workouts</button>
+        <button class="nav-item"><span class="nav-icon-chip gold">🍽️</span>Meals</button>
+        <button class="nav-item"><span class="nav-icon-chip">🥗</span>Diet</button>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<div class="closing">
+  <p>All ten render the same six components — header, bottom nav, stat card + secondary action, button trio, exercise list item, and input + segmented control — so they compare directly. No direction uses emoji as a substitute for an icon outside the bottom nav.</p>
+</div>
+
+</body>
+</html>

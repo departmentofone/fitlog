@@ -26,7 +26,7 @@ export function SessionTimer({ session }: { session: WorkoutSession }) {
   const elapsed = running ? Math.floor((now - new Date(session.started_at!).getTime()) / 1000) : (session.duration_seconds ?? 0)
 
   return (
-    <div className="flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-1.5">
+    <div className="flex items-center gap-2 rounded-xl bg-slate-800 px-3 py-1.5">
       <span className={`text-sm font-mono ${running ? 'text-emerald-400' : 'text-slate-400'}`}>
         {formatDuration(Math.max(0, elapsed))}
       </span>

@@ -58,7 +58,7 @@ export function DietTab() {
 
       <div
         onClick={!editing ? startEditing : undefined}
-        className={`rounded-2xl bg-gradient-to-br from-emerald-600/20 to-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5 transition ${
+        className={`rounded-3xl bg-gradient-to-br from-emerald-600/20 to-slate-900 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5 transition ${
           !editing ? 'cursor-pointer hover:ring-emerald-500/30' : ''
         }`}
       >
@@ -74,7 +74,7 @@ export function DietTab() {
                 <button
                   key={g.value}
                   onClick={() => setGoalDraft(g.value)}
-                  className={`rounded-lg px-2 py-1.5 text-xs font-medium transition ${
+                  className={`rounded-xl px-2 py-1.5 text-xs font-medium transition ${
                     goalDraft === g.value ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                   }`}
                 >
@@ -88,18 +88,18 @@ export function DietTab() {
               placeholder="Daily calorie target"
               value={calorieDraft}
               onChange={(e) => setCalorieDraft(e.target.value)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
             />
             <div className="flex gap-2">
               <button
                 onClick={() => setEditing(false)}
-                className="flex-1 rounded-lg bg-slate-800 py-2 text-sm text-slate-300 hover:bg-slate-700"
+                className="flex-1 rounded-xl bg-slate-800 py-2 text-sm text-slate-300 hover:bg-slate-700"
               >
                 Cancel
               </button>
               <button
                 onClick={save}
-                className="flex-1 rounded-lg bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500"
+                className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500"
               >
                 Save
               </button>
@@ -129,7 +129,7 @@ export function DietTab() {
 
       <div
         onClick={() => setShowBreakdown(true)}
-        className="cursor-pointer rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5 transition hover:ring-emerald-500/30"
+        className="cursor-pointer rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5 transition hover:ring-emerald-500/30"
       >
         <div className="mb-2 flex items-center justify-between">
           <h3 className="text-sm font-medium text-slate-300">Consumed today</h3>

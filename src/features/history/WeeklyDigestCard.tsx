@@ -7,14 +7,14 @@ export function WeeklyDigestCard() {
   const workoutTrend = data.workoutsThisWeek - data.workoutsLastWeek
 
   return (
-    <div className="rounded-2xl bg-gradient-to-br from-emerald-600/20 via-slate-900 to-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-3xl bg-gradient-to-br from-emerald-600/20 via-slate-900 to-slate-900 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="font-medium text-white">📊 Your week</h2>
+        <h2 className="font-medium text-white">Your week</h2>
         <span className="text-xs text-slate-500">Last 7 days</span>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-xl bg-slate-800/60 p-3">
+        <div className="rounded-2xl bg-slate-800/60 p-3">
           <p className="text-2xl font-bold text-white">{data.workoutsThisWeek}</p>
           <p className="text-xs text-slate-500">
             Workouts
@@ -26,15 +26,15 @@ export function WeeklyDigestCard() {
             )}
           </p>
         </div>
-        <div className="rounded-xl bg-slate-800/60 p-3">
+        <div className="rounded-2xl bg-slate-800/60 p-3">
           <p className="text-2xl font-bold text-white">{Math.round(data.totalVolume).toLocaleString()}</p>
           <p className="text-xs text-slate-500">kg moved</p>
         </div>
-        <div className="rounded-xl bg-slate-800/60 p-3">
+        <div className="rounded-2xl bg-slate-800/60 p-3">
           <p className="text-2xl font-bold text-emerald-400">{Math.round(data.avgCalories)}</p>
           <p className="text-xs text-slate-500">avg kcal/day</p>
         </div>
-        <div className="rounded-xl bg-slate-800/60 p-3">
+        <div className="rounded-2xl bg-slate-800/60 p-3">
           <p className="text-2xl font-bold text-blue-400">{Math.round(data.avgProtein)}g</p>
           <p className="text-xs text-slate-500">avg protein/day</p>
         </div>

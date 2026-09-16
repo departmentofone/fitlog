@@ -24,7 +24,7 @@ export function FoodPicker({ onAdd, onCancel }: FoodPickerProps) {
   }
 
   return (
-    <div className="rounded-xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-medium text-white">Add food</h3>
         <button onClick={onCancel} className="text-sm text-slate-400 hover:text-slate-200">
@@ -36,7 +36,7 @@ export function FoodPicker({ onAdd, onCancel }: FoodPickerProps) {
         placeholder="Search foods…"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="mb-3 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+        className="mb-3 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
       />
       {!search.trim() && frequent.length > 0 && (
         <div className="mb-3">
@@ -59,7 +59,7 @@ export function FoodPicker({ onAdd, onCancel }: FoodPickerProps) {
           <button
             key={food.id}
             onClick={() => setSelected(food)}
-            className="flex w-full items-center justify-between rounded-lg bg-slate-800 px-3 py-2.5 text-left text-white hover:bg-slate-700"
+            className="flex w-full items-center justify-between rounded-xl bg-slate-800 px-3 py-2.5 text-left text-white hover:bg-slate-700"
           >
             <span>{food.name}</span>
             <span className="text-xs text-slate-400">{Math.round(food.calories_per_100g)} kcal/100g</span>
@@ -69,7 +69,7 @@ export function FoodPicker({ onAdd, onCancel }: FoodPickerProps) {
       </div>
       <button
         onClick={() => setCreating(true)}
-        className="w-full rounded-lg border border-dashed border-slate-700 py-2.5 text-sm font-medium text-slate-300 hover:border-emerald-500 hover:text-emerald-400"
+        className="w-full rounded-xl border border-dashed border-slate-700 py-2.5 text-sm font-medium text-slate-300 hover:border-emerald-500 hover:text-emerald-400"
       >
         + New food
       </button>
@@ -95,7 +95,7 @@ function AmountForm({
   const preview = macrosForGrams(food, resolvedGrams)
 
   return (
-    <div className="rounded-xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-medium text-white">{food.name}</h3>
         <button onClick={onBack} className="text-sm text-slate-400 hover:text-slate-200">
@@ -109,7 +109,7 @@ function AmountForm({
             <button
               key={serving.label}
               onClick={() => setMode(i)}
-              className={`rounded-lg px-3 py-1.5 text-xs font-medium ${
+              className={`rounded-xl px-3 py-1.5 text-xs font-medium ${
                 mode === i ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
               }`}
             >
@@ -118,7 +118,7 @@ function AmountForm({
           ))}
           <button
             onClick={() => setMode('grams')}
-            className={`rounded-lg px-3 py-1.5 text-xs font-medium ${
+            className={`rounded-xl px-3 py-1.5 text-xs font-medium ${
               mode === 'grams' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
             }`}
           >
@@ -133,11 +133,11 @@ function AmountForm({
           inputMode="decimal"
           value={grams}
           onChange={(e) => setGrams(e.target.value)}
-          className="mb-3 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2.5 text-white focus:border-emerald-500 focus:outline-none"
+          className="mb-3 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white focus:border-emerald-500 focus:outline-none"
         />
       )}
 
-      <div className="mb-3 flex items-center justify-between rounded-lg bg-slate-800/60 px-3 py-2">
+      <div className="mb-3 flex items-center justify-between rounded-xl bg-slate-800/60 px-3 py-2">
         <span className="text-sm text-slate-400">Quantity</span>
         <div className="flex items-center gap-3">
           <button
@@ -169,7 +169,7 @@ function AmountForm({
           onAdd({ foodId: food.id, grams: resolvedGrams, servingLabel })
         }}
         disabled={resolvedGrams <= 0}
-        className="w-full rounded-lg bg-emerald-600 py-2.5 font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+        className="w-full rounded-xl bg-emerald-600 py-2.5 font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
       >
         Add to meal
       </button>
@@ -225,7 +225,7 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
   }
 
   return (
-    <div className="rounded-xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-medium text-white">New food</h3>
         <button onClick={onCancel} className="text-sm text-slate-400 hover:text-slate-200">
@@ -237,7 +237,7 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
           placeholder="Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+          className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
         />
         <p className="text-xs text-slate-500">Per 100g:</p>
         <div className="grid grid-cols-2 gap-2.5">
@@ -246,28 +246,28 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
             type="number"
             value={calories}
             onChange={(e) => setCalories(e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
           />
           <input
             placeholder="Protein (g)"
             type="number"
             value={protein}
             onChange={(e) => setProtein(e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
           />
           <input
             placeholder="Carbs (g)"
             type="number"
             value={carbs}
             onChange={(e) => setCarbs(e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
           />
           <input
             placeholder="Fat (g)"
             type="number"
             value={fat}
             onChange={(e) => setFat(e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
           />
         </div>
         <p className="text-xs text-slate-500">Optional common serving (e.g. "1 small egg" = 38g):</p>
@@ -276,14 +276,14 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
             placeholder="Label"
             value={servingLabel}
             onChange={(e) => setServingLabel(e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
           />
           <input
             placeholder="Grams"
             type="number"
             value={servingGrams}
             onChange={(e) => setServingGrams(e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
           />
         </div>
 
@@ -301,63 +301,63 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
               type="number"
               value={fiber}
               onChange={(e) => setFiber(e.target.value)}
-              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
             />
             <input
               placeholder="Sugar (g)"
               type="number"
               value={sugar}
               onChange={(e) => setSugar(e.target.value)}
-              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
             />
             <input
               placeholder="Sodium (mg)"
               type="number"
               value={sodium}
               onChange={(e) => setSodium(e.target.value)}
-              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
             />
             <input
               placeholder="Cholesterol (mg)"
               type="number"
               value={cholesterol}
               onChange={(e) => setCholesterol(e.target.value)}
-              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
             />
             <input
               placeholder="Potassium (mg)"
               type="number"
               value={potassium}
               onChange={(e) => setPotassium(e.target.value)}
-              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
             />
             <input
               placeholder="Calcium (mg)"
               type="number"
               value={calcium}
               onChange={(e) => setCalcium(e.target.value)}
-              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
             />
             <input
               placeholder="Iron (mg)"
               type="number"
               value={iron}
               onChange={(e) => setIron(e.target.value)}
-              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
             />
             <input
               placeholder="Vitamin C (mg)"
               type="number"
               value={vitaminC}
               onChange={(e) => setVitaminC(e.target.value)}
-              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
             />
             <input
               placeholder="Vitamin A (mcg)"
               type="number"
               value={vitaminA}
               onChange={(e) => setVitaminA(e.target.value)}
-              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
             />
           </div>
         )}
@@ -365,7 +365,7 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
         <button
           onClick={handleCreate}
           disabled={!name.trim() || !calories || createFood.isPending}
-          className="w-full rounded-lg bg-emerald-600 py-2.5 font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+          className="w-full rounded-xl bg-emerald-600 py-2.5 font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
         >
           Create food
         </button>

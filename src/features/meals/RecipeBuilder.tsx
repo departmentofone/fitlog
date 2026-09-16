@@ -90,14 +90,14 @@ export function RecipeBuilderView({
         ← Back
       </button>
 
-      <div className="rounded-xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-3 font-medium text-white">New recipe</h3>
         <div className="mb-3 space-y-2.5">
           <input
             placeholder="Recipe name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
           />
           <div className="flex items-center gap-2">
             <span className="text-sm text-slate-400">Servings</span>
@@ -106,7 +106,7 @@ export function RecipeBuilderView({
               min={1}
               value={servings}
               onChange={(e) => setServings(Math.max(1, parseInt(e.target.value, 10) || 1))}
-              className="w-20 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none"
+              className="w-20 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none"
             />
           </div>
         </div>
@@ -115,7 +115,7 @@ export function RecipeBuilderView({
           placeholder="Search foods…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="mb-3 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+          className="mb-3 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
         />
         {!search.trim() && frequent.length > 0 && (
           <div className="mb-3">
@@ -138,7 +138,7 @@ export function RecipeBuilderView({
             <button
               key={food.id}
               onClick={() => addFoodToDraft(food)}
-              className="flex w-full items-center justify-between rounded-lg bg-slate-800 px-3 py-2.5 text-left text-white hover:bg-slate-700"
+              className="flex w-full items-center justify-between rounded-xl bg-slate-800 px-3 py-2.5 text-left text-white hover:bg-slate-700"
             >
               <span>{food.name}</span>
               <span className="text-xs text-slate-400">{Math.round(food.calories_per_100g)} kcal/100g</span>
@@ -150,14 +150,14 @@ export function RecipeBuilderView({
         {draft.length > 0 && (
           <div className="mb-3 space-y-1.5">
             {draft.map((d, i) => (
-              <div key={i} className="flex items-center gap-2 rounded-lg bg-slate-800/60 px-3 py-2">
+              <div key={i} className="flex items-center gap-2 rounded-xl bg-slate-800/60 px-3 py-2">
                 <span className="flex-1 truncate text-sm text-slate-200">{d.food.name}</span>
                 <input
                   type="number"
                   min={0}
                   value={d.grams}
                   onChange={(e) => updateDraftGrams(i, parseFloat(e.target.value) || 0)}
-                  className="w-20 rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-sm text-white focus:border-emerald-500 focus:outline-none"
+                  className="w-20 rounded-xl border border-slate-700 bg-slate-900 px-2 py-1 text-sm text-white focus:border-emerald-500 focus:outline-none"
                 />
                 <span className="text-xs text-slate-500">g</span>
                 <button onClick={() => removeDraftIngredient(i)} className="text-red-400 hover:text-red-300">
@@ -169,7 +169,7 @@ export function RecipeBuilderView({
         )}
 
         {draft.length > 0 && (
-          <div className="mb-3 rounded-lg bg-slate-800/60 px-3 py-2">
+          <div className="mb-3 rounded-xl bg-slate-800/60 px-3 py-2">
             <p className="mb-1 text-sm font-medium text-white">{Math.round(draftMacros.total.calories)} kcal total</p>
             <MacroLine macros={draftMacros.total} />
           </div>
@@ -178,13 +178,13 @@ export function RecipeBuilderView({
         <button
           onClick={handleSave}
           disabled={!name.trim() || draft.length === 0 || createRecipe.isPending}
-          className="w-full rounded-lg bg-emerald-600 py-2.5 font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+          className="w-full rounded-xl bg-emerald-600 py-2.5 font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
         >
           Save recipe
         </button>
       </div>
 
-      <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 p-4 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
         <h3 className="mb-3 font-medium text-white">Your recipes</h3>
         {isLoading && <p className="text-sm text-slate-400">Loading…</p>}
         {!isLoading && recipes.length === 0 && (
@@ -251,7 +251,7 @@ function RecipeCard({
   const perServing = macros.perServing(recipe.servings)
 
   return (
-    <div className="rounded-lg bg-slate-800/60 p-3">
+    <div className="rounded-xl bg-slate-800/60 p-3">
       <div className="mb-1 flex items-center justify-between">
         <h4 className="text-sm font-medium text-white">{recipe.name}</h4>
         {isOwner && (
@@ -270,14 +270,14 @@ function RecipeCard({
             min={1}
             value={recipe.servings}
             onChange={(e) => updateServings.mutate({ recipeId: recipe.id, servings: Math.max(1, parseInt(e.target.value, 10) || 1) })}
-            className="w-16 rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-white focus:border-emerald-500 focus:outline-none"
+            className="w-16 rounded-xl border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-white focus:border-emerald-500 focus:outline-none"
           />
         ) : (
           <span className="text-xs text-slate-300">{recipe.servings}</span>
         )}
       </div>
 
-      <div className="mb-2 rounded-lg bg-slate-900/60 px-3 py-2">
+      <div className="mb-2 rounded-xl bg-slate-900/60 px-3 py-2">
         <p className="text-xs text-slate-400">
           Total: {Math.round(macros.total.calories)} kcal · Per serving: {Math.round(perServing.calories)} kcal
         </p>
@@ -305,7 +305,7 @@ function RecipeCard({
           min={1}
           value={servingsToAdd}
           onChange={(e) => setServingsToAdd(Math.max(1, parseInt(e.target.value, 10) || 1))}
-          className="w-16 rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-white focus:border-emerald-500 focus:outline-none"
+          className="w-16 rounded-xl border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-white focus:border-emerald-500 focus:outline-none"
         />
         <span className="text-xs text-slate-500">serving(s) to:</span>
       </div>
@@ -316,7 +316,7 @@ function RecipeCard({
             <button
               key={meal.id}
               onClick={() => onAddToMeal(meal.id, servingsToAdd, meal.name)}
-              className="rounded-lg bg-slate-700 px-3 py-1.5 text-xs font-medium text-slate-200 hover:bg-slate-600"
+              className="rounded-xl bg-slate-700 px-3 py-1.5 text-xs font-medium text-slate-200 hover:bg-slate-600"
             >
               → {meal.name}
             </button>

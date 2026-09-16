@@ -56,11 +56,11 @@ export function AlcoholSection() {
   }
 
   return (
-    <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
-      <h3 className="mb-3 font-medium text-white">🍷 Alcohol</h3>
+    <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <h3 className="mb-3 font-medium text-white">Alcohol</h3>
       <DateNav date={date} max={todayISO()} onChange={setDate} />
 
-      <div className="my-3 rounded-xl bg-slate-800/60 p-3 text-center">
+      <div className="my-3 rounded-2xl bg-slate-800/60 p-3 text-center">
         <p className="text-lg font-semibold text-white">{Math.round(totalCalories)} kcal</p>
         <p className="text-xs text-slate-500">{logs.length} drink{logs.length === 1 ? '' : 's'} logged</p>
       </div>
@@ -68,7 +68,7 @@ export function AlcoholSection() {
       {logs.length > 0 && (
         <div className="mb-3 space-y-1.5">
           {logs.map((l) => (
-            <div key={l.id} className="flex items-center justify-between rounded-lg bg-slate-800/60 px-3 py-2 text-sm text-slate-300">
+            <div key={l.id} className="flex items-center justify-between rounded-xl bg-slate-800/60 px-3 py-2 text-sm text-slate-300">
               <span>{l.name}</span>
               <div className="flex items-center gap-3">
                 <span className="text-xs text-slate-500">{Math.round(l.calories)} kcal</span>
@@ -85,13 +85,13 @@ export function AlcoholSection() {
       )}
 
       {adding ? (
-        <div className="rounded-xl bg-slate-800/60 p-3">
+        <div className="rounded-2xl bg-slate-800/60 p-3">
           <input
             autoFocus
             placeholder="Drink name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="mb-2 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="mb-2 w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
           />
           <div className="mb-2 flex flex-wrap gap-1.5">
             {COMMON_DRINKS.map((d) => (
@@ -118,7 +118,7 @@ export function AlcoholSection() {
               placeholder="Calories"
               value={manualCalories}
               onChange={(e) => setManualCalories(e.target.value)}
-              className="mb-2 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="mb-2 w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
             />
           ) : (
             <div className="mb-2 grid grid-cols-2 gap-2">
@@ -127,22 +127,22 @@ export function AlcoholSection() {
                 placeholder="Volume (ml)"
                 value={volumeMl}
                 onChange={(e) => setVolumeMl(e.target.value)}
-                className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
               />
               <input
                 type="number"
                 placeholder="ABV %"
                 value={abvPercent}
                 onChange={(e) => setAbvPercent(e.target.value)}
-                className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
               />
             </div>
           )}
           <div className="flex gap-2">
-            <button onClick={reset} className="flex-1 rounded-lg bg-slate-700 py-2 text-sm text-slate-300 hover:bg-slate-600">
+            <button onClick={reset} className="flex-1 rounded-xl bg-slate-700 py-2 text-sm text-slate-300 hover:bg-slate-600">
               Cancel
             </button>
-            <button onClick={handleAdd} disabled={!name.trim()} className="flex-1 rounded-lg bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50">
+            <button onClick={handleAdd} disabled={!name.trim()} className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50">
               Add
             </button>
           </div>
@@ -150,7 +150,7 @@ export function AlcoholSection() {
       ) : (
         <button
           onClick={() => setAdding(true)}
-          className="w-full rounded-lg border border-dashed border-slate-700 py-2 text-sm font-medium text-slate-300 transition hover:border-emerald-500 hover:text-emerald-400"
+          className="w-full rounded-xl border border-dashed border-slate-700 py-2 text-sm font-medium text-slate-300 transition hover:border-emerald-500 hover:text-emerald-400"
         >
           + Log a drink
         </button>

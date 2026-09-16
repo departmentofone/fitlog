@@ -68,7 +68,7 @@ export function MonthCalendar({
               key={i}
               disabled={disabled}
               onClick={() => onSelectDate(iso)}
-              className={`relative aspect-square rounded-lg text-xs font-medium transition disabled:opacity-30 ${
+              className={`relative aspect-square rounded-xl text-xs font-medium transition disabled:opacity-30 ${
                 selectedDate === iso
                   ? 'bg-emerald-600 text-white'
                   : isToday

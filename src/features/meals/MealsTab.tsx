@@ -41,7 +41,7 @@ export function MealsTab() {
       <div className="grid grid-cols-2 gap-2">
         <button
           onClick={() => setShowTrends((v) => !v)}
-          className={`flex-1 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+          className={`flex-1 rounded-xl px-3 py-1.5 text-xs font-medium transition ${
             showTrends ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
           }`}
         >
@@ -49,15 +49,15 @@ export function MealsTab() {
         </button>
         <button
           onClick={() => setShowPresets(true)}
-          className="flex-1 rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700"
+          className="flex-1 rounded-xl bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700"
         >
-          📋 Presets
+          Presets
         </button>
         <button
           onClick={() => setShowRecipes(true)}
-          className="rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700"
+          className="rounded-xl bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700"
         >
-          🍳 Recipes
+          Recipes
         </button>
         <CopyDayButton
           disabled={meals.length === 0}
@@ -74,7 +74,7 @@ export function MealsTab() {
 
       <div
         onClick={() => setShowBreakdown(true)}
-        className="cursor-pointer rounded-2xl bg-gradient-to-br from-emerald-600/20 to-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5 transition hover:ring-emerald-500/30"
+        className="cursor-pointer rounded-3xl bg-gradient-to-br from-emerald-600/20 to-slate-900 p-4 shadow-[var(--glow-shadow)] ring-1 ring-white/5 transition hover:ring-emerald-500/30"
       >
         <div className="mb-2 flex items-center justify-between">
           <h3 className="text-sm font-medium text-slate-300">Today's totals</h3>
@@ -93,7 +93,7 @@ export function MealsTab() {
       <button
         onClick={() => createMeal.mutate({ date, name: nextPreset })}
         disabled={createMeal.isPending}
-        className="w-full rounded-xl border border-dashed border-slate-700 py-3 font-medium text-slate-300 transition hover:border-emerald-500 hover:text-emerald-400"
+        className="w-full rounded-2xl border border-dashed border-slate-700 py-3 font-medium text-slate-300 transition hover:border-emerald-500 hover:text-emerald-400"
       >
         + Add {nextPreset.toLowerCase()}
       </button>

@@ -30,7 +30,7 @@ function CheckList<T extends { id: string; name: string }>({
       <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-slate-500">{title}</p>
       <div className="space-y-1">
         {items.map((item) => (
-          <label key={item.id} className="flex items-center gap-2 rounded-lg bg-slate-800/60 px-3 py-2 text-sm text-slate-200">
+          <label key={item.id} className="flex items-center gap-2 rounded-xl bg-slate-800/60 px-3 py-2 text-sm text-slate-200">
             <input type="checkbox" checked={selected.has(item.id)} onChange={() => onToggle(item.id)} className="h-4 w-4 accent-emerald-500" />
             {item.name}
           </label>
@@ -81,21 +81,21 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
   }
 
   return (
-    <div className="rounded-xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <h3 className="mb-3 font-medium text-white">New program</h3>
       <div className="mb-3 space-y-2.5">
         <input
           placeholder="Program name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+          className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
         />
         <textarea
           placeholder="Description (optional)"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={2}
-          className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2.5 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+          className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
         />
       </div>
 
@@ -118,7 +118,7 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
           <select
             value={dietGoal}
             onChange={(e) => setDietGoal(e.target.value as DietGoal)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:outline-none"
+            className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:outline-none"
           >
             <option value="deficit">Deficit</option>
             <option value="maintenance">Maintenance</option>
@@ -130,27 +130,27 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
               placeholder="Calorie goal"
               value={calorieGoal}
               onChange={(e) => setCalorieGoal(e.target.value)}
-              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
             />
             <input
               type="number"
               placeholder="Water goal (ml)"
               value={waterGoalMl}
               onChange={(e) => setWaterGoalMl(e.target.value)}
-              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
             />
           </div>
         </div>
       )}
 
       <div className="flex gap-2">
-        <button onClick={onDone} className="flex-1 rounded-lg bg-slate-800 py-2.5 text-sm text-slate-300 hover:bg-slate-700">
+        <button onClick={onDone} className="flex-1 rounded-xl bg-slate-800 py-2.5 text-sm text-slate-300 hover:bg-slate-700">
           Cancel
         </button>
         <button
           onClick={handleSave}
           disabled={!name.trim() || !hasAnyContent || createProgram.isPending}
-          className="flex-1 rounded-lg bg-emerald-600 py-2.5 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+          className="flex-1 rounded-xl bg-emerald-600 py-2.5 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
         >
           Save program
         </button>
@@ -180,7 +180,7 @@ function ProgramCard({ program, isOwner }: { program: Program; isOwner: boolean 
   }
 
   return (
-    <div className="rounded-lg bg-slate-800/60 p-3">
+    <div className="rounded-xl bg-slate-800/60 p-3">
       <div className="mb-1 flex items-center justify-between">
         <h4 className="text-sm font-medium text-white">{program.name}</h4>
         {isOwner && (
@@ -218,7 +218,7 @@ function ProgramCard({ program, isOwner }: { program: Program; isOwner: boolean 
       <button
         onClick={handleImport}
         disabled={importProgram.isPending}
-        className="w-full rounded-lg bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+        className="w-full rounded-xl bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
       >
         {importProgram.isPending ? 'Importing…' : 'Import into my account'}
       </button>
@@ -233,7 +233,7 @@ export function ProgramsTab() {
 
   return (
     <div className="space-y-4 p-4">
-      <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
         <p className="mb-3 text-sm text-slate-400">
           Bundle workout presets, recipes, meal presets, and diet goals into one package you or a friend can import in a
           single batch instead of preset-by-preset.
@@ -243,14 +243,14 @@ export function ProgramsTab() {
         ) : (
           <button
             onClick={() => setShowNew(true)}
-            className="w-full rounded-lg border border-dashed border-slate-700 py-2.5 text-sm font-medium text-slate-300 transition hover:border-emerald-500 hover:text-emerald-400"
+            className="w-full rounded-xl border border-dashed border-slate-700 py-2.5 text-sm font-medium text-slate-300 transition hover:border-emerald-500 hover:text-emerald-400"
           >
             + New program
           </button>
         )}
       </div>
 
-      <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-3 font-medium text-white">Programs</h3>
         {isLoading && <p className="text-sm text-slate-400">Loading…</p>}
         {!isLoading && programs.length === 0 && <p className="text-sm text-slate-500">No programs yet - build one above.</p>}

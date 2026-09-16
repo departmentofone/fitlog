@@ -14,12 +14,12 @@ import { PhotoCompare } from './PhotoCompare'
 
 function PhotoThumb({ path, onClick }: { path: string; onClick?: () => void }) {
   const { data: url } = useSignedPhotoUrl(path)
-  if (!url) return <div className="h-20 w-20 shrink-0 animate-pulse rounded-lg bg-slate-800" />
+  if (!url) return <div className="h-20 w-20 shrink-0 animate-pulse rounded-xl bg-slate-800" />
   return (
     <img
       src={url}
       onClick={onClick}
-      className="h-20 w-20 shrink-0 rounded-lg object-cover"
+      className="h-20 w-20 shrink-0 rounded-xl object-cover"
       alt="Progress"
     />
   )
@@ -66,7 +66,7 @@ function EntryEditor({
   }
 
   return (
-    <div className="rounded-xl bg-slate-800/60 p-3">
+    <div className="rounded-2xl bg-slate-800/60 p-3">
       <div className="mb-3 flex items-center justify-between">
         <h4 className="text-sm font-medium text-white">
           {new Date(date + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
@@ -78,11 +78,11 @@ function EntryEditor({
 
       <div className="mb-3 flex items-center gap-3">
         {photoUrl ? (
-          <img src={photoUrl} alt="Progress" className="h-20 w-20 rounded-lg object-cover" />
+          <img src={photoUrl} alt="Progress" className="h-20 w-20 rounded-xl object-cover" />
         ) : (
-          <div className="flex h-20 w-20 items-center justify-center rounded-lg bg-slate-800 text-2xl">📷</div>
+          <div className="flex h-20 w-20 items-center justify-center rounded-xl bg-slate-800" />
         )}
-        <label className="flex-1 cursor-pointer rounded-lg border border-dashed border-slate-600 px-3 py-2 text-center text-xs font-medium text-slate-300 hover:border-emerald-500 hover:text-emerald-400">
+        <label className="flex-1 cursor-pointer rounded-xl border border-dashed border-slate-600 px-3 py-2 text-center text-xs font-medium text-slate-300 hover:border-emerald-500 hover:text-emerald-400">
           {uploading ? 'Uploading…' : entry?.photo_path ? 'Replace photo' : 'Add photo'}
           <input type="file" accept="image/*" className="hidden" onChange={handleFile} disabled={uploading} />
         </label>
@@ -94,14 +94,14 @@ function EntryEditor({
         placeholder={`Weight (${unit})`}
         value={weight}
         onChange={(e) => setWeight(e.target.value)}
-        className="mb-2 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+        className="mb-2 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
       />
       <textarea
         placeholder="Notes (optional)"
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
         rows={2}
-        className="mb-3 w-full resize-none rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+        className="mb-3 w-full resize-none rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
       />
 
       <div className="flex gap-2">
@@ -111,12 +111,12 @@ function EntryEditor({
               deleteEntry.mutate(entry)
               onClose()
             }}
-            className="rounded-lg bg-red-600/20 px-3 py-2 text-sm font-medium text-red-400 hover:bg-red-600/30"
+            className="rounded-xl bg-red-600/20 px-3 py-2 text-sm font-medium text-red-400 hover:bg-red-600/30"
           >
             Delete
           </button>
         )}
-        <button onClick={save} className="flex-1 rounded-lg bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500">
+        <button onClick={save} className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500">
           Save
         </button>
       </div>
@@ -139,7 +139,7 @@ export function ProgressCalendar() {
   }
 
   return (
-    <div className="rounded-2xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-3xl bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-medium text-white">Progress log</h3>
         {photoEntries.length >= 2 && (

@@ -1,8 +1,6 @@
--- FitLog schema v9 (DRAFT): push notification subscriptions.
--- DO NOT PASTE THIS INTO SUPABASE YET. The push notification feature is scaffolding-only
--- right now (see PUSH_NOTIFICATIONS.md) - nothing sends a real push yet, so there's no reason
--- to create this table until the sending side actually exists. Filed here just so the shape
--- is decided and reviewable.
+-- FitLog schema v9: push notification subscriptions.
+-- The sending side (api/cron/weekly-digest.ts, api/cron/streak-check.ts) is now real - run this,
+-- then see PUSH_NOTIFICATIONS.md for the remaining Vercel env vars + cron setup.
 
 create table push_subscriptions (
   id uuid primary key default gen_random_uuid(),

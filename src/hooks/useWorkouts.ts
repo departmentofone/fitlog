@@ -124,6 +124,41 @@ export function useStopWorkoutTimer(sessionId: string | undefined) {
 
 export interface SetWithExercise extends WorkoutSet {
   exercise: Exercise
+  /**
+   * Groups this set with others sharing the same value within a session, for supersets/circuits
+   * (migration_v18). Optional/nullable so it's a no-op until that migration runs and for every
+   * set logged outside a superset.
+   */
+  superset_group?: number | null
+}
+
+/** Minimal shape needed to (re)insert a previously-logged set - used by restore/copy below. */
+type StoredSet = {
+  exercise_id: string
+  set_number: number
+  weight: number
+  reps: number
+  difficulty: number
+  is_warmup: boolean
+  superset_group?: number | null
+}
+
+/**
+ * Builds an insert row for `workout_sets`, omitting `superset_group` entirely when the set isn't
+ * part of one - so inserts keep working even before migration_v18 has added that column.
+ */
+function buildSetRow(s: StoredSet, sessionId: string) {
+  const row: Record<string, unknown> = {
+    session_id: sessionId,
+    exercise_id: s.exercise_id,
+    set_number: s.set_number,
+    weight: s.weight,
+    reps: s.reps,
+    difficulty: s.difficulty,
+    is_warmup: s.is_warmup,
+  }
+  if (s.superset_group != null) row.superset_group = s.superset_group
+  return row
 }
 
 export function useSessionSets(sessionId: string | null | undefined) {
@@ -152,6 +187,7 @@ export function useAddSet(sessionId: string | null | undefined) {
       reps,
       difficulty,
       isWarmup,
+      supersetGroup,
     }: {
       exerciseId: string
       setNumber: number
@@ -159,17 +195,15 @@ export function useAddSet(sessionId: string | null | undefined) {
       reps: number
       difficulty: number
       isWarmup?: boolean
+      /** Non-null to log this set as part of a superset/circuit group (see migration_v18). */
+      supersetGroup?: number | null
     }) => {
       if (!sessionId) throw new Error('No active session')
-      const { error } = await supabase.from('workout_sets').insert({
-        session_id: sessionId,
-        exercise_id: exerciseId,
-        set_number: setNumber,
-        weight,
-        reps,
-        is_warmup: isWarmup ?? false,
-        difficulty,
-      })
+      const row = buildSetRow(
+        { exercise_id: exerciseId, set_number: setNumber, weight, reps, difficulty, is_warmup: isWarmup ?? false, superset_group: supersetGroup },
+        sessionId,
+      )
+      const { error } = await supabase.from('workout_sets').insert(row)
       if (error) throw error
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['sets', sessionId] }),
@@ -236,7 +270,7 @@ export function useRestoreSession() {
   const { user } = useAuth()
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async (snapshot: WorkoutSession & { workout_sets: WorkoutSet[] }) => {
+    mutationFn: async (snapshot: WorkoutSession & { workout_sets: StoredSet[] }) => {
       if (!user) throw new Error('Not signed in')
       const { data: created, error: sessionError } = await supabase
         .from('workout_sessions')
@@ -246,15 +280,7 @@ export function useRestoreSession() {
       if (sessionError) throw sessionError
 
       if (snapshot.workout_sets.length > 0) {
-        const rows = snapshot.workout_sets.map((s) => ({
-          session_id: created.id,
-          exercise_id: s.exercise_id,
-          set_number: s.set_number,
-          weight: s.weight,
-          reps: s.reps,
-          difficulty: s.difficulty,
-          is_warmup: s.is_warmup,
-        }))
+        const rows = snapshot.workout_sets.map((s) => buildSetRow(s, created.id))
         const { error: setsError } = await supabase.from('workout_sets').insert(rows)
         if (setsError) throw setsError
       }
@@ -287,6 +313,22 @@ export function summarizeLastSets(sets: LastSessionSetSummary[]): string {
   return groups
     .map((g) => (g.count > 1 ? `${g.count}×${g.reps} @ ${g.weight}kg` : `${g.reps} @ ${g.weight}kg`))
     .join(', ')
+}
+
+/**
+ * Assigns short display labels ("A", "B", "C"...) to distinct `superset_group` ids, in order of
+ * first appearance among the given sets. `sets` is expected ordered by `created_at` ascending
+ * (as `useSessionSets` already returns), so the first superset logged today reads as "A", etc.
+ */
+export function buildSupersetLabels(sets: { superset_group?: number | null }[]): Map<number, string> {
+  const map = new Map<number, string>()
+  for (const s of sets) {
+    const group = s.superset_group
+    if (group != null && !map.has(group)) {
+      map.set(group, String.fromCharCode(65 + map.size))
+    }
+  }
+  return map
 }
 
 /**
@@ -457,15 +499,37 @@ export function useCopyWorkoutDay() {
         toSessionId = created.id
       }
 
-      const rows = (fromSession.workout_sets as WorkoutSet[]).map((s) => ({
-        session_id: toSessionId,
-        exercise_id: s.exercise_id,
-        set_number: s.set_number,
-        weight: s.weight,
-        reps: s.reps,
-        difficulty: s.difficulty,
-        is_warmup: s.is_warmup,
-      }))
+      // Superset group ids are only unique within a session, so when copying into a day that
+      // already has sets of its own, renumber the copied groups above whatever's already there
+      // instead of reusing the raw source ids (which could collide with unrelated groups).
+      // superset_group may not exist yet (pre migration_v18) - degrade to "no groups" rather than
+      // failing the whole copy.
+      let targetMaxGroup = 0
+      const { data: targetSets, error: targetSetsError } = await supabase
+        .from('workout_sets')
+        .select('superset_group')
+        .eq('session_id', toSessionId)
+      if (!targetSetsError) {
+        for (const row of (targetSets ?? []) as { superset_group?: number | null }[]) {
+          if (row.superset_group != null) targetMaxGroup = Math.max(targetMaxGroup, row.superset_group)
+        }
+      }
+
+      const groupRemap = new Map<number, number>()
+      let nextGroup = targetMaxGroup
+      const rows = (fromSession.workout_sets as StoredSet[]).map((s) => {
+        let supersetGroup: number | undefined
+        if (s.superset_group != null) {
+          let remapped = groupRemap.get(s.superset_group)
+          if (remapped === undefined) {
+            nextGroup += 1
+            remapped = nextGroup
+            groupRemap.set(s.superset_group, remapped)
+          }
+          supersetGroup = remapped
+        }
+        return buildSetRow({ ...s, superset_group: supersetGroup }, toSessionId as string)
+      })
       const { error: insertError } = await supabase.from('workout_sets').insert(rows)
       if (insertError) throw insertError
     },

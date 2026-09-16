@@ -1,4 +1,14 @@
-export function PreworkoutGate({ onAnswer, loading }: { onAnswer: (preworkout: boolean) => void; loading?: boolean }) {
+export function PreworkoutGate({
+  onAnswer,
+  loading,
+  onLogRestDay,
+  restDayLogged,
+}: {
+  onAnswer: (preworkout: boolean) => void
+  loading?: boolean
+  onLogRestDay?: () => void
+  restDayLogged?: boolean
+}) {
   return (
     <div className="p-4">
       <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-5 text-center shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
@@ -20,6 +30,15 @@ export function PreworkoutGate({ onAnswer, loading }: { onAnswer: (preworkout: b
             No
           </button>
         </div>
+        {onLogRestDay && (
+          <button
+            onClick={onLogRestDay}
+            disabled={restDayLogged}
+            className="mt-4 text-xs font-medium text-slate-500 underline decoration-dotted transition hover:text-emerald-400 disabled:no-underline"
+          >
+            {restDayLogged ? "Rest day logged - your streak's safe" : "Not training today? Log a rest day instead"}
+          </button>
+        )}
       </div>
     </div>
   )

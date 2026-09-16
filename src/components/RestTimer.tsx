@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { haptics } from '../lib/haptics'
+import { localNotify } from '../lib/localNotify'
 
 const STORAGE_KEY = 'fitlog-rest-seconds'
 const DEFAULT_SECONDS = 90
@@ -87,6 +88,7 @@ export function RestTimer({ restartKey }: { restartKey: number }) {
   useEffect(() => {
     if (phase === 'running' && remaining === 0) {
       haptics.success()
+      void localNotify('Rest over', { body: 'Time for your next set.', tag: 'fitlog-rest-timer' })
       setPhase('done')
     }
   }, [phase, remaining])

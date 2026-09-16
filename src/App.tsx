@@ -19,6 +19,7 @@ const MaintenanceCalculatorTab = lazy(() =>
   import('./features/calculator/MaintenanceCalculatorTab').then((m) => ({ default: m.MaintenanceCalculatorTab })),
 )
 const AboutTab = lazy(() => import('./features/about/AboutTab').then((m) => ({ default: m.AboutTab })))
+const WhatsNewTab = lazy(() => import('./features/about/WhatsNewTab').then((m) => ({ default: m.WhatsNewTab })))
 const HistoryView = lazy(() => import('./features/history/HistoryView').then((m) => ({ default: m.HistoryView })))
 const SettingsTab = lazy(() => import('./features/settings/SettingsTab').then((m) => ({ default: m.SettingsTab })))
 
@@ -110,6 +111,7 @@ function App() {
           {!overlay && tab === 'achievements' && <AchievementsTab />}
           {!overlay && tab === 'programs' && <ProgramsTab />}
           {!overlay && tab === 'calculator' && <MaintenanceCalculatorTab />}
+          {!overlay && tab === 'whatsnew' && <WhatsNewTab />}
           {!overlay && tab === 'about' && <AboutTab />}
         </Suspense>
       </Layout>

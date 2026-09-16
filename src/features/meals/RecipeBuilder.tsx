@@ -13,8 +13,8 @@ import {
   useCreateRecipe,
   useDeleteRecipe,
   useRecipes,
+  useRescaleRecipe,
   useSetRecipeShared,
-  useUpdateRecipeServings,
   type RecipeIngredientWithFood,
   type RecipeWithIngredients,
 } from '../../hooks/useRecipes'
@@ -253,11 +253,16 @@ function RecipeCard({
   onSetShared: (isShared: boolean) => void
   onAddToMeal: (mealId: string, servingsToAdd: number, mealName: string) => void
 }) {
-  const updateServings = useUpdateRecipeServings()
+  const rescaleRecipe = useRescaleRecipe()
   const [servingsToAdd, setServingsToAdd] = useState(1)
 
   const macros = computeRecipeMacros(recipe.recipe_ingredients)
   const perServing = macros.perServing(recipe.servings)
+
+  function handleRescale(newServings: number) {
+    if (!Number.isFinite(newServings) || newServings <= 0) return
+    rescaleRecipe.mutate({ recipe, newServings })
+  }
 
   return (
     <div className="rounded-xl bg-slate-800/60 p-3">
@@ -274,14 +279,37 @@ function RecipeCard({
       <div className="mb-2 flex items-center gap-2">
         <span className="text-xs text-slate-500">Servings</span>
         {isOwner ? (
-          <input
-            type="number"
+          <>
+            <input
+              key={recipe.servings}
+              type="number"
               inputMode="decimal"
-            min={1}
-            value={recipe.servings}
-            onChange={(e) => updateServings.mutate({ recipeId: recipe.id, servings: Math.max(1, parseInt(e.target.value, 10) || 1) })}
-            className="w-16 rounded-xl border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-white focus:border-emerald-500 focus:outline-none"
-          />
+              min={0.1}
+              step="any"
+              defaultValue={recipe.servings}
+              onBlur={(e) => handleRescale(parseFloat(e.target.value))}
+              disabled={rescaleRecipe.isPending}
+              className="w-16 rounded-xl border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-white focus:border-emerald-500 focus:outline-none disabled:opacity-50"
+            />
+            <button
+              type="button"
+              onClick={() => handleRescale(recipe.servings * 0.5)}
+              disabled={rescaleRecipe.isPending}
+              className="rounded-lg bg-slate-700 px-2 py-1 text-xs font-medium text-slate-200 hover:bg-slate-600 disabled:opacity-50"
+              title="Halve the recipe"
+            >
+              ×0.5
+            </button>
+            <button
+              type="button"
+              onClick={() => handleRescale(recipe.servings * 2)}
+              disabled={rescaleRecipe.isPending}
+              className="rounded-lg bg-slate-700 px-2 py-1 text-xs font-medium text-slate-200 hover:bg-slate-600 disabled:opacity-50"
+              title="Double the recipe"
+            >
+              ×2
+            </button>
+          </>
         ) : (
           <span className="text-xs text-slate-300">{recipe.servings}</span>
         )}

@@ -1,8 +1,12 @@
 import { CountUp } from '../../components/CountUp'
+import { useWeeklyAdherence } from '../../hooks/useDiet'
+import { useUserSettings } from '../../hooks/useUserSettings'
 import { useWeeklyDigest } from '../../hooks/useWeeklyDigest'
 
 export function WeeklyDigestCard() {
   const { data } = useWeeklyDigest()
+  const { data: settings } = useUserSettings()
+  const adherence = useWeeklyAdherence(settings?.calorie_goal ?? null, settings?.diet_goal ?? 'deficit')
   if (!data) return null
 
   const workoutTrend = data.workoutsThisWeek - data.workoutsLastWeek
@@ -49,8 +53,18 @@ export function WeeklyDigestCard() {
         </div>
       </div>
 
-      {data.weightChange !== null && Math.abs(data.weightChange) > 0.05 && (
+      {adherence.data && adherence.data.daysWithData > 0 && (
         <p className="mt-3 text-center text-sm text-slate-400">
+          On target{' '}
+          <span className="font-medium text-emerald-400">
+            {adherence.data.daysOnTarget}/{adherence.data.daysWithData}
+          </span>{' '}
+          logged {adherence.data.daysWithData === 1 ? 'day' : 'days'} this week
+        </p>
+      )}
+
+      {data.weightChange !== null && Math.abs(data.weightChange) > 0.05 && (
+        <p className="mt-1 text-center text-sm text-slate-400">
           Weight {data.weightChange < 0 ? 'down' : 'up'}{' '}
           <span className={data.weightChange < 0 ? 'font-medium text-emerald-400' : 'font-medium text-amber-400'}>
             {Math.abs(data.weightChange).toFixed(1)}kg

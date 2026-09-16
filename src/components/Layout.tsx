@@ -27,15 +27,16 @@ const TABS: { key: Tab; label: string; icon: string; group: TabGroup | null }[] 
   { key: 'achievements', label: 'Achievements', icon: '🏆', group: 'progress' },
   { key: 'programs', label: 'Programs', icon: '🗂️', group: 'tools' },
   { key: 'calculator', label: 'Calculator', icon: '🧮', group: 'tools' },
+  { key: 'whatsnew', label: "What's new", icon: '🆕', group: null },
   { key: 'about', label: 'About', icon: 'ℹ️', group: null },
 ]
 
 const SHORT_LABELS: Partial<Record<Tab, string>> = { achievements: 'Awards' }
 const PINNED_TABS: Tab[] = ['workouts', 'meals']
-// About lives permanently at the bottom of the menu (see below) - it's not a candidate for
-// the bottom nav bar, and not part of the regular grouped tab list either.
-const MENU_TABS = TABS.filter((t) => t.key !== 'about')
-const ABOUT_TAB = TABS.find((t) => t.key === 'about')!
+// About and What's new live permanently at the bottom of the menu (see below) - neither is a
+// candidate for the bottom nav bar, or part of the regular grouped tab list.
+const FOOTER_TABS: Tab[] = ['whatsnew', 'about']
+const MENU_TABS = TABS.filter((t) => !FOOTER_TABS.includes(t.key))
 // Achievements and History are look-back/celebration screens, not something worth a one-tap
 // slot - excluded from bottom-bar customization (still reachable from the menu as usual).
 const EXCLUDED_FROM_BOTTOM_NAV: Tab[] = ['achievements', 'history']
@@ -270,18 +271,25 @@ export function Layout({
             </nav>
 
             <div className="shrink-0 border-t border-white/10 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-              <button
-                onClick={() => {
-                  onChange('about')
-                  setMenuOpen(false)
-                }}
-                className={`flex w-full items-center gap-3 rounded-2xl px-3.5 py-3 text-left text-sm font-semibold transition ${
-                  active === 'about' ? 'bg-emerald-500/15 text-emerald-400' : 'text-slate-300 hover:bg-white/5'
-                }`}
-              >
-                <span className="text-xl">{ABOUT_TAB.icon}</span>
-                {ABOUT_TAB.label}
-              </button>
+              {FOOTER_TABS.map((key) => {
+                const tab = TABS.find((t) => t.key === key)!
+                const isActive = active === key
+                return (
+                  <button
+                    key={key}
+                    onClick={() => {
+                      onChange(key)
+                      setMenuOpen(false)
+                    }}
+                    className={`flex w-full items-center gap-3 rounded-2xl px-3.5 py-3 text-left text-sm font-semibold transition ${
+                      isActive ? 'bg-emerald-500/15 text-emerald-400' : 'text-slate-300 hover:bg-white/5'
+                    }`}
+                  >
+                    <span className="text-xl">{tab.icon}</span>
+                    {tab.label}
+                  </button>
+                )
+              })}
               <p className="mt-2 text-center text-[10px] text-slate-600">Build {formatBuildTime()}</p>
             </div>
           </div>

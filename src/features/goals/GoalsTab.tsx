@@ -1,13 +1,195 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { EmptyState } from '../../components/EmptyState'
 import { useCreateGoal, useDeleteGoal, useGoals, useRestoreGoal, useToggleGoal } from '../../hooks/useGoals'
 import { useToast } from '../../components/ToastProvider'
 import { useUpdateSettings, useUserSettings } from '../../hooks/useUserSettings'
 import { useExercises } from '../../hooks/useExercises'
 import { useExerciseHistory } from '../../hooks/useWorkouts'
+import { useBodyMeasurements, useUpsertBodyMeasurement, type BodyMeasurement } from '../../hooks/useBodyMeasurements'
 import { cmToIn, inToCm, kgToLb, lbToKg } from '../../lib/units'
+import { CHART_FONT, useThemeChartColors } from '../../lib/useChartColors'
 import type { ActivityLevel, Goal, GoalCategory, Sex } from '../../types'
 import { ProgressCalendar } from './ProgressCalendar'
+import { WeightChart } from './WeightChart'
+
+type MeasurementField = 'waist' | 'chest' | 'arms' | 'hips'
+const MEASUREMENT_FIELDS: { key: MeasurementField; column: `${MeasurementField}_cm`; label: string; color: string }[] = [
+  { key: 'waist', column: 'waist_cm', label: 'Waist', color: '#34d399' },
+  { key: 'chest', column: 'chest_cm', label: 'Chest', color: '#60a5fa' },
+  { key: 'arms', column: 'arms_cm', label: 'Arms', color: '#fbbf24' },
+  { key: 'hips', column: 'hips_cm', label: 'Hips', color: '#f87171' },
+]
+
+function BodyMeasurementsCard() {
+  const { data: settings } = useUserSettings()
+  const { data: measurements = [] } = useBodyMeasurements()
+  const upsertMeasurement = useUpsertBodyMeasurement()
+  const colors = useThemeChartColors()
+
+  const imperial = settings?.unit_system === 'imperial'
+  const lengthUnit = imperial ? 'in' : 'cm'
+  const displayLength = (cm: number) => Math.round((imperial ? cmToIn(cm) : cm) * 10) / 10
+
+  const sorted = useMemo(() => [...measurements].sort((a, b) => b.date.localeCompare(a.date)), [measurements])
+  const latest = sorted[0] as BodyMeasurement | undefined
+  const previous = sorted[1] as BodyMeasurement | undefined
+
+  const availableFields = MEASUREMENT_FIELDS.filter((f) => measurements.some((m) => m[f.column] != null))
+  const [metric, setMetric] = useState<MeasurementField>('waist')
+  const activeField = availableFields.find((f) => f.key === metric) ?? availableFields[0]
+
+  const [editing, setEditing] = useState(false)
+  const [date, setDate] = useState('')
+  const [values, setValues] = useState<Record<MeasurementField, string>>({ waist: '', chest: '', arms: '', hips: '' })
+
+  function startEditing() {
+    const todayStr = new Date().toISOString().slice(0, 10)
+    const base = latest?.date === todayStr ? latest : undefined
+    setDate(todayStr)
+    setValues({
+      waist: base?.waist_cm != null ? String(displayLength(base.waist_cm)) : '',
+      chest: base?.chest_cm != null ? String(displayLength(base.chest_cm)) : '',
+      arms: base?.arms_cm != null ? String(displayLength(base.arms_cm)) : '',
+      hips: base?.hips_cm != null ? String(displayLength(base.hips_cm)) : '',
+    })
+    setEditing(true)
+  }
+
+  function save() {
+    const toCm = (v: string) => (imperial ? inToCm(parseFloat(v)) : parseFloat(v))
+    upsertMeasurement.mutate({
+      date,
+      waist_cm: values.waist ? toCm(values.waist) : null,
+      chest_cm: values.chest ? toCm(values.chest) : null,
+      arms_cm: values.arms ? toCm(values.arms) : null,
+      hips_cm: values.hips ? toCm(values.hips) : null,
+    })
+    setEditing(false)
+  }
+
+  const chartData = useMemo(() => {
+    if (!activeField) return []
+    return [...measurements]
+      .filter((m) => m[activeField.column] != null)
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .map((m) => ({
+        label: new Date(m.date + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+        value: displayLength(m[activeField.column]!),
+      }))
+  }, [measurements, activeField, imperial])
+
+  return (
+    <div
+      onClick={!editing ? startEditing : undefined}
+      className={`rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5 transition ${
+        !editing ? 'cursor-pointer hover:ring-emerald-500/30' : ''
+      }`}
+    >
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="font-medium text-white">Body measurements</h3>
+        {!editing && <span className="text-xs text-slate-500">Tap to edit</span>}
+      </div>
+
+      {editing ? (
+        <div onClick={(e) => e.stopPropagation()} className="space-y-2.5">
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none"
+          />
+          <div className="grid grid-cols-2 gap-2.5">
+            {MEASUREMENT_FIELDS.map((f) => (
+              <input
+                key={f.key}
+                placeholder={`${f.label} (${lengthUnit})`}
+                type="number"
+                inputMode="decimal"
+                value={values[f.key]}
+                onChange={(e) => setValues((prev) => ({ ...prev, [f.key]: e.target.value }))}
+                className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              />
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <button onClick={() => setEditing(false)} className="flex-1 rounded-xl bg-slate-800 py-2 text-sm text-slate-300 hover:bg-slate-700">
+              Cancel
+            </button>
+            <button onClick={save} className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500">
+              Save
+            </button>
+          </div>
+        </div>
+      ) : latest ? (
+        <div onClick={(e) => e.stopPropagation()}>
+          <div className="grid grid-cols-2 gap-2 text-sm text-slate-300">
+            {MEASUREMENT_FIELDS.map((f) => {
+              const value = latest[f.column]
+              const prevValue = previous?.[f.column] ?? null
+              const delta = value != null && prevValue != null ? displayLength(value) - displayLength(prevValue) : null
+              return (
+                <p key={f.key}>
+                  {f.label}: {value != null ? `${displayLength(value)} ${lengthUnit}` : '—'}
+                  {delta != null && Math.abs(delta) >= 0.1 && (
+                    <span className={delta > 0 ? 'text-amber-400' : 'text-emerald-400'}> ({delta > 0 ? '+' : ''}{Math.round(delta * 10) / 10})</span>
+                  )}
+                </p>
+              )
+            })}
+          </div>
+
+          {activeField && chartData.length >= 2 && (
+            <div className="mt-3">
+              <div className="mb-2 flex flex-wrap gap-1.5">
+                {availableFields.map((f) => (
+                  <button
+                    key={f.key}
+                    onClick={() => setMetric(f.key)}
+                    className={`rounded-xl px-2.5 py-1 text-xs font-medium ${
+                      activeField.key === f.key ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+              <div className="h-36 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
+                    <XAxis
+                      dataKey="label"
+                      tick={{ fill: colors.tick, fontSize: 11, fontFamily: CHART_FONT }}
+                      axisLine={{ stroke: colors.axis }}
+                      tickLine={false}
+                      interval={Math.ceil(chartData.length / 5)}
+                    />
+                    <YAxis
+                      tick={{ fill: colors.tick, fontSize: 11, fontFamily: CHART_FONT }}
+                      axisLine={false}
+                      tickLine={false}
+                      width={40}
+                      domain={['dataMin - 1', 'dataMax + 1']}
+                    />
+                    <Tooltip
+                      contentStyle={{ background: colors.tooltipBg, border: `1px solid ${colors.tooltipBorder}`, borderRadius: 8, fontFamily: CHART_FONT }}
+                      labelStyle={{ color: colors.tooltipText }}
+                      formatter={(value) => [`${value} ${lengthUnit}`, activeField.label]}
+                    />
+                    <Line type="monotone" dataKey="value" stroke={activeField.color} strokeWidth={2} dot={false} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <EmptyState variant="list" message="No measurements logged yet." />
+      )}
+    </div>
+  )
+}
 
 const ACTIVITY_OPTIONS: { value: ActivityLevel; label: string }[] = [
   { value: 'sedentary', label: 'Sedentary' },
@@ -327,6 +509,10 @@ export function GoalsTab() {
           </div>
         )}
       </div>
+
+      <WeightChart />
+
+      <BodyMeasurementsCard />
 
       <ProgressCalendar />
 

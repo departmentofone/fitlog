@@ -1,4 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
+import { supabase } from '../lib/supabase'
+import type { Food } from '../types'
 
 export interface OpenFoodFactsProduct {
   name: string
@@ -54,9 +56,41 @@ export async function lookupBarcode(barcode: string): Promise<OpenFoodFactsProdu
   }
 }
 
-/** React Query wrapper around {@link lookupBarcode} for use from components. */
+function foodToProduct(food: Food): OpenFoodFactsProduct {
+  return {
+    name: food.name,
+    caloriesPer100g: food.calories_per_100g,
+    proteinPer100g: food.protein_per_100g,
+    carbsPer100g: food.carbs_per_100g,
+    fatPer100g: food.fat_per_100g,
+  }
+}
+
+/**
+ * Looks up a barcode against the user's own food library first, falling back to
+ * {@link lookupBarcode}'s Open Food Facts network call only when there's no local match. A hit
+ * is instant and avoids the network entirely.
+ *
+ * The `foods.barcode` column (migration_v17b_food_barcode.sql) may not exist yet on a database
+ * that hasn't been migrated — the `.eq('barcode', ...)` filter would error in that case. That's
+ * treated exactly like a cache miss so this never breaks scanning, it just always falls through
+ * to the network until the migration runs.
+ */
+export async function lookupBarcodeCached(barcode: string): Promise<OpenFoodFactsProduct | null> {
+  const trimmed = barcode.trim()
+  if (!trimmed) return null
+  try {
+    const { data, error } = await supabase.from('foods').select('*').eq('barcode', trimmed).maybeSingle()
+    if (!error && data) return foodToProduct(data as Food)
+  } catch {
+    // Supabase call failed outright (missing column, offline, etc.) - fall through to the network.
+  }
+  return lookupBarcode(trimmed)
+}
+
+/** React Query wrapper around {@link lookupBarcodeCached} for use from components. */
 export function useBarcodeLookup() {
   return useMutation({
-    mutationFn: lookupBarcode,
+    mutationFn: lookupBarcodeCached,
   })
 }

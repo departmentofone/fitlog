@@ -9,8 +9,15 @@ export function todayDayNumber(): number {
   return Math.floor(Date.now() / 86_400_000)
 }
 
-export function computeDayStreaks(dateStrings: string[]): { current: number; best: number } {
-  const days = Array.from(new Set(dateStrings.map(toDayNumber))).sort((a, b) => a - b)
+/**
+ * `restDayStrings` (optional) bridges gaps for streak-continuity purposes only - a logged rest
+ * day counts toward keeping the streak alive without being a real activity day. Pass it for the
+ * workout streak (where "rest day" is a meaningful concept); leave it out for the diet streak.
+ */
+export function computeDayStreaks(dateStrings: string[], restDayStrings: string[] = []): { current: number; best: number } {
+  const activeDays = new Set(dateStrings.map(toDayNumber))
+  const restDays = new Set(restDayStrings.map(toDayNumber))
+  const days = Array.from(new Set([...activeDays, ...restDays])).sort((a, b) => a - b)
   if (days.length === 0) return { current: 0, best: 0 }
 
   let best = 1

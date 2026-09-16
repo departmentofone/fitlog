@@ -1,5 +1,20 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
-import { lookupBarcode } from './useOpenFoodFacts'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+const { maybeSingleMock } = vi.hoisted(() => ({ maybeSingleMock: vi.fn() }))
+
+vi.mock('../lib/supabase', () => ({
+  supabase: {
+    from: () => ({
+      select: () => ({
+        eq: () => ({
+          maybeSingle: maybeSingleMock,
+        }),
+      }),
+    }),
+  },
+}))
+
+import { lookupBarcode, lookupBarcodeCached } from './useOpenFoodFacts'
 
 function mockFetchOnce(response: unknown, ok = true) {
   vi.stubGlobal(
@@ -7,6 +22,10 @@ function mockFetchOnce(response: unknown, ok = true) {
     vi.fn().mockResolvedValue({ ok, json: () => Promise.resolve(response) } as Response),
   )
 }
+
+beforeEach(() => {
+  maybeSingleMock.mockReset()
+})
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -66,5 +85,68 @@ describe('lookupBarcode', () => {
       carbsPer100g: null,
       fatPer100g: null,
     })
+  })
+})
+
+describe('lookupBarcodeCached', () => {
+  it('returns null for an empty barcode without touching Supabase or the network', async () => {
+    const fetchSpy = vi.fn()
+    vi.stubGlobal('fetch', fetchSpy)
+    expect(await lookupBarcodeCached('   ')).toBeNull()
+    expect(fetchSpy).not.toHaveBeenCalled()
+    expect(maybeSingleMock).not.toHaveBeenCalled()
+  })
+
+  it('returns a locally-cached food from Supabase without calling the network', async () => {
+    maybeSingleMock.mockResolvedValue({
+      data: {
+        name: 'Cached Snack',
+        calories_per_100g: 200,
+        protein_per_100g: 10,
+        carbs_per_100g: 20,
+        fat_per_100g: 5,
+      },
+      error: null,
+    })
+    const fetchSpy = vi.fn()
+    vi.stubGlobal('fetch', fetchSpy)
+
+    expect(await lookupBarcodeCached('111')).toEqual({
+      name: 'Cached Snack',
+      caloriesPer100g: 200,
+      proteinPer100g: 10,
+      carbsPer100g: 20,
+      fatPer100g: 5,
+    })
+    expect(fetchSpy).not.toHaveBeenCalled()
+  })
+
+  it('falls back to the network when there is no cached match', async () => {
+    maybeSingleMock.mockResolvedValue({ data: null, error: null })
+    mockFetchOnce({
+      status: 1,
+      product: { product_name: 'Fresh Lookup', nutriments: { 'energy-kcal_100g': 100 } },
+    })
+
+    const result = await lookupBarcodeCached('222')
+    expect(result?.name).toBe('Fresh Lookup')
+  })
+
+  it('falls back to the network when the Supabase lookup errors (e.g. barcode column missing)', async () => {
+    maybeSingleMock.mockResolvedValue({ data: null, error: { message: 'column foods.barcode does not exist' } })
+    mockFetchOnce({
+      status: 1,
+      product: { product_name: 'Fresh Lookup Two', nutriments: {} },
+    })
+
+    const result = await lookupBarcodeCached('333')
+    expect(result?.name).toBe('Fresh Lookup Two')
+  })
+
+  it('falls back to the network when the Supabase call itself throws', async () => {
+    maybeSingleMock.mockRejectedValue(new Error('offline'))
+    mockFetchOnce({ status: 0 })
+
+    expect(await lookupBarcodeCached('444')).toBeNull()
   })
 })

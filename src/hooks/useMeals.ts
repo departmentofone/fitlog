@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
-import { macrosForGrams, sumMacros, type Food, type Meal, type MealItem } from '../types'
+import { macrosForGrams, microsForGrams, sumMacros, sumMicros, type Food, type Meal, type MealItem } from '../types'
 import { useAuth } from './useAuth'
 import { todayISO } from './useWorkouts'
 
@@ -128,10 +128,72 @@ export function useDeleteMealItem() {
   })
 }
 
+const MEAL_PHOTOS_BUCKET = 'meal-photos'
+
+/**
+ * Uploads (or replaces) the photo attached to a logged meal. Mirrors
+ * useUploadProgressPhoto in useProgressEntries.ts: private bucket, path
+ * `<user_id>/<meal_id>.<ext>`, old file cleaned up once the new one is stored.
+ *
+ * This is a user-triggered write, not a query that runs automatically on page load, so it's
+ * fine for it to simply fail (surfaced by the caller's mutation `onError`) on a database that
+ * hasn't run migration_v17_meal_photos.sql yet rather than needing to degrade silently.
+ */
+export function useUploadMealPhoto() {
+  const { user } = useAuth()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({
+      mealId,
+      file,
+      previousPath,
+    }: {
+      mealId: string
+      date: string
+      file: File
+      previousPath?: string | null
+    }) => {
+      if (!user) throw new Error('Not signed in')
+      const ext = file.name.split('.').pop() || 'jpg'
+      const path = `${user.id}/${mealId}.${ext}`
+
+      const { error: uploadError } = await supabase.storage.from(MEAL_PHOTOS_BUCKET).upload(path, file, { upsert: true })
+      if (uploadError) throw uploadError
+
+      if (previousPath && previousPath !== path) {
+        await supabase.storage.from(MEAL_PHOTOS_BUCKET).remove([previousPath])
+      }
+
+      const { error } = await supabase.from('meals').update({ photo_path: path }).eq('id', mealId)
+      if (error) throw error
+    },
+    onSuccess: (_data, variables) => qc.invalidateQueries({ queryKey: ['meals', user?.id, variables.date] }),
+  })
+}
+
+/** Mirrors useSignedPhotoUrl in useProgressEntries.ts, against the meal-photos bucket. */
+export function useSignedMealPhotoUrl(path: string | null | undefined) {
+  return useQuery({
+    queryKey: ['meal-photo-url', path],
+    enabled: !!path,
+    staleTime: 50 * 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await supabase.storage.from(MEAL_PHOTOS_BUCKET).createSignedUrl(path!, 3600)
+      if (error) throw error
+      return data.signedUrl
+    },
+  })
+}
+
 export function dailyTotals(meals: MealWithItems[] | undefined) {
   if (!meals) return { calories: 0, protein: 0, carbs: 0, fat: 0 }
   const all = meals.flatMap((m) => m.meal_items.map((item) => macrosForGrams(item.food, item.grams)))
   return sumMacros(all)
+}
+
+export function dailyMicroTotals(meals: MealWithItems[] | undefined) {
+  const all = (meals ?? []).flatMap((m) => m.meal_items.map((item) => microsForGrams(item.food, item.grams)))
+  return sumMicros(all)
 }
 
 export interface DayMacroPoint {

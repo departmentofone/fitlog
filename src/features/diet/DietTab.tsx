@@ -4,10 +4,11 @@ import { CountUp } from '../../components/CountUp'
 import { FireStreak } from '../../components/FireStreak'
 import { MacroLine } from '../../components/MacroLine'
 import { remainingCaloriesInfo, useDietStreak } from '../../hooks/useDiet'
-import { dailyTotals, useMealsForDate } from '../../hooks/useMeals'
+import { dailyMicroTotals, dailyTotals, useMealsForDate } from '../../hooks/useMeals'
 import { useUpdateSettings, useUserSettings } from '../../hooks/useUserSettings'
 import { todayISO } from '../../hooks/useWorkouts'
 import type { DietGoal } from '../../types'
+import { MicroDashboard } from '../nutrition/MicroDashboard'
 import { NutritionBreakdownModal } from '../nutrition/NutritionBreakdownModal'
 import { AlcoholSection } from './AlcoholSection'
 import { GoalProjectionChart } from './GoalProjectionChart'
@@ -29,6 +30,7 @@ export function DietTab() {
   const updateSettings = useUpdateSettings()
   const { data: meals = [] } = useMealsForDate(todayISO())
   const totals = dailyTotals(meals)
+  const micros = dailyMicroTotals(meals)
 
   const dietGoal = settings?.diet_goal ?? 'deficit'
   const calorieGoal = settings?.calorie_goal ?? null
@@ -141,6 +143,8 @@ export function DietTab() {
         </p>
         <MacroLine macros={totals} className="mt-1 text-sm" />
       </div>
+
+      <MicroDashboard micros={micros} />
 
       <GoalProjectionChart />
 

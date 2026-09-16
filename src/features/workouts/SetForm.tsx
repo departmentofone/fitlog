@@ -28,6 +28,8 @@ interface SetFormProps {
   adding?: boolean
   /** Bump this (e.g. on a successful add-set mutation) to (re)start the rest timer. */
   restTrigger: number
+  /** e.g. "A" - shown as a "Superset A" badge next to the exercise name when part of one. */
+  supersetLabel?: string
 }
 
 function EditableSetRow({
@@ -105,6 +107,7 @@ export function SetForm({
   onDone,
   adding,
   restTrigger,
+  supersetLabel,
 }: SetFormProps) {
   const [weight, setWeight] = useState('')
   const [reps, setReps] = useState('')
@@ -126,8 +129,15 @@ export function SetForm({
   return (
     <div className="rounded-2xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <div className="mb-1 flex items-center justify-between">
-        <h3 className="font-medium text-white">{exercise.name}</h3>
-        <button onClick={onDone} className="text-sm text-slate-400 hover:text-slate-200">
+        <div className="flex min-w-0 items-center gap-2">
+          <h3 className="truncate font-medium text-white">{exercise.name}</h3>
+          {supersetLabel && (
+            <span className="shrink-0 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-400">
+              Superset {supersetLabel}
+            </span>
+          )}
+        </div>
+        <button onClick={onDone} className="shrink-0 text-sm text-slate-400 hover:text-slate-200">
           Done
         </button>
       </div>

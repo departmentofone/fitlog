@@ -5,17 +5,29 @@ export function ExerciseSummaryBox({
   sets,
   onClick,
   onOpenDetail,
+  supersetLabel,
 }: {
   name: string
   sets: SetWithExercise[]
   onClick: () => void
   onOpenDetail?: () => void
+  /** e.g. "A" - when set, this exercise's sets belong to a superset and get a distinct tint/badge. */
+  supersetLabel?: string
 }) {
   const topSet = sets.reduce((max, s) => (s.weight > max.weight ? s : max), sets[0])
 
   return (
-    <div className="relative rounded-2xl bg-slate-900 backdrop-blur-xl border-t border-white/10 shadow-lg shadow-black/20 ring-1 ring-white/5 transition hover:ring-emerald-500/30">
+    <div
+      className={`relative rounded-2xl bg-slate-900 backdrop-blur-xl border-t shadow-lg shadow-black/20 ring-1 transition hover:ring-emerald-500/30 ${
+        supersetLabel ? 'border-emerald-500/40 ring-emerald-500/20' : 'border-white/10 ring-white/5'
+      }`}
+    >
       <button onClick={onClick} className="w-full p-3 text-left">
+        {supersetLabel && (
+          <p className="mb-1 inline-block rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-400">
+            Superset {supersetLabel}
+          </p>
+        )}
         <p className="mb-1 truncate pr-6 text-sm font-medium text-white">{name}</p>
         <p className="text-xs text-slate-400">
           S{sets.length} · R{topSet.reps} · {topSet.weight}kg

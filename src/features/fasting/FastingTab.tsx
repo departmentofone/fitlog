@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { CircularProgress } from '../../components/CircularProgress'
 import { EmptyState } from '../../components/EmptyState'
+import { FireStreak } from '../../components/FireStreak'
 import { useActiveFast, useEndFast, useFastHistory, useStartFast } from '../../hooks/useFasting'
 import { haptics } from '../../lib/haptics'
+import { computeDayStreaks } from '../../lib/streaks'
+import { FastingStages } from './FastingStages'
 
 const PRESETS = [
   { label: '16:8', hours: 16 },
@@ -32,11 +35,22 @@ export function FastingTab() {
     return () => clearInterval(interval)
   }, [active])
 
+  // A fasting streak credits the calendar day a fast was started on - matches how someone would
+  // think of "I fasted N days in a row" for a daily intermittent-fasting habit.
+  const streak = useMemo(
+    () => computeDayStreaks(history.map((f) => new Date(f.start_time).toISOString().slice(0, 10))),
+    [history],
+  )
+
+  const elapsedMs = active ? now - new Date(active.start_time).getTime() : null
+  const elapsedHours = elapsedMs != null ? elapsedMs / 3_600_000 : null
+
   return (
     <div className="space-y-4 p-4">
-      {active ? (
+      <FireStreak count={streak.current} label="day streak" />
+
+      {active && elapsedMs != null ? (
         (() => {
-          const elapsedMs = now - new Date(active.start_time).getTime()
           const targetMs = active.target_hours * 3_600_000
           const pct = Math.min(100, (elapsedMs / targetMs) * 100)
           const remaining = targetMs - elapsedMs
@@ -123,6 +137,8 @@ export function FastingTab() {
           </div>
         )}
       </div>
+
+      <FastingStages elapsedHours={elapsedHours} />
     </div>
   )
 }

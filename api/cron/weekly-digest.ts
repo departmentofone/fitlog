@@ -3,22 +3,11 @@ import type { VercelRequest, VercelResponse } from '@vercel/node'
 import webpush from 'web-push'
 
 /**
- * DRAFT / NOT ENABLED. See PUSH_NOTIFICATIONS.md.
- *
- * This is not wired into a Vercel Cron schedule yet (no `crons` entry in vercel.json), so it
- * only runs if something calls it directly - and even then, push_subscriptions doesn't exist
- * in the database yet, so it has nothing to send to.
- *
- * What's still missing before this is real:
- *  - Run supabase/migration_v9_draft_DO_NOT_RUN_YET.sql (rename it once it's actually ready).
- *  - Set these as *server* env vars in Vercel (never VITE_-prefixed): SUPABASE_SERVICE_ROLE_KEY,
- *    VAPID_PRIVATE_KEY, CRON_SECRET (any random string - Vercel sends it back as a bearer token
- *    when it invokes a scheduled function, which is what the check below verifies).
- *  - Port the real digest computation from src/hooks/useWeeklyDigest.ts to run here per-user
- *    with the service-role client (it currently only runs client-side, scoped to the signed-in
- *    user via RLS). Right now this sends a generic placeholder notification, not real numbers.
- *  - Add a `crons` entry to vercel.json once the above is done, e.g.:
- *      { "crons": [{ "path": "/api/cron/weekly-digest", "schedule": "0 9 * * 0" }] }
+ * Sends each subscribed user their real weekly digest numbers (not a generic placeholder).
+ * Requires: migration_v9_push_subscriptions.sql run, and SUPABASE_SERVICE_ROLE_KEY /
+ * VAPID_PRIVATE_KEY / VITE_VAPID_PUBLIC_KEY / CRON_SECRET set as *server* env vars in Vercel
+ * (never VITE_-prefixed beyond the one that's meant to be public) - see PUSH_NOTIFICATIONS.md.
+ * Wire it to a schedule via vercel.json's `crons` entry once those are in place.
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.headers.authorization !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -42,14 +31,54 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { data: subscriptions, error } = await supabase.from('push_subscriptions').select('*')
   if (error) return res.status(500).json({ error: error.message })
 
-  const payload = JSON.stringify({
-    title: 'Your weekly digest is ready',
-    body: "Tap to see this week's progress.",
-    url: '/',
-  })
+  const userIds = Array.from(new Set((subscriptions ?? []).map((s) => s.user_id as string)))
+
+  function iso(d: Date) {
+    return d.toISOString().slice(0, 10)
+  }
+
+  async function digestFor(userId: string) {
+    const today = new Date()
+    const start = new Date(today)
+    start.setDate(today.getDate() - 6)
+
+    const [sessions, meals] = await Promise.all([
+      supabase
+        .from('workout_sessions')
+        .select('id, workout_sets!inner(id)')
+        .eq('user_id', userId)
+        .gte('date', iso(start))
+        .lte('date', iso(today)),
+      supabase
+        .from('meals')
+        .select('meal_items(grams, food:foods(calories_per_100g))')
+        .eq('user_id', userId)
+        .gte('date', iso(start))
+        .lte('date', iso(today)),
+    ])
+
+    const workouts = sessions.data?.length ?? 0
+    type MealRow = { meal_items: { grams: number; food: { calories_per_100g: number } | null }[] }
+    let totalCalories = 0
+    for (const meal of (meals.data as unknown as MealRow[]) ?? []) {
+      for (const item of meal.meal_items) {
+        if (!item.food) continue
+        totalCalories += (item.food.calories_per_100g * item.grams) / 100
+      }
+    }
+    const avgCalories = Math.round(totalCalories / 7)
+
+    return { workouts, avgCalories }
+  }
 
   const results = await Promise.allSettled(
     (subscriptions ?? []).map(async (sub) => {
+      const digest = await digestFor(sub.user_id)
+      const payload = JSON.stringify({
+        title: 'Your weekly digest',
+        body: `${digest.workouts} workout${digest.workouts === 1 ? '' : 's'} this week, ~${digest.avgCalories} kcal/day average. Tap to see more.`,
+        url: '/',
+      })
       try {
         await webpush.sendNotification({ endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } }, payload)
       } catch (err) {
@@ -64,5 +93,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   )
 
   const sent = results.filter((r) => r.status === 'fulfilled').length
-  return res.status(200).json({ sent, failed: results.length - sent })
+  return res.status(200).json({ users: userIds.length, sent, failed: results.length - sent })
 }

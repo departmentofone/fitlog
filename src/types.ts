@@ -101,6 +101,7 @@ export interface Food {
   vitamin_c_mg: number
   vitamin_a_mcg: number
   common_servings: CommonServing[]
+  barcode: string | null
   created_at: string
 }
 
@@ -110,6 +111,7 @@ export interface Meal {
   date: string
   name: string
   completed: boolean
+  photo_path: string | null
   created_at: string
 }
 
@@ -139,6 +141,7 @@ export type Tab =
   | 'achievements'
   | 'programs'
   | 'calculator'
+  | 'whatsnew'
   | 'about'
 
 export interface UserSettings {

@@ -49,6 +49,13 @@ export interface CreateFoodInput {
   ironMg?: number
   vitaminCMg?: number
   vitaminAMcg?: number
+  /**
+   * Only set by the barcode scanner. Left undefined (rather than null) for every other
+   * caller so the insert payload below omits the `barcode` key entirely for them - that
+   * keeps normal food creation working even on a database that hasn't run
+   * migration_v17b_food_barcode.sql yet, since the column simply won't be referenced.
+   */
+  barcode?: string
 }
 
 export function useCreateFood() {
@@ -76,6 +83,9 @@ export function useCreateFood() {
           iron_mg: input.ironMg ?? 0,
           vitamin_c_mg: input.vitaminCMg ?? 0,
           vitamin_a_mcg: input.vitaminAMcg ?? 0,
+          // Omitted entirely (not sent as null) unless the caller passed one - see the
+          // comment on CreateFoodInput.barcode.
+          ...(input.barcode !== undefined ? { barcode: input.barcode } : {}),
         })
         .select()
         .single()

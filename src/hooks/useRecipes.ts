@@ -135,6 +135,47 @@ export function useUpdateRecipeServings() {
   })
 }
 
+/**
+ * Rescales a recipe to a new serving count: updates `servings` and multiplies every
+ * ingredient's `grams` by the same ratio, so the recipe's total (and per-serving) macros
+ * stay proportionally consistent instead of just changing the serving count in place.
+ */
+export function useRescaleRecipe() {
+  const { user } = useAuth()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({
+      recipe,
+      newServings,
+    }: {
+      recipe: RecipeWithIngredients
+      newServings: number
+    }) => {
+      if (recipe.servings <= 0) throw new Error('Recipe has no servings')
+      if (newServings <= 0) throw new Error('Servings must be positive')
+      const scale = newServings / recipe.servings
+
+      const { error: recipeError } = await supabase
+        .from('recipes')
+        .update({ servings: newServings })
+        .eq('id', recipe.id)
+      if (recipeError) throw recipeError
+
+      const results = await Promise.all(
+        recipe.recipe_ingredients.map((i) =>
+          supabase
+            .from('recipe_ingredients')
+            .update({ grams: i.grams * scale })
+            .eq('id', i.id),
+        ),
+      )
+      const failed = results.find((r) => r.error)
+      if (failed?.error) throw failed.error
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['recipes', user?.id] }),
+  })
+}
+
 /** Adds a scaled portion of a recipe's ingredients into an existing logged meal. */
 export function useAddRecipeToMeal() {
   const qc = useQueryClient()

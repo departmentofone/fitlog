@@ -41,6 +41,50 @@ export function useDietStreak(calorieGoal: number | null, dietGoal: DietGoal) {
   })
 }
 
+export interface WeeklyAdherence {
+  daysOnTarget: number
+  daysWithData: number
+}
+
+/** How many of the last 7 days (including today) hit the calorie goal - the diet-side sibling of
+ * the workout streak's weekly volume view. Days with no logged food don't count against you. */
+export function useWeeklyAdherence(calorieGoal: number | null, dietGoal: DietGoal) {
+  const { user } = useAuth()
+  return useQuery({
+    queryKey: ['weekly-adherence', user?.id, calorieGoal, dietGoal],
+    enabled: !!user && !!calorieGoal,
+    queryFn: async (): Promise<WeeklyAdherence> => {
+      const today = new Date()
+      const start = new Date(today)
+      start.setDate(today.getDate() - 6)
+      const startISO = start.toISOString().slice(0, 10)
+      const endISO = today.toISOString().slice(0, 10)
+
+      const { data, error } = await supabase
+        .from('meals')
+        .select('date, meal_items(grams, food:foods(calories_per_100g))')
+        .gte('date', startISO)
+        .lte('date', endISO)
+      if (error) throw error
+
+      type Row = { date: string; meal_items: { grams: number; food: Food | null }[] }
+      const byDate = new Map<string, number>()
+      for (const meal of (data as unknown as Row[]) ?? []) {
+        let total = byDate.get(meal.date) ?? 0
+        for (const item of meal.meal_items) {
+          if (!item.food) continue
+          total += (item.food.calories_per_100g * item.grams) / 100
+        }
+        byDate.set(meal.date, total)
+      }
+
+      const daysWithData = byDate.size
+      const daysOnTarget = Array.from(byDate.values()).filter((calories) => meetsGoal(calories, calorieGoal!, dietGoal)).length
+      return { daysOnTarget, daysWithData }
+    },
+  })
+}
+
 export interface RemainingInfo {
   remaining: number
   text: string

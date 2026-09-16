@@ -174,6 +174,7 @@ export function ScannerTab() {
   async function handleSave() {
     if (!form.name.trim() || !form.calories) return
     try {
+      const trimmedBarcode = barcode.trim()
       await createFood.mutateAsync({
         name: form.name.trim(),
         caloriesPer100g: parseFloat(form.calories) || 0,
@@ -181,6 +182,9 @@ export function ScannerTab() {
         carbsPer100g: parseFloat(form.carbs) || 0,
         fatPer100g: parseFloat(form.fat) || 0,
         commonServings: [],
+        // Only set when a barcode was actually scanned/entered, so "skip lookup, enter
+        // manually" saves keep working exactly as before - see CreateFoodInput.barcode.
+        ...(trimmedBarcode ? { barcode: trimmedBarcode } : {}),
       })
       show('Added to your food library')
       reset()

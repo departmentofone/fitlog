@@ -244,6 +244,7 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
           <input
             placeholder="Calories"
             type="number"
+            inputMode="decimal"
             value={calories}
             onChange={(e) => setCalories(e.target.value)}
             className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
@@ -251,6 +252,7 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
           <input
             placeholder="Protein (g)"
             type="number"
+            inputMode="decimal"
             value={protein}
             onChange={(e) => setProtein(e.target.value)}
             className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
@@ -258,6 +260,7 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
           <input
             placeholder="Carbs (g)"
             type="number"
+            inputMode="decimal"
             value={carbs}
             onChange={(e) => setCarbs(e.target.value)}
             className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
@@ -265,6 +268,7 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
           <input
             placeholder="Fat (g)"
             type="number"
+            inputMode="decimal"
             value={fat}
             onChange={(e) => setFat(e.target.value)}
             className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
@@ -281,6 +285,7 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
           <input
             placeholder="Grams"
             type="number"
+            inputMode="decimal"
             value={servingGrams}
             onChange={(e) => setServingGrams(e.target.value)}
             className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
@@ -299,6 +304,7 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
             <input
               placeholder="Fiber (g)"
               type="number"
+              inputMode="decimal"
               value={fiber}
               onChange={(e) => setFiber(e.target.value)}
               className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
@@ -306,6 +312,7 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
             <input
               placeholder="Sugar (g)"
               type="number"
+              inputMode="decimal"
               value={sugar}
               onChange={(e) => setSugar(e.target.value)}
               className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
@@ -313,6 +320,7 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
             <input
               placeholder="Sodium (mg)"
               type="number"
+              inputMode="decimal"
               value={sodium}
               onChange={(e) => setSodium(e.target.value)}
               className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
@@ -320,6 +328,7 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
             <input
               placeholder="Cholesterol (mg)"
               type="number"
+              inputMode="decimal"
               value={cholesterol}
               onChange={(e) => setCholesterol(e.target.value)}
               className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
@@ -327,6 +336,7 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
             <input
               placeholder="Potassium (mg)"
               type="number"
+              inputMode="decimal"
               value={potassium}
               onChange={(e) => setPotassium(e.target.value)}
               className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
@@ -334,6 +344,7 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
             <input
               placeholder="Calcium (mg)"
               type="number"
+              inputMode="decimal"
               value={calcium}
               onChange={(e) => setCalcium(e.target.value)}
               className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
@@ -341,6 +352,7 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
             <input
               placeholder="Iron (mg)"
               type="number"
+              inputMode="decimal"
               value={iron}
               onChange={(e) => setIron(e.target.value)}
               className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
@@ -348,6 +360,7 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
             <input
               placeholder="Vitamin C (mg)"
               type="number"
+              inputMode="decimal"
               value={vitaminC}
               onChange={(e) => setVitaminC(e.target.value)}
               className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
@@ -355,6 +368,7 @@ function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void;
             <input
               placeholder="Vitamin A (mcg)"
               type="number"
+              inputMode="decimal"
               value={vitaminA}
               onChange={(e) => setVitaminA(e.target.value)}
               className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"

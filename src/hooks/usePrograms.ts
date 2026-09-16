@@ -117,6 +117,31 @@ export function useDeleteProgram() {
   })
 }
 
+/** Recreates a deleted program from its last-known snapshot, for the undo toast. */
+export function useRestoreProgram() {
+  const { user } = useAuth()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (program: Program) => {
+      if (!user) throw new Error('Not signed in')
+      const { error } = await supabase.from('programs').insert({
+        user_id: user.id,
+        name: program.name,
+        description: program.description,
+        is_shared: program.is_shared,
+        diet_goal: program.diet_goal,
+        calorie_goal: program.calorie_goal,
+        water_goal_ml: program.water_goal_ml,
+        workouts: program.workouts,
+        recipes: program.recipes,
+        meal_presets: program.meal_presets,
+      })
+      if (error) throw error
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['programs', user?.id] }),
+  })
+}
+
 async function findOrCreateExercise(userId: string, name: string, muscleGroup: string): Promise<string> {
   const { data: existing, error: findError } = await supabase.from('exercises').select('id').ilike('name', name).limit(1).maybeSingle()
   if (findError) throw findError

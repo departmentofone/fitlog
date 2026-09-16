@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { EmptyState } from '../../components/EmptyState'
 import { MacroLine } from '../../components/MacroLine'
+import { SkeletonRow } from '../../components/Skeleton'
 import { useToast } from '../../components/ToastProvider'
 import { useAuth } from '../../hooks/useAuth'
 import { useFoodSearch } from '../../hooks/useFoods'
@@ -103,6 +105,7 @@ export function RecipeBuilderView({
             <span className="text-sm text-slate-400">Servings</span>
             <input
               type="number"
+              inputMode="decimal"
               min={1}
               value={servings}
               onChange={(e) => setServings(Math.max(1, parseInt(e.target.value, 10) || 1))}
@@ -154,6 +157,7 @@ export function RecipeBuilderView({
                 <span className="flex-1 truncate text-sm text-slate-200">{d.food.name}</span>
                 <input
                   type="number"
+              inputMode="decimal"
                   min={0}
                   value={d.grams}
                   onChange={(e) => updateDraftGrams(i, parseFloat(e.target.value) || 0)}
@@ -186,9 +190,14 @@ export function RecipeBuilderView({
 
       <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
         <h3 className="mb-3 font-medium text-white">Your recipes</h3>
-        {isLoading && <p className="text-sm text-slate-400">Loading…</p>}
+        {isLoading && (
+          <div className="space-y-2">
+            <SkeletonRow />
+            <SkeletonRow />
+          </div>
+        )}
         {!isLoading && recipes.length === 0 && (
-          <p className="text-sm text-slate-500">No recipes yet — build one above.</p>
+          <EmptyState variant="folder" message="No recipes yet — build one above." />
         )}
         <div className="space-y-2">
           {recipes.map((recipe) => (
@@ -267,6 +276,7 @@ function RecipeCard({
         {isOwner ? (
           <input
             type="number"
+              inputMode="decimal"
             min={1}
             value={recipe.servings}
             onChange={(e) => updateServings.mutate({ recipeId: recipe.id, servings: Math.max(1, parseInt(e.target.value, 10) || 1) })}
@@ -302,6 +312,7 @@ function RecipeCard({
         <span className="text-xs text-slate-500">Add</span>
         <input
           type="number"
+              inputMode="decimal"
           min={1}
           value={servingsToAdd}
           onChange={(e) => setServingsToAdd(Math.max(1, parseInt(e.target.value, 10) || 1))}

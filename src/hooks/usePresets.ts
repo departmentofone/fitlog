@@ -81,6 +81,36 @@ export function useDeletePreset() {
   })
 }
 
+/** Recreates a deleted preset from its last-known snapshot, for the undo toast. */
+export function useRestorePreset() {
+  const { user } = useAuth()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (preset: PresetWithItems) => {
+      if (!user) throw new Error('Not signed in')
+      const { data: created, error: presetError } = await supabase
+        .from('workout_presets')
+        .insert({ user_id: user.id, name: preset.name, is_shared: preset.is_shared })
+        .select()
+        .single()
+      if (presetError) throw presetError
+
+      const items = preset.workout_preset_items.map((i) => ({
+        preset_id: created.id,
+        exercise_id: i.exercise_id,
+        set_number: i.set_number,
+        weight: i.weight,
+        reps: i.reps,
+      }))
+      if (items.length > 0) {
+        const { error: itemsError } = await supabase.from('workout_preset_items').insert(items)
+        if (itemsError) throw itemsError
+      }
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['presets', user?.id] }),
+  })
+}
+
 /** Loads a preset's items into a session as real logged sets, continuing set numbering per exercise. */
 export function useLoadPreset(sessionId: string | undefined) {
   const qc = useQueryClient()

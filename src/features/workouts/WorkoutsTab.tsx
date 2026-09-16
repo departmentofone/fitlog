@@ -4,6 +4,7 @@ import { DateNav } from '../../components/DateNav'
 import { FireStreak } from '../../components/FireStreak'
 import { MuscleDiagram } from '../../components/MuscleDiagram'
 import { useToast } from '../../components/ToastProvider'
+import { SkeletonCard } from '../../components/Skeleton'
 import { haptics } from '../../lib/haptics'
 import { useUserSettings } from '../../hooks/useUserSettings'
 import { useWorkoutStreaks } from '../../hooks/useWorkoutStreaks'
@@ -57,6 +58,7 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
   const [showPresets, setShowPresets] = useState(false)
   const [detailExercise, setDetailExercise] = useState<Exercise | null>(null)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
+  const [restTrigger, setRestTrigger] = useState(0)
   const { data: activeExerciseHistory = [] } = useExerciseHistory(activeExercise?.id)
 
   const groupedByExercise = useMemo(() => {
@@ -120,7 +122,7 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
       <FireStreak count={streaks?.currentStreak ?? 0} label="day streak" />
 
       {sessionLoading ? (
-        <p className="p-4 text-slate-400">Loading…</p>
+        <SkeletonCard lines={2} />
       ) : !session ? (
         <PreworkoutGate loading={startSession.isPending} onAnswer={(pw) => startSession.mutate({ preworkout: pw, date })} />
       ) : (
@@ -193,6 +195,7 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
               existingSets={groupedByExercise.get(activeExercise.id) ?? []}
               nextSetNumber={(groupedByExercise.get(activeExercise.id)?.length ?? 0) + 1}
               adding={addSet.isPending}
+              restTrigger={restTrigger}
               onAdd={(input) => {
                 const priorBest = activeExerciseHistory
                   .filter((h) => !h.is_warmup)
@@ -207,11 +210,14 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
                   haptics.tap()
                 }
 
-                addSet.mutate({
-                  exerciseId: activeExercise.id,
-                  setNumber: (groupedByExercise.get(activeExercise.id)?.length ?? 0) + 1,
-                  ...input,
-                })
+                addSet.mutate(
+                  {
+                    exerciseId: activeExercise.id,
+                    setNumber: (groupedByExercise.get(activeExercise.id)?.length ?? 0) + 1,
+                    ...input,
+                  },
+                  { onSuccess: () => setRestTrigger((t) => t + 1) },
+                )
               }}
               onDeleteSet={(id) => {
                 const target = sets.find((s) => s.id === id)

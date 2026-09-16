@@ -17,6 +17,7 @@ export const DEFAULT_SETTINGS: Omit<UserSettings, 'user_id' | 'updated_at'> = {
   unit_system: 'metric',
   theme: 'system',
   color_palette: 'emerald',
+  haptics_enabled: true,
   bottom_nav_tabs: [],
 }
 

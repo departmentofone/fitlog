@@ -1,17 +1,30 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import type { CommonServing, Food } from '../types'
 import { useAuth } from './useAuth'
 
+/** Delays reacting to a fast-changing value (e.g. keystrokes) until it settles for `delayMs`. */
+function useDebouncedValue<T>(value: T, delayMs: number): T {
+  const [debounced, setDebounced] = useState(value)
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delayMs)
+    return () => clearTimeout(timer)
+  }, [value, delayMs])
+  return debounced
+}
+
 export function useFoodSearch(search: string) {
   const { user } = useAuth()
+  const debouncedSearch = useDebouncedValue(search, 300)
   return useQuery({
-    queryKey: ['foods', search],
+    queryKey: ['foods', debouncedSearch],
     enabled: !!user,
+    placeholderData: (previous) => previous,
     queryFn: async () => {
       let query = supabase.from('foods').select('*').order('name', { ascending: true }).limit(50)
-      if (search.trim()) {
-        query = query.ilike('name', `%${search.trim()}%`)
+      if (debouncedSearch.trim()) {
+        query = query.ilike('name', `%${debouncedSearch.trim()}%`)
       }
       const { data, error } = await query
       if (error) throw error

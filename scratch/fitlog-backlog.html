@@ -1,0 +1,470 @@
+<title>FitLog Backlog</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Literata:ital,opsz,wght@0,18..144,400;0,18..144,500;0,18..144,600;1,18..144,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #eef2fa;
+    --surface: rgba(255,255,255,.72);
+    --surface-2: rgba(255,255,255,.55);
+    --text: #10152a;
+    --muted: #4b5468;
+    --accent: #189a6c;
+    --accent-soft: rgba(24,154,108,.14);
+    --amber: #b45309;
+    --amber-soft: rgba(180,83,9,.14);
+    --violet: #6d28d9;
+    --violet-soft: rgba(109,40,217,.12);
+    --border: rgba(15,23,42,.12);
+    --border-strong: rgba(15,23,42,.2);
+    --shadow: 0 10px 34px rgba(15,23,42,.08);
+    --radius-lg: 22px;
+    --radius-md: 14px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0b0f1e;
+      --surface: rgba(255,255,255,.055);
+      --surface-2: rgba(255,255,255,.08);
+      --text: #f4f6fb;
+      --muted: #a8b0c4;
+      --accent: #34d399;
+      --accent-soft: rgba(52,211,153,.16);
+      --amber: #fbbf24;
+      --amber-soft: rgba(251,191,36,.14);
+      --violet: #a78bfa;
+      --violet-soft: rgba(167,139,250,.16);
+      --border: rgba(255,255,255,.12);
+      --border-strong: rgba(255,255,255,.2);
+      --shadow: 0 10px 34px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0b0f1e;
+    --surface: rgba(255,255,255,.055);
+    --surface-2: rgba(255,255,255,.08);
+    --text: #f4f6fb;
+    --muted: #a8b0c4;
+    --accent: #34d399;
+    --accent-soft: rgba(52,211,153,.16);
+    --amber: #fbbf24;
+    --amber-soft: rgba(251,191,36,.14);
+    --violet: #a78bfa;
+    --violet-soft: rgba(167,139,250,.16);
+    --border: rgba(255,255,255,.12);
+    --border-strong: rgba(255,255,255,.2);
+    --shadow: 0 10px 34px rgba(0,0,0,.4);
+  }
+
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); }
+
+  .page {
+    font-family: 'Literata', Georgia, 'Times New Roman', serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100%;
+    padding-block: 28px 80px;
+  }
+  .shell { max-width: 1080px; margin: 0 auto; padding-inline: 20px; }
+
+  h1, h2, h3, .label, .chip, .stat-num, button, .kicker {
+    font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+  }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+  /* ---------- ambient glow (matches the app itself) ---------- */
+  .glow { position: fixed; pointer-events: none; z-index: 0; border-radius: 999px; filter: blur(90px); }
+  .glow.a { top: -80px; left: -60px; width: 300px; height: 300px; background: var(--accent); opacity: .28; }
+  .glow.b { bottom: -100px; right: -60px; width: 320px; height: 320px; background: var(--amber); opacity: .18; }
+
+  .content { position: relative; z-index: 1; }
+
+  /* ---------- header ---------- */
+  header.hero {
+    background: var(--surface);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-top-color: var(--border-strong);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 28px 26px;
+    margin-bottom: 22px;
+  }
+  .kicker {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--accent); background: var(--accent-soft); border-radius: 999px;
+    padding: 5px 11px; margin-bottom: 14px;
+  }
+  header.hero h1 {
+    font-size: clamp(26px, 4.2vw, 36px); font-weight: 800; letter-spacing: -0.01em;
+    margin: 0 0 10px; text-wrap: balance; line-height: 1.12;
+  }
+  header.hero p.lede {
+    font-family: 'Literata', serif; font-size: 16.5px; line-height: 1.6; color: var(--muted);
+    max-width: 62ch; margin: 0 0 18px;
+  }
+  .hero-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 4px; }
+  .hero-stat {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-md);
+    padding: 10px 14px; min-width: 108px;
+  }
+  .hero-stat .stat-num { font-size: 21px; font-weight: 700; line-height: 1; }
+  .hero-stat .stat-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  .notice {
+    margin-top: 16px; font-size: 13.5px; color: var(--muted);
+    border-left: 3px solid var(--amber); padding: 8px 0 8px 12px;
+  }
+  .notice strong { color: var(--text); }
+
+  /* ---------- controls (jump nav + filter) ---------- */
+  .controls {
+    position: sticky; top: 12px; z-index: 5;
+    display: flex; gap: 10px; align-items: center; justify-content: space-between;
+    background: var(--surface); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border); border-radius: 999px; padding: 8px 8px 8px 16px;
+    margin-bottom: 26px; box-shadow: var(--shadow);
+  }
+  .jumpnav { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+  .jumpnav::-webkit-scrollbar { display: none; }
+  .jumpnav a {
+    flex: 0 0 auto; font-size: 12.5px; font-weight: 600; color: var(--muted); text-decoration: none;
+    padding: 7px 12px; border-radius: 999px; white-space: nowrap; transition: background .15s, color .15s;
+  }
+  .jumpnav a:hover { background: var(--surface-2); color: var(--text); }
+  #star-toggle {
+    flex: 0 0 auto; font-size: 12.5px; font-weight: 600; border: 1px solid var(--border);
+    background: var(--surface-2); color: var(--muted); border-radius: 999px; padding: 7px 14px;
+    cursor: pointer; display: flex; align-items: center; gap: 6px; transition: color .15s, border-color .15s;
+  }
+  #star-toggle svg { width: 13px; height: 13px; }
+  #star-toggle.active { color: var(--amber); border-color: var(--amber); }
+
+  /* ---------- sections ---------- */
+  section.cat { margin-bottom: 34px; scroll-margin-top: 70px; }
+  section.cat .cat-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+  section.cat h2 { font-size: 20px; font-weight: 700; margin: 0; letter-spacing: -0.005em; }
+  section.cat .cat-count {
+    font-size: 12px; color: var(--muted); background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 999px; padding: 2px 9px;
+  }
+  section.cat > p.blurb { font-size: 14.5px; color: var(--muted); margin: 6px 0 16px; max-width: 68ch; line-height: 1.55; }
+
+  .items { display: flex; flex-direction: column; gap: 10px; }
+
+  .item {
+    background: var(--surface); border: 1px solid var(--border); border-top-color: var(--border-strong);
+    border-radius: var(--radius-md); padding: 15px 16px; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: start;
+    transition: border-color .15s;
+  }
+  .item:hover { border-color: var(--border-strong); }
+  .item .idx {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted);
+    background: var(--surface-2); border-radius: 8px; width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center; margin-top: 1px;
+  }
+  .item .body h3 {
+    font-size: 15.5px; font-weight: 600; margin: 0 0 5px; line-height: 1.35;
+  }
+  .item .body p {
+    font-family: 'Literata', serif; font-size: 14.5px; line-height: 1.6; color: var(--muted); margin: 0;
+  }
+  .item .meta { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+  .tag {
+    font-size: 10.5px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase;
+    padding: 4px 9px; border-radius: 999px; white-space: nowrap;
+  }
+  .tag.quick { color: var(--accent); background: var(--accent-soft); }
+  .tag.medium { color: var(--amber); background: var(--amber-soft); }
+  .tag.big { color: var(--violet); background: var(--violet-soft); }
+
+  .star-btn {
+    background: none; border: none; cursor: pointer; padding: 2px; color: var(--muted);
+    display: flex; align-items: center; justify-content: center; border-radius: 6px;
+  }
+  .star-btn svg { width: 17px; height: 17px; transition: fill .15s, stroke .15s; }
+  .star-btn.starred svg { fill: var(--amber); stroke: var(--amber); }
+  .star-btn:not(.starred) svg { fill: none; stroke: var(--muted); stroke-width: 1.6; }
+
+  .item[data-starred="0"].filtering { display: none; }
+
+  footer.endnote {
+    margin-top: 40px; text-align: center; font-size: 13px; color: var(--muted);
+    border-top: 1px solid var(--border); padding-top: 20px;
+  }
+
+  @media (max-width: 640px) {
+    .item { grid-template-columns: auto 1fr; }
+    .item .meta { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; margin-top: 4px; }
+    header.hero { padding: 22px 18px; }
+    .controls { position: static; border-radius: var(--radius-md); flex-wrap: wrap; }
+  }
+</style>
+
+<div class="glow a"></div>
+<div class="glow b"></div>
+
+<div class="page">
+  <div class="content shell">
+
+    <header class="hero">
+      <span class="kicker">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        Research only — nothing built yet
+      </span>
+      <h1>FitLog build backlog</h1>
+      <p class="lede">
+        A full pass over the current app — every tab, hook, and screen — looking for what would make FitLog feel
+        smoother to use, look more finished, and close the gap against the apps you're already competing with
+        (Strong, Hevy, MyFitnessPal, Cronometer, Zero). Organized so you can skim by category, star what's worth
+        doing first, and decide the order yourself.
+      </p>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="stat-num">47</div><div class="stat-label">ideas</div></div>
+        <div class="hero-stat"><div class="stat-num">11</div><div class="stat-label">categories</div></div>
+        <div class="hero-stat"><div class="stat-num">14</div><div class="stat-label">quick wins</div></div>
+        <div class="hero-stat"><div class="stat-num">6</div><div class="stat-label">big bets</div></div>
+      </div>
+      <p class="notice"><strong>Nothing here has been implemented.</strong> This is a reading list — star the ones that land, and we'll turn those into an actual plan when you're back.</p>
+    </header>
+
+    <div class="controls">
+      <nav class="jumpnav" id="jumpnav"></nav>
+      <button id="star-toggle" type="button">
+        <svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.4 6.9.7-5.2 4.7 1.5 6.8L12 17.6 5.9 21.1l1.5-6.8-5.2-4.7 6.9-.7L12 2.5z" stroke-width="1.6" stroke="currentColor" fill="none"/></svg>
+        Starred only
+      </button>
+    </div>
+
+    <div id="sections"></div>
+
+    <footer class="endnote">
+      Compiled from a full read of <span class="mono">src/features/**</span>, the Supabase schema, and the repo's own
+      scoping docs (<span class="mono">WORKOUT_VIDEO_RESEARCH.md</span>, <span class="mono">PUSH_NOTIFICATIONS.md</span>,
+      <span class="mono">DELETE_ACCOUNT_PLAN.md</span>) — not generic app-improvement advice.
+    </footer>
+
+  </div>
+</div>
+
+<script>
+(function () {
+  var SECTIONS = [
+    {
+      id: 'quick-wins',
+      title: 'Fast polish',
+      blurb: 'Small, self-contained fixes — mostly one component each, nothing architectural. Good first pass before anything bigger.',
+      items: [
+        { t: 'Debounce food search', e: 'quick', b: 'FoodPicker fires a Supabase query on every keystroke while typing a food name. A 250–300ms debounce cuts the request count and stops the results list from flickering mid-word.' },
+        { t: 'One delete pattern, everywhere', e: 'quick', b: 'Three different delete UX patterns currently coexist: tap-to-arm/tap-to-confirm (History), instant-delete-with-undo-toast (sets, programs), and a bare "×" with no confirmation (Goals list rows). Standardize on instant + undo — it’s already built, already used in two places, and is the lowest-friction of the three.' },
+        { t: 'Skeleton loaders instead of "Loading…"', e: 'quick', b: 'Nearly every tab shows the same plain loading string while its query resolves. A shimmer shaped like the glass cards that are about to appear stops the layout from jumping and reads as more considered.' },
+        { t: 'Toast icons', e: 'quick', b: 'ToastProvider messages are plain text right now. A small check/warning glyph makes success vs. error scannable without reading the sentence.' },
+        { t: 'Numeric keyboard audit', e: 'quick', b: 'Several numeric inputs (age, custom fast hours, calculator fields) don’t set inputMode, so the phone shows the full keyboard instead of a numpad. A five-minute pass across every <input type="number"> fixes this app-wide.' },
+        { t: 'Confirm the calculator’s "save" action', e: 'quick', b: 'MaintenanceCalculatorTab’s "Save these stats to my profile" button gives no feedback on success — add the same toast pattern already used everywhere else.' },
+      ],
+    },
+    {
+      id: 'motion',
+      title: 'Interaction & motion',
+      blurb: 'The app is visually calm now (Aurora Glass) but almost nothing moves. A handful of deliberate motion moments would make it feel alive without turning it busy.',
+      items: [
+        { t: 'Haptic feedback on key moments', e: 'quick', b: 'navigator.vibrate() on a logged set, a PR, a completed fast, or a streak milestone. Free to add, works on Android, silently no-ops on iOS — no downside.' },
+        { t: 'Rest timer between sets', e: 'medium', b: 'SessionTimer tracks the whole workout, but there’s no per-set rest countdown. This is one of the most-used features in Strong and Hevy — an auto-starting countdown after logging a set, with a vibration at zero, would close a real gap.' },
+        { t: '"Last time" hint while logging a set', e: 'medium', b: 'SetForm doesn’t show what you logged for this exercise last session. Surfacing "last time: 3×8 @ 60kg" right above the input removes almost all the guesswork — probably the single highest-leverage workout change on this whole list.' },
+        { t: 'Number count-up on stat reveals', e: 'quick', b: 'Today’s totals, the weekly digest numbers, and streak counts currently just render their final value. A brief count-up animation when the tab opens costs very little and feels noticeably more polished.' },
+        { t: 'Celebrate achievement unlocks in the moment', e: 'medium', b: 'Achievements is entirely passive right now — you have to remember to open it to see anything changed. Fire a small in-app moment (toast + brief ring animation) the instant a "first" or tier actually unlocks.' },
+        { t: 'Before/after slider for progress photos', e: 'medium', b: 'PhotoCompare shows two static images side by side. A drag-to-reveal comparison slider is a far more compelling way to present the exact same two photos you already have.' },
+        { t: 'Swipe-to-delete on list rows', e: 'medium', b: 'Sets, meal items, and exercises are all deleted via a small tap target. Swipe gestures are expected now on list rows and would sit naturally alongside the existing undo-toast pattern.' },
+      ],
+    },
+    {
+      id: 'visual',
+      title: 'Visual design follow-ups',
+      blurb: 'Aurora Glass just shipped app-wide. These are the seams left over from doing that as a fast, mechanical pass rather than a component-by-component redesign.',
+      items: [
+        { t: 'Theme-aware chart colors', e: 'medium', b: 'TrendsChart hardcodes hex colors (emerald/blue/amber/red) instead of reading the accent palette you can pick in Settings. Someone on the violet palette still sees green bars — pull chart colors from the CSS custom properties at render time instead.' },
+        { t: 'Recharts font mismatch', e: 'quick', b: 'Chart axis labels and tooltips render in the browser’s default sans-serif, not Sora — a small but visible seam against the rest of the redesigned UI.' },
+        { t: 'Contrast audit on glass surfaces', e: 'quick', b: 'Translucent cards now show different effective contrast depending on what’s rendered behind them (the ambient blobs, a busy chart). Worth a deliberate pass, especially for muted/secondary text sitting over the amber glow.' },
+        { t: 'Refresh the app icon & splash', e: 'quick', b: 'The apple-touch-icon, 192/512 icons, and manifest splash screen were generated for the old "Ring System" black-canvas look — they should be regenerated to match Aurora Glass’s navy-and-emerald identity.' },
+        { t: 'Illustrated empty states', e: 'medium', b: 'Programs, Goals, and Achievements all show a plain sentence when there’s nothing there yet ("No programs yet…"). A small line-art illustration in the aurora glow style turns a dead end into an invitation to act.' },
+        { t: 'Press feedback on buttons', e: 'quick', b: 'Buttons currently only change background color on hover. A subtle active:scale-[0.98] press effect would reinforce the tactile "glass" feel the rest of the redesign is going for.' },
+      ],
+    },
+    {
+      id: 'ia',
+      title: 'Navigation & information architecture',
+      blurb: 'The tab list has grown organically to ten destinations. Worth a deliberate pass before adding more.',
+      items: [
+        { t: 'Group the menu into sections', e: 'medium', b: 'Workouts, Meals, Scanner, Diet, Fasting, Goals, Achievements, Programs, Calculator, About is a long flat list in one hamburger menu. Group them — e.g. "Track" (Workouts/Meals/Scanner/Diet/Fasting), "Progress" (Goals/Achievements), "Tools" (Programs/Calculator) — with small section labels, so it reads as organized instead of just long.' },
+        { t: 'History is nearly unreachable', e: 'medium', b: 'History only opens via a button inside the Workouts tab (onOpenHistory) — it’s not in the main menu at all. Either promote it to a real tab, or fold its calendar/streaks/day-detail view into Goals, which already owns ProgressCalendar.' },
+        { t: 'The same numbers appear in four places', e: 'medium', b: 'Workout streak, diet streak, and weekly totals each show up independently in History (WeeklyDigestCard), Diet (FireStreak), and Achievements (TierPills) — three overlapping views of similar numbers. Pick one "home base" for at-a-glance status and let the others link to it instead of duplicating.' },
+        { t: 'No cross-app search', e: 'big', b: 'Exercises, foods, and past sessions each have their own local search inside their own picker. Not urgent today, but worth a single search entry point once the food library (now ~300+ items after the Android-launch seed) and workout history both keep growing.' },
+        { t: 'Floating quick-add action', e: 'medium', b: 'Logging a set requires being in Workouts; logging food requires being in Meals. A floating "+" with a small radial menu (Log set / Log meal / Start fast) would remove the tab-switch for the three most common actions in the app.' },
+      ],
+    },
+    {
+      id: 'workouts',
+      title: 'Workout feature gaps',
+      blurb: 'Measured against Strong, Hevy, and Fitbod — the apps whose users FitLog is most directly built for.',
+      items: [
+        { t: 'Plate calculator', e: 'quick', b: 'Given a target barbell weight, show which plates go on each side. Small, self-contained, and genuinely well-liked in every lifting app that has it.' },
+        { t: 'Superset / circuit grouping', e: 'medium', b: 'There’s currently no way to group exercises as a superset or circuit — sets are logged per-exercise independently, which doesn’t match how a lot of real workouts are actually structured.' },
+        { t: 'Exercise video/GIF reference', e: 'big', b: 'WORKOUT_VIDEO_RESEARCH.md is already sitting in the repo root — this was scoped out at some point and never built. Worth resurrecting; even a link-out to one canonical demo per exercise closes a real, visible gap against Strong/Hevy/Fitbod.' },
+        { t: 'Warmup-set auto-suggestion', e: 'medium', b: 'is_warmup already exists on the sets table. Auto-suggesting a warmup ramp (say, 40/60/80% of your planned working weight) turns a field that exists but is purely manual into something that actually saves effort.' },
+        { t: 'Overtraining / deload awareness', e: 'medium', b: 'WeeklyVolumeCard shows volume but never flags when it’s unusually high for you specifically — a simple "this week is 40% above your 4-week average, consider a lighter day" would use data you’re already computing.' },
+      ],
+    },
+    {
+      id: 'nutrition',
+      title: 'Meals & nutrition feature gaps',
+      blurb: 'The food schema already tracks more than the UI currently shows — several of these are "surface data you already have," not new data collection.',
+      items: [
+        { t: 'A real micros dashboard', e: 'medium', b: 'Every food already carries fiber, sugar, sodium, cholesterol, potassium, calcium, iron, vitamin C, and vitamin A — but the only place any of it appears is inside NutritionBreakdownModal after a tap. Even just fiber + sodium always-visible would surface data you’re already capturing and currently hiding.' },
+        { t: 'Photos on logged meals', e: 'medium', b: 'No support for attaching a photo to a meal. The Storage pattern for this already exists (progress photos use it) — reusing it for meals adds real "what did I actually eat" recall value for very little new schema work.' },
+        { t: 'Cache barcode lookups', e: 'quick', b: 'useOpenFoodFacts hits the API fresh on every scan, including repeat scans of the same product. Caching by barcode (even just checking your own foods table first) makes re-scans instant and reduces reliance on an external API.' },
+        { t: 'Weekly nutrition adherence score', e: 'medium', b: 'TrendsChart shows daily bars and an average line, but nothing scores "how many of the last 7 days did I actually hit my calorie goal" the way the workout and diet streaks already do for consistency.' },
+        { t: 'Recipe scaling', e: 'quick', b: 'RecipeBuilder stores a fixed servings count with no way to scale a recipe up or down — doubling a recipe currently means re-entering every ingredient’s grams by hand.' },
+      ],
+    },
+    {
+      id: 'progress',
+      title: 'Fasting, goals & progress gaps',
+      blurb: 'Goals owns weight and photos; Fasting owns the timer — both are missing views that would be pretty standard elsewhere.',
+      items: [
+        { t: 'A weight-over-time chart', e: 'medium', b: 'ProgressCalendar and the Goals stats card both show point-in-time weight, but there’s no line chart of weight over time the way TrendsChart exists for macros. This is about as standard a view as exists in any fitness app, and it’s currently missing.' },
+        { t: 'Body measurements', e: 'medium', b: 'Only weight and photos are tracked today. Waist/chest/arm/hip measurements are a common, lightweight addition for anyone doing a real body-recomposition goal, and would slot into the same table shape as ProgressEntry.' },
+        { t: 'Surface the fasting streak in Fasting itself', e: 'quick', b: 'The fasting streak is tracked in Achievements only — FastingTab never shows "you’re on a 5-day streak," so the motivational signal is buried one tab away from where it’s actually earned.' },
+        { t: 'Fasting-stage education', e: 'quick', b: 'No info anywhere about what’s physiologically happening at different fasting durations (a Zero/Fastic staple) — even a static reference card ("16h: glycogen depleting," "24h: autophagy begins") adds perceived value cheaply.' },
+      ],
+    },
+    {
+      id: 'motivation',
+      title: 'Motivation, achievements & the two-person angle',
+      blurb: 'FitLog is explicitly built for you and one friend right now — a couple of these lean into that instead of building generic social features.',
+      items: [
+        { t: 'A friend status card', e: 'medium', b: 'Programs already supports sharing bundles with your friend, but there’s no way to see their current streak or last workout date. A small "friend status" card — no feed, no comments, just their streak — is a genuinely fun social loop that fits a two-person app without building real social infrastructure.' },
+        { t: 'Shareable milestone card', e: 'medium', b: 'A canvas-rendered image of a PR or streak (no backend needed) that you can send your friend outside the app — cheap to build, and gives the achievement system a reason to be looked at.' },
+        { t: '(See also: celebrate unlocks in the moment, under Motion)', e: 'quick', b: 'Listed above — repeating the pointer here since it’s as much a motivation fix as a motion one.' },
+      ],
+    },
+    {
+      id: 'notifications',
+      title: 'Notifications & re-engagement',
+      blurb: 'Almost everything here is blocked on one thing: finishing what’s already half-built.',
+      items: [
+        { t: 'Finish push notifications', e: 'big', b: 'PUSH_NOTIFICATIONS.md and PushNotificationsCard already exist in the repo, described as scaffolded but not enabled. Finishing this one thing unlocks nearly every other item in this section — rest-timer alerts, meal reminders, streak-at-risk nudges — none of which can ship without it.' },
+        { t: 'Streak-at-risk reminder', e: 'medium', b: '"You haven’t logged today and your 12-day streak ends at midnight" is one of the single highest-leverage retention notifications in habit-tracking apps generally — and the streak data to power it already exists in useWorkoutStreaks/useDietStreak.' },
+        { t: 'Rest-timer notification', e: 'medium', b: 'Once push/local notifications exist, the rest timer (see Motion/Workouts) can alert you even if the phone is locked or the tab is backgrounded — without this it only works while you’re staring at the screen.' },
+      ],
+    },
+    {
+      id: 'technical',
+      title: 'Performance & technical health',
+      blurb: 'Nothing urgent today at this scale, but worth knowing about before the user count grows past two.',
+      items: [
+        { t: 'FoodPicker may be doing too much', e: 'medium', b: 'Beyond the debounce fix above, this single component has a notably high count of repeated card patterns — a sign it might be worth splitting into smaller pieces for maintainability as the food library keeps growing.' },
+        { t: 'Watch service-worker cache growth', e: 'quick', b: 'The app now lazy-loads ten-plus feature tabs; periodically sanity-check the precache manifest size so a cold install doesn’t get slow as more chunks accumulate.' },
+        { t: 'Basic error visibility', e: 'medium', b: 'There’s currently no crash/error reporting — you and your friend are the entire QA team right now. Even a lightweight logger (log window.onerror to a Supabase table) means you’d hear about a real bug before someone has to tell you about it.' },
+        { t: '"What’s new" note after an update', e: 'quick', b: 'About already shows the build time; extending it to show a one-line "what changed since you last opened this" is genuinely useful today for two people, and becomes close to essential once strangers are using the app and can’t just ask you what changed.' },
+      ],
+    },
+    {
+      id: 'launch',
+      title: 'Play Store launch readiness',
+      blurb: 'Separate from design/UX — these are the things that block publishing at all, not things that make the app nicer.',
+      items: [
+        { t: 'Finish the account-deletion flow', e: 'big', b: 'DELETE_ACCOUNT_PLAN.md already exists in the repo. Play Store policy requires an in-app account-deletion path for any app with user accounts — this isn’t optional once you publish, so it’s worth checking whether that plan was ever actually implemented.' },
+        { t: 'Privacy policy & terms page', e: 'quick', b: 'Required for the Play Store listing itself — a single hosted static page is enough to satisfy this, and doesn’t exist yet.' },
+        { t: 'Store listing assets', e: 'medium', b: 'Screenshots, a feature graphic, and short/long descriptions — all straightforward to produce once Aurora Glass is stable and you’re happy with how each tab looks.' },
+        { t: 'Real version numbering', e: 'quick', b: 'There’s a build-time footer but no version code/name scheme — Play Store requires a real version per release, and it’s much easier to set this convention now than to retrofit it later.' },
+        { t: 'Lightweight, privacy-conscious analytics', e: 'big', b: 'Even simple "which tabs actually get opened" counts would tell you where to invest further design and feature effort instead of guessing — valuable the moment there are users beyond the two of you.' },
+      ],
+    },
+  ];
+
+  var root = document.getElementById('sections');
+  var jumpnav = document.getElementById('jumpnav');
+  var starToggle = document.getElementById('star-toggle');
+  var STORAGE_KEY = 'fitlog-backlog-stars';
+
+  var starred = {};
+  try { starred = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (e) { starred = {}; }
+
+  function saveStars() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(starred)); } catch (e) {}
+  }
+
+  var EFFORT_LABEL = { quick: 'Quick win', medium: 'Medium', big: 'Big bet' };
+
+  var starSvg = '<svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.4 6.9.7-5.2 4.7 1.5 6.8L12 17.6 5.9 21.1l1.5-6.8-5.2-4.7 6.9-.7L12 2.5z" stroke-width="1.6" stroke="currentColor" fill="none"/></svg>';
+
+  SECTIONS.forEach(function (section, sIdx) {
+    var a = document.createElement('a');
+    a.href = '#' + section.id;
+    a.textContent = section.title;
+    jumpnav.appendChild(a);
+
+    var el = document.createElement('section');
+    el.className = 'cat';
+    el.id = section.id;
+
+    var head = document.createElement('div');
+    head.className = 'cat-head';
+    head.innerHTML = '<h2>' + section.title + '</h2><span class="cat-count">' + section.items.length + '</span>';
+    el.appendChild(head);
+
+    var blurb = document.createElement('p');
+    blurb.className = 'blurb';
+    blurb.textContent = section.blurb;
+    el.appendChild(blurb);
+
+    var list = document.createElement('div');
+    list.className = 'items';
+
+    section.items.forEach(function (item, iIdx) {
+      var id = sIdx + '-' + iIdx;
+      var row = document.createElement('div');
+      row.className = 'item';
+      row.setAttribute('data-id', id);
+      row.setAttribute('data-starred', starred[id] ? '1' : '0');
+
+      var num = (iIdx + 1) < 10 ? '0' + (iIdx + 1) : String(iIdx + 1);
+
+      row.innerHTML =
+        '<span class="idx mono">' + num + '</span>' +
+        '<div class="body"><h3>' + item.t + '</h3><p>' + item.b + '</p></div>' +
+        '<div class="meta">' +
+          '<button class="star-btn' + (starred[id] ? ' starred' : '') + '" type="button" aria-label="Star this idea">' + starSvg + '</button>' +
+          '<span class="tag ' + item.e + '">' + EFFORT_LABEL[item.e] + '</span>' +
+        '</div>';
+
+      var btn = row.querySelector('.star-btn');
+      btn.addEventListener('click', function () {
+        var isStarred = !starred[id];
+        starred[id] = isStarred;
+        saveStars();
+        btn.classList.toggle('starred', isStarred);
+        row.setAttribute('data-starred', isStarred ? '1' : '0');
+      });
+
+      list.appendChild(row);
+    });
+
+    el.appendChild(list);
+    root.appendChild(el);
+  });
+
+  var filtering = false;
+  starToggle.addEventListener('click', function () {
+    filtering = !filtering;
+    starToggle.classList.toggle('active', filtering);
+    document.querySelectorAll('.item').forEach(function (row) {
+      row.classList.toggle('filtering', filtering);
+    });
+  });
+})();
+</script>

@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import { useLastSetForExercise } from '../../hooks/useWorkouts'
+import { useMemo, useState } from 'react'
+import { RestTimer } from '../../components/RestTimer'
+import { summarizeLastSets, useLastSessionSetsForExercise } from '../../hooks/useWorkouts'
 import type { Exercise, WorkoutSet } from '../../types'
 
 const DIFFICULTY_LABELS: Record<number, string> = {
@@ -25,6 +26,8 @@ interface SetFormProps {
   onUpdateSet: (input: { setId: string; weight: number; reps: number; difficulty: number }) => void
   onDone: () => void
   adding?: boolean
+  /** Bump this (e.g. on a successful add-set mutation) to (re)start the rest timer. */
+  restTrigger: number
 }
 
 function EditableSetRow({
@@ -101,13 +104,15 @@ export function SetForm({
   onUpdateSet,
   onDone,
   adding,
+  restTrigger,
 }: SetFormProps) {
   const [weight, setWeight] = useState('')
   const [reps, setReps] = useState('')
   const [difficulty, setDifficulty] = useState(6)
   const [isWarmup, setIsWarmup] = useState(false)
   const [editingSetId, setEditingSetId] = useState<string | null>(null)
-  const { data: lastSet } = useLastSetForExercise(exercise.id, sessionId)
+  const { data: lastSets = [] } = useLastSessionSetsForExercise(exercise.id, sessionId)
+  const lastTimeSummary = useMemo(() => summarizeLastSets(lastSets), [lastSets])
 
   function handleAdd() {
     const w = parseFloat(weight)
@@ -127,11 +132,9 @@ export function SetForm({
         </button>
       </div>
 
-      {lastSet && (
-        <p className="mb-3 text-xs text-slate-500">
-          Last time: <span className="text-slate-300">{lastSet.weight}kg × {lastSet.reps} reps</span>
-        </p>
-      )}
+      {lastTimeSummary && <p className="mb-3 text-xs text-slate-500">Last time: {lastTimeSummary}</p>}
+
+      <RestTimer restartKey={restTrigger} />
 
       {existingSets.length > 0 && (
         <div className="mb-3 space-y-1">

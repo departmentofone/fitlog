@@ -284,6 +284,7 @@ export function ScannerTab() {
               <input
                 placeholder="Calories"
                 type="number"
+                inputMode="decimal"
                 value={form.calories}
                 onChange={(e) => updateField('calories', e.target.value)}
                 className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
@@ -291,6 +292,7 @@ export function ScannerTab() {
               <input
                 placeholder="Protein (g)"
                 type="number"
+                inputMode="decimal"
                 value={form.protein}
                 onChange={(e) => updateField('protein', e.target.value)}
                 className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
@@ -298,6 +300,7 @@ export function ScannerTab() {
               <input
                 placeholder="Carbs (g)"
                 type="number"
+                inputMode="decimal"
                 value={form.carbs}
                 onChange={(e) => updateField('carbs', e.target.value)}
                 className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
@@ -305,6 +308,7 @@ export function ScannerTab() {
               <input
                 placeholder="Fat (g)"
                 type="number"
+                inputMode="decimal"
                 value={form.fat}
                 onChange={(e) => updateField('fat', e.target.value)}
                 className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { MacroLine } from '../../components/MacroLine'
+import { SwipeToDelete } from '../../components/SwipeToDelete'
 import { useToast } from '../../components/ToastProvider'
 import { useAddMealItem, useDeleteMealItem, useSetMealCompleted, type MealWithItems } from '../../hooks/useMeals'
 import { haptics } from '../../lib/haptics'
@@ -48,36 +49,32 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
       <div className="mb-3 space-y-1">
         {meal.meal_items.map((item) => {
           const m = macrosForGrams(item.food, item.grams)
+          const removeItem = () =>
+            undoable(
+              `Removed ${item.food.name}`,
+              () => deleteItem.mutate(item.id),
+              () =>
+                addItem.mutate({
+                  mealId: meal.id,
+                  foodId: item.food_id,
+                  grams: item.grams,
+                  servingLabel: item.serving_label,
+                }),
+            )
           return (
-            <div
-              key={item.id}
-              className="flex items-center justify-between rounded-xl bg-slate-800/60 px-3 py-2 text-sm text-slate-300"
-            >
-              <span>
-                {item.food.name} · {item.serving_label ?? `${item.grams}g`}
-              </span>
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-slate-500">{Math.round(m.calories)} kcal</span>
-                <button
-                  onClick={() =>
-                    undoable(
-                      `Removed ${item.food.name}`,
-                      () => deleteItem.mutate(item.id),
-                      () =>
-                        addItem.mutate({
-                          mealId: meal.id,
-                          foodId: item.food_id,
-                          grams: item.grams,
-                          servingLabel: item.serving_label,
-                        }),
-                    )
-                  }
-                  className="text-red-400 hover:text-red-300"
-                >
-                  ×
-                </button>
+            <SwipeToDelete key={item.id} onDelete={removeItem} className="rounded-xl">
+              <div className="flex items-center justify-between rounded-xl bg-slate-800/60 px-3 py-2 text-sm text-slate-300">
+                <span>
+                  {item.food.name} · {item.serving_label ?? `${item.grams}g`}
+                </span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-slate-500">{Math.round(m.calories)} kcal</span>
+                  <button onClick={removeItem} className="text-red-400 hover:text-red-300">
+                    ×
+                  </button>
+                </div>
               </div>
-            </div>
+            </SwipeToDelete>
           )
         })}
         {meal.meal_items.length === 0 && <p className="text-sm text-slate-500">No items yet.</p>}

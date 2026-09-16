@@ -4,10 +4,14 @@ import {
   useDeletePreset,
   useLoadPreset,
   usePresets,
+  useRestorePreset,
   useSetPresetShared,
   type PresetWithItems,
 } from '../../hooks/usePresets'
 import { useAuth } from '../../hooks/useAuth'
+import { EmptyState } from '../../components/EmptyState'
+import { SkeletonRow } from '../../components/Skeleton'
+import { useToast } from '../../components/ToastProvider'
 import type { SetWithExercise } from '../../hooks/useWorkouts'
 
 function summarize(preset: PresetWithItems) {
@@ -35,8 +39,10 @@ export function PresetsView({
   const { data: presets = [], isLoading } = usePresets()
   const createFromSets = useCreatePresetFromSets()
   const deletePreset = useDeletePreset()
+  const restorePreset = useRestorePreset()
   const loadPreset = useLoadPreset(sessionId)
   const setShared = useSetPresetShared()
+  const { undoable } = useToast()
 
   const [showSaveForm, setShowSaveForm] = useState(false)
   const [name, setName] = useState('')
@@ -92,11 +98,17 @@ export function PresetsView({
 
       <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
         <h3 className="mb-3 font-medium text-white">Your presets</h3>
-        {isLoading && <p className="text-sm text-slate-400">Loading…</p>}
+        {isLoading && (
+          <div className="space-y-2">
+            <SkeletonRow />
+            <SkeletonRow />
+          </div>
+        )}
         {!isLoading && presets.length === 0 && (
-          <p className="text-sm text-slate-500">
-            No presets yet — log a workout, then save it as a preset to quickly reuse it later.
-          </p>
+          <EmptyState
+            variant="dumbbell"
+            message="No presets yet — log a workout, then save it as a preset to quickly reuse it later."
+          />
         )}
         <div className="space-y-2">
           {presets.map((preset) => (
@@ -104,7 +116,16 @@ export function PresetsView({
               <div className="mb-1 flex items-center justify-between">
                 <h4 className="text-sm font-medium text-white">{preset.name}</h4>
                 {preset.user_id === user?.id && (
-                  <button onClick={() => deletePreset.mutate(preset.id)} className="text-red-400 hover:text-red-300">
+                  <button
+                    onClick={() =>
+                      undoable(
+                        `Deleted "${preset.name}"`,
+                        () => deletePreset.mutate(preset.id),
+                        () => restorePreset.mutate(preset),
+                      )
+                    }
+                    className="text-red-400 hover:text-red-300"
+                  >
                     ×
                   </button>
                 )}

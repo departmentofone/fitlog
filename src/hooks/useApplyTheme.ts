@@ -1,10 +1,16 @@
 import { useEffect } from 'react'
+import { setHapticsEnabled } from '../lib/haptics'
 import { useUserSettings } from './useUserSettings'
 
 export function useApplyTheme() {
   const { data: settings } = useUserSettings()
   const theme = settings?.theme ?? 'system'
   const palette = settings?.color_palette ?? 'emerald'
+  const hapticsEnabled = settings?.haptics_enabled ?? true
+
+  useEffect(() => {
+    setHapticsEnabled(hapticsEnabled)
+  }, [hapticsEnabled])
 
   useEffect(() => {
     const root = document.documentElement

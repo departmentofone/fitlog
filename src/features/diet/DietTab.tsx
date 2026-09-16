@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { CircularProgress } from '../../components/CircularProgress'
+import { CountUp } from '../../components/CountUp'
 import { FireStreak } from '../../components/FireStreak'
 import { MacroLine } from '../../components/MacroLine'
 import { remainingCaloriesInfo, useDietStreak } from '../../hooks/useDiet'
@@ -135,7 +136,9 @@ export function DietTab() {
           <h3 className="text-sm font-medium text-slate-300">Consumed today</h3>
           <span className="text-xs text-slate-500">Tap for breakdown</span>
         </div>
-        <p className="text-2xl font-bold text-emerald-400">{Math.round(totals.calories)} kcal</p>
+        <p className="text-2xl font-bold text-emerald-400">
+          <CountUp value={totals.calories} suffix=" kcal" />
+        </p>
         <MacroLine macros={totals} className="mt-1 text-sm" />
       </div>
 

@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { EmptyState } from '../../components/EmptyState'
+import { SkeletonRow } from '../../components/Skeleton'
 import { useToast } from '../../components/ToastProvider'
 import { useAuth } from '../../hooks/useAuth'
 import { useMealPresets } from '../../hooks/useMealPresets'
@@ -7,6 +9,7 @@ import {
   useDeleteProgram,
   useImportProgram,
   usePrograms,
+  useRestoreProgram,
   useSetProgramShared,
 } from '../../hooks/usePrograms'
 import { usePresets } from '../../hooks/usePresets'
@@ -127,6 +130,7 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
           <div className="grid grid-cols-2 gap-2">
             <input
               type="number"
+              inputMode="decimal"
               placeholder="Calorie goal"
               value={calorieGoal}
               onChange={(e) => setCalorieGoal(e.target.value)}
@@ -134,6 +138,7 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
             />
             <input
               type="number"
+              inputMode="decimal"
               placeholder="Water goal (ml)"
               value={waterGoalMl}
               onChange={(e) => setWaterGoalMl(e.target.value)}
@@ -162,6 +167,7 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
 function ProgramCard({ program, isOwner }: { program: Program; isOwner: boolean }) {
   const setShared = useSetProgramShared()
   const deleteProgram = useDeleteProgram()
+  const restoreProgram = useRestoreProgram()
   const importProgram = useImportProgram()
   const { show, undoable } = useToast()
   const [applyGoals, setApplyGoals] = useState(true)
@@ -185,7 +191,9 @@ function ProgramCard({ program, isOwner }: { program: Program; isOwner: boolean 
         <h4 className="text-sm font-medium text-white">{program.name}</h4>
         {isOwner && (
           <button
-            onClick={() => undoable(`Deleted "${program.name}"`, () => deleteProgram.mutate(program.id), () => {})}
+            onClick={() =>
+              undoable(`Deleted "${program.name}"`, () => deleteProgram.mutate(program.id), () => restoreProgram.mutate(program))
+            }
             className="text-red-400 hover:text-red-300"
           >
             ×
@@ -252,8 +260,15 @@ export function ProgramsTab() {
 
       <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-3 font-medium text-white">Programs</h3>
-        {isLoading && <p className="text-sm text-slate-400">Loading…</p>}
-        {!isLoading && programs.length === 0 && <p className="text-sm text-slate-500">No programs yet - build one above.</p>}
+        {isLoading && (
+          <div className="space-y-2">
+            <SkeletonRow />
+            <SkeletonRow />
+          </div>
+        )}
+        {!isLoading && programs.length === 0 && (
+          <EmptyState variant="folder" message="No programs yet - build one above." />
+        )}
         <div className="space-y-2">
           {programs.map((program) => (
             <ProgramCard key={program.id} program={program} isOwner={program.user_id === user?.id} />

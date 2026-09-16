@@ -73,6 +73,23 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
       </div>
 
       <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h3 className="font-medium text-white">Motion & haptics</h3>
+            <p className="mt-0.5 text-xs text-slate-500">
+              Small vibrations for logged sets, PRs, streaks, and other key moments. Only affects devices that support it.
+            </p>
+          </div>
+          <input
+            type="checkbox"
+            checked={settings?.haptics_enabled ?? true}
+            onChange={(e) => updateSettings.mutate({ haptics_enabled: e.target.checked })}
+            className="h-6 w-6 shrink-0 accent-emerald-500"
+          />
+        </div>
+      </div>
+
+      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-2 font-medium text-white">Appearance</h3>
         <p className="mb-1.5 text-xs text-slate-500">Theme</p>
         <div className="mb-3 grid grid-cols-3 gap-1.5">

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useToast } from '../../components/ToastProvider'
 import { estimateTDEE } from '../../lib/tdee'
 import { cmToIn, inToCm, kgToLb, lbToKg } from '../../lib/units'
 import { useUpdateSettings, useUserSettings } from '../../hooks/useUserSettings'
@@ -18,6 +19,7 @@ const fieldClass =
 export function MaintenanceCalculatorTab() {
   const { data: settings } = useUserSettings()
   const updateSettings = useUpdateSettings()
+  const { show } = useToast()
   const imperial = settings?.unit_system === 'imperial'
   const weightUnit = imperial ? 'lb' : 'kg'
   const heightUnit = imperial ? 'in' : 'cm'
@@ -60,12 +62,15 @@ export function MaintenanceCalculatorTab() {
   function applyGoal(goal: DietGoal) {
     if (maintenance == null) return
     const calorie_goal = goal === 'deficit' ? cuttingGoal! : goal === 'surplus' ? bulkingGoal! : maintenance
-    updateSettings.mutate({ calorie_goal, diet_goal: goal })
+    updateSettings.mutate({ calorie_goal, diet_goal: goal }, { onSuccess: () => show(`Calorie goal set to ${calorie_goal} kcal`) })
   }
 
   function saveStatsToProfile() {
     if (weightKg == null || heightCm == null || ageNum == null || !sex || !activity) return
-    updateSettings.mutate({ current_weight: weightKg, height_cm: heightCm, age: ageNum, sex, activity_level: activity })
+    updateSettings.mutate(
+      { current_weight: weightKg, height_cm: heightCm, age: ageNum, sex, activity_level: activity },
+      { onSuccess: () => show('Saved to your profile') },
+    )
   }
 
   return (
@@ -81,6 +86,7 @@ export function MaintenanceCalculatorTab() {
           <input
             placeholder={`Weight (${weightUnit})`}
             type="number"
+              inputMode="decimal"
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
             className={fieldClass}
@@ -88,11 +94,13 @@ export function MaintenanceCalculatorTab() {
           <input
             placeholder={`Height (${heightUnit})`}
             type="number"
+              inputMode="decimal"
             value={height}
             onChange={(e) => setHeight(e.target.value)}
             className={fieldClass}
           />
-          <input placeholder="Age" type="number" value={age} onChange={(e) => setAge(e.target.value)} className={fieldClass} />
+          <input placeholder="Age" type="number"
+              inputMode="decimal" value={age} onChange={(e) => setAge(e.target.value)} className={fieldClass} />
           <select value={sex} onChange={(e) => setSex(e.target.value as Sex | '')} className={fieldClass}>
             <option value="">Sex</option>
             <option value="male">Male</option>

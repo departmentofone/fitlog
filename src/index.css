@@ -82,6 +82,30 @@ input, select, textarea, button {
   font: inherit;
 }
 
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--color-slate-800) 25%, var(--color-slate-700) 50%, var(--color-slate-800) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}
+
+/* Tactile press feedback app-wide - reinforces the "glass" surfaces as touchable without
+   needing every button to opt in individually. Skipped for anyone who's asked for less motion. */
+@media (prefers-reduced-motion: no-preference) {
+  button {
+    transition: transform 0.1s ease-out;
+  }
+  button:active {
+    transform: scale(0.97);
+  }
+}
+
 html[data-theme="light"] {
   --color-slate-950: #eef2fa;
   --color-slate-900: rgba(255, 255, 255, 0.55);

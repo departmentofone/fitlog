@@ -1,6 +1,7 @@
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { estimateTDEE, projectGoal } from '../../lib/tdee'
 import { useUserSettings } from '../../hooks/useUserSettings'
+import { CHART_FONT, useThemeChartColors } from '../../lib/useChartColors'
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
@@ -13,6 +14,7 @@ function Card({ children }: { children: React.ReactNode }) {
 
 export function GoalProjectionChart() {
   const { data: settings } = useUserSettings()
+  const colors = useThemeChartColors()
   if (!settings) return null
 
   const tdee = estimateTDEE(settings)
@@ -74,27 +76,27 @@ export function GoalProjectionChart() {
       <div className="h-48 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+            <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
             <XAxis
               dataKey="label"
-              tick={{ fill: '#94a3b8', fontSize: 11 }}
-              axisLine={{ stroke: '#334155' }}
+              tick={{ fill: colors.tick, fontSize: 11, fontFamily: CHART_FONT }}
+              axisLine={{ stroke: colors.axis }}
               tickLine={false}
               interval={Math.ceil(numPoints / 5)}
             />
             <YAxis
-              tick={{ fill: '#94a3b8', fontSize: 11 }}
+              tick={{ fill: colors.tick, fontSize: 11, fontFamily: CHART_FONT }}
               axisLine={false}
               tickLine={false}
               width={40}
               domain={['dataMin - 1', 'dataMax + 1']}
             />
             <Tooltip
-              contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 8 }}
-              labelStyle={{ color: '#e2e8f0' }}
+              contentStyle={{ background: colors.tooltipBg, border: `1px solid ${colors.tooltipBorder}`, borderRadius: 8, fontFamily: CHART_FONT }}
+              labelStyle={{ color: colors.tooltipText }}
               formatter={(value) => [`${value} kg`, 'Projected weight']}
             />
-            <Line type="monotone" dataKey="weight" stroke="#34d399" strokeWidth={2} dot={false} />
+            <Line type="monotone" dataKey="weight" stroke={colors.accent} strokeWidth={2} dot={false} />
           </LineChart>
         </ResponsiveContainer>
       </div>

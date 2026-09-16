@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useCreateGoal, useDeleteGoal, useGoals, useToggleGoal } from '../../hooks/useGoals'
+import { EmptyState } from '../../components/EmptyState'
+import { useCreateGoal, useDeleteGoal, useGoals, useRestoreGoal, useToggleGoal } from '../../hooks/useGoals'
+import { useToast } from '../../components/ToastProvider'
 import { useUpdateSettings, useUserSettings } from '../../hooks/useUserSettings'
 import { useExercises } from '../../hooks/useExercises'
 import { useExerciseHistory } from '../../hooks/useWorkouts'
@@ -47,6 +49,8 @@ function GoalList({ category, title }: { category: GoalCategory; title: string }
   const createGoal = useCreateGoal()
   const toggleGoal = useToggleGoal()
   const deleteGoal = useDeleteGoal()
+  const restoreGoal = useRestoreGoal()
+  const { undoable } = useToast()
   const [titleInput, setTitleInput] = useState('')
   const [adding, setAdding] = useState(false)
   const [autoTrack, setAutoTrack] = useState(false)
@@ -93,7 +97,9 @@ function GoalList({ category, title }: { category: GoalCategory; title: string }
               key={g.id}
               goal={g}
               exerciseName={exercises.find((e) => e.id === g.target_exercise_id)?.name ?? g.title}
-              onDelete={() => deleteGoal.mutate(g.id)}
+              onDelete={() =>
+                undoable(`Deleted "${g.title}"`, () => deleteGoal.mutate(g.id), () => restoreGoal.mutate(g))
+              }
             />
           ) : (
             <div key={g.id} className="flex items-center gap-3 rounded-xl bg-slate-800/60 px-3 py-2">
@@ -106,13 +112,16 @@ function GoalList({ category, title }: { category: GoalCategory; title: string }
               <span className={`flex-1 text-sm ${g.completed ? 'text-slate-500 line-through' : 'text-white'}`}>
                 {g.title}
               </span>
-              <button onClick={() => deleteGoal.mutate(g.id)} className="text-red-400 hover:text-red-300">
+              <button
+                onClick={() => undoable(`Deleted "${g.title}"`, () => deleteGoal.mutate(g.id), () => restoreGoal.mutate(g))}
+                className="text-red-400 hover:text-red-300"
+              >
                 ×
               </button>
             </div>
           ),
         )}
-        {filtered.length === 0 && <p className="text-sm text-slate-500">No goals yet.</p>}
+        {filtered.length === 0 && <EmptyState variant="trophy" message="No goals yet." />}
       </div>
 
       {adding ? (
@@ -140,6 +149,7 @@ function GoalList({ category, title }: { category: GoalCategory; title: string }
               <div className="grid grid-cols-2 gap-2">
                 <input
                   type="number"
+              inputMode="decimal"
                   placeholder="Target weight (kg)"
                   value={targetWeight}
                   onChange={(e) => setTargetWeight(e.target.value)}
@@ -147,6 +157,7 @@ function GoalList({ category, title }: { category: GoalCategory; title: string }
                 />
                 <input
                   type="number"
+              inputMode="decimal"
                   placeholder="Reps (optional)"
                   value={targetReps}
                   onChange={(e) => setTargetReps(e.target.value)}
@@ -246,6 +257,7 @@ export function GoalsTab() {
               <input
                 placeholder={`Current weight (${weightUnit})`}
                 type="number"
+              inputMode="decimal"
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
                 className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
@@ -253,6 +265,7 @@ export function GoalsTab() {
               <input
                 placeholder={`Goal weight (${weightUnit})`}
                 type="number"
+              inputMode="decimal"
                 value={weightGoal}
                 onChange={(e) => setWeightGoal(e.target.value)}
                 className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
@@ -260,6 +273,7 @@ export function GoalsTab() {
               <input
                 placeholder={`Height (${heightUnit})`}
                 type="number"
+              inputMode="decimal"
                 value={height}
                 onChange={(e) => setHeight(e.target.value)}
                 className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
@@ -267,6 +281,7 @@ export function GoalsTab() {
               <input
                 placeholder="Age"
                 type="number"
+              inputMode="decimal"
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
                 className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"

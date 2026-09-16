@@ -91,6 +91,35 @@ export function useDeleteMealPreset() {
   })
 }
 
+/** Recreates a deleted meal preset from its last-known snapshot, for the undo toast. */
+export function useRestoreMealPreset() {
+  const { user } = useAuth()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (preset: MealPreset) => {
+      if (!user) throw new Error('Not signed in')
+      const { data: created, error: presetError } = await supabase
+        .from('meal_presets')
+        .insert({ user_id: user.id, name: preset.name, is_shared: preset.is_shared })
+        .select()
+        .single()
+      if (presetError) throw presetError
+
+      const items = preset.meal_preset_items.map((i) => ({
+        preset_id: created.id,
+        food_id: i.food_id,
+        grams: i.grams,
+        serving_label: i.serving_label,
+      }))
+      if (items.length > 0) {
+        const { error: itemsError } = await supabase.from('meal_preset_items').insert(items)
+        if (itemsError) throw itemsError
+      }
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['meal-presets', user?.id] }),
+  })
+}
+
 /** Loads a meal preset as a new meal on the given date. */
 export function useLoadMealPreset() {
   const { user } = useAuth()

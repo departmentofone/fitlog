@@ -1,20 +1,27 @@
 import { useMemo, useState } from 'react'
 import { Bar, BarChart, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { SkeletonLine } from '../../components/Skeleton'
 import { useMacroTrend } from '../../hooks/useMeals'
+import { CHART_FONT, useThemeChartColors } from '../../lib/useChartColors'
 
 type Metric = 'calories' | 'protein' | 'carbs' | 'fat'
 
-const METRICS: { key: Metric; label: string; unit: string; color: string }[] = [
-  { key: 'calories', label: 'Calories', unit: 'kcal', color: '#34d399' },
-  { key: 'protein', label: 'Protein', unit: 'g', color: '#60a5fa' },
-  { key: 'carbs', label: 'Carbs', unit: 'g', color: '#fbbf24' },
-  { key: 'fat', label: 'Fat', unit: 'g', color: '#f87171' },
+// Calories tracks the user's accent color (it's the headline metric); protein/carbs/fat stay
+// fixed, distinguishable series colors regardless of accent, same as any multi-series chart.
+const FIXED_COLORS: Partial<Record<Metric, string>> = { protein: '#60a5fa', carbs: '#fbbf24', fat: '#f87171' }
+const METRIC_LABELS: { key: Metric; label: string; unit: string }[] = [
+  { key: 'calories', label: 'Calories', unit: 'kcal' },
+  { key: 'protein', label: 'Protein', unit: 'g' },
+  { key: 'carbs', label: 'Carbs', unit: 'g' },
+  { key: 'fat', label: 'Fat', unit: 'g' },
 ]
 
 export function TrendsChart() {
   const [range, setRange] = useState<7 | 30>(7)
   const [metric, setMetric] = useState<Metric>('calories')
   const { data: points = [], isLoading } = useMacroTrend(range)
+  const colors = useThemeChartColors()
+  const METRICS = METRIC_LABELS.map((m) => ({ ...m, color: FIXED_COLORS[m.key] ?? colors.accent }))
   const active = METRICS.find((m) => m.key === metric)!
 
   const average = useMemo(() => {
@@ -65,26 +72,26 @@ export function TrendsChart() {
       </p>
 
       {isLoading ? (
-        <p className="py-8 text-center text-sm text-slate-500">Loading…</p>
+        <SkeletonLine className="h-56 w-full rounded-2xl" />
       ) : (
         <div className="h-56 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+              <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
               <XAxis
                 dataKey="label"
-                tick={{ fill: '#94a3b8', fontSize: 11 }}
+                tick={{ fill: colors.tick, fontSize: 11, fontFamily: CHART_FONT }}
                 interval={range === 30 ? 3 : 0}
-                axisLine={{ stroke: '#334155' }}
+                axisLine={{ stroke: colors.axis }}
                 tickLine={false}
               />
-              <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} width={48} />
+              <YAxis tick={{ fill: colors.tick, fontSize: 11, fontFamily: CHART_FONT }} axisLine={false} tickLine={false} width={48} />
               <Tooltip
-                contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 8 }}
-                labelStyle={{ color: '#e2e8f0' }}
+                contentStyle={{ background: colors.tooltipBg, border: `1px solid ${colors.tooltipBorder}`, borderRadius: 8, fontFamily: CHART_FONT }}
+                labelStyle={{ color: colors.tooltipText }}
                 formatter={(value) => [`${Math.round(Number(value))} ${active.unit}`, active.label]}
               />
-              <ReferenceLine y={average} stroke="#94a3b8" strokeDasharray="4 4" />
+              <ReferenceLine y={average} stroke={colors.tick} strokeDasharray="4 4" />
               <Bar dataKey={metric} fill={active.color} radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>

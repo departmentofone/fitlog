@@ -263,22 +263,65 @@ export function useRestoreSession() {
   })
 }
 
-/** Most recent previously-logged set for this exercise (from an earlier session), for a "last time" hint. */
-export function useLastSetForExercise(exerciseId: string | undefined, excludeSessionId: string | undefined) {
+export interface LastSessionSetSummary {
+  weight: number
+  reps: number
+}
+
+/**
+ * Compacts a prior session's working sets into a short "Last time" string, e.g. "3×8 @ 60kg"
+ * when all sets match, or "10 @ 40kg, 8 @ 50kg, 6 @ 60kg" for a pyramid/ramping scheme. Adjacent
+ * sets with the same weight+reps are collapsed into one "N×reps" group. Returns '' for no sets.
+ */
+export function summarizeLastSets(sets: LastSessionSetSummary[]): string {
+  if (sets.length === 0) return ''
+  const groups: { weight: number; reps: number; count: number }[] = []
+  for (const s of sets) {
+    const last = groups[groups.length - 1]
+    if (last && last.weight === s.weight && last.reps === s.reps) {
+      last.count += 1
+    } else {
+      groups.push({ weight: s.weight, reps: s.reps, count: 1 })
+    }
+  }
+  return groups
+    .map((g) => (g.count > 1 ? `${g.count}×${g.reps} @ ${g.weight}kg` : `${g.reps} @ ${g.weight}kg`))
+    .join(', ')
+}
+
+/**
+ * Most recent PRIOR session's working (non-warmup) sets for this exercise, for a "last time"
+ * hint - excludes the session currently being logged into (not necessarily "today", since a
+ * past date can be edited too) and reflects the whole session's sets, not just the last row.
+ */
+export function useLastSessionSetsForExercise(exerciseId: string | undefined, excludeSessionId: string | undefined) {
   return useQuery({
-    queryKey: ['last-set', exerciseId, excludeSessionId],
+    queryKey: ['last-session-sets', exerciseId, excludeSessionId],
     enabled: !!exerciseId,
-    queryFn: async () => {
-      let query = supabase
+    queryFn: async (): Promise<LastSessionSetSummary[]> => {
+      let latestQuery = supabase
         .from('workout_sets')
-        .select('weight, reps, difficulty, created_at')
+        .select('session_id')
         .eq('exercise_id', exerciseId!)
         .order('created_at', { ascending: false })
         .limit(1)
-      if (excludeSessionId) query = query.neq('session_id', excludeSessionId)
-      const { data, error } = await query.maybeSingle()
+      if (excludeSessionId) latestQuery = latestQuery.neq('session_id', excludeSessionId)
+      const { data: latest, error: latestError } = await latestQuery.maybeSingle()
+      if (latestError) throw latestError
+      if (!latest) return []
+
+      const { data: rows, error } = await supabase
+        .from('workout_sets')
+        .select('set_number, weight, reps, is_warmup')
+        .eq('session_id', latest.session_id)
+        .eq('exercise_id', exerciseId!)
+        .order('set_number', { ascending: true })
       if (error) throw error
-      return data as { weight: number; reps: number; difficulty: number; created_at: string } | null
+
+      type Row = { set_number: number; weight: number; reps: number; is_warmup: boolean | null }
+      return ((rows as Row[]) ?? [])
+        .filter((r) => !r.is_warmup)
+        .map((r) => ({ weight: r.weight, reps: r.reps }))
     },
   })
 }

@@ -115,6 +115,7 @@ export function AlcoholSection() {
           {useManual ? (
             <input
               type="number"
+              inputMode="decimal"
               placeholder="Calories"
               value={manualCalories}
               onChange={(e) => setManualCalories(e.target.value)}
@@ -124,6 +125,7 @@ export function AlcoholSection() {
             <div className="mb-2 grid grid-cols-2 gap-2">
               <input
                 type="number"
+              inputMode="decimal"
                 placeholder="Volume (ml)"
                 value={volumeMl}
                 onChange={(e) => setVolumeMl(e.target.value)}
@@ -131,6 +133,7 @@ export function AlcoholSection() {
               />
               <input
                 type="number"
+              inputMode="decimal"
                 placeholder="ABV %"
                 value={abvPercent}
                 onChange={(e) => setAbvPercent(e.target.value)}

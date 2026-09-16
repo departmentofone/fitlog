@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { SkeletonLine } from '../../components/Skeleton'
 import { useExerciseNote, useSetExerciseNote } from '../../hooks/useExerciseNotes'
 import { useExerciseHistory } from '../../hooks/useWorkouts'
 import { estimate1RM } from '../../lib/oneRepMax'
@@ -46,7 +47,10 @@ export function ExerciseDetailModal({ exercise, onClose }: { exercise: Exercise;
         </div>
 
         {isLoading ? (
-          <p className="text-sm text-slate-400">Loading…</p>
+          <div className="space-y-2.5">
+            <SkeletonLine className="h-16 w-full rounded-2xl" />
+            <SkeletonLine className="h-32 w-full rounded-2xl" />
+          </div>
         ) : working.length === 0 ? (
           <p className="text-sm text-slate-500">No sets logged yet for this exercise.</p>
         ) : (

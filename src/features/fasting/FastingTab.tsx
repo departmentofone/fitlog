@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { CircularProgress } from '../../components/CircularProgress'
+import { EmptyState } from '../../components/EmptyState'
 import { useActiveFast, useEndFast, useFastHistory, useStartFast } from '../../hooks/useFasting'
+import { haptics } from '../../lib/haptics'
 
 const PRESETS = [
   { label: '16:8', hours: 16 },
@@ -52,7 +54,10 @@ export function FastingTab() {
                 </div>
               </div>
               <button
-                onClick={() => endFast.mutate(active.id)}
+                onClick={() => {
+                  if (pct >= 100) haptics.success()
+                  endFast.mutate(active.id)
+                }}
                 className="mt-3 w-full rounded-xl bg-red-600/20 py-2 text-sm font-medium text-red-400 hover:bg-red-600/30"
               >
                 End fast
@@ -68,7 +73,10 @@ export function FastingTab() {
             {PRESETS.map((p) => (
               <button
                 key={p.label}
-                onClick={() => startFast.mutate(p.hours)}
+                onClick={() => {
+                  haptics.tap()
+                  startFast.mutate(p.hours)
+                }}
                 className="rounded-xl bg-slate-800 px-3 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700"
               >
                 {p.label}
@@ -78,6 +86,7 @@ export function FastingTab() {
           <div className="flex gap-2">
             <input
               type="number"
+              inputMode="decimal"
               value={customHours}
               onChange={(e) => setCustomHours(e.target.value)}
               className="w-20 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:outline-none"
@@ -92,9 +101,11 @@ export function FastingTab() {
         </div>
       )}
 
-      {history.length > 0 && (
-        <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
-          <p className="mb-2 text-sm font-medium text-white">Recent fasts</p>
+      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+        <p className="mb-2 text-sm font-medium text-white">Recent fasts</p>
+        {history.length === 0 ? (
+          <EmptyState variant="calendar" message="No fasts logged yet - finish one above and it'll show up here." />
+        ) : (
           <div className="space-y-1.5">
             {history.map((f) => {
               const durationH = (new Date(f.end_time!).getTime() - new Date(f.start_time).getTime()) / 3_600_000
@@ -110,8 +121,8 @@ export function FastingTab() {
               )
             })}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }

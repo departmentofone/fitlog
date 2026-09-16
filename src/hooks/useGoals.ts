@@ -71,3 +71,27 @@ export function useDeleteGoal() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['goals', user?.id] }),
   })
 }
+
+/** Recreates a deleted goal from its last-known snapshot, for the undo toast. */
+export function useRestoreGoal() {
+  const { user } = useAuth()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (goal: Goal) => {
+      if (!user) throw new Error('Not signed in')
+      const { error } = await supabase.from('goals').insert({
+        user_id: user.id,
+        category: goal.category,
+        title: goal.title,
+        notes: goal.notes,
+        target_date: goal.target_date,
+        target_exercise_id: goal.target_exercise_id,
+        target_weight: goal.target_weight,
+        target_reps: goal.target_reps,
+        completed: goal.completed,
+      })
+      if (error) throw error
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['goals', user?.id] }),
+  })
+}

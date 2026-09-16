@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
 import { FireStreak } from '../../components/FireStreak'
 import { MonthCalendar } from '../../components/MonthCalendar'
+import { SkeletonLine } from '../../components/Skeleton'
+import { SwipeToDelete } from '../../components/SwipeToDelete'
 import { useToast } from '../../components/ToastProvider'
 import { useDietStreak } from '../../hooks/useDiet'
 import { useUserSettings } from '../../hooks/useUserSettings'
@@ -31,7 +33,15 @@ function DayDetail({ date }: { date: string }) {
   const { undoable } = useToast()
   const [confirmingDelete, setConfirmingDelete] = useState(false)
 
-  if (isLoading) return <p className="text-sm text-slate-400">Loading…</p>
+  if (isLoading) {
+    return (
+      <div className="space-y-2 rounded-2xl bg-slate-800/50 p-3">
+        <SkeletonLine className="h-4 w-1/2" />
+        <SkeletonLine className="h-3 w-full" />
+        <SkeletonLine className="h-3 w-2/3" />
+      </div>
+    )
+  }
   if (!session || session.workout_sets.length === 0) {
     return <p className="text-sm text-slate-500">No sets logged this day.</p>
   }
@@ -92,19 +102,18 @@ function DayDetail({ date }: { date: string }) {
             <p className="mb-1 font-medium text-slate-200">{name}</p>
             <div className="flex flex-wrap gap-1">
               {sets.map((s) => (
-                <span
-                  key={s.id}
-                  className="flex items-center gap-1 rounded-md bg-slate-900/60 py-0.5 pl-2 pr-1 text-slate-400"
-                >
-                  {s.weight}×{s.reps}
-                  <button
-                    onClick={() => deleteSet.mutate(s.id)}
-                    aria-label={`Delete set ${s.weight}×${s.reps}`}
-                    className="rounded px-1 text-slate-600 hover:bg-red-600/20 hover:text-red-400"
-                  >
-                    ×
-                  </button>
-                </span>
+                <SwipeToDelete key={s.id} onDelete={() => deleteSet.mutate(s.id)} className="rounded-md">
+                  <span className="flex items-center gap-1 rounded-md bg-slate-900/60 py-0.5 pl-2 pr-1 text-slate-400">
+                    {s.weight}×{s.reps}
+                    <button
+                      onClick={() => deleteSet.mutate(s.id)}
+                      aria-label={`Delete set ${s.weight}×${s.reps}`}
+                      className="rounded px-1 text-slate-600 hover:bg-red-600/20 hover:text-red-400"
+                    >
+                      ×
+                    </button>
+                  </span>
+                </SwipeToDelete>
               ))}
             </div>
           </div>
@@ -114,7 +123,7 @@ function DayDetail({ date }: { date: string }) {
   )
 }
 
-export function HistoryView({ onBack }: { onBack: () => void }) {
+export function HistoryView() {
   const { data: streaks } = useWorkoutStreaks()
   const { data: settings } = useUserSettings()
   const dietStreak = useDietStreak(settings?.calorie_goal ?? null, settings?.diet_goal ?? 'deficit')
@@ -126,9 +135,6 @@ export function HistoryView({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="space-y-4 p-4">
-      <button onClick={onBack} className="text-sm text-slate-400 hover:text-slate-200">
-        ← Back
-      </button>
 
       <WeeklyDigestCard />
 

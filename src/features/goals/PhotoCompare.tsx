@@ -1,23 +1,100 @@
 import { useState } from 'react'
+import type { PointerEvent as ReactPointerEvent } from 'react'
 import { useSignedPhotoUrl } from '../../hooks/useProgressEntries'
 import type { ProgressEntry } from '../../types'
 
-function Slot({ entry, label }: { entry: ProgressEntry | undefined; label: string }) {
-  const { data: url } = useSignedPhotoUrl(entry?.photo_path)
+function formatCaption(entry: ProgressEntry | undefined) {
+  if (!entry) return ''
+  const date = new Date(entry.date + 'T00:00:00').toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
+  return entry.weight != null ? `${date} · ${entry.weight}kg` : date
+}
+
+function clampPercent(value: number) {
+  return Math.min(100, Math.max(0, value))
+}
+
+function BeforeAfterSlider({ before, after }: { before: ProgressEntry | undefined; after: ProgressEntry | undefined }) {
+  const { data: beforeUrl } = useSignedPhotoUrl(before?.photo_path)
+  const { data: afterUrl } = useSignedPhotoUrl(after?.photo_path)
+  const [percent, setPercent] = useState(50)
+  const [dragging, setDragging] = useState(false)
+
+  const updateFromClientX = (target: HTMLDivElement, clientX: number) => {
+    const rect = target.getBoundingClientRect()
+    if (rect.width === 0) return
+    setPercent(clampPercent(((clientX - rect.left) / rect.width) * 100))
+  }
+
+  const handlePointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    e.currentTarget.setPointerCapture(e.pointerId)
+    setDragging(true)
+    updateFromClientX(e.currentTarget, e.clientX)
+  }
+
+  const handlePointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (!dragging) return
+    updateFromClientX(e.currentTarget, e.clientX)
+  }
+
+  const endDrag = (e: ReactPointerEvent<HTMLDivElement>) => {
+    setDragging(false)
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId)
+    }
+  }
+
   return (
-    <div className="flex-1">
-      <p className="mb-1 text-center text-xs text-slate-500">{label}</p>
-      {url ? (
-        <img src={url} alt={label} className="aspect-[3/4] w-full rounded-xl object-cover" />
-      ) : (
-        <div className="flex aspect-[3/4] w-full items-center justify-center rounded-xl bg-slate-800" />
-      )}
-      {entry && (
-        <p className="mt-1 text-center text-xs text-slate-400">
-          {new Date(entry.date + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-          {entry.weight != null && ` · ${entry.weight}kg`}
-        </p>
-      )}
+    <div>
+      <div
+        className="relative aspect-[3/4] w-full touch-none select-none overflow-hidden rounded-xl bg-slate-800"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onPointerLeave={(e) => dragging && endDrag(e)}
+      >
+        {/* Before: full-width base layer */}
+        {beforeUrl ? (
+          <img src={beforeUrl} alt="Before" className="absolute inset-0 h-full w-full object-cover" draggable={false} />
+        ) : (
+          <div className="absolute inset-0 bg-slate-800" />
+        )}
+
+        {/* After: clipped to reveal only up to the divider */}
+        <div className="absolute inset-0 overflow-hidden" style={{ clipPath: `inset(0 ${100 - percent}% 0 0)` }}>
+          {afterUrl ? (
+            <img src={afterUrl} alt="After" className="h-full w-full object-cover" draggable={false} />
+          ) : (
+            <div className="h-full w-full bg-slate-800" />
+          )}
+        </div>
+
+        <span className="absolute left-2 top-2 rounded-full bg-slate-900/60 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
+          Before
+        </span>
+        <span className="absolute right-2 top-2 rounded-full bg-slate-900/60 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
+          After
+        </span>
+
+        {/* Divider + drag handle */}
+        <div
+          className="absolute top-0 bottom-0 w-0.5 bg-white/90"
+          style={{ left: `${percent}%`, transform: 'translateX(-50%)' }}
+        >
+          <div className="absolute left-1/2 top-1/2 flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-slate-900 shadow-lg">
+            <span className="text-xs leading-none">↔</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-1 flex items-center justify-between text-xs text-slate-400">
+        <span>{formatCaption(before)}</span>
+        <span>{formatCaption(after)}</span>
+      </div>
     </div>
   )
 }
@@ -64,10 +141,7 @@ export function PhotoCompare({ entries, onBack }: { entries: ProgressEntry[]; on
         </select>
       </div>
 
-      <div className="flex gap-3">
-        <Slot entry={left} label="Before" />
-        <Slot entry={right} label="After" />
-      </div>
+      <BeforeAfterSlider before={left} after={right} />
     </div>
   )
 }

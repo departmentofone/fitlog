@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { CopyDayButton } from '../../components/CopyDayButton'
 import { DateNav } from '../../components/DateNav'
 import { MacroLine } from '../../components/MacroLine'
+import { SkeletonCard } from '../../components/Skeleton'
 import { useToast } from '../../components/ToastProvider'
 import { useCopyMealsDay, dailyTotals, useCreateMeal, useMealsForDate } from '../../hooks/useMeals'
 import { todayISO } from '../../hooks/useWorkouts'
@@ -84,7 +85,7 @@ export function MealsTab() {
         <MacroLine macros={totals} className="mt-1 text-sm" />
       </div>
 
-      {isLoading && <p className="text-slate-400">Loading…</p>}
+      {isLoading && <SkeletonCard lines={2} />}
 
       {meals.map((meal) => (
         <MealCard key={meal.id} meal={meal} />

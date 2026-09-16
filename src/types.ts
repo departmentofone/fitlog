@@ -135,6 +135,7 @@ export type Tab =
   | 'diet'
   | 'fasting'
   | 'goals'
+  | 'history'
   | 'achievements'
   | 'programs'
   | 'calculator'
@@ -155,6 +156,7 @@ export interface UserSettings {
   unit_system: UnitSystem
   theme: ThemePreference
   color_palette: string
+  haptics_enabled: boolean
   /** Extra bottom-nav shortcuts beyond the always-pinned Workouts/Meals (max 2). */
   bottom_nav_tabs: Tab[]
   updated_at: string

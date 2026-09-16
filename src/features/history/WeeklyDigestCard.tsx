@@ -1,3 +1,4 @@
+import { CountUp } from '../../components/CountUp'
 import { useWeeklyDigest } from '../../hooks/useWeeklyDigest'
 
 export function WeeklyDigestCard() {
@@ -15,7 +16,9 @@ export function WeeklyDigestCard() {
 
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-2xl bg-slate-800/60 p-3">
-          <p className="text-2xl font-bold text-white">{data.workoutsThisWeek}</p>
+          <p className="text-2xl font-bold text-white">
+            <CountUp value={data.workoutsThisWeek} />
+          </p>
           <p className="text-xs text-slate-500">
             Workouts
             {workoutTrend !== 0 && (
@@ -27,15 +30,21 @@ export function WeeklyDigestCard() {
           </p>
         </div>
         <div className="rounded-2xl bg-slate-800/60 p-3">
-          <p className="text-2xl font-bold text-white">{Math.round(data.totalVolume).toLocaleString()}</p>
+          <p className="text-2xl font-bold text-white">
+            <CountUp value={data.totalVolume} format={(n) => Math.round(n).toLocaleString()} />
+          </p>
           <p className="text-xs text-slate-500">kg moved</p>
         </div>
         <div className="rounded-2xl bg-slate-800/60 p-3">
-          <p className="text-2xl font-bold text-emerald-400">{Math.round(data.avgCalories)}</p>
+          <p className="text-2xl font-bold text-emerald-400">
+            <CountUp value={data.avgCalories} />
+          </p>
           <p className="text-xs text-slate-500">avg kcal/day</p>
         </div>
         <div className="rounded-2xl bg-slate-800/60 p-3">
-          <p className="text-2xl font-bold text-blue-400">{Math.round(data.avgProtein)}g</p>
+          <p className="text-2xl font-bold text-blue-400">
+            <CountUp value={data.avgProtein} suffix="g" />
+          </p>
           <p className="text-xs text-slate-500">avg protein/day</p>
         </div>
       </div>

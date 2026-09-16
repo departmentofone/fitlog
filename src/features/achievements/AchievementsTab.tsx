@@ -8,6 +8,8 @@ import {
   type LiftKey,
 } from '../../lib/achievements'
 import { useAchievementsData } from '../../hooks/useAchievements'
+import { CountUp } from '../../components/CountUp'
+import { SkeletonCard } from '../../components/Skeleton'
 
 function TierPills({ tiers }: { tiers: { label: string; unlocked: boolean }[] }) {
   return (
@@ -42,7 +44,13 @@ export function AchievementsTab() {
   const data = useAchievementsData()
 
   if (data.isLoading) {
-    return <p className="p-4 text-slate-400">Loading…</p>
+    return (
+      <div className="space-y-4 p-4">
+        <SkeletonCard lines={2} />
+        <SkeletonCard lines={2} />
+        <SkeletonCard />
+      </div>
+    )
   }
 
   const prCount = countGenuinePRs(data.sets)
@@ -81,7 +89,10 @@ export function AchievementsTab() {
 
       <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-1 font-medium text-white">PR milestones</h3>
-        <p className="mb-3 text-xs text-slate-500">{prCount} genuine PR{prCount === 1 ? '' : 's'} set (beating your own prior best - the first time you log a lift never counts)</p>
+        <p className="mb-3 text-xs text-slate-500">
+          <CountUp value={prCount} /> genuine PR{prCount === 1 ? '' : 's'} set (beating your own prior best - the first
+          time you log a lift never counts)
+        </p>
         <TierPills tiers={tierProgress(prCount, PR_COUNT_TIERS, ' PRs')} />
       </div>
 

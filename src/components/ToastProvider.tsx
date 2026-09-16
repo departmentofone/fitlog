@@ -60,6 +60,18 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               t.tone === 'error' ? 'bg-red-950/95 text-red-200 ring-red-500/30' : 'bg-slate-800/95 text-white ring-white/10'
             }`}
           >
+            {t.tone === 'error' ? (
+              <svg viewBox="0 0 24 24" className="h-4.5 w-4.5 shrink-0 text-red-400" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" className="h-4.5 w-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M8.5 12.5l2.4 2.4L15.5 9.5" />
+              </svg>
+            )}
             <span className="text-sm">{t.message}</span>
             {t.actionLabel && (
               <button

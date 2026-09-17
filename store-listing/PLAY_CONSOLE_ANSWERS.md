@@ -10,7 +10,8 @@ Play Console path: **Policy and programs → App content**.
 
 ## 1. Privacy policy
 
-`https://fitlog-two-gamma.vercel.app/privacy`
+`https://fitlog-two-gamma.vercel.app/privacy`. It names the developer as **Milan Solarov**, which must
+match the developer name on the Play Console account exactly.
 
 ## 2. App access
 

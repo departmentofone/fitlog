@@ -35,7 +35,7 @@ export function PlateCalculator() {
 
   return (
     <>
-      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
         <h3 className="mb-1 font-medium text-white">Plate calculator</h3>
         <p className="mb-3 text-sm text-slate-400">
           Work out which plates to load on each side of the bar to hit a target total weight.
@@ -64,7 +64,7 @@ export function PlateCalculator() {
         </p>
       </div>
 
-      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-3 font-medium text-white">Result</h3>
         {result == null ? (
           <p className="text-sm text-slate-500">Enter a target weight and bar weight above to see the loading.</p>

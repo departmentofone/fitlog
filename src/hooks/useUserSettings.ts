@@ -42,7 +42,22 @@ export function useUserSettings() {
 export function useUpdateSettings() {
   const { user } = useAuth()
   const qc = useQueryClient()
+  const queryKey = ['user-settings', user?.id]
   return useMutation({
+    // Settings writes run one at a time, in tap order - otherwise two quick toggles race and the
+    // later-arriving request can overwrite the newer choice.
+    scope: { id: 'user-settings' },
+    // Optimistic: the UI (and the next tap) sees the change immediately, instead of computing the
+    // next value from stale data while the previous save is still in flight.
+    onMutate: async (patch) => {
+      await qc.cancelQueries({ queryKey })
+      const previous = qc.getQueryData<UserSettings>(queryKey)
+      if (previous) qc.setQueryData<UserSettings>(queryKey, { ...previous, ...patch })
+      return { previous }
+    },
+    onError: (_error, _patch, context) => {
+      if (context?.previous) qc.setQueryData(queryKey, context.previous)
+    },
     mutationFn: async (patch: Partial<Omit<UserSettings, 'user_id' | 'updated_at'>>) => {
       if (!user) throw new Error('Not signed in')
       const { error } = await supabase
@@ -50,6 +65,11 @@ export function useUpdateSettings() {
         .upsert({ user_id: user.id, ...patch, updated_at: new Date().toISOString() }, { onConflict: 'user_id' })
       if (error) throw error
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['user-settings', user?.id] }),
+    onSettled: () => {
+      // Refetch once the last queued settings write has finished, not after each one.
+      if (qc.isMutating({ predicate: (m) => m.options.scope?.id === 'user-settings' }) <= 1) {
+        qc.invalidateQueries({ queryKey })
+      }
+    },
   })
 }

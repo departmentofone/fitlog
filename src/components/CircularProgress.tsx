@@ -1,5 +1,5 @@
 const TONE_COLORS: Record<string, string> = {
-  good: '#34d399',
+  good: 'var(--color-success)',
   warn: '#f87171',
   neutral: '#60a5fa',
 }
@@ -26,7 +26,7 @@ export function CircularProgress({
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="#1e293b" strokeWidth={strokeWidth} />
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="var(--color-slate-700)" strokeWidth={strokeWidth} />
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -42,7 +42,7 @@ export function CircularProgress({
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="text-sm font-bold text-white">{Math.round(clamped)}%</span>
-        {label && <span className="text-[9px] text-slate-500">{label}</span>}
+        {label && <span className="text-[11px] text-slate-500">{label}</span>}
       </div>
     </div>
   )

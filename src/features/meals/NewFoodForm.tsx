@@ -51,7 +51,7 @@ export function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) =
   }
 
   return (
-    <div className="rounded-2xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-2xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-medium text-white">New food</h3>
         <button onClick={onCancel} className="text-sm text-slate-400 hover:text-slate-200">
@@ -205,7 +205,7 @@ export function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) =
         <button
           onClick={handleCreate}
           disabled={!name.trim() || !calories || createFood.isPending}
-          className="w-full rounded-xl bg-emerald-600 py-2.5 font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+          className="w-full rounded-xl bg-emerald-600 py-2.5 font-medium text-on-accent hover:brightness-90 disabled:opacity-50"
         >
           Create food
         </button>

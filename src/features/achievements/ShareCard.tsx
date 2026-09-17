@@ -293,7 +293,7 @@ export function ShareCardButton({ data, className }: { data: ShareCardData; clas
               <button
                 type="button"
                 onClick={() => blob && shareOrDownload(blob, data.type, data)}
-                className="flex-1 rounded-full bg-emerald-600 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-500"
+                className="flex-1 rounded-full bg-emerald-600 py-2.5 text-sm font-semibold text-on-accent transition hover:brightness-90"
               >
                 Share / Save image
               </button>

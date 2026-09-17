@@ -70,7 +70,7 @@ export function MonthCalendar({
               onClick={() => onSelectDate(iso)}
               className={`relative aspect-square rounded-xl text-xs font-medium transition disabled:opacity-30 ${
                 selectedDate === iso
-                  ? 'bg-emerald-600 text-white'
+                  ? 'bg-emerald-600 text-on-accent'
                   : isToday
                     ? 'bg-slate-800 text-emerald-400 ring-1 ring-emerald-500/40'
                     : 'text-slate-300 hover:bg-slate-800'

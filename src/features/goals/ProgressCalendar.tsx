@@ -116,7 +116,7 @@ function EntryEditor({
             Delete
           </button>
         )}
-        <button onClick={save} className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500">
+        <button onClick={save} className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90">
           Save
         </button>
       </div>
@@ -139,7 +139,7 @@ export function ProgressCalendar() {
   }
 
   return (
-    <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-medium text-white">Progress log</h3>
         {photoEntries.length >= 2 && (

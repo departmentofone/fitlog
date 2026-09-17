@@ -37,7 +37,7 @@ export function PushNotificationsCard() {
   }
 
   return (
-    <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <h3 className="mb-1 font-medium text-white">Notifications</h3>
       <p className="mb-3 text-xs text-slate-500">
         Get your weekly digest as a push notification instead of only seeing it in the app.
@@ -52,7 +52,7 @@ export function PushNotificationsCard() {
           onClick={handleToggle}
           disabled={pending}
           className={`w-full rounded-xl py-2.5 text-sm font-medium transition disabled:opacity-50 ${
-            isSubscribed ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-emerald-600 text-white hover:bg-emerald-500'
+            isSubscribed ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-emerald-600 text-on-accent hover:brightness-90'
           }`}
         >
           {pending ? 'Working…' : isSubscribed ? 'Notifications on — turn off' : 'Enable notifications'}

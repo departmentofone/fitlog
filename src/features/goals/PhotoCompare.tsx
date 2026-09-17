@@ -73,10 +73,10 @@ function BeforeAfterSlider({ before, after }: { before: ProgressEntry | undefine
           )}
         </div>
 
-        <span className="absolute left-2 top-2 rounded-full bg-slate-900/60 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
+        <span className="absolute left-2 top-2 rounded-full bg-slate-900/60 px-2 py-0.5 text-[11px] font-medium text-white backdrop-blur-sm">
           Before
         </span>
-        <span className="absolute right-2 top-2 rounded-full bg-slate-900/60 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
+        <span className="absolute right-2 top-2 rounded-full bg-slate-900/60 px-2 py-0.5 text-[11px] font-medium text-white backdrop-blur-sm">
           After
         </span>
 

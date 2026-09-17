@@ -18,13 +18,13 @@ export function ExerciseSummaryBox({
 
   return (
     <div
-      className={`relative rounded-2xl bg-slate-900 backdrop-blur-xl border-t shadow-lg shadow-black/20 ring-1 transition hover:ring-emerald-500/30 ${
+      className={`relative rounded-2xl bg-slate-900 border-t shadow-lg shadow-black/20 ring-1 transition hover:ring-emerald-500/30 ${
         supersetLabel ? 'border-emerald-500/40 ring-emerald-500/20' : 'border-white/10 ring-white/5'
       }`}
     >
       <button onClick={onClick} className="w-full p-3 text-left">
         {supersetLabel && (
-          <p className="mb-1 inline-block rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-400">
+          <p className="mb-1 inline-block rounded-full bg-emerald-500/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-emerald-400">
             Superset {supersetLabel}
           </p>
         )}

@@ -195,7 +195,7 @@ export function ScannerTab() {
 
   return (
     <div className="space-y-4 p-4">
-      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
         <h3 className="mb-1 font-medium text-white">Barcode scanner</h3>
         <p className="mb-3 text-sm text-slate-400">
           Look up a packaged food by its barcode against the Open Food Facts database, review the nutrition
@@ -216,7 +216,7 @@ export function ScannerTab() {
           <button
             onClick={() => void handleLookup(barcode)}
             disabled={!barcode.trim() || lookup.isPending}
-            className="shrink-0 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+            className="shrink-0 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-on-accent hover:brightness-90 disabled:opacity-50"
           >
             {lookup.isPending ? 'Looking up…' : 'Look up'}
           </button>
@@ -262,7 +262,7 @@ export function ScannerTab() {
       </div>
 
       {reviewing && (
-        <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+        <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
           <div className="mb-3 flex items-center justify-between">
             <h3 className="font-medium text-white">Review</h3>
             <button onClick={reset} className="text-sm text-slate-400 hover:text-slate-200">
@@ -322,7 +322,7 @@ export function ScannerTab() {
             <button
               onClick={() => void handleSave()}
               disabled={!form.name.trim() || !form.calories || createFood.isPending}
-              className="w-full rounded-xl bg-emerald-600 py-2.5 font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+              className="w-full rounded-xl bg-emerald-600 py-2.5 font-medium text-on-accent hover:brightness-90 disabled:opacity-50"
             >
               {createFood.isPending ? 'Saving…' : 'Save to food library'}
             </button>

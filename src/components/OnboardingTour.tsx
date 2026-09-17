@@ -36,17 +36,20 @@ const SLIDES: Slide[] = [
     ),
   },
   {
-    title: 'Two ways to get around',
+    title: 'Getting around',
     body: (
       <div className="space-y-3 text-sm text-slate-300">
         <p>
-          <span className="font-semibold text-white">Menu</span> (top-left) — everything lives here: all 9 tabs,
-          including Workouts, Meals, Scanner, Diet, Fasting, Goals, Achievements, Programs, and About.
+          The <span className="font-semibold text-white">bottom bar</span> keeps your most-used sections one tap away —{' '}
+          <span className="font-semibold text-white">Workouts</span> and <span className="font-semibold text-white">Meals</span>{' '}
+          are always there.
         </p>
         <p>
-          <span className="font-semibold text-white">Bottom bar</span> — <span className="font-semibold text-white">Workouts</span> and{' '}
-          <span className="font-semibold text-white">Meals</span> are always pinned there, so your two most-used tabs
-          are always one tap away.
+          <span className="font-semibold text-white">More</span> (bottom-right) opens every other section: Scanner, Diet,
+          Fasting, Goals, History, Achievements, Programs, and the Calculator.
+        </p>
+        <p>
+          The <span className="font-semibold text-white">+</span> button logs a set, a meal, or starts a fast from anywhere.
         </p>
       </div>
     ),
@@ -57,28 +60,22 @@ const SLIDES: Slide[] = [
     body: (
       <div className="space-y-3 text-sm text-slate-200">
         <p>
-          The bottom bar has <span className="font-semibold text-emerald-400">2 more open slots</span> beyond Workouts
-          and Meals — pick whichever tabs you use most.
+          The bottom bar has <span className="font-semibold text-emerald-400">2 open slots</span> — fill them with
+          whichever sections you use most.
         </p>
         <p>
-          Head to <span className="font-semibold text-white">Settings</span> (the{' '}
-          <span className="font-semibold text-white">icon</span>, top-right) and choose your extras under{' '}
+          Open <span className="font-semibold text-white">Settings</span> (the gear, top-right) and choose them under{' '}
           <span className="font-semibold text-white">&ldquo;Bottom bar&rdquo;</span>.
         </p>
       </div>
     ),
   },
   {
-    title: 'A few newer additions',
+    title: "You're all set",
     body: (
-      <div className="space-y-3 text-sm text-slate-300">
-        <p>
-          Don&apos;t be surprised to find <span className="font-semibold text-white">Fasting</span> (track fasting
-          windows), <span className="font-semibold text-white">Scanner</span> (scan food to log it fast), and{' '}
-          <span className="font-semibold text-white">About</span> tucked in the Menu too.
-        </p>
-        <p className="text-slate-400">You&apos;re all set — go ahead and explore.</p>
-      </div>
+      <p className="text-sm text-slate-300">
+        Tip: the system back gesture works everywhere — it steps back through screens and closes sheets.
+      </p>
     ),
   },
 ]
@@ -126,7 +123,7 @@ export function OnboardingTour() {
           </div>
           <button
             onClick={finish}
-            className="text-xs font-medium text-slate-500 transition hover:text-slate-300"
+            className="-my-3 -mr-3 min-h-11 px-3 text-xs font-medium text-slate-400"
           >
             Skip
           </button>
@@ -137,7 +134,7 @@ export function OnboardingTour() {
 
         <button
           onClick={next}
-          className="w-full rounded-2xl bg-emerald-600 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-500"
+          className="w-full rounded-2xl bg-emerald-600 py-2.5 text-sm font-semibold text-on-accent transition hover:brightness-90"
         >
           {isLast ? "Let's go" : step === SLIDES.length - 2 ? 'Got it' : 'Next'}
         </button>

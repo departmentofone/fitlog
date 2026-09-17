@@ -1,5 +1,16 @@
 @import "tailwindcss";
 
+/*
+ * Semantic tokens that sit outside the accent palette. `success` must never follow the user's
+ * accent choice (a rose or amber "saved" message reads as an error/warning), and `on-accent` is
+ * the text color on filled accent/danger buttons - it stays white in both themes, unlike
+ * `--color-white`, which flips to navy for light mode's body text.
+ */
+@theme {
+  --color-success: #4ade80;
+  --color-on-accent: #ffffff;
+}
+
 :root {
   color-scheme: light dark;
   /* Overridden by src/lib/viewportHeight.ts with the real measured height as soon as JS runs -
@@ -39,7 +50,8 @@ html, body, #root {
   --color-emerald-300: #7ce8b8;
   --color-emerald-400: #34d399;
   --color-emerald-500: #22b985;
-  --color-emerald-600: #189a6c;
+  /* Dark enough for white button text to clear WCAG AA (4.8:1). */
+  --color-emerald-600: #0d8259;
   --font-body: 'Sora', ui-sans-serif, system-ui, sans-serif;
   /* Reference glow for the one hero/stat card per screen - not every card, just the one that
      matters most (matches the mockup's restraint: this is an accent, not a default). */
@@ -51,6 +63,9 @@ html[data-theme="light"] {
 
 body {
   font-family: var(--font-body);
+  /* Numbers everywhere in this app (weights, reps, macros, timers) - equal-width digits keep them
+     from jittering as values change and line up in columns. Sora ships a tnum feature. */
+  font-variant-numeric: tabular-nums;
 }
 
 /*
@@ -78,8 +93,11 @@ body {
   overflow: hidden;
 }
 
-input, select, textarea, button {
-  font: inherit;
+/* In the base layer: unlayered, this beat every text-size/weight utility on buttons and inputs. */
+@layer base {
+  input, select, textarea, button {
+    font: inherit;
+  }
 }
 
 @keyframes skeleton-shimmer {
@@ -97,18 +115,22 @@ input, select, textarea, button {
 
 /* Tactile press feedback app-wide - reinforces the "glass" surfaces as touchable without
    needing every button to opt in individually. Skipped for anyone who's asked for less motion. */
-@media (prefers-reduced-motion: no-preference) {
-  button {
-    transition: transform 0.1s ease-out;
-  }
-  button:active {
-    transform: scale(0.97);
+@layer base {
+  @media (prefers-reduced-motion: no-preference) {
+    button {
+      transition: transform 0.1s ease-out;
+    }
+    button:active {
+      transform: scale(0.97);
+    }
   }
 }
 
 html[data-theme="light"] {
+  --color-success: #166534;
   --color-slate-950: #eef2fa;
-  --color-slate-900: rgba(255, 255, 255, 0.55);
+  /* Opaque enough that cards separate from the pale canvas without relying on blur. */
+  --color-slate-900: rgba(255, 255, 255, 0.78);
   --color-slate-800: rgba(255, 255, 255, 0.4);
   --color-slate-700: rgba(15, 23, 42, 0.12);
   --color-slate-600: #64748b;
@@ -136,7 +158,7 @@ html[data-palette="cyan"] {
   --color-emerald-300: #67e8f9;
   --color-emerald-400: #22d3ee;
   --color-emerald-500: #06b6d4;
-  --color-emerald-600: #0891b2;
+  --color-emerald-600: #0e7490;
 }
 html[data-palette="rose"] {
   --color-emerald-300: #fda4af;
@@ -148,5 +170,38 @@ html[data-palette="amber"] {
   --color-emerald-300: #fcd34d;
   --color-emerald-400: #fbbf24;
   --color-emerald-500: #f59e0b;
-  --color-emerald-600: #d97706;
+  --color-emerald-600: #b45309;
+}
+
+/* Overlay motion - one duration pair for every sheet/backdrop. */
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .fade-in { animation: fade-in 200ms ease-out; }
+  .sheet-up { animation: sheet-up 250ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+}
+
+/*
+ * Touch hit area: on touch screens every button's tappable area grows to at least 44x44 (Apple
+ * HIG) via an invisible overlay, without changing how small chips/icons look. In the base layer so
+ * positioning utilities (`absolute`, `fixed`) on a button still win.
+ */
+@layer base {
+  @media (pointer: coarse) {
+    button:not(:where([class*="absolute"], [class*="fixed"], [class*="sticky"])) {
+      position: relative;
+    }
+    button::after {
+      content: "";
+      position: absolute;
+      top: min(0px, calc((100% - 44px) / 2));
+      bottom: min(0px, calc((100% - 44px) / 2));
+      left: min(0px, calc((100% - 44px) / 2));
+      right: min(0px, calc((100% - 44px) / 2));
+    }
+  }
 }

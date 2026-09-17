@@ -15,7 +15,7 @@ export function WaterWidget() {
   const pct = Math.min(100, (mlToday / goal) * 100)
 
   return (
-    <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       {editingGoal ? (
         <div className="mb-2 flex items-center justify-between">
           <h3 className="text-sm font-medium text-slate-300">Water</h3>
@@ -58,7 +58,7 @@ export function WaterWidget() {
               if (!Number.isNaN(liters) && liters > 0) updateSettings.mutate({ water_goal_ml: liters * 1000 })
               setEditingGoal(false)
             }}
-            className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500"
+            className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-on-accent hover:brightness-90"
           >
             Save
           </button>

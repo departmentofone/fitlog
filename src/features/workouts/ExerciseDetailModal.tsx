@@ -118,7 +118,7 @@ export function ExerciseDetailModal({ exercise, onClose }: { exercise: Exercise;
                     setNote.mutate({ exerciseId: exercise.id, notes: noteDraft.trim() })
                     setEditingNote(false)
                   }}
-                  className="flex-1 rounded-xl bg-emerald-600 py-1.5 text-sm font-medium text-white hover:bg-emerald-500"
+                  className="flex-1 rounded-xl bg-emerald-600 py-1.5 text-sm font-medium text-on-accent hover:brightness-90"
                 >
                   Save
                 </button>

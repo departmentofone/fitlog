@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { CopyDayButton } from '../../components/CopyDayButton'
 import { DateNav } from '../../components/DateNav'
 import { FireStreak } from '../../components/FireStreak'
@@ -62,7 +62,14 @@ function isFinalMemberOfRound(
   return counts.every((c) => c === counts[0])
 }
 
-export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
+export function WorkoutsTab({
+  onOpenHistory,
+  quickAction,
+}: {
+  onOpenHistory: () => void
+  /** Changes when the quick-add "Log a set" action fires - opens today's exercise picker. */
+  quickAction?: number
+}) {
   const { data: settings } = useUserSettings()
   const askPreworkout = settings?.ask_preworkout ?? true
 
@@ -95,6 +102,26 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
   const [confirmingDelete, setConfirmingDelete] = useState(false)
   const [restTrigger, setRestTrigger] = useState(0)
   const { data: activeExerciseHistory = [] } = useExerciseHistory(activeExercise?.id)
+  const [pendingPick, setPendingPick] = useState(false)
+
+  useEffect(() => {
+    if (quickAction == null) return
+    setDate(todayISO())
+    setShowPresets(false)
+    setActiveExercise(null)
+    setActiveSuperset(null)
+    setAppendPicking(false)
+    setPendingPick(true)
+  }, [quickAction])
+
+  // Opens the picker as soon as today's session exists - immediately if it already does, or right
+  // after the preworkout question is answered if it doesn't yet.
+  useEffect(() => {
+    if (!pendingPick || !session || !isToday) return
+    setPickerMode('solo')
+    setPicking(true)
+    setPendingPick(false)
+  }, [pendingPick, session, isToday])
 
   const groupedByExercise = useMemo(() => {
     const map = new Map<string, (typeof sets)[number][]>()
@@ -312,7 +339,7 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
                   aria-label="Delete workout"
                   className={`rounded-full px-3 py-1 text-xs font-medium transition ${
                     confirmingDelete
-                      ? 'bg-red-600 text-white'
+                      ? 'bg-red-600 text-on-accent'
                       : 'bg-slate-800 text-slate-500 hover:text-red-400'
                   }`}
                 >
@@ -379,7 +406,7 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
                           key={ex.id}
                           onClick={() => setActiveExercise(ex)}
                           className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
-                            isActive ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                            isActive ? 'bg-emerald-600 text-on-accent' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                           }`}
                         >
                           {ex.name}
@@ -428,7 +455,7 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
 
             if (picking) {
               return (
-                <div className="rounded-2xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+                <div className="rounded-2xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
                   <div className="mb-3 flex items-center justify-between">
                     <h3 className="font-medium text-white">
                       {pickerMode === 'superset' ? 'Build a superset' : 'Pick an exercise'}
@@ -505,7 +532,7 @@ export function WorkoutsTab({ onOpenHistory }: { onOpenHistory: () => void }) {
           })()}
 
           {musclesTrained.length > 0 && (
-            <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+            <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
               <h3 className="mb-2 text-center text-sm font-medium text-slate-300">Muscle groups worked</h3>
               <MuscleDiagram selected={musclesTrained} size={90} />
             </div>

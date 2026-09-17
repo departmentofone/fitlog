@@ -52,12 +52,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={{ show, undoable }}>
       {children}
-      <div className="pointer-events-none fixed inset-x-0 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-[200] flex flex-col items-center gap-2 px-4">
+      <div className="pointer-events-none fixed inset-x-0 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-[200] flex flex-col items-center gap-2 px-4">
         {toasts.map((t) => (
           <div
             key={t.id}
             className={`pointer-events-auto flex max-w-sm items-center gap-3 rounded-2xl px-4 py-3 shadow-2xl ring-1 backdrop-blur ${
-              t.tone === 'error' ? 'bg-red-950/95 text-red-200 ring-red-500/30' : 'bg-slate-800/95 text-white ring-white/10'
+              t.tone === 'error' ? 'bg-red-950/95 text-red-200 ring-red-500/30' : 'bg-slate-950/95 text-white ring-white/10'
             }`}
           >
             {t.tone === 'error' ? (
@@ -67,7 +67,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 <line x1="12" y1="17" x2="12.01" y2="17" />
               </svg>
             ) : (
-              <svg viewBox="0 0 24 24" className="h-4.5 w-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg viewBox="0 0 24 24" className="h-4.5 w-4.5 shrink-0 text-success" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="9" />
                 <path d="M8.5 12.5l2.4 2.4L15.5 9.5" />
               </svg>
@@ -79,7 +79,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                   t.onAction?.()
                   dismiss(t.id)
                 }}
-                className="shrink-0 text-sm font-semibold text-emerald-400 hover:text-emerald-300"
+                className="-my-2 -mr-2 min-h-11 shrink-0 px-3 text-sm font-semibold text-emerald-400"
               >
                 {t.actionLabel}
               </button>

@@ -21,7 +21,7 @@ function formatElapsed(ms: number): string {
   return `${h}h ${m}m`
 }
 
-export function FastingTab() {
+export function FastingTab({ quickAction }: { quickAction?: number }) {
   const { data: active } = useActiveFast()
   const { data: history = [] } = useFastHistory()
   const startFast = useStartFast()
@@ -42,6 +42,14 @@ export function FastingTab() {
     [history],
   )
 
+  // Quick-add "Start a fast": bring the fast picker (or the running fast) into view.
+  useEffect(() => {
+    if (quickAction == null) return
+    requestAnimationFrame(() =>
+      document.getElementById('fasting-primary')?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
+    )
+  }, [quickAction])
+
   const elapsedMs = active ? now - new Date(active.start_time).getTime() : null
   const elapsedHours = elapsedMs != null ? elapsedMs / 3_600_000 : null
 
@@ -56,7 +64,7 @@ export function FastingTab() {
           const remaining = targetMs - elapsedMs
 
           return (
-            <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+            <div id="fasting-primary" className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
               <h3 className="mb-3 font-medium text-white">Current fast</h3>
               <div className="flex items-center gap-4">
                 <CircularProgress percent={pct} tone={pct >= 100 ? 'good' : 'neutral'} size={84} />
@@ -80,7 +88,7 @@ export function FastingTab() {
           )
         })()
       ) : (
-        <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+        <div id="fasting-primary" className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
           <h3 className="mb-3 font-medium text-white">Start a fast</h3>
           <p className="mb-2 text-sm text-slate-400">Pick a fasting window and start the timer.</p>
           <div className="mb-2 grid grid-cols-2 gap-1.5">
@@ -107,7 +115,7 @@ export function FastingTab() {
             />
             <button
               onClick={() => startFast.mutate(parseFloat(customHours) || 16)}
-              className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500"
+              className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90"
             >
               Start custom fast
             </button>
@@ -115,7 +123,7 @@ export function FastingTab() {
         </div>
       )}
 
-      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <p className="mb-2 text-sm font-medium text-white">Recent fasts</p>
         {history.length === 0 ? (
           <EmptyState variant="calendar" message="No fasts logged yet - finish one above and it'll show up here." />

@@ -1,9 +1,11 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
+import { useBackToClose } from '../hooks/useHashRoute'
 import { useUserSettings } from '../hooks/useUserSettings'
 import { formatBuildTime } from '../lib/buildInfo'
-import type { Tab } from '../types'
+import type { Tab, UserSettings } from '../types'
 import { OfflineBanner } from './OfflineBanner'
 import { SearchOverlay } from './SearchOverlay'
+import { TabIcon } from './TabIcon'
 
 export type { Tab }
 
@@ -16,34 +18,45 @@ const GROUP_LABELS: Record<TabGroup, string> = {
 }
 const GROUP_ORDER: TabGroup[] = ['track', 'progress', 'tools']
 
-const TABS: { key: Tab; label: string; icon: string; group: TabGroup | null }[] = [
-  { key: 'workouts', label: 'Workouts', icon: '🏋️', group: 'track' },
-  { key: 'meals', label: 'Meals', icon: '🍽️', group: 'track' },
-  { key: 'scanner', label: 'Scanner', icon: '📷', group: 'track' },
-  { key: 'diet', label: 'Diet', icon: '🥗', group: 'track' },
-  { key: 'fasting', label: 'Fasting', icon: '⏱️', group: 'track' },
-  { key: 'goals', label: 'Goals', icon: '🎯', group: 'progress' },
-  { key: 'history', label: 'History', icon: '📅', group: 'progress' },
-  { key: 'achievements', label: 'Achievements', icon: '🏆', group: 'progress' },
-  { key: 'programs', label: 'Programs', icon: '🗂️', group: 'tools' },
-  { key: 'calculator', label: 'Calculator', icon: '🧮', group: 'tools' },
-  { key: 'whatsnew', label: "What's new", icon: '🆕', group: null },
-  { key: 'about', label: 'About', icon: 'ℹ️', group: null },
+const TABS: { key: Tab; label: string; group: TabGroup | null }[] = [
+  { key: 'workouts', label: 'Workouts', group: 'track' },
+  { key: 'meals', label: 'Meals', group: 'track' },
+  { key: 'scanner', label: 'Scanner', group: 'track' },
+  { key: 'diet', label: 'Diet', group: 'track' },
+  { key: 'fasting', label: 'Fasting', group: 'track' },
+  { key: 'goals', label: 'Goals', group: 'progress' },
+  { key: 'history', label: 'History', group: 'progress' },
+  { key: 'achievements', label: 'Achievements', group: 'progress' },
+  { key: 'programs', label: 'Programs', group: 'tools' },
+  { key: 'calculator', label: 'Calculator', group: 'tools' },
+  { key: 'whatsnew', label: "What's new", group: null },
+  { key: 'about', label: 'About', group: null },
 ]
 
 const SHORT_LABELS: Partial<Record<Tab, string>> = { achievements: 'Awards' }
 const PINNED_TABS: Tab[] = ['workouts', 'meals']
-// About and What's new live permanently at the bottom of the menu (see below) - neither is a
-// candidate for the bottom nav bar, or part of the regular grouped tab list.
+// About and What's new live permanently at the bottom of the More sheet - neither is a candidate
+// for the bottom nav bar, or part of the regular grouped destination grid.
 const FOOTER_TABS: Tab[] = ['whatsnew', 'about']
 const MENU_TABS = TABS.filter((t) => !FOOTER_TABS.includes(t.key))
 // Achievements and History are look-back/celebration screens, not something worth a one-tap
-// slot - excluded from bottom-bar customization (still reachable from the menu as usual).
+// slot - excluded from bottom-bar customization (still reachable from More as usual).
 const EXCLUDED_FROM_BOTTOM_NAV: Tab[] = ['achievements', 'history']
 export const BOTTOM_NAV_CHOICES = MENU_TABS.filter(
   (t) => !PINNED_TABS.includes(t.key) && !EXCLUDED_FROM_BOTTOM_NAV.includes(t.key),
 )
 export const MAX_BOTTOM_NAV_EXTRAS = 2
+
+/**
+ * The user's extra bottom-bar tabs, cleaned up: known choices only, no duplicates, capped. Used by
+ * both the bar and the Settings picker so a stale/invalid stored entry can never fill a slot.
+ */
+export function resolveBottomNavExtras(settings: Pick<UserSettings, 'bottom_nav_tabs'> | undefined): Tab[] {
+  const validExtraKeys = new Set(BOTTOM_NAV_CHOICES.map((t) => t.key))
+  return Array.from(new Set(settings?.bottom_nav_tabs ?? []))
+    .filter((t) => validExtraKeys.has(t))
+    .slice(0, MAX_BOTTOM_NAV_EXTRAS)
+}
 
 export interface QuickAddAction {
   key: string
@@ -108,7 +121,7 @@ function QuickAddFab({ actions }: { actions: QuickAddAction[] }) {
                 action.onSelect()
                 setOpen(false)
               }}
-              className="flex items-center gap-2.5 rounded-full bg-slate-900 backdrop-blur-xl border border-white/10 py-2 pl-3.5 pr-4 text-sm font-medium text-white shadow-lg shadow-black/30"
+              className="flex min-h-11 items-center gap-2.5 rounded-full border border-white/10 bg-slate-950/90 py-2 pl-3.5 pr-4 text-sm font-medium text-white shadow-lg shadow-black/30 backdrop-blur-xl"
             >
               <span className="flex h-6 w-6 items-center justify-center text-emerald-400">{action.icon}</span>
               {action.label}
@@ -120,12 +133,87 @@ function QuickAddFab({ actions }: { actions: QuickAddAction[] }) {
         onClick={() => setOpen((o) => !o)}
         aria-label={open ? 'Close quick actions' : 'Quick add'}
         aria-expanded={open}
-        className={`pointer-events-auto flex h-14 w-14 items-center justify-center rounded-full text-white shadow-lg shadow-black/40 transition ${
-          open ? 'rotate-45 bg-slate-700' : 'bg-emerald-600'
+        className={`pointer-events-auto flex h-14 w-14 items-center justify-center rounded-full shadow-lg shadow-black/40 transition ${
+          open ? 'rotate-45 bg-slate-700 text-white' : 'bg-emerald-600 text-on-accent'
         }`}
       >
         <PlusIcon />
       </button>
+    </div>
+  )
+}
+
+function MoreSheet({ active, onPick, onClose }: { active: Tab; onPick: (tab: Tab) => void; onClose: () => void }) {
+  useBackToClose(true, onClose)
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col justify-end" onClick={onClose}>
+      <div className="fade-in absolute inset-0 bg-black/60" />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="All sections"
+        onClick={(e) => e.stopPropagation()}
+        className="sheet-up relative max-h-[85%] overflow-y-auto rounded-t-3xl border-t border-white/10 bg-slate-950 px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-2xl"
+      >
+        <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-slate-700" />
+        <div className="space-y-4">
+          {GROUP_ORDER.map((group) => (
+            <div key={group}>
+              <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                {GROUP_LABELS[group]}
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                {MENU_TABS.filter((t) => t.group === group).map((tab) => {
+                  const isActive = active === tab.key
+                  return (
+                    <button
+                      key={tab.key}
+                      onClick={() => onPick(tab.key)}
+                      aria-current={isActive ? 'page' : undefined}
+                      className={`flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-2xl px-2 py-3 text-xs font-semibold transition ${
+                        isActive ? 'bg-emerald-500/15 text-emerald-400' : 'bg-slate-900 text-slate-300'
+                      }`}
+                    >
+                      <TabIcon tab={tab.key} />
+                      {tab.label}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-4 flex gap-2 border-t border-white/10 pt-3">
+          {FOOTER_TABS.map((key) => {
+            const tab = TABS.find((t) => t.key === key)!
+            const isActive = active === key
+            return (
+              <button
+                key={key}
+                onClick={() => onPick(key)}
+                aria-current={isActive ? 'page' : undefined}
+                className={`flex min-h-11 flex-1 items-center justify-center gap-2 rounded-2xl text-sm font-semibold transition ${
+                  isActive ? 'bg-emerald-500/15 text-emerald-400' : 'text-slate-300'
+                }`}
+              >
+                <TabIcon tab={key} className="h-5 w-5" />
+                {tab.label}
+              </button>
+            )
+          })}
+        </div>
+        <p className="mt-2 text-center text-xs text-slate-500">Build {formatBuildTime()}</p>
+      </div>
     </div>
   )
 }
@@ -137,62 +225,48 @@ export function Layout({
   quickAddActions,
   children,
 }: {
-  active: Tab
+  active: Tab | null
   onChange: (tab: Tab) => void
   onOpenSettings: () => void
   quickAddActions?: QuickAddAction[]
   children: ReactNode
 }) {
-  const [menuOpen, setMenuOpen] = useState(false)
+  const [moreOpen, setMoreOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const { data: settings } = useUserSettings()
 
-  const validExtraKeys = new Set(BOTTOM_NAV_CHOICES.map((t) => t.key))
-  const extras = (settings?.bottom_nav_tabs ?? [])
-    .filter((t) => !PINNED_TABS.includes(t) && validExtraKeys.has(t))
-    .slice(0, MAX_BOTTOM_NAV_EXTRAS)
-  const bottomBarTabs = [...PINNED_TABS, ...extras]
+  const bottomBarTabs = [...PINNED_TABS, ...resolveBottomNavExtras(settings)]
     .map((key) => TABS.find((t) => t.key === key))
     .filter((t): t is (typeof TABS)[number] => !!t)
+  // "More" reads as selected whenever the current screen is one that only lives in the More sheet.
+  const moreIsActive = active != null && !bottomBarTabs.some((t) => t.key === active)
 
   return (
     <div className="relative flex h-[var(--app-height)] flex-col overflow-hidden overscroll-none bg-slate-950">
-      {/* Ambient glow blobs - fixed behind the whole app so scrolling glass cards (backdrop-blur)
-          pick up a soft frosted color from whatever's behind them, instead of a flat void. */}
+      {/* Ambient glow blobs - fixed behind the whole app. They're already heavily blurred, so the
+          translucent cards over them read as frosted glass without paying for a backdrop-filter on
+          every card (reserved for the header, nav, and floating layers). */}
       <div className="pointer-events-none fixed -left-16 -top-16 z-0 h-64 w-64 rounded-full bg-emerald-400/40 blur-[90px]" />
       <div className="pointer-events-none fixed -bottom-24 -right-16 z-0 h-64 w-64 rounded-full bg-amber-400/25 blur-[90px]" />
 
-      <header className="relative z-10 grid grid-cols-[1fr_auto_1fr] items-center gap-2 border-b border-white/10 bg-slate-950/40 px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur-xl">
-        <button
-          onClick={() => setMenuOpen(true)}
-          aria-label="Menu"
-          className="flex h-8 w-fit items-center gap-1.5 justify-self-start rounded-full pl-1 pr-2.5 text-slate-300 transition hover:bg-white/5"
-        >
-          <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <line x1="4" y1="7" x2="20" y2="7" />
-            <line x1="4" y1="12" x2="20" y2="12" />
-            <line x1="4" y1="17" x2="20" y2="17" />
-          </svg>
-          <span className="text-xs font-medium">Menu</span>
-        </button>
-
-        <div className="col-start-2 flex items-center gap-2 justify-self-center">
+      <header className="relative z-10 flex items-center justify-between gap-2 border-b border-white/10 bg-slate-950/40 py-1.5 pl-4 pr-2 pt-[max(0.375rem,env(safe-area-inset-top))] backdrop-blur-xl">
+        <div className="flex items-center gap-2">
           <LogoMark />
           <h1 className="text-lg font-semibold tracking-tight text-white">FitLog</h1>
         </div>
 
-        <div className="col-start-3 flex items-center gap-1 justify-self-end">
+        <div className="flex items-center">
           <button
             onClick={() => setSearchOpen(true)}
             aria-label="Search"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition hover:bg-white/5 hover:text-slate-200"
+            className="flex h-11 w-11 items-center justify-center rounded-full text-slate-400 transition active:bg-white/10"
           >
             <SearchIcon />
           </button>
           <button
             onClick={onOpenSettings}
             aria-label="Settings"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition hover:bg-white/5 hover:text-slate-200"
+            className="flex h-11 w-11 items-center justify-center rounded-full text-slate-400 transition active:bg-white/10"
           >
             <SettingsIcon />
           </button>
@@ -203,7 +277,8 @@ export function Layout({
         <OfflineBanner />
       </div>
 
-      <main className="relative z-10 flex-1 overflow-y-auto overscroll-none">{children}</main>
+      {/* Bottom padding lets the last card scroll clear of the floating quick-add button. */}
+      <main className="relative z-10 flex-1 overflow-y-auto overscroll-none pb-20">{children}</main>
 
       {quickAddActions && quickAddActions.length > 0 && (
         <div className="pointer-events-none absolute inset-x-0 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-20">
@@ -211,89 +286,48 @@ export function Layout({
         </div>
       )}
 
-      <nav className="relative z-10 flex shrink-0 gap-1 border-t border-white/10 bg-slate-950/60 px-2 pb-[env(safe-area-inset-bottom)] pt-1 backdrop-blur-xl">
+      <nav
+        aria-label="Main"
+        className="relative z-10 flex shrink-0 gap-1 border-t border-white/10 bg-slate-950/60 px-2 pb-[env(safe-area-inset-bottom)] pt-1 backdrop-blur-xl"
+      >
         {bottomBarTabs.map((tab) => {
           const isActive = active === tab.key
           return (
             <button
               key={tab.key}
               onClick={() => onChange(tab.key)}
-              className={`my-1 flex flex-1 flex-col items-center gap-0.5 rounded-2xl py-2 text-xs font-semibold transition ${
-                isActive ? 'bg-emerald-500/15 text-emerald-400' : 'text-slate-500 hover:text-slate-300'
+              aria-current={isActive ? 'page' : undefined}
+              className={`my-1 flex min-h-12 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl py-1.5 text-[11px] font-semibold transition ${
+                isActive ? 'bg-emerald-500/15 text-emerald-400' : 'text-slate-500'
               }`}
             >
-              <span className="text-lg">{tab.icon}</span>
-              {SHORT_LABELS[tab.key] ?? tab.label}
+              <TabIcon tab={tab.key} />
+              <span className="max-w-full truncate">{SHORT_LABELS[tab.key] ?? tab.label}</span>
             </button>
           )
         })}
+        <button
+          onClick={() => setMoreOpen(true)}
+          aria-haspopup="dialog"
+          aria-expanded={moreOpen}
+          className={`my-1 flex min-h-12 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl py-1.5 text-[11px] font-semibold transition ${
+            moreIsActive ? 'bg-emerald-500/15 text-emerald-400' : 'text-slate-500'
+          }`}
+        >
+          <TabIcon tab="more" />
+          <span>More</span>
+        </button>
       </nav>
 
-      {menuOpen && (
-        <div className="fixed inset-0 z-50 flex" onClick={() => setMenuOpen(false)}>
-          <div className="absolute inset-0 bg-black/60" />
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative flex h-full w-72 max-w-[80vw] flex-col border-r border-white/10 bg-slate-950/85 pt-[env(safe-area-inset-top)] shadow-2xl backdrop-blur-xl"
-          >
-            <div className="flex items-center gap-2 border-b border-white/5 px-4 py-4">
-              <LogoMark />
-              <h2 className="text-lg font-semibold text-white">FitLog</h2>
-            </div>
-            <nav className="flex-1 space-y-4 overflow-y-auto p-3">
-              {GROUP_ORDER.map((group) => (
-                <div key={group}>
-                  <p className="mb-1.5 px-3.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    {GROUP_LABELS[group]}
-                  </p>
-                  <div className="space-y-1.5">
-                    {MENU_TABS.filter((t) => t.group === group).map((tab) => {
-                      const isActive = active === tab.key
-                      return (
-                        <button
-                          key={tab.key}
-                          onClick={() => {
-                            onChange(tab.key)
-                            setMenuOpen(false)
-                          }}
-                          className={`flex w-full items-center gap-3 rounded-2xl px-3.5 py-3 text-left text-sm font-semibold transition ${
-                            isActive ? 'bg-emerald-500/15 text-emerald-400' : 'text-slate-300 hover:bg-white/5'
-                          }`}
-                        >
-                          <span className="text-xl">{tab.icon}</span>
-                          {tab.label}
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-              ))}
-            </nav>
-
-            <div className="shrink-0 border-t border-white/10 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-              {FOOTER_TABS.map((key) => {
-                const tab = TABS.find((t) => t.key === key)!
-                const isActive = active === key
-                return (
-                  <button
-                    key={key}
-                    onClick={() => {
-                      onChange(key)
-                      setMenuOpen(false)
-                    }}
-                    className={`flex w-full items-center gap-3 rounded-2xl px-3.5 py-3 text-left text-sm font-semibold transition ${
-                      isActive ? 'bg-emerald-500/15 text-emerald-400' : 'text-slate-300 hover:bg-white/5'
-                    }`}
-                  >
-                    <span className="text-xl">{tab.icon}</span>
-                    {tab.label}
-                  </button>
-                )
-              })}
-              <p className="mt-2 text-center text-[10px] text-slate-600">Build {formatBuildTime()}</p>
-            </div>
-          </div>
-        </div>
+      {moreOpen && (
+        <MoreSheet
+          active={active ?? 'workouts'}
+          onClose={() => setMoreOpen(false)}
+          onPick={(tab) => {
+            onChange(tab)
+            setMoreOpen(false)
+          }}
+        />
       )}
 
       {searchOpen && <SearchOverlay onClose={() => setSearchOpen(false)} />}

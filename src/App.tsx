@@ -1,11 +1,13 @@
-import { lazy, Suspense, useState } from 'react'
-import { AuthScreen } from './components/Auth'
-import { Layout, type QuickAddAction, type Tab } from './components/Layout'
+import { lazy, Suspense, useEffect, useState } from 'react'
+import { AuthScreen, SetNewPasswordScreen } from './components/Auth'
+import { Layout, type QuickAddAction } from './components/Layout'
 import { OnboardingTour } from './components/OnboardingTour'
 import { SkeletonCard } from './components/Skeleton'
 import { useApplyTheme } from './hooks/useApplyTheme'
 import { useAuth } from './hooks/useAuth'
 import { useCelebrateUnlocks } from './hooks/useCelebrateUnlocks'
+import { useHashRoute } from './hooks/useHashRoute'
+import type { Tab } from './types'
 
 const WorkoutsTab = lazy(() => import('./features/workouts/WorkoutsTab').then((m) => ({ default: m.WorkoutsTab })))
 const MealsTab = lazy(() => import('./features/meals/MealsTab').then((m) => ({ default: m.MealsTab })))
@@ -22,8 +24,6 @@ const AboutTab = lazy(() => import('./features/about/AboutTab').then((m) => ({ d
 const WhatsNewTab = lazy(() => import('./features/about/WhatsNewTab').then((m) => ({ default: m.WhatsNewTab })))
 const HistoryView = lazy(() => import('./features/history/HistoryView').then((m) => ({ default: m.HistoryView })))
 const SettingsTab = lazy(() => import('./features/settings/SettingsTab').then((m) => ({ default: m.SettingsTab })))
-
-type Overlay = 'settings' | null
 
 const QUICK_ADD_ICONS = {
   set: (
@@ -58,9 +58,15 @@ function TabFallback() {
 }
 
 function App() {
-  const { user, loading } = useAuth()
-  const [tab, setTab] = useState<Tab>('workouts')
-  const [overlay, setOverlay] = useState<Overlay>(null)
+  const { user, loading, recoveringPassword, finishPasswordRecovery } = useAuth()
+  const { route, navigate, goBack } = useHashRoute()
+  // A quick-add request for the tab it navigates to: the tab performs the action (open the
+  // exercise picker, add a meal, jump to the fast picker) whenever the nonce changes.
+  const [quickAction, setQuickAction] = useState<{ tab: Tab; nonce: number } | null>(null)
+  // Drop the request once the user leaves that tab, so coming back later doesn't replay it.
+  useEffect(() => {
+    if (quickAction && route !== quickAction.tab) setQuickAction(null)
+  }, [route, quickAction])
   useApplyTheme()
   useCelebrateUnlocks()
 
@@ -78,41 +84,49 @@ function App() {
     return <AuthScreen />
   }
 
-  function handleTabChange(next: Tab) {
-    setOverlay(null)
-    setTab(next)
+  if (recoveringPassword) {
+    return <SetNewPasswordScreen onDone={finishPasswordRecovery} />
   }
 
-  const quickAddActions: QuickAddAction[] = overlay
+  const tab: Tab | null = route === 'settings' ? null : route
+  const onSettings = route === 'settings'
+
+  function quickAdd(target: Tab) {
+    setQuickAction({ tab: target, nonce: Date.now() })
+    navigate(target)
+  }
+  const nonceFor = (target: Tab) => (quickAction?.tab === target ? quickAction.nonce : undefined)
+
+  const quickAddActions: QuickAddAction[] = onSettings
     ? []
     : [
-        { key: 'fast', label: 'Start a fast', icon: QUICK_ADD_ICONS.fast, onSelect: () => handleTabChange('fasting') },
-        { key: 'meal', label: 'Log a meal', icon: QUICK_ADD_ICONS.meal, onSelect: () => handleTabChange('meals') },
-        { key: 'set', label: 'Log a set', icon: QUICK_ADD_ICONS.set, onSelect: () => handleTabChange('workouts') },
+        { key: 'fast', label: 'Start a fast', icon: QUICK_ADD_ICONS.fast, onSelect: () => quickAdd('fasting') },
+        { key: 'meal', label: 'Log a meal', icon: QUICK_ADD_ICONS.meal, onSelect: () => quickAdd('meals') },
+        { key: 'set', label: 'Log a set', icon: QUICK_ADD_ICONS.set, onSelect: () => quickAdd('workouts') },
       ]
 
   return (
     <>
       <Layout
         active={tab}
-        onChange={handleTabChange}
-        onOpenSettings={() => setOverlay('settings')}
+        onChange={navigate}
+        onOpenSettings={() => navigate('settings')}
         quickAddActions={quickAddActions}
       >
         <Suspense fallback={<TabFallback />}>
-          {overlay === 'settings' && <SettingsTab onBack={() => setOverlay(null)} />}
-          {!overlay && tab === 'workouts' && <WorkoutsTab onOpenHistory={() => handleTabChange('history')} />}
-          {!overlay && tab === 'meals' && <MealsTab />}
-          {!overlay && tab === 'scanner' && <ScannerTab />}
-          {!overlay && tab === 'diet' && <DietTab />}
-          {!overlay && tab === 'fasting' && <FastingTab />}
-          {!overlay && tab === 'goals' && <GoalsTab />}
-          {!overlay && tab === 'history' && <HistoryView />}
-          {!overlay && tab === 'achievements' && <AchievementsTab />}
-          {!overlay && tab === 'programs' && <ProgramsTab />}
-          {!overlay && tab === 'calculator' && <MaintenanceCalculatorTab />}
-          {!overlay && tab === 'whatsnew' && <WhatsNewTab />}
-          {!overlay && tab === 'about' && <AboutTab />}
+          {onSettings && <SettingsTab onBack={goBack} />}
+          {tab === 'workouts' && <WorkoutsTab onOpenHistory={() => navigate('history')} quickAction={nonceFor('workouts')} />}
+          {tab === 'meals' && <MealsTab quickAction={nonceFor('meals')} />}
+          {tab === 'scanner' && <ScannerTab />}
+          {tab === 'diet' && <DietTab />}
+          {tab === 'fasting' && <FastingTab quickAction={nonceFor('fasting')} />}
+          {tab === 'goals' && <GoalsTab />}
+          {tab === 'history' && <HistoryView />}
+          {tab === 'achievements' && <AchievementsTab />}
+          {tab === 'programs' && <ProgramsTab />}
+          {tab === 'calculator' && <MaintenanceCalculatorTab />}
+          {tab === 'whatsnew' && <WhatsNewTab />}
+          {tab === 'about' && <AboutTab />}
         </Suspense>
       </Layout>
       <OnboardingTour />

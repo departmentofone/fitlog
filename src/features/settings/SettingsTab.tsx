@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import { BOTTOM_NAV_CHOICES, MAX_BOTTOM_NAV_EXTRAS } from '../../components/Layout'
+import { BOTTOM_NAV_CHOICES, MAX_BOTTOM_NAV_EXTRAS, resolveBottomNavExtras } from '../../components/Layout'
+import { TabIcon } from '../../components/TabIcon'
 import { useAuth } from '../../hooks/useAuth'
 import { useUpdateSettings, useUserSettings } from '../../hooks/useUserSettings'
+import { formatBuildTime } from '../../lib/buildInfo'
 import { exportUserData } from '../../lib/exportData'
 import { supabase } from '../../lib/supabase'
 import type { Tab } from '../../types'
@@ -55,7 +57,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
         ← Back
       </button>
 
-      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <div className="flex items-center justify-between gap-4">
           <div>
             <h3 className="font-medium text-white">Ask about preworkout</h3>
@@ -72,7 +74,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
         </div>
       </div>
 
-      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <div className="flex items-center justify-between gap-4">
           <div>
             <h3 className="font-medium text-white">Motion & haptics</h3>
@@ -89,7 +91,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
         </div>
       </div>
 
-      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-2 font-medium text-white">Appearance</h3>
         <p className="mb-1.5 text-xs text-slate-500">Theme</p>
         <div className="mb-3 grid grid-cols-3 gap-1.5">
@@ -98,7 +100,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
               key={t}
               onClick={() => updateSettings.mutate({ theme: t })}
               className={`rounded-xl px-3 py-2 text-sm font-medium capitalize transition ${
-                (settings?.theme ?? 'system') === t ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                (settings?.theme ?? 'system') === t ? 'bg-emerald-600 text-on-accent' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
               }`}
             >
               {t}
@@ -130,29 +132,36 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
         </div>
       </div>
 
-      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
-        <h3 className="mb-1 font-medium text-white">Bottom bar</h3>
+      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+        <div className="mb-1 flex items-baseline justify-between">
+          <h3 className="font-medium text-white">Bottom bar</h3>
+          <span className="text-xs text-slate-500">
+            {resolveBottomNavExtras(settings).length} of {MAX_BOTTOM_NAV_EXTRAS} slots used
+          </span>
+        </div>
         <p className="mb-3 text-xs text-slate-500">
-          Workouts and Meals are always there. Pick up to {MAX_BOTTOM_NAV_EXTRAS} more for one-tap access — everything else
-          stays in the menu.
+          Workouts and Meals are always there. Pick up to {MAX_BOTTOM_NAV_EXTRAS} more for one-tap access — everything else is
+          under More.
         </p>
         <div className="grid grid-cols-3 gap-1.5">
           {BOTTOM_NAV_CHOICES.map((choice) => {
-            const extras = settings?.bottom_nav_tabs ?? []
+            const extras = resolveBottomNavExtras(settings)
             const isSelected = extras.includes(choice.key)
             const atMax = extras.length >= MAX_BOTTOM_NAV_EXTRAS
             return (
               <button
                 key={choice.key}
                 disabled={!isSelected && atMax}
+                aria-pressed={isSelected}
                 onClick={() => {
                   const next: Tab[] = isSelected ? extras.filter((t) => t !== choice.key) : [...extras, choice.key]
                   updateSettings.mutate({ bottom_nav_tabs: next })
                 }}
-                className={`flex flex-col items-center gap-1 rounded-xl px-2 py-2.5 text-xs font-medium transition disabled:opacity-30 ${
-                  isSelected ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                className={`flex min-h-16 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2.5 text-xs font-medium transition disabled:opacity-30 ${
+                  isSelected ? 'bg-emerald-600 text-on-accent' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                 }`}
               >
+                <TabIcon tab={choice.key} className="h-5 w-5" />
                 {choice.label}
               </button>
             )
@@ -162,7 +171,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
 
       <PushNotificationsCard />
 
-      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-2 font-medium text-white">Units</h3>
         <div className="grid grid-cols-2 gap-1.5">
           {(['metric', 'imperial'] as const).map((u) => (
@@ -171,7 +180,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
               onClick={() => updateSettings.mutate({ unit_system: u })}
               className={`rounded-xl px-3 py-2 text-sm font-medium transition capitalize ${
                 (settings?.unit_system ?? 'metric') === u
-                  ? 'bg-emerald-600 text-white'
+                  ? 'bg-emerald-600 text-on-accent'
                   : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
               }`}
             >
@@ -181,7 +190,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
         </div>
       </div>
 
-      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <p className="mb-1 text-xs text-slate-500">Signed in as</p>
         <p className="mb-4 truncate text-sm text-white">{user?.email}</p>
 
@@ -201,7 +210,11 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
             />
-            {passwordMessage && <p className="text-xs text-slate-400">{passwordMessage}</p>}
+            {passwordMessage && (
+              <p role="status" className={`text-xs ${passwordMessage === 'Password updated.' ? 'text-success' : 'text-red-400'}`}>
+                {passwordMessage}
+              </p>
+            )}
             <div className="flex gap-2">
               <button
                 onClick={() => setChangingPassword(false)}
@@ -211,7 +224,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
               </button>
               <button
                 onClick={handleChangePassword}
-                className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500"
+                className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90"
               >
                 Update
               </button>
@@ -242,7 +255,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
         </button>
       </div>
 
-      <p className="px-1 text-center text-xs text-slate-600">FitLog</p>
+      <p className="px-1 pb-2 text-center text-xs text-slate-500">FitLog · Build {formatBuildTime()}</p>
     </div>
   )
 }

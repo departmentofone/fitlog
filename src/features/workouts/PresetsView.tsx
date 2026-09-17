@@ -62,7 +62,7 @@ export function PresetsView({
 
       {currentSets.length > 0 &&
         (showSaveForm ? (
-          <div className="rounded-2xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+          <div className="rounded-2xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
             <h3 className="mb-3 font-medium text-white">Save as preset</h3>
             <input
               autoFocus
@@ -81,7 +81,7 @@ export function PresetsView({
               <button
                 onClick={handleSave}
                 disabled={!name.trim() || createFromSets.isPending}
-                className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+                className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90 disabled:opacity-50"
               >
                 Save
               </button>
@@ -96,7 +96,7 @@ export function PresetsView({
           </button>
         ))}
 
-      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
         <h3 className="mb-3 font-medium text-white">Your presets</h3>
         {isLoading && (
           <div className="space-y-2">
@@ -151,7 +151,7 @@ export function PresetsView({
                   onLoaded()
                 }}
                 disabled={!sessionId || loadPreset.isPending}
-                className="w-full rounded-xl bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+                className="w-full rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90 disabled:opacity-50"
               >
                 Load
               </button>

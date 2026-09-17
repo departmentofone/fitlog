@@ -79,7 +79,7 @@ function DayDetail({ date }: { date: string }) {
             onBlur={() => setConfirmingDelete(false)}
             aria-label="Delete workout"
             className={`rounded-full px-2 py-0.5 text-xs font-medium transition ${
-              confirmingDelete ? 'bg-red-600 text-white' : 'bg-slate-700/60 text-slate-500 hover:text-red-400'
+              confirmingDelete ? 'bg-red-600 text-on-accent' : 'bg-slate-700/60 text-slate-500 hover:text-red-400'
             }`}
           >
             {confirmingDelete ? (
@@ -157,7 +157,7 @@ export function HistoryView() {
         </div>
       </div>
 
-      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-3 font-medium text-white">Workout history</h3>
         <MonthCalendar
           month={month}

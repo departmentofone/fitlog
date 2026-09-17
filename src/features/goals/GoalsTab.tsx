@@ -82,7 +82,7 @@ function BodyMeasurementsCard() {
   return (
     <div
       onClick={!editing ? startEditing : undefined}
-      className={`rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5 transition ${
+      className={`rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5 transition ${
         !editing ? 'cursor-pointer hover:ring-emerald-500/30' : ''
       }`}
     >
@@ -116,7 +116,7 @@ function BodyMeasurementsCard() {
             <button onClick={() => setEditing(false)} className="flex-1 rounded-xl bg-slate-800 py-2 text-sm text-slate-300 hover:bg-slate-700">
               Cancel
             </button>
-            <button onClick={save} className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500">
+            <button onClick={save} className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90">
               Save
             </button>
           </div>
@@ -147,7 +147,7 @@ function BodyMeasurementsCard() {
                     key={f.key}
                     onClick={() => setMetric(f.key)}
                     className={`rounded-xl px-2.5 py-1 text-xs font-medium ${
-                      activeField.key === f.key ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                      activeField.key === f.key ? 'bg-emerald-600 text-on-accent' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                     }`}
                   >
                     {f.label}
@@ -270,7 +270,7 @@ function GoalList({ category, title }: { category: GoalCategory; title: string }
   }
 
   return (
-    <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <h3 className="mb-3 font-medium text-white">{title}</h3>
       <div className="mb-3 space-y-1.5">
         {filtered.map((g) =>
@@ -361,7 +361,7 @@ function GoalList({ category, title }: { category: GoalCategory; title: string }
             <button onClick={reset} className="flex-1 rounded-xl bg-slate-800 py-2 text-sm text-slate-300 hover:bg-slate-700">
               Cancel
             </button>
-            <button onClick={handleAdd} className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500">
+            <button onClick={handleAdd} className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90">
               Add
             </button>
           </div>
@@ -424,7 +424,7 @@ export function GoalsTab() {
     <div className="space-y-4 p-4">
       <div
         onClick={!editingStats ? startEditing : undefined}
-        className={`rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5 transition ${
+        className={`rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5 transition ${
           !editingStats ? 'cursor-pointer hover:ring-emerald-500/30' : ''
         }`}
       >
@@ -495,7 +495,7 @@ export function GoalsTab() {
               <button onClick={() => setEditingStats(false)} className="flex-1 rounded-xl bg-slate-800 py-2 text-sm text-slate-300 hover:bg-slate-700">
                 Cancel
               </button>
-              <button onClick={saveStats} className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500">
+              <button onClick={saveStats} className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90">
                 Save
               </button>
             </div>

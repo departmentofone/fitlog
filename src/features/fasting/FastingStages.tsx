@@ -74,7 +74,7 @@ export function FastingStages({ elapsedHours }: { elapsedHours?: number | null }
   const activeId = activeStageId(elapsedHours)
 
   return (
-    <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <p className="mb-2 text-sm font-medium text-white">What's happening during a fast</p>
       <div className="space-y-1.5">
         {STAGES.map((stage) => {
@@ -85,7 +85,7 @@ export function FastingStages({ elapsedHours }: { elapsedHours?: number | null }
               <p className="flex items-center gap-2 text-sm font-medium text-slate-200">
                 {stage.title}
                 {isActive && (
-                  <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">Now</span>
+                  <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[11px] font-semibold text-emerald-400">Now</span>
                 )}
               </p>
               <p className="mt-0.5 text-xs text-slate-400">{stage.summary}</p>

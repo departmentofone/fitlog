@@ -45,7 +45,7 @@ export function MealPresetsView({
       </button>
 
       {savableMeals.length > 0 && (
-        <div className="rounded-2xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+        <div className="rounded-2xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
           <h3 className="mb-3 font-medium text-white">Save a meal as preset</h3>
           <div className="space-y-2">
             {savableMeals.map((meal) =>
@@ -67,7 +67,7 @@ export function MealPresetsView({
                         createFromMeal.mutate({ name: name.trim(), meal })
                         setSavingMealId(null)
                       }}
-                      className="flex-1 rounded-xl bg-emerald-600 py-1.5 text-xs font-medium text-white hover:bg-emerald-500"
+                      className="flex-1 rounded-xl bg-emerald-600 py-1.5 text-xs font-medium text-on-accent hover:brightness-90"
                     >
                       Save
                     </button>
@@ -91,7 +91,7 @@ export function MealPresetsView({
         </div>
       )}
 
-      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
         <h3 className="mb-3 font-medium text-white">Your meal presets</h3>
         {isLoading && (
           <div className="space-y-2">
@@ -142,7 +142,7 @@ export function MealPresetsView({
                   onLoaded()
                 }}
                 disabled={loadPreset.isPending}
-                className="w-full rounded-xl bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+                className="w-full rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90 disabled:opacity-50"
               >
                 Load
               </button>

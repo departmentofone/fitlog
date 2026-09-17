@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CopyDayButton } from '../../components/CopyDayButton'
 import { DateNav } from '../../components/DateNav'
 import { MacroLine } from '../../components/MacroLine'
@@ -15,7 +15,7 @@ import { WaterWidget } from './WaterWidget'
 
 const MEAL_PRESETS = ['Breakfast', 'Lunch', 'Dinner', 'Snack']
 
-export function MealsTab() {
+export function MealsTab({ quickAction }: { quickAction?: number }) {
   const [date, setDate] = useState(todayISO())
   const { data: meals = [], isLoading } = useMealsForDate(date)
   const createMeal = useCreateMeal()
@@ -29,6 +29,31 @@ export function MealsTab() {
   const totals = dailyTotals(meals)
   const usedNames = new Set(meals.map((m) => m.name))
   const nextPreset = MEAL_PRESETS.find((p) => !usedNames.has(p)) ?? 'Meal'
+  const [pendingAdd, setPendingAdd] = useState(false)
+
+  // Quick-add "Log a meal": switch to today, then add the next meal once today's list has loaded
+  // (so the Breakfast/Lunch/... name is picked from the right day) and scroll the new card in.
+  useEffect(() => {
+    if (quickAction == null) return
+    setDate(todayISO())
+    setShowPresets(false)
+    setShowRecipes(false)
+    setPendingAdd(true)
+  }, [quickAction])
+
+  useEffect(() => {
+    if (!pendingAdd || date !== todayISO() || isLoading) return
+    setPendingAdd(false)
+    createMeal.mutate(
+      { date, name: nextPreset },
+      {
+        onSuccess: () =>
+          requestAnimationFrame(() =>
+            document.getElementById('meals-add')?.scrollIntoView({ behavior: 'smooth', block: 'end' }),
+          ),
+      },
+    )
+  }, [pendingAdd, date, isLoading, nextPreset, createMeal])
 
   if (showPresets) {
     return <MealPresetsView date={date} currentMeals={meals} onBack={() => setShowPresets(false)} onLoaded={() => setShowPresets(false)} />
@@ -43,7 +68,7 @@ export function MealsTab() {
         <button
           onClick={() => setShowTrends((v) => !v)}
           className={`flex-1 rounded-xl px-3 py-1.5 text-xs font-medium transition ${
-            showTrends ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+            showTrends ? 'bg-emerald-600 text-on-accent' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
           }`}
         >
           Trends
@@ -92,6 +117,7 @@ export function MealsTab() {
       ))}
 
       <button
+        id="meals-add"
         onClick={() => createMeal.mutate({ date, name: nextPreset })}
         disabled={createMeal.isPending}
         className="w-full rounded-2xl border border-dashed border-slate-700 py-3 font-medium text-slate-300 transition hover:border-emerald-500 hover:text-emerald-400"

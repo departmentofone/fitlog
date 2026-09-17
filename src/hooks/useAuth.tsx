@@ -6,13 +6,23 @@ interface AuthContextValue {
   user: User | null
   session: Session | null
   loading: boolean
+  /** True after arriving via a password-reset email link, until the new password is saved. */
+  recoveringPassword: boolean
+  finishPasswordRecovery: () => void
 }
 
-const AuthContext = createContext<AuthContextValue>({ user: null, session: null, loading: true })
+const AuthContext = createContext<AuthContextValue>({
+  user: null,
+  session: null,
+  loading: true,
+  recoveringPassword: false,
+  finishPasswordRecovery: () => {},
+})
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [recoveringPassword, setRecoveringPassword] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -20,15 +30,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false)
     })
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event, newSession) => {
       setSession(newSession)
+      if (event === 'PASSWORD_RECOVERY') setRecoveringPassword(true)
     })
 
     return () => listener.subscription.unsubscribe()
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user: session?.user ?? null, session, loading }}>
+    <AuthContext.Provider value={{
+        user: session?.user ?? null,
+        session,
+        loading,
+        recoveringPassword,
+        finishPasswordRecovery: () => setRecoveringPassword(false),
+      }}>
       {children}
     </AuthContext.Provider>
   )

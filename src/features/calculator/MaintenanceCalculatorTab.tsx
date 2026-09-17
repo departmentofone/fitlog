@@ -20,7 +20,7 @@ export function MaintenanceCalculatorTab() {
             key={m.value}
             onClick={() => setMode(m.value)}
             className={`rounded-xl px-2 py-1.5 text-xs font-medium transition ${
-              mode === m.value ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+              mode === m.value ? 'bg-emerald-600 text-on-accent' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
             }`}
           >
             {m.label}

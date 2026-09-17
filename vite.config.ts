@@ -15,6 +15,8 @@ export default defineConfig({
   },
   server: {
     host: true,
+    // Lets a preview harness run a second dev server alongside one already on 5173.
+    port: process.env.PORT ? Number(process.env.PORT) : undefined,
   },
   test: {
     // Most tests are pure logic and don't need a DOM — component tests opt into jsdom

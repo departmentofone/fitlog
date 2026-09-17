@@ -84,7 +84,7 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
   }
 
   return (
-    <div className="rounded-2xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-2xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <h3 className="mb-3 font-medium text-white">New program</h3>
       <div className="mb-3 space-y-2.5">
         <input
@@ -155,7 +155,7 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
         <button
           onClick={handleSave}
           disabled={!name.trim() || !hasAnyContent || createProgram.isPending}
-          className="flex-1 rounded-xl bg-emerald-600 py-2.5 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+          className="flex-1 rounded-xl bg-emerald-600 py-2.5 text-sm font-medium text-on-accent hover:brightness-90 disabled:opacity-50"
         >
           Save program
         </button>
@@ -226,7 +226,7 @@ function ProgramCard({ program, isOwner }: { program: Program; isOwner: boolean 
       <button
         onClick={handleImport}
         disabled={importProgram.isPending}
-        className="w-full rounded-xl bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+        className="w-full rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90 disabled:opacity-50"
       >
         {importProgram.isPending ? 'Importing…' : 'Import into my account'}
       </button>
@@ -241,7 +241,7 @@ export function ProgramsTab() {
 
   return (
     <div className="space-y-4 p-4">
-      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
         <p className="mb-3 text-sm text-slate-400">
           Bundle workout presets, recipes, meal presets, and diet goals into one package you or a friend can import in a
           single batch instead of preset-by-preset.
@@ -258,7 +258,7 @@ export function ProgramsTab() {
         )}
       </div>
 
-      <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-3 font-medium text-white">Programs</h3>
         {isLoading && (
           <div className="space-y-2">

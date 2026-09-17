@@ -20,7 +20,7 @@ export function FoodAmountForm({
   const preview = macrosForGrams(food, resolvedGrams)
 
   return (
-    <div className="rounded-2xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-2xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-medium text-white">{food.name}</h3>
         <button onClick={onBack} className="text-sm text-slate-400 hover:text-slate-200">
@@ -35,7 +35,7 @@ export function FoodAmountForm({
               key={serving.label}
               onClick={() => setMode(i)}
               className={`rounded-xl px-3 py-1.5 text-xs font-medium ${
-                mode === i ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                mode === i ? 'bg-emerald-600 text-on-accent' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
               }`}
             >
               {serving.label}
@@ -44,7 +44,7 @@ export function FoodAmountForm({
           <button
             onClick={() => setMode('grams')}
             className={`rounded-xl px-3 py-1.5 text-xs font-medium ${
-              mode === 'grams' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+              mode === 'grams' ? 'bg-emerald-600 text-on-accent' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
             }`}
           >
             Grams
@@ -74,7 +74,7 @@ export function FoodAmountForm({
           <span className="w-5 text-center text-sm font-medium text-white">{qty}</span>
           <button
             onClick={() => setQty((q) => q + 1)}
-            className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-600 text-white transition hover:bg-emerald-500"
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-600 text-on-accent transition hover:brightness-90"
           >
             +
           </button>
@@ -94,7 +94,7 @@ export function FoodAmountForm({
           onAdd({ foodId: food.id, grams: resolvedGrams, servingLabel })
         }}
         disabled={resolvedGrams <= 0}
-        className="w-full rounded-xl bg-emerald-600 py-2.5 font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+        className="w-full rounded-xl bg-emerald-600 py-2.5 font-medium text-on-accent hover:brightness-90 disabled:opacity-50"
       >
         Add to meal
       </button>

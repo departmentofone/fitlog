@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { RestTimer } from '../../components/RestTimer'
 import { summarizeLastSets, useLastSessionSetsForExercise } from '../../hooks/useWorkouts'
 import type { Exercise, WorkoutSet } from '../../types'
 
-const DIFFICULTY_LABELS: Record<number, string> = {
+/** RPE (rate of perceived exertion) - the 1-10 effort scale lifters already know. */
+const RPE_LABELS: Record<number, string> = {
   1: 'Very easy',
   2: 'Easy',
   3: 'Easy',
@@ -14,6 +15,63 @@ const DIFFICULTY_LABELS: Record<number, string> = {
   8: 'Hard',
   9: 'Very hard',
   10: 'Failure',
+}
+
+const WEIGHT_STEP = 2.5
+const REPS_STEP = 1
+
+function roundStep(value: number) {
+  return Math.round(value * 100) / 100
+}
+
+/** Number field flanked by big -/+ buttons - nudging a value mid-set beats retyping it. */
+function Stepper({
+  label,
+  unit,
+  value,
+  onChange,
+  step,
+  inputMode,
+}: {
+  label: string
+  unit?: string
+  value: string
+  onChange: (next: string) => void
+  step: number
+  inputMode: 'decimal' | 'numeric'
+}) {
+  function nudge(dir: 1 | -1) {
+    const current = parseFloat(value)
+    const base = Number.isNaN(current) ? 0 : current
+    onChange(String(Math.max(0, roundStep(base + dir * step))))
+  }
+  const buttonClass =
+    'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-800 text-lg font-semibold text-slate-200 active:bg-slate-700'
+
+  return (
+    <div className="flex flex-col gap-1">
+      <span className="text-xs text-slate-400">
+        {label}
+        {unit && <span className="text-slate-500"> ({unit})</span>}
+      </span>
+      <div className="flex items-center gap-1.5">
+        <button type="button" onClick={() => nudge(-1)} aria-label={`Decrease ${label.toLowerCase()} by ${step}`} className={buttonClass}>
+          −
+        </button>
+        <input
+          type="number"
+          inputMode={inputMode}
+          aria-label={unit ? `${label} in ${unit}` : label}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="h-11 w-full min-w-0 rounded-xl border border-slate-700 bg-slate-800 px-1 text-center text-lg font-semibold text-white focus:border-emerald-500 focus:outline-none"
+        />
+        <button type="button" onClick={() => nudge(1)} aria-label={`Increase ${label.toLowerCase()} by ${step}`} className={buttonClass}>
+          +
+        </button>
+      </div>
+    </div>
+  )
 }
 
 interface SetFormProps {
@@ -49,35 +107,31 @@ function EditableSetRow({
 
   return (
     <div className="rounded-xl bg-slate-800 px-3 py-2.5">
-      <div className="mb-2 grid grid-cols-2 gap-2">
-        <input
-          type="number"
-          inputMode="decimal"
-          value={weight}
-          onChange={(e) => setWeight(e.target.value)}
-          className="rounded-xl border border-slate-700 bg-slate-900 px-2 py-1.5 text-sm text-white focus:border-emerald-500 focus:outline-none"
-        />
-        <input
-          type="number"
-          inputMode="numeric"
-          value={reps}
-          onChange={(e) => setReps(e.target.value)}
-          className="rounded-xl border border-slate-700 bg-slate-900 px-2 py-1.5 text-sm text-white focus:border-emerald-500 focus:outline-none"
-        />
+      <p className="mb-2 text-xs font-medium text-slate-400">Edit set {set.set_number}</p>
+      <div className="mb-3 grid grid-cols-2 gap-2">
+        <Stepper label="Weight" unit="kg" value={weight} onChange={setWeight} step={WEIGHT_STEP} inputMode="decimal" />
+        <Stepper label="Reps" value={reps} onChange={setReps} step={REPS_STEP} inputMode="numeric" />
       </div>
+      <label className="mb-1 flex justify-between text-xs text-slate-400">
+        <span>Effort (RPE)</span>
+        <span className="text-slate-300">
+          {difficulty} · {RPE_LABELS[difficulty]}
+        </span>
+      </label>
       <input
         type="range"
         min={1}
         max={10}
         value={difficulty}
+        aria-label="Effort, RPE 1 to 10"
         onChange={(e) => setDifficulty(parseInt(e.target.value, 10))}
-        className="mb-2 w-full accent-emerald-500"
+        className="mb-3 h-6 w-full accent-emerald-500"
       />
       <div className="flex gap-2">
-        <button onClick={onDelete} className="rounded-xl bg-red-600/20 px-3 py-1.5 text-xs font-medium text-red-400 hover:bg-red-600/30">
+        <button onClick={onDelete} className="min-h-11 rounded-xl bg-red-600/20 px-4 text-sm font-medium text-red-400 active:bg-red-600/30">
           Delete
         </button>
-        <button onClick={onCancel} className="flex-1 rounded-xl bg-slate-700 py-1.5 text-xs text-slate-300 hover:bg-slate-600">
+        <button onClick={onCancel} className="min-h-11 flex-1 rounded-xl bg-slate-700 text-sm text-slate-300 active:bg-slate-600">
           Cancel
         </button>
         <button
@@ -87,7 +141,7 @@ function EditableSetRow({
             if (Number.isNaN(w) || Number.isNaN(r)) return
             onSave({ weight: w, reps: r, difficulty })
           }}
-          className="flex-1 rounded-xl bg-emerald-600 py-1.5 text-xs font-medium text-white hover:bg-emerald-500"
+          className="min-h-11 flex-1 rounded-xl bg-emerald-600 text-sm font-medium text-on-accent hover:brightness-90"
         >
           Save
         </button>
@@ -117,6 +171,13 @@ export function SetForm({
   const { data: lastSets = [] } = useLastSessionSetsForExercise(exercise.id, sessionId)
   const lastTimeSummary = useMemo(() => summarizeLastSets(lastSets), [lastSets])
 
+  // Start from the weight you last used - this session's latest set, else last session's - so a
+  // typical set is just "check reps, tap Add".
+  const suggestedWeight = existingSets.at(-1)?.weight ?? lastSets.at(-1)?.weight
+  useEffect(() => {
+    if (suggestedWeight != null) setWeight((w) => (w === '' ? String(suggestedWeight) : w))
+  }, [suggestedWeight])
+
   function handleAdd() {
     const w = parseFloat(weight)
     const r = parseInt(reps, 10)
@@ -127,17 +188,17 @@ export function SetForm({
   }
 
   return (
-    <div className="rounded-2xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-2xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <div className="mb-1 flex items-center justify-between">
         <div className="flex min-w-0 items-center gap-2">
           <h3 className="truncate font-medium text-white">{exercise.name}</h3>
           {supersetLabel && (
-            <span className="shrink-0 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-400">
+            <span className="shrink-0 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-emerald-400">
               Superset {supersetLabel}
             </span>
           )}
         </div>
-        <button onClick={onDone} className="shrink-0 text-sm text-slate-400 hover:text-slate-200">
+        <button onClick={onDone} className="-my-2 -mr-2 min-h-11 shrink-0 rounded-xl px-3 text-sm font-medium text-emerald-400 active:bg-white/5">
           Done
         </button>
       </div>
@@ -167,13 +228,14 @@ export function SetForm({
               <button
                 key={s.id}
                 onClick={() => setEditingSetId(s.id)}
-                className="flex w-full items-center justify-between rounded-xl bg-slate-800/60 px-3 py-2 text-left text-sm text-slate-300 transition hover:bg-slate-800"
+                aria-label={`Edit set ${s.set_number}`}
+                className="flex min-h-11 w-full items-center justify-between rounded-xl bg-slate-800/60 px-3 py-2 text-left text-sm text-slate-300 transition active:bg-slate-800"
               >
                 <span>
-                  Set {s.set_number} · {s.weight} × {s.reps} reps
+                  Set {s.set_number} · {s.weight} kg × {s.reps} reps
                   {s.is_warmup && <span className="ml-1.5 text-amber-400">(warm-up)</span>}
                 </span>
-                <span className="text-xs text-slate-500">DIFF {s.difficulty}</span>
+                <span className="text-xs text-slate-500">RPE {s.difficulty}</span>
               </button>
             ),
           )}
@@ -182,42 +244,24 @@ export function SetForm({
 
       <div className="mb-2 flex items-center justify-between">
         <p className="text-xs text-slate-500">Set {nextSetNumber}</p>
-        <label className="flex items-center gap-1.5 text-xs text-slate-400">
+        <label className="-my-2 -mr-2 flex min-h-11 items-center gap-2 px-2 text-sm text-slate-400">
           <input
             type="checkbox"
             checked={isWarmup}
             onChange={(e) => setIsWarmup(e.target.checked)}
-            className="h-3.5 w-3.5 accent-amber-500"
+            className="h-5 w-5 accent-amber-500"
           />
           Warm-up
         </label>
       </div>
       <div className="mb-3 grid grid-cols-2 gap-3">
-        <label className="flex flex-col gap-1 text-xs text-slate-400">
-          Weight
-          <input
-            type="number"
-            inputMode="decimal"
-            value={weight}
-            onChange={(e) => setWeight(e.target.value)}
-            className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none"
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-xs text-slate-400">
-          Reps
-          <input
-            type="number"
-            inputMode="numeric"
-            value={reps}
-            onChange={(e) => setReps(e.target.value)}
-            className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none"
-          />
-        </label>
+        <Stepper label="Weight" unit="kg" value={weight} onChange={setWeight} step={WEIGHT_STEP} inputMode="decimal" />
+        <Stepper label="Reps" value={reps} onChange={setReps} step={REPS_STEP} inputMode="numeric" />
       </div>
       <label className="mb-1 flex justify-between text-xs text-slate-400">
-        <span>Difficulty (DIFF)</span>
+        <span>Effort (RPE)</span>
         <span className="text-slate-300">
-          {difficulty} · {DIFFICULTY_LABELS[difficulty]}
+          {difficulty} · {RPE_LABELS[difficulty]}
         </span>
       </label>
       <input
@@ -225,15 +269,16 @@ export function SetForm({
         min={1}
         max={10}
         value={difficulty}
+        aria-label="Effort, RPE 1 to 10"
         onChange={(e) => setDifficulty(parseInt(e.target.value, 10))}
-        className="mb-4 w-full accent-emerald-500"
+        className="mb-4 h-6 w-full accent-emerald-500"
       />
       <button
         onClick={handleAdd}
         disabled={!weight || !reps || adding}
-        className="w-full rounded-xl bg-emerald-600 py-2.5 font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+        className="min-h-12 w-full rounded-xl bg-emerald-600 font-semibold text-on-accent hover:brightness-90 disabled:opacity-50"
       >
-        Add set
+        Add set {nextSetNumber}
       </button>
     </div>
   )

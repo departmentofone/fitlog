@@ -70,7 +70,7 @@ export function ExercisePicker({
 
   if (creating) {
     return (
-      <div className="rounded-2xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="rounded-2xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-3 font-medium text-white">New exercise</h3>
         <input
           autoFocus
@@ -87,7 +87,7 @@ export function ExercisePicker({
               onClick={() => setMuscleGroup(g.value)}
               className={`rounded-xl px-2 py-1.5 text-xs font-medium transition ${
                 muscleGroup === g.value
-                  ? 'bg-emerald-600 text-white'
+                  ? 'bg-emerald-600 text-on-accent'
                   : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
               }`}
             >
@@ -105,7 +105,7 @@ export function ExercisePicker({
           <button
             onClick={handleCreate}
             disabled={!name.trim() || !muscleGroup || createExercise.isPending}
-            className="flex-1 rounded-xl bg-emerald-600 py-2.5 font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+            className="flex-1 rounded-xl bg-emerald-600 py-2.5 font-medium text-on-accent hover:brightness-90 disabled:opacity-50"
           >
             Create
           </button>
@@ -142,7 +142,7 @@ export function ExercisePicker({
               <span className="flex items-center gap-2">
                 {multiSelect && (
                   <span
-                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] ${
+                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[11px] ${
                       isSelected ? 'bg-emerald-500 text-slate-950' : 'bg-slate-700 text-transparent'
                     }`}
                   >
@@ -162,7 +162,7 @@ export function ExercisePicker({
       {multiSelect && selected.length >= 2 && (
         <button
           onClick={() => onConfirmSelection?.(selected)}
-          className="mb-3 w-full rounded-xl bg-emerald-600 py-2.5 font-medium text-white hover:bg-emerald-500"
+          className="mb-3 w-full rounded-xl bg-emerald-600 py-2.5 font-medium text-on-accent hover:brightness-90"
         >
           Group {selected.length} exercises as a superset
         </button>

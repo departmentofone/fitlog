@@ -40,7 +40,7 @@ export function WeightChart() {
   }, [entries, range, settings?.unit_system])
 
   return (
-    <div className="rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-medium text-white">Weight over time</h3>
         <div className="flex gap-1.5">
@@ -49,7 +49,7 @@ export function WeightChart() {
               key={r.value}
               onClick={() => setRange(r.value)}
               className={`rounded-xl px-2.5 py-1 text-xs font-medium ${
-                range === r.value ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                range === r.value ? 'bg-emerald-600 text-on-accent' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
               }`}
             >
               {r.label}

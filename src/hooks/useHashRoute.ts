@@ -79,7 +79,8 @@ export function useBackToClose(open: boolean, onClose: () => void) {
 
   useEffect(() => {
     if (!open) return
-    history.pushState({ fitlogLayer: true }, '', window.location.href)
+    const layerId = Math.random().toString(36).slice(2)
+    history.pushState({ fitlogLayer: layerId }, '', window.location.href)
     let poppedByUser = false
     const onPop = () => {
       poppedByUser = true
@@ -88,7 +89,12 @@ export function useBackToClose(open: boolean, onClose: () => void) {
     window.addEventListener('popstate', onPop)
     return () => {
       window.removeEventListener('popstate', onPop)
-      if (!poppedByUser && history.state?.fitlogLayer) history.back()
+      if (poppedByUser) return
+      // Deferred, and only if our own entry is still on top: a synchronous back() here would land
+      // after an immediate re-open (React StrictMode re-runs effects) pushed a new entry, and close it.
+      setTimeout(() => {
+        if (history.state?.fitlogLayer === layerId) history.back()
+      }, 0)
     }
   }, [open])
 }

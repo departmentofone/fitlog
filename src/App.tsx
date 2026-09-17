@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { AuthScreen, SetNewPasswordScreen } from './components/Auth'
+import { HealthConsentScreen } from './components/HealthConsentScreen'
 import { Layout, type QuickAddAction } from './components/Layout'
 import { OnboardingTour } from './components/OnboardingTour'
 import { SkeletonCard } from './components/Skeleton'
@@ -7,6 +8,7 @@ import { useApplyTheme } from './hooks/useApplyTheme'
 import { useAuth } from './hooks/useAuth'
 import { useCelebrateUnlocks } from './hooks/useCelebrateUnlocks'
 import { useHashRoute } from './hooks/useHashRoute'
+import { useUserSettings } from './hooks/useUserSettings'
 import type { Tab } from './types'
 
 const WorkoutsTab = lazy(() => import('./features/workouts/WorkoutsTab').then((m) => ({ default: m.WorkoutsTab })))
@@ -48,6 +50,8 @@ const QUICK_ADD_ICONS = {
   ),
 }
 
+const QUICK_PARAM_TABS: Record<string, Tab> = { set: 'workouts', meal: 'meals', fast: 'fasting' }
+
 function TabFallback() {
   return (
     <div className="space-y-4 p-4">
@@ -60,9 +64,23 @@ function TabFallback() {
 function App() {
   const { user, loading, recoveringPassword, finishPasswordRecovery } = useAuth()
   const { route, navigate, goBack } = useHashRoute()
+  const { data: settings, isLoading: settingsLoading } = useUserSettings()
   // A quick-add request for the tab it navigates to: the tab performs the action (open the
   // exercise picker, add a meal, jump to the fast picker) whenever the nonce changes.
   const [quickAction, setQuickAction] = useState<{ tab: Tab; nonce: number } | null>(null)
+  // Home-screen shortcuts (manifest `shortcuts`) launch with ?quick=set|meal|fast - run that quick
+  // action once the user is signed in, then strip the param so a reload doesn't repeat it.
+  useEffect(() => {
+    if (!user) return
+    const params = new URLSearchParams(window.location.search)
+    const target = QUICK_PARAM_TABS[params.get('quick') ?? '']
+    if (!target) return
+    params.delete('quick')
+    const search = params.toString()
+    history.replaceState(history.state, '', `${window.location.pathname}${search ? `?${search}` : ''}${window.location.hash}`)
+    setQuickAction({ tab: target, nonce: Date.now() })
+    navigate(target)
+  }, [user, navigate])
   // Drop the request once the user leaves that tab, so coming back later doesn't replay it.
   useEffect(() => {
     if (quickAction && route !== quickAction.tab) setQuickAction(null)
@@ -70,7 +88,7 @@ function App() {
   useApplyTheme()
   useCelebrateUnlocks()
 
-  if (loading) {
+  if (loading || (user && settingsLoading)) {
     return (
       <div className="flex h-[var(--app-height)] items-center justify-center bg-slate-950 p-4">
         <div className="w-full max-w-sm space-y-4">
@@ -86,6 +104,11 @@ function App() {
 
   if (recoveringPassword) {
     return <SetNewPasswordScreen onDone={finishPasswordRecovery} />
+  }
+
+  // Undefined settings (e.g. offline with nothing cached) never blocks the app.
+  if (settings && !settings.health_data_consent_at) {
+    return <HealthConsentScreen />
   }
 
   const tab: Tab | null = route === 'settings' ? null : route

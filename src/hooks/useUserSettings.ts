@@ -19,6 +19,7 @@ export const DEFAULT_SETTINGS: Omit<UserSettings, 'user_id' | 'updated_at'> = {
   color_palette: 'emerald',
   haptics_enabled: true,
   bottom_nav_tabs: [],
+  health_data_consent_at: null,
 }
 
 export function useUserSettings() {

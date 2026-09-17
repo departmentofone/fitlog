@@ -7,6 +7,7 @@ import { formatBuildTime } from '../../lib/buildInfo'
 import { exportUserData } from '../../lib/exportData'
 import { supabase } from '../../lib/supabase'
 import type { Tab } from '../../types'
+import { DeleteAccountCard } from './DeleteAccountCard'
 import { PushNotificationsCard } from './PushNotificationsCard'
 
 export function SettingsTab({ onBack }: { onBack: () => void }) {
@@ -255,7 +256,15 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
         </button>
       </div>
 
-      <p className="px-1 pb-2 text-center text-xs text-slate-500">FitLog · Build {formatBuildTime()}</p>
+      <DeleteAccountCard onExport={handleExport} exporting={exporting} />
+
+      <p className="px-1 pb-2 text-center text-xs text-slate-500">
+        <a href="/privacy" target="_blank" rel="noopener" className="inline-flex min-h-11 items-center px-2 font-medium text-slate-400 underline">
+          Privacy policy
+        </a>
+        <br />
+        FitLog · Build {formatBuildTime()}
+      </p>
     </div>
   )
 }

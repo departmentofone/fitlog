@@ -99,9 +99,17 @@ export function AboutTab() {
       <div className={cardClass}>
         <h3 className="mb-2 text-sm font-medium text-white">Data & privacy</h3>
         <p className="text-sm leading-relaxed text-slate-400">
-          Your data is private to your account — it isn't shared or sold. This is a small personal project without
-          a formal privacy policy, so treat that as an informal assurance rather than a legal one.
+          Your data is private to your account — it's never sold, never used for ads, and FitLog has no trackers.
+          You can export everything or delete your account at any time from Settings.
         </p>
+        <a
+          href="/privacy"
+          target="_blank"
+          rel="noopener"
+          className="mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-emerald-400"
+        >
+          Read the privacy policy
+        </a>
       </div>
 
       <div className={cardClass}>

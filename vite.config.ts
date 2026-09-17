@@ -1,8 +1,19 @@
 /// <reference types="vitest/config" />
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
+
+// Captured from the real app at 1080x1920 (see store-listing/README.md) and shown in the richer
+// Android install sheet. Order = display order.
+const STORE_SCREENSHOTS = ['workouts', 'set-logging', 'meals', 'more'] as const
+const SCREENSHOT_LABELS: Record<(typeof STORE_SCREENSHOTS)[number], string> = {
+  workouts: "Today's workout at a glance",
+  'set-logging': 'Log sets fast with steppers and a rest timer',
+  meals: 'Meals, macros, and water in one place',
+  more: 'Every section one tap away',
+}
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -12,6 +23,15 @@ export default defineConfig({
   // bottom-gap bug, where "does force-quit even load new code" turned out to be its own bug).
   define: {
     __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+  },
+  build: {
+    rollupOptions: {
+      // Second page: the public, logged-out account deletion flow (served at /delete-account).
+      input: {
+        main: fileURLToPath(new URL('./index.html', import.meta.url)),
+        deleteAccount: fileURLToPath(new URL('./delete-account.html', import.meta.url)),
+      },
+    },
   },
   server: {
     host: true,
@@ -39,24 +59,68 @@ export default defineConfig({
       filename: 'sw.ts',
       includeAssets: ['apple-touch-icon.png', 'favicon.svg'],
       manifest: {
-        name: 'FitLog',
+        // Stable app identity - must never change once installed/published, even if start_url does.
+        id: '/',
+        name: 'FitLog - Workout & Meal Tracker',
         short_name: 'FitLog',
-        description: 'Workout and meal tracker',
+        description:
+          'Free workout, meal, macro, and fasting tracker. Log sets and meals, track goals and progress. No ads, no paywalls.',
+        lang: 'en',
+        dir: 'ltr',
+        categories: ['health', 'fitness', 'lifestyle'],
         theme_color: '#0b0f1e',
         background_color: '#0b0f1e',
         display: 'standalone',
+        display_override: ['standalone', 'minimal-ui'],
+        orientation: 'portrait',
+        scope: '/',
         start_url: '/',
+        // A shortcut tapped while FitLog is already open reuses that window and navigates it.
+        launch_handler: { client_mode: ['navigate-existing', 'auto'] },
+        prefer_related_applications: false,
         icons: [
           { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },
           { src: '/icon-512-maskable.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
+        shortcuts: [
+          {
+            name: 'Log a set',
+            short_name: 'Log set',
+            description: "Open today's workout with the exercise picker",
+            url: '/?quick=set#/workouts',
+            icons: [{ src: '/shortcuts/shortcut-set.png', sizes: '96x96', type: 'image/png' }],
+          },
+          {
+            name: 'Log a meal',
+            short_name: 'Log meal',
+            description: "Add the next meal to today's log",
+            url: '/?quick=meal#/meals',
+            icons: [{ src: '/shortcuts/shortcut-meal.png', sizes: '96x96', type: 'image/png' }],
+          },
+          {
+            name: 'Start a fast',
+            short_name: 'Fast',
+            description: 'Pick a fasting window and start the timer',
+            url: '/?quick=fast#/fasting',
+            icons: [{ src: '/shortcuts/shortcut-fast.png', sizes: '96x96', type: 'image/png' }],
+          },
+        ],
+        screenshots: STORE_SCREENSHOTS.map((name) => ({
+          src: `/screenshots/${name}.png`,
+          sizes: '1080x1920',
+          type: 'image/png',
+          form_factor: 'narrow',
+          label: SCREENSHOT_LABELS[name],
+        })),
       },
       injectManifest: {
         // .html deliberately excluded - src/sw.ts routes navigations through a network-first
         // strategy instead of precaching's default cache-first, so a stale shell can't get
         // stuck serving indefinitely (see the comment in sw.ts for why this mattered).
         globPatterns: ['**/*.{js,css,svg,png,ico}'],
+        // Store-size screenshots are only for install prompts - not worth precaching on every device.
+        globIgnores: ['screenshots/**'],
       },
     }),
   ],

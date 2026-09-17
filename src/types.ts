@@ -162,6 +162,8 @@ export interface UserSettings {
   haptics_enabled: boolean
   /** Extra bottom-nav shortcuts beyond the always-pinned Workouts/Meals (max 2). */
   bottom_nav_tabs: Tab[]
+  /** When the user agreed to the health-data disclosure (null = not yet asked/agreed). */
+  health_data_consent_at: string | null
   updated_at: string
 }
 

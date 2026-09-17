@@ -7,10 +7,13 @@ import { ToastProvider } from './components/ToastProvider.tsx'
 import { AuthProvider } from './hooks/useAuth.tsx'
 import { initErrorLogger } from './lib/errorLogger'
 import { offlinePersister, PERSIST_MAX_AGE, shouldDehydrateQuery } from './lib/offlinePersister'
+import { isAndroidApp } from './lib/platform'
 import { queryClient } from './lib/queryClient'
 import './lib/viewportHeight'
 
 initErrorLogger()
+// Record the Play (TWA) launch while the android-app:// referrer is still present.
+isAndroidApp()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

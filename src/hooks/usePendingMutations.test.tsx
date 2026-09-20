@@ -1,10 +1,13 @@
 // @vitest-environment jsdom
 import { act, render, waitFor } from '@testing-library/react'
 import { onlineManager, QueryClientProvider, useMutation } from '@tanstack/react-query'
-import { useState } from 'react'
+import { StrictMode, useState } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { queryClient } from '../lib/queryClient'
 import { usePendingMutations } from './usePendingMutations'
+import { OfflineBanner } from '../components/OfflineBanner'
+import { SessionTimer } from '../features/workouts/SessionTimer'
+import type { WorkoutSession } from '../types'
 
 function Banner() {
   return <span data-testid="pending">{usePendingMutations()}</span>
@@ -30,6 +33,29 @@ function App() {
   )
 }
 
+const session: WorkoutSession = {
+  id: 'session-1',
+  user_id: 'user-1',
+  date: '2026-01-01',
+  preworkout: false,
+  notes: null,
+  started_at: new Date().toISOString(),
+  duration_seconds: null,
+  created_at: new Date().toISOString(),
+}
+
+/** The real pairing from the Workouts tab: OfflineBanner mounted, SessionTimer mounting later. */
+function WorkoutsLikeApp() {
+  const [showTimer, setShowTimer] = useState(false)
+  return (
+    <QueryClientProvider client={queryClient}>
+      <OfflineBanner />
+      <button onClick={() => setShowTimer(true)}>open session</button>
+      {showTimer && <SessionTimer session={session} />}
+    </QueryClientProvider>
+  )
+}
+
 describe('usePendingMutations', () => {
   afterEach(() => vi.restoreAllMocks())
 
@@ -44,6 +70,20 @@ describe('usePendingMutations', () => {
     )
     expect(renderPhaseWarnings).toEqual([])
     expect(getByTestId('pending').textContent).toBe('0')
+  })
+
+  it('does not warn when the real SessionTimer mounts next to OfflineBanner', () => {
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const { getByText } = render(
+      <StrictMode>
+        <WorkoutsLikeApp />
+      </StrictMode>,
+    )
+    act(() => getByText('open session').click())
+    const renderPhaseWarnings = errors.mock.calls.filter((args) =>
+      String(args[0]).includes('Cannot update a component'),
+    )
+    expect(renderPhaseWarnings).toEqual([])
   })
 
   it('counts mutations paused while offline and clears them on reconnect', async () => {

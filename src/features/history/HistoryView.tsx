@@ -14,6 +14,7 @@ import {
   useSessionDetailForDate,
 } from '../../hooks/useWorkouts'
 import { useWorkoutStreaks } from '../../hooks/useWorkoutStreaks'
+import { formatDuration } from '../../lib/duration'
 import { WeeklyDigestCard } from './WeeklyDigestCard'
 
 function StatTile({ label, value }: { label: string; value: string }) {
@@ -59,6 +60,16 @@ function DayDetail({ date }: { date: string }) {
           {new Date(date + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
         </h4>
         <div className="flex items-center gap-1.5">
+          {session.duration_seconds != null && (
+            <span className="flex items-center gap-1 rounded-full bg-slate-700/60 px-2 py-0.5 text-xs text-slate-300">
+              <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="12" cy="13" r="8" />
+                <path d="M12 9v4l2.5 2.5M10 2h4" />
+              </svg>
+              <span className="sr-only">Workout length </span>
+              {formatDuration(session.duration_seconds)}
+            </span>
+          )}
           {session.preworkout && (
             <span className="rounded-full bg-emerald-600/20 px-2 py-0.5 text-xs text-emerald-400">Preworkout</span>
           )}

@@ -37,5 +37,5 @@ exists anywhere in the app or backend.
 
 ## Before flipping the switch — re-verify
 
-- Test `isAndroidApp()` on a real TWA install (the referrer is only present on the first page load).
+- Test `isAndroidApp()` on a real TWA install (package `com.fitlog.app`) (the referrer is only present on the first page load).
 - Re-read the Vercel fair-use and Play Payments pages; both change without notice.

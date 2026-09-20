@@ -67,6 +67,24 @@ FitLog is a tracking tool, not medical advice. Talk to a professional before sta
 **Contact email:** msolarovsocial@gmail.com · **Website:** https://fitlog-two-gamma.vercel.app ·
 **Privacy policy:** https://fitlog-two-gamma.vercel.app/privacy
 
+## Android package name
+
+```
+com.fitlog.app
+```
+
+Chosen 2026-09-20; checked as unused by any published Play app. **Permanent** once uploaded - it
+can never be changed, and it is what the Play Store URL
+(`play.google.com/store/apps/details?id=com.fitlog.app`) is built from. Enter it in PWABuilder
+instead of the default it suggests (`app.vercel.fitlog_two_gamma.twa`), which would bake the
+temporary Vercel hostname into the ID forever.
+
+After the first upload, write the app-link file with it:
+
+```
+node scripts/set-assetlinks.mjs com.fitlog.app <upload-key SHA-256> <Play app-signing SHA-256>
+```
+
 ## Graphics
 
 | Play asset | File | Spec check |

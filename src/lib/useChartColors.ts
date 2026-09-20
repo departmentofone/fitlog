@@ -42,7 +42,7 @@ export function useThemeChartColors(): ChartColors {
       grid: cssVar('--color-slate-700', 'rgba(255,255,255,.14)'),
       axis: cssVar('--color-slate-700', 'rgba(255,255,255,.14)'),
       tick: cssVar('--color-slate-400', '#a8b0c4'),
-      tooltipBg: cssVar('--color-slate-900', '#111318'),
+      tooltipBg: cssVar('--color-slate-950', '#0b0f1e'),
       tooltipBorder: cssVar('--color-slate-700', 'rgba(255,255,255,.14)'),
       tooltipText: cssVar('--color-white', '#f4f6fb'),
     })

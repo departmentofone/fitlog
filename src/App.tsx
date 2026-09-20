@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { AuthScreen, SetNewPasswordScreen } from './components/Auth'
 import { HealthConsentScreen } from './components/HealthConsentScreen'
+import { TabErrorBoundary } from './components/TabErrorBoundary'
 import { Layout, type QuickAddAction } from './components/Layout'
 import { OnboardingTour } from './components/OnboardingTour'
 import { SkeletonCard } from './components/Skeleton'
@@ -52,6 +53,16 @@ const QUICK_ADD_ICONS = {
 
 const QUICK_PARAM_TABS: Record<string, Tab> = { set: 'workouts', meal: 'meals', fast: 'fasting' }
 
+/**
+ * Achievement watching reads the user's whole training/diet history, so it only mounts once the
+ * health-data disclosure has been accepted - and its celebration toast can't land on top of the
+ * consent screen any more.
+ */
+function AchievementWatcher() {
+  useCelebrateUnlocks()
+  return null
+}
+
 function TabFallback() {
   return (
     <div className="space-y-4 p-4">
@@ -86,7 +97,6 @@ function App() {
     if (quickAction && route !== quickAction.tab) setQuickAction(null)
   }, [route, quickAction])
   useApplyTheme()
-  useCelebrateUnlocks()
 
   if (loading || (user && settingsLoading)) {
     return (
@@ -130,13 +140,15 @@ function App() {
 
   return (
     <>
+      <AchievementWatcher />
       <Layout
         active={tab}
         onChange={navigate}
         onOpenSettings={() => navigate('settings')}
         quickAddActions={quickAddActions}
       >
-        <Suspense fallback={<TabFallback />}>
+        <TabErrorBoundary route={route}>
+          <Suspense fallback={<TabFallback />}>
           {onSettings && <SettingsTab onBack={goBack} />}
           {tab === 'workouts' && <WorkoutsTab onOpenHistory={() => navigate('history')} quickAction={nonceFor('workouts')} />}
           {tab === 'meals' && <MealsTab quickAction={nonceFor('meals')} />}
@@ -149,8 +161,9 @@ function App() {
           {tab === 'programs' && <ProgramsTab />}
           {tab === 'calculator' && <MaintenanceCalculatorTab />}
           {tab === 'whatsnew' && <WhatsNewTab />}
-          {tab === 'about' && <AboutTab />}
-        </Suspense>
+            {tab === 'about' && <AboutTab />}
+          </Suspense>
+        </TabErrorBoundary>
       </Layout>
       <OnboardingTour />
     </>

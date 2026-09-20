@@ -51,24 +51,24 @@ export function useCreateProgram() {
 
       const workouts = input.workoutPresets.map((p) => ({
         name: p.name,
-        items: p.workout_preset_items.map((i) => ({
+        items: p.workout_preset_items.flatMap((i) => (i.exercise ? [{
           exerciseName: i.exercise.name,
           muscleGroup: i.exercise.muscle_group,
           setNumber: i.set_number,
           weight: i.weight,
           reps: i.reps,
-        })),
+        }] : [])),
       }))
 
       const recipes = input.recipes.map((r) => ({
         name: r.name,
         servings: r.servings,
-        ingredients: r.recipe_ingredients.map((i) => foodSnapshot(i.grams, i.serving_label, i.food)),
+        ingredients: r.recipe_ingredients.flatMap((i) => (i.food ? [foodSnapshot(i.grams, i.serving_label, i.food)] : [])),
       }))
 
       const mealPresets = input.mealPresets.map((p) => ({
         name: p.name,
-        items: p.meal_preset_items.map((i) => foodSnapshot(i.grams, i.serving_label, i.food)),
+        items: p.meal_preset_items.flatMap((i) => (i.food ? [foodSnapshot(i.grams, i.serving_label, i.food)] : [])),
       }))
 
       const { data, error } = await supabase

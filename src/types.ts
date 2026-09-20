@@ -193,6 +193,8 @@ export interface WorkoutPresetItem {
   set_number: number
   weight: number
   reps: number
+  /** Preserved through save/load so a warm-up doesn't return as a working set (migration v20). */
+  is_warmup: boolean
 }
 
 export interface WorkoutPreset {
@@ -296,7 +298,14 @@ export interface MacroTotals {
   fat: number
 }
 
-export function macrosForGrams(food: Food, grams: number): MacroTotals {
+/**
+ * `food` is nullable on purpose: a shared preset/recipe (and any meal logged from one) can
+ * reference a custom food owned by another user, which row-level security hides from this reader -
+ * PostgREST then returns `food: null` for that row rather than failing. Counting it as zero keeps
+ * totals rendering instead of crashing the whole tab; the UI labels it "Unavailable food".
+ */
+export function macrosForGrams(food: Food | null | undefined, grams: number): MacroTotals {
+  if (!food) return { calories: 0, protein: 0, carbs: 0, fat: 0 }
   const factor = grams / 100
   return {
     calories: food.calories_per_100g * factor,
@@ -318,6 +327,12 @@ export function sumMacros(items: MacroTotals[]): MacroTotals {
   )
 }
 
+/** Label for an exercise this account can't read (another user's custom exercise in a shared preset). */
+export const UNAVAILABLE_EXERCISE_NAME = 'Unavailable exercise'
+
+/** Label for a food this account can't read (another user's custom food, kept by a shared preset). */
+export const UNAVAILABLE_FOOD_NAME = 'Unavailable food'
+
 export interface MicroTotals {
   fiber: number
   sugar: number
@@ -330,7 +345,11 @@ export interface MicroTotals {
   vitaminA: number
 }
 
-export function microsForGrams(food: Food, grams: number): MicroTotals {
+const EMPTY_MICROS: MicroTotals = { fiber: 0, sugar: 0, sodium: 0, cholesterol: 0, potassium: 0, calcium: 0, iron: 0, vitaminC: 0, vitaminA: 0 }
+
+/** Nullable for the same reason as macrosForGrams - an unreadable food contributes nothing. */
+export function microsForGrams(food: Food | null | undefined, grams: number): MicroTotals {
+  if (!food) return EMPTY_MICROS
   const factor = grams / 100
   return {
     fiber: food.fiber_g * factor,

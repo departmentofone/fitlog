@@ -155,12 +155,8 @@ export function useRescaleRecipe() {
       if (newServings <= 0) throw new Error('Servings must be positive')
       const scale = newServings / recipe.servings
 
-      const { error: recipeError } = await supabase
-        .from('recipes')
-        .update({ servings: newServings })
-        .eq('id', recipe.id)
-      if (recipeError) throw recipeError
-
+      // Ingredients first, servings last: if an ingredient update fails mid-batch, servings still
+      // matches the old grams, so per-serving macros stay correct instead of silently drifting.
       const results = await Promise.all(
         recipe.recipe_ingredients.map((i) =>
           supabase
@@ -171,6 +167,12 @@ export function useRescaleRecipe() {
       )
       const failed = results.find((r) => r.error)
       if (failed?.error) throw failed.error
+
+      const { error: recipeError } = await supabase
+        .from('recipes')
+        .update({ servings: newServings })
+        .eq('id', recipe.id)
+      if (recipeError) throw recipeError
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['recipes', user?.id] }),
   })

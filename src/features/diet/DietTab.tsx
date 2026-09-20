@@ -49,7 +49,9 @@ export function DietTab() {
 
   function save() {
     const parsed = parseFloat(calorieDraft)
-    updateSettings.mutate({ diet_goal: goalDraft, calorie_goal: Number.isNaN(parsed) ? null : parsed })
+    // 0 (or a negative) is not a goal - storing it divided by zero on the progress ring.
+    const calorie_goal = Number.isFinite(parsed) && parsed > 0 ? parsed : null
+    updateSettings.mutate({ diet_goal: goalDraft, calorie_goal })
     setEditing(false)
   }
 

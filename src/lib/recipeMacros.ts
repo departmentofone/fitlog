@@ -2,7 +2,8 @@ import { macrosForGrams, sumMacros, type Food, type MacroTotals } from '../types
 import type { RecipeIngredient } from '../types'
 
 export interface RecipeIngredientWithFood extends RecipeIngredient {
-  food: Food
+  /** Null when the food belongs to another user and RLS hides it - see macrosForGrams. */
+  food: Food | null
 }
 
 export function computeRecipeMacros(ingredients: RecipeIngredientWithFood[]): {

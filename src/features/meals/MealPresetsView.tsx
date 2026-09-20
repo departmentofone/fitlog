@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { UNAVAILABLE_FOOD_NAME } from '../../types'
 import {
   useCreateMealPresetFromMeal,
   useDeleteMealPreset,
@@ -122,7 +123,7 @@ export function MealPresetsView({
                   </button>
                 )}
               </div>
-              <p className="mb-2 text-xs text-slate-400">{preset.meal_preset_items.map((i) => i.food.name).join(', ')}</p>
+              <p className="mb-2 text-xs text-slate-400">{preset.meal_preset_items.map((i) => i.food?.name ?? UNAVAILABLE_FOOD_NAME).join(', ')}</p>
               {preset.user_id === user?.id ? (
                 <label className="mb-2 flex items-center gap-1.5 text-xs text-slate-400">
                   <input

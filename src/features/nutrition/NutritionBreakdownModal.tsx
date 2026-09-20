@@ -1,3 +1,4 @@
+import { CHART_FONT, useThemeChartColors } from '../../lib/useChartColors'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import { DAILY_VALUES, formatAmount, percentDV } from '../../lib/nutrition'
 import { macrosForGrams, microsForGrams, sumMacros, sumMicros, type MacroTotals, type MicroTotals } from '../../types'
@@ -31,10 +32,11 @@ const FLAG_CLASSES: Record<string, string> = {
 }
 
 export function NutritionBreakdownModal({ meals, onClose }: { meals: MealWithItems[]; onClose: () => void }) {
+  const colors = useThemeChartColors()
   const items = meals.flatMap((m) => m.meal_items)
   const totals: MacroTotals = sumMacros(items.map((i) => macrosForGrams(i.food, i.grams)))
   const micros: MicroTotals = sumMicros(items.map((i) => microsForGrams(i.food, i.grams)))
-  const foodNames = items.map((i) => i.food.name.toLowerCase())
+  const foodNames = items.flatMap((i) => (i.food ? [i.food.name.toLowerCase()] : []))
 
   const pieData = [
     { name: 'Protein', value: Math.round(totals.protein * 4), grams: Math.round(totals.protein), color: '#60a5fa' },
@@ -71,7 +73,8 @@ export function NutritionBreakdownModal({ meals, onClose }: { meals: MealWithIte
                       ))}
                     </Pie>
                     <Tooltip
-                      contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 8 }}
+                      contentStyle={{ background: colors.tooltipBg, border: `1px solid ${colors.tooltipBorder}`, borderRadius: 8, fontFamily: CHART_FONT }}
+                      labelStyle={{ color: colors.tooltipText }}
                       formatter={(value, name) => [`${value} kcal`, name]}
                     />
                   </PieChart>

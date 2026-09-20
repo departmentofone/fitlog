@@ -10,7 +10,8 @@ export interface MealPresetItem {
   food_id: string
   grams: number
   serving_label: string | null
-  food: Food
+  /** Null when the food belongs to another user and RLS hides it - see macrosForGrams. */
+  food: Food | null
 }
 
 export interface MealPreset {

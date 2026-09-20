@@ -1,6 +1,15 @@
 import { supabase } from './supabase'
 
 const MAX_LOGS_PER_SESSION = 20
+
+/**
+ * Path + in-app route only. location.href can hold Supabase auth tokens (#access_token=...) right
+ * after a password-reset or confirmation link, and those must never reach a stored log.
+ */
+function safeUrl(): string {
+  const route = location.hash.includes('=') ? '#<auth-callback>' : location.hash
+  return `${location.pathname}${route}`
+}
 let logged = 0
 
 async function logError(message: string, stack?: string) {
@@ -13,7 +22,7 @@ async function logError(message: string, stack?: string) {
       user_id: auth.user.id,
       message: message.slice(0, 2000),
       stack: stack?.slice(0, 4000) ?? null,
-      url: location.href,
+      url: safeUrl(),
       user_agent: navigator.userAgent,
     })
   } catch {

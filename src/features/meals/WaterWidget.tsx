@@ -2,6 +2,11 @@ import { useState } from 'react'
 import { useAddWater, useTodayWater } from '../../hooks/useWaterLog'
 import { useUpdateSettings, useUserSettings } from '../../hooks/useUserSettings'
 
+/** One decimal, trailing zero trimmed, so the amount and the goal read consistently: "0.3 / 4 L". */
+function formatLitres(ml: number): string {
+  return (Math.round(ml / 100) / 10).toString()
+}
+
 export function WaterWidget() {
   const { data: settings } = useUserSettings()
   const updateSettings = useUpdateSettings()
@@ -33,7 +38,7 @@ export function WaterWidget() {
             <span className="text-xs text-slate-500">Tap to edit goal</span>
           </div>
           <p className="mb-2 text-2xl font-bold text-blue-400">
-            {(mlToday / 1000).toFixed(2)} <span className="text-sm font-medium text-slate-400">/ {(goal / 1000).toFixed(1)} L</span>
+            {formatLitres(mlToday)} <span className="text-sm font-medium text-slate-400">/ {formatLitres(goal)} L</span>
           </p>
           <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
             <div className="h-full rounded-full bg-blue-500 transition-all" style={{ width: `${pct}%` }} />

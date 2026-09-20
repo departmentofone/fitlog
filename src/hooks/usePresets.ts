@@ -5,7 +5,8 @@ import { useAuth } from './useAuth'
 import type { SetWithExercise } from './useWorkouts'
 
 export interface PresetItemWithExercise extends WorkoutPresetItem {
-  exercise: Exercise
+  /** Null when the exercise belongs to another user and RLS hides it (shared preset). */
+  exercise: Exercise | null
 }
 
 export interface PresetWithItems extends WorkoutPreset {
@@ -47,6 +48,7 @@ export function useCreatePresetFromSets() {
         set_number: s.set_number,
         weight: s.weight,
         reps: s.reps,
+        is_warmup: s.is_warmup,
       }))
       const { error: itemsError } = await supabase.from('workout_preset_items').insert(items)
       if (itemsError) throw itemsError
@@ -138,6 +140,7 @@ export function useLoadPreset(sessionId: string | undefined) {
           set_number: offset + 1,
           weight: item.weight,
           reps: item.reps,
+          is_warmup: item.is_warmup ?? false,
           difficulty: 6,
         }
       })

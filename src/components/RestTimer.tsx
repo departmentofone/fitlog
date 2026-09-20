@@ -154,13 +154,13 @@ export function RestTimer({ restartKey }: { restartKey: number }) {
       {showRing && (
         <div className="relative h-11 w-11 shrink-0" aria-hidden="true">
           <svg width={44} height={44} className="-rotate-90">
-            <circle cx={22} cy={22} r={RING_RADIUS} fill="none" stroke="#1e293b" strokeWidth={5} />
+            <circle cx={22} cy={22} r={RING_RADIUS} fill="none" stroke="var(--color-slate-700)" strokeWidth={5} />
             <circle
               cx={22}
               cy={22}
               r={RING_RADIUS}
               fill="none"
-              stroke="#34d399"
+              stroke="var(--color-emerald-400)"
               strokeWidth={5}
               strokeDasharray={RING_CIRCUMFERENCE}
               strokeDashoffset={RING_CIRCUMFERENCE * (1 - pct / 100)}

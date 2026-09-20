@@ -2,6 +2,7 @@ import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YA
 import { estimateTDEE, projectGoal } from '../../lib/tdee'
 import { useUserSettings } from '../../hooks/useUserSettings'
 import { CHART_FONT, useThemeChartColors } from '../../lib/useChartColors'
+import { displayWeightValue, weightUnitLabel } from '../../lib/units'
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
@@ -31,6 +32,8 @@ export function GoalProjectionChart() {
     )
   }
 
+  // Weights are stored in kg; show them in the user's chosen units like every other screen.
+  const unitLabel = weightUnitLabel(settings.unit_system)
   const projection = projectGoal(settings.current_weight!, settings.weight_goal!, tdee!, settings.calorie_goal!)
 
   if (!projection) {
@@ -57,9 +60,9 @@ export function GoalProjectionChart() {
   const numPoints = Math.min(20, Math.max(2, Math.round(totalDays / 7)))
   const data = Array.from({ length: numPoints + 1 }, (_, i) => {
     const day = Math.round((i / numPoints) * totalDays)
-    const weight = settings.current_weight! + (settings.weight_goal! - settings.current_weight!) * (day / totalDays)
+    const weightKg = settings.current_weight! + (settings.weight_goal! - settings.current_weight!) * (day / totalDays)
     const date = new Date(Date.now() + day * 86_400_000)
-    return { weight: Math.round(weight * 10) / 10, label: date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) }
+    return { weight: displayWeightValue(weightKg, settings.unit_system), label: date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) }
   })
   const weeks = Math.round(totalDays / 7)
 
@@ -67,7 +70,7 @@ export function GoalProjectionChart() {
     <Card>
       <p className="mb-3 text-sm text-slate-400">
         At this rate, about <span className="font-semibold text-white">{totalDays} days</span> (~{weeks} weeks) to reach{' '}
-        {settings.weight_goal}kg — around{' '}
+        {displayWeightValue(settings.weight_goal!, settings.unit_system)} {unitLabel} — around{' '}
         <span className="font-semibold text-white">
           {projection.targetDate.toLocaleDateString(undefined, { month: 'long', day: 'numeric' })}
         </span>
@@ -94,7 +97,7 @@ export function GoalProjectionChart() {
             <Tooltip
               contentStyle={{ background: colors.tooltipBg, border: `1px solid ${colors.tooltipBorder}`, borderRadius: 8, fontFamily: CHART_FONT }}
               labelStyle={{ color: colors.tooltipText }}
-              formatter={(value) => [`${value} kg`, 'Projected weight']}
+              formatter={(value) => [`${value} ${unitLabel}`, 'Projected weight']}
             />
             <Line type="monotone" dataKey="weight" stroke={colors.accent} strokeWidth={2} dot={false} />
           </LineChart>

@@ -5,7 +5,8 @@ import { useAuth } from './useAuth'
 import { todayISO } from './useWorkouts'
 
 export interface MealItemWithFood extends MealItem {
-  food: Food
+  /** Null when the food belongs to another user and RLS hides it - see macrosForGrams. */
+  food: Food | null
 }
 
 export interface MealWithItems extends Meal {

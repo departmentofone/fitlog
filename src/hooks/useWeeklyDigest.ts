@@ -49,13 +49,16 @@ export function useWeeklyDigest() {
       type MealRow = { date: string; meal_items: { grams: number; food: Food | null }[] }
       let totalCalories = 0
       let totalProtein = 0
+      const loggedDates = new Set<string>()
       for (const meal of (meals.data as unknown as MealRow[]) ?? []) {
         for (const item of meal.meal_items) {
           if (!item.food) continue
           totalCalories += (item.food.calories_per_100g * item.grams) / 100
           totalProtein += (item.food.protein_per_100g * item.grams) / 100
+          loggedDates.add(meal.date)
         }
       }
+      const daysLogged = loggedDates.size
 
       type SetRow = { weight: number; reps: number }
       const totalVolume = ((setsRes.data as unknown as SetRow[]) ?? []).reduce((sum, s) => sum + s.weight * s.reps, 0)
@@ -68,8 +71,9 @@ export function useWeeklyDigest() {
         workoutsThisWeek: sessionsThis.data?.length ?? 0,
         workoutsLastWeek: sessionsLast.data?.length ?? 0,
         totalVolume,
-        avgCalories: totalCalories / 7,
-        avgProtein: totalProtein / 7,
+        // Averaged over days actually logged, not a flat 7 - matching useWeeklyAdherence.
+        avgCalories: daysLogged > 0 ? totalCalories / daysLogged : 0,
+        avgProtein: daysLogged > 0 ? totalProtein / daysLogged : 0,
         weightChange,
       }
     },

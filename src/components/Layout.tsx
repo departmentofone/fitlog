@@ -143,7 +143,7 @@ function QuickAddFab({ actions }: { actions: QuickAddAction[] }) {
   )
 }
 
-function MoreSheet({ active, onPick, onClose }: { active: Tab; onPick: (tab: Tab) => void; onClose: () => void }) {
+function MoreSheet({ active, onPick, onClose }: { active: Tab | null; onPick: (tab: Tab) => void; onClose: () => void }) {
   useBackToClose(true, onClose)
 
   useEffect(() => {
@@ -321,7 +321,7 @@ export function Layout({
 
       {moreOpen && (
         <MoreSheet
-          active={active ?? 'workouts'}
+          active={active}
           onClose={() => setMoreOpen(false)}
           onPick={(tab) => {
             onChange(tab)

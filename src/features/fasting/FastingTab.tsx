@@ -7,6 +7,16 @@ import { haptics } from '../../lib/haptics'
 import { computeDayStreaks } from '../../lib/streaks'
 import { FastingStages } from './FastingStages'
 
+const DEFAULT_FAST_HOURS = 16
+const MAX_FAST_HOURS = 168
+
+/** A negative number is truthy, so `|| 16` let "-5h" through and opened the timer at "Goal reached". */
+function clampFastHours(input: string): number {
+  const parsed = parseFloat(input)
+  if (!Number.isFinite(parsed) || parsed <= 0) return DEFAULT_FAST_HOURS
+  return Math.min(parsed, MAX_FAST_HOURS)
+}
+
 const PRESETS = [
   { label: '16:8', hours: 16 },
   { label: '18:6', hours: 18 },
@@ -110,11 +120,14 @@ export function FastingTab({ quickAction }: { quickAction?: number }) {
               type="number"
               inputMode="decimal"
               value={customHours}
+              min={0.5}
+              max={MAX_FAST_HOURS}
+              aria-label="Custom fast length in hours"
               onChange={(e) => setCustomHours(e.target.value)}
               className="w-20 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:outline-none"
             />
             <button
-              onClick={() => startFast.mutate(parseFloat(customHours) || 16)}
+              onClick={() => startFast.mutate(clampFastHours(customHours))}
               className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90"
             >
               Start custom fast

@@ -132,7 +132,7 @@ export function WorkoutsTab({
   }, [sets])
 
   const musclesTrained = useMemo(
-    () => Array.from(new Set(sets.map((s) => s.exercise?.muscle_group).filter(Boolean))),
+    () => Array.from(new Set(sets.flatMap((s) => (s.exercise ? [s.exercise.muscle_group] : [])))),
     [sets],
   )
 
@@ -302,7 +302,7 @@ export function WorkoutsTab({
             <div>
               <p className="text-xs text-slate-400">{isToday ? "Today's" : 'Total'} moved</p>
               <p className="text-2xl font-bold text-white">
-                {sets.reduce((sum, s) => sum + s.weight * s.reps, 0).toLocaleString()}{' '}
+                {sets.reduce((sum, s) => (s.is_warmup ? sum : sum + s.weight * s.reps), 0).toLocaleString()}{' '}
                 <span className="text-sm font-medium text-slate-400">kg</span>
               </p>
             </div>
@@ -522,7 +522,10 @@ export function WorkoutsTab({
                       name={exerciseSets[0].exercise?.name ?? 'Exercise'}
                       sets={exerciseSets}
                       supersetLabel={groupId != null ? labelForGroup(groupId) : undefined}
-                      onClick={() => resumeExercise(exerciseSets[0].exercise)}
+                      onClick={() => {
+                        const exercise = exerciseSets[0].exercise
+                        if (exercise) resumeExercise(exercise)
+                      }}
                       onOpenDetail={() => setDetailExercise(exerciseSets[0].exercise)}
                     />
                   )

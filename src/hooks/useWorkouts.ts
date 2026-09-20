@@ -4,8 +4,17 @@ import { supabase } from '../lib/supabase'
 import type { Exercise, WorkoutSession, WorkoutSet } from '../types'
 import { useAuth } from './useAuth'
 
+/**
+ * Today's date in the user's own timezone, as YYYY-MM-DD. Deliberately not toISOString(), which
+ * converts to UTC first: east of UTC that reports yesterday shortly after local midnight (so the
+ * date picker's max blocked "today"), and west of UTC it reports tomorrow all evening (so evening
+ * logs landed on the wrong day).
+ */
 export function todayISO() {
-  return new Date().toISOString().slice(0, 10)
+  const now = new Date()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  return `${now.getFullYear()}-${month}-${day}`
 }
 
 export function useSessionForDate(date: string) {
@@ -123,7 +132,8 @@ export function useStopWorkoutTimer(sessionId: string | undefined) {
 }
 
 export interface SetWithExercise extends WorkoutSet {
-  exercise: Exercise
+  /** Null when the exercise belongs to another user and RLS hides it (loaded from a shared preset). */
+  exercise: Exercise | null
   /**
    * Groups this set with others sharing the same value within a session, for supersets/circuits
    * (migration_v18). Optional/nullable so it's a no-op until that migration runs and for every
@@ -206,7 +216,11 @@ export function useAddSet(sessionId: string | null | undefined) {
       const { error } = await supabase.from('workout_sets').insert(row)
       if (error) throw error
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['sets', sessionId] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['sets', sessionId] })
+      // PR detection and the 1RM chart read this; without it they compare against stale data.
+      qc.invalidateQueries({ queryKey: ['exercise-history'] })
+    },
   })
 }
 
@@ -227,11 +241,17 @@ export function useUpdateSet(sessionId: string | null | undefined) {
       const { error } = await supabase.from('workout_sets').update({ weight, reps, difficulty }).eq('id', setId)
       if (error) throw error
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['sets', sessionId] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['sets', sessionId] })
+      // PR detection and the 1RM chart read this; without it they compare against stale data.
+      qc.invalidateQueries({ queryKey: ['exercise-history'] })
+    },
   })
 }
 
 function invalidateAfterSessionChange(qc: ReturnType<typeof useQueryClient>) {
+  qc.invalidateQueries({ queryKey: ['exercise-history'] })
+  qc.invalidateQueries({ queryKey: ['weekly-volume'] })
   qc.invalidateQueries({ queryKey: ['session'] })
   qc.invalidateQueries({ queryKey: ['sets'] })
   qc.invalidateQueries({ queryKey: ['session-dates'] })
@@ -451,6 +471,7 @@ export function useWeeklyVolumeByMuscleGroup(days = 7) {
       const { data, error } = await supabase
         .from('workout_sets')
         .select('weight, reps, exercise:exercises(muscle_group), session:workout_sessions!inner(date)')
+        .eq('is_warmup', false)
         .gte('session.date', startISO)
       if (error) throw error
 
@@ -485,6 +506,8 @@ export function useCopyWorkoutDay() {
         .from('workout_sessions')
         .select('*')
         .eq('date', toDate)
+        .order('created_at', { ascending: true })
+        .limit(1)
         .maybeSingle()
       if (toError) throw toError
 

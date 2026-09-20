@@ -11,7 +11,7 @@ import {
   type MealWithItems,
 } from '../../hooks/useMeals'
 import { haptics } from '../../lib/haptics'
-import { macrosForGrams, microsForGrams, sumMacros, sumMicros } from '../../types'
+import { macrosForGrams, microsForGrams, sumMacros, sumMicros, UNAVAILABLE_FOOD_NAME } from '../../types'
 import { FoodPicker } from './FoodPicker'
 
 /**
@@ -126,7 +126,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
           const m = macrosForGrams(item.food, item.grams)
           const removeItem = () =>
             undoable(
-              `Removed ${item.food.name}`,
+              `Removed ${item.food?.name ?? UNAVAILABLE_FOOD_NAME}`,
               () => deleteItem.mutate(item.id),
               () =>
                 addItem.mutate({
@@ -140,7 +140,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
             <SwipeToDelete key={item.id} onDelete={removeItem} className="rounded-xl">
               <div className="flex items-center justify-between rounded-xl bg-slate-800/60 px-3 py-2 text-sm text-slate-300">
                 <span>
-                  {item.food.name} · {item.serving_label ?? `${item.grams}g`}
+                  {item.food?.name ?? UNAVAILABLE_FOOD_NAME} · {item.serving_label ?? `${item.grams}g`}
                 </span>
                 <div className="flex items-center gap-3">
                   <span className="text-xs text-slate-500">{Math.round(m.calories)} kcal</span>

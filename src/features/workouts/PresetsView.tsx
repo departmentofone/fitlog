@@ -1,3 +1,4 @@
+import { UNAVAILABLE_EXERCISE_NAME } from '../../types'
 import { useState } from 'react'
 import {
   useCreatePresetFromSets,
@@ -17,7 +18,9 @@ import type { SetWithExercise } from '../../hooks/useWorkouts'
 function summarize(preset: PresetWithItems) {
   const names = new Map<string, number>()
   for (const item of preset.workout_preset_items) {
-    names.set(item.exercise.name, (names.get(item.exercise.name) ?? 0) + 1)
+    // A shared preset can reference the owner's custom exercise, which RLS hides from us.
+    const name = item.exercise?.name ?? UNAVAILABLE_EXERCISE_NAME
+    names.set(name, (names.get(name) ?? 0) + 1)
   }
   return Array.from(names.entries())
     .map(([name, count]) => `${name} (${count})`)

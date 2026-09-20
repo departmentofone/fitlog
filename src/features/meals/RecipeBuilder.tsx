@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { UNAVAILABLE_FOOD_NAME } from '../../types'
 import { EmptyState } from '../../components/EmptyState'
 import { MacroLine } from '../../components/MacroLine'
 import { SkeletonRow } from '../../components/Skeleton'
@@ -274,7 +275,7 @@ function RecipeCard({
           </button>
         )}
       </div>
-      <p className="mb-2 text-xs text-slate-400">{recipe.recipe_ingredients.map((i) => i.food.name).join(', ')}</p>
+      <p className="mb-2 text-xs text-slate-400">{recipe.recipe_ingredients.map((i) => i.food?.name ?? UNAVAILABLE_FOOD_NAME).join(', ')}</p>
 
       <div className="mb-2 flex items-center gap-2">
         <span className="text-xs text-slate-500">Servings</span>

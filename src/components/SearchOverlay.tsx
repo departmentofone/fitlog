@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useBackToClose } from '../hooks/useHashRoute'
 import { useExercises } from '../hooks/useExercises'
 import { useFoodSearch } from '../hooks/useFoods'
 import { MUSCLE_GROUPS, type Exercise } from '../types'
@@ -7,6 +8,8 @@ import { ExerciseDetailModal } from '../features/workouts/ExerciseDetailModal'
 const MUSCLE_LABELS = Object.fromEntries(MUSCLE_GROUPS.map((m) => [m.value, m.label]))
 
 export function SearchOverlay({ onClose }: { onClose: () => void }) {
+  // Back/swipe closes search instead of changing the tab underneath it.
+  useBackToClose(true, onClose)
   const [query, setQuery] = useState('')
   const { data: exercises = [] } = useExercises()
   const { data: foods = [] } = useFoodSearch(query)

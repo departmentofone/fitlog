@@ -64,6 +64,7 @@ function Stepper({
           aria-label={unit ? `${label} in ${unit}` : label}
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          min={0}
           className="h-11 w-full min-w-0 rounded-xl border border-slate-700 bg-slate-800 px-1 text-center text-lg font-semibold text-white focus:border-emerald-500 focus:outline-none"
         />
         <button type="button" onClick={() => nudge(1)} aria-label={`Increase ${label.toLowerCase()} by ${step}`} className={buttonClass}>
@@ -138,7 +139,7 @@ function EditableSetRow({
           onClick={() => {
             const w = parseFloat(weight)
             const r = parseInt(reps, 10)
-            if (Number.isNaN(w) || Number.isNaN(r)) return
+            if (!Number.isFinite(w) || w < 0 || !Number.isInteger(r) || r < 1) return
             onSave({ weight: w, reps: r, difficulty })
           }}
           className="min-h-11 flex-1 rounded-xl bg-emerald-600 text-sm font-medium text-on-accent hover:brightness-90"
@@ -181,7 +182,8 @@ export function SetForm({
   function handleAdd() {
     const w = parseFloat(weight)
     const r = parseInt(reps, 10)
-    if (Number.isNaN(w) || Number.isNaN(r)) return
+    // Reps must be a real rep; weight can be 0 (bodyweight) but never negative.
+    if (!Number.isFinite(w) || w < 0 || !Number.isInteger(r) || r < 1) return
     onAdd({ weight: w, reps: r, difficulty, isWarmup })
     setReps('')
     setIsWarmup(false)

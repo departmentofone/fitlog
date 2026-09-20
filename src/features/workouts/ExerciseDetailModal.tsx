@@ -1,3 +1,5 @@
+import { CHART_FONT, useThemeChartColors } from '../../lib/useChartColors'
+import { useBackToClose } from '../../hooks/useHashRoute'
 import { useMemo, useState } from 'react'
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { SkeletonLine } from '../../components/Skeleton'
@@ -7,6 +9,8 @@ import { estimate1RM } from '../../lib/oneRepMax'
 import type { Exercise } from '../../types'
 
 export function ExerciseDetailModal({ exercise, onClose }: { exercise: Exercise; onClose: () => void }) {
+  useBackToClose(true, onClose)
+  const colors = useThemeChartColors()
   const { data: history = [], isLoading } = useExerciseHistory(exercise.id)
   const { data: savedNote } = useExerciseNote(exercise.id)
   const setNote = useSetExerciseNote()
@@ -69,14 +73,15 @@ export function ExerciseDetailModal({ exercise, onClose }: { exercise: Exercise;
             <div className="h-44 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                  <XAxis dataKey="label" tick={{ fill: '#94a3b8', fontSize: 10 }} axisLine={{ stroke: '#334155' }} tickLine={false} interval={Math.ceil(chartData.length / 5)} />
-                  <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} width={36} domain={['dataMin - 5', 'dataMax + 5']} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
+                  <XAxis dataKey="label" tick={{ fill: colors.tick, fontSize: 10, fontFamily: CHART_FONT }} axisLine={{ stroke: colors.axis }} tickLine={false} interval={Math.ceil(chartData.length / 5)} />
+                  <YAxis tick={{ fill: colors.tick, fontSize: 11, fontFamily: CHART_FONT }} axisLine={false} tickLine={false} width={36} domain={['dataMin - 5', 'dataMax + 5']} />
                   <Tooltip
-                    contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 8 }}
+                    contentStyle={{ background: colors.tooltipBg, border: `1px solid ${colors.tooltipBorder}`, borderRadius: 8, fontFamily: CHART_FONT }}
+                    labelStyle={{ color: colors.tooltipText }}
                     formatter={(value) => [`${value} kg`, 'Est. 1RM']}
                   />
-                  <Line type="monotone" dataKey="oneRm" stroke="#34d399" strokeWidth={2} dot={{ r: 2 }} />
+                  <Line type="monotone" dataKey="oneRm" stroke={colors.accent} strokeWidth={2} dot={{ r: 2 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>

@@ -45,6 +45,12 @@ function formatProgress(a: Award): string {
   return `${current} / ${a.target} ${a.unit}`
 }
 
+/** Compact caption under a collection medal. */
+function shortProgress(a: Award): string {
+  if (a.unit === '× bodyweight') return a.current > 0 ? `${a.current.toFixed(2)}× of ${a.target}×` : 'Not logged yet'
+  return `${Math.min(a.current, a.target)} / ${a.target}`
+}
+
 function ProgressBar({ value }: { value: number }) {
   return (
     <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
@@ -267,7 +273,7 @@ export function AchievementsTab() {
                 />
                 <span className={`text-xs font-medium leading-tight ${l.earned ? 'text-slate-200' : 'text-slate-400'}`}>{l.name}</span>
                 <span className="text-[11px] leading-tight text-slate-500">
-                  {l.earned ? TIER_NAME[l.earned.tier] : progressTo ? formatProgress(progressTo).replace(/ .*$/, '') + ` / ${progressTo.target}` : ''}
+                  {l.earned ? TIER_NAME[l.earned.tier] : progressTo ? shortProgress(progressTo) : ''}
                 </span>
               </button>
             )

@@ -77,6 +77,9 @@ export function MealsTab({ quickAction }: { quickAction?: number }) {
         <MacroLine macros={totals} className="mt-1 text-sm" />
       </div>
 
+      {/* Water is logged for today only, so it's hidden when looking back at another day. */}
+      {date === todayISO() && <WaterWidget />}
+
       {isLoading && <SkeletonCard lines={2} />}
 
       {meals.map((meal) => (
@@ -118,9 +121,6 @@ export function MealsTab({ quickAction }: { quickAction?: number }) {
       </div>
 
       {showTrends && <TrendsChart />}
-
-      {/* Water is logged for today only, so it's hidden when looking back at another day. */}
-      {date === todayISO() && <WaterWidget />}
 
       {showBreakdown && <NutritionBreakdownModal meals={meals} onClose={() => setShowBreakdown(false)} />}
     </div>

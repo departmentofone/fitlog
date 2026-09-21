@@ -277,8 +277,11 @@ export function Layout({
         <OfflineBanner />
       </div>
 
-      {/* Bottom padding lets the last card scroll clear of the floating quick-add button. */}
-      <main className="relative z-10 flex-1 overflow-y-auto overscroll-none pb-20">{children}</main>
+      {/* Bottom padding lets the last card scroll clear of the floating quick-add button.
+          No z-index here on purpose: a z-index would make <main> its own stacking context, trapping
+          every full-screen sheet/modal a screen renders (z-50) underneath the bottom nav. Being
+          later in the DOM than the glow blobs already paints it above them. */}
+      <main className="relative flex-1 overflow-y-auto overscroll-none pb-20">{children}</main>
 
       {quickAddActions && quickAddActions.length > 0 && (
         <div className="pointer-events-none absolute inset-x-0 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-20">

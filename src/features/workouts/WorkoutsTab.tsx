@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { CopyDayButton } from '../../components/CopyDayButton'
 import { DateNav } from '../../components/DateNav'
 import { FireStreak } from '../../components/FireStreak'
-import { MuscleDiagram } from '../../components/MuscleDiagram'
 import { useToast } from '../../components/ToastProvider'
 import { SkeletonCard } from '../../components/Skeleton'
 import { haptics } from '../../lib/haptics'
@@ -140,7 +139,6 @@ export function WorkoutsTab({
     }
     return counts
   }, [sets])
-  const musclesTrained = Object.keys(setsPerMuscle)
 
   // Distinct superset groups logged today, labeled "A", "B", ... in the order they first appear.
   const supersetLabels = useMemo(() => buildSupersetLabels(sets), [sets])
@@ -506,14 +504,7 @@ export function WorkoutsTab({
             )
           })()}
 
-          {musclesTrained.length > 0 && (
-            <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
-              <h3 className="mb-3 text-center text-sm font-medium text-slate-300">Muscles worked · working sets</h3>
-              <MuscleDiagram intensity={setsPerMuscle} size={110} showLegend />
-            </div>
-          )}
-
-          <WeeklyVolumeCard />
+          <WeeklyVolumeCard todaySetsPerMuscle={setsPerMuscle} />
 
           {/* Destructive and rare, so it lives at the very bottom - still tap-to-confirm with undo. */}
           {sets.length > 0 && (

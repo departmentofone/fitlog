@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { MuscleDiagram, type MuscleIntensity } from '../../components/MuscleDiagram'
 import { MUSCLE_GROUPS } from '../../types'
 import { useSessionDates, useWeeklyVolumeByMuscleGroup } from '../../hooks/useWorkouts'
@@ -36,15 +37,23 @@ function hasEnoughHistoryForComparison(sessionDates: string[]): boolean {
   return daysSinceEarliest >= MIN_DAYS_OF_HISTORY
 }
 
-export function WeeklyVolumeCard() {
+/**
+ * One muscles card with a Today / Last 7 days switch (two full body maps stacked back to back was
+ * ~1000px of near-duplicate figures). Today is working sets per muscle; the week is volume, with the
+ * exact per-muscle bars underneath.
+ */
+export function WeeklyVolumeCard({ todaySetsPerMuscle }: { todaySetsPerMuscle: MuscleIntensity }) {
+  const hasToday = Object.keys(todaySetsPerMuscle).length > 0
+  const [range, setRange] = useState<'today' | 'week'>(hasToday ? 'today' : 'week')
   const { data: volumes = [] } = useWeeklyVolumeByMuscleGroup(7)
   const { data: last28DaysVolumes = [] } = useWeeklyVolumeByMuscleGroup(28)
   const { data: sessionDates = [] } = useSessionDates()
 
   const sorted = [...volumes].filter((v) => v.volume > 0).sort((a, b) => b.volume - a.volume)
-  if (sorted.length === 0) return null
+  if (sorted.length === 0 && !hasToday) return null
+  const showing = range === 'today' && hasToday ? 'today' : 'week'
 
-  const max = sorted[0].volume
+  const max = sorted[0]?.volume ?? 0
   const weeklyIntensity: MuscleIntensity = Object.fromEntries(sorted.map((v) => [v.muscleGroup, v.volume]))
 
   const thisWeekTotal = volumes.reduce((sum, v) => sum + v.volume, 0)
@@ -61,11 +70,32 @@ export function WeeklyVolumeCard() {
 
   return (
     <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
-      <h3 className="mb-3 text-sm font-medium text-slate-300">Last 7 days · volume by muscle group</h3>
-      {/* At-a-glance balance first (what you've hit and what you've skipped), exact numbers below. */}
-      <div className="mb-4">
-        <MuscleDiagram intensity={weeklyIntensity} size={96} showLegend />
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <h3 className="text-sm font-medium text-slate-300">
+          {showing === 'today' ? 'Muscles worked today' : 'Last 7 days · volume'}
+        </h3>
+        <div className="flex rounded-xl bg-slate-800/60 p-0.5" role="tablist" aria-label="Range">
+          {(['today', 'week'] as const).map((r) => (
+            <button
+              key={r}
+              role="tab"
+              aria-selected={showing === r}
+              disabled={r === 'today' && !hasToday}
+              onClick={() => setRange(r)}
+              className={`min-h-8 rounded-lg px-2.5 text-xs font-medium transition disabled:opacity-40 ${
+                showing === r ? 'bg-slate-700 text-white' : 'text-slate-400'
+              }`}
+            >
+              {r === 'today' ? 'Today' : '7 days'}
+            </button>
+          ))}
+        </div>
       </div>
+      {/* At-a-glance balance first (what you've hit and what you've skipped), exact numbers below. */}
+      <div className={showing === 'week' ? 'mb-4' : ''}>
+        <MuscleDiagram intensity={showing === 'today' ? todaySetsPerMuscle : weeklyIntensity} size={110} showLegend />
+      </div>
+      {showing === 'week' && (
       <div className="space-y-2">
         {sorted.map((v) => (
           <div key={v.muscleGroup}>
@@ -79,7 +109,8 @@ export function WeeklyVolumeCard() {
           </div>
         ))}
       </div>
-      {showDeloadHint && (
+      )}
+      {showing === 'week' && showDeloadHint && (
         <p className="mt-3 rounded-xl bg-amber-500/10 px-3 py-2 text-xs text-amber-400">
           This week's volume is ~{percentAbove}% above your recent average — a lighter day might be worth considering.
         </p>

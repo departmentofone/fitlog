@@ -1,8 +1,5 @@
 import { estimate1RM } from './oneRepMax'
 
-export const STREAK_TIERS = [7, 30, 60, 90, 180, 365] as const
-export const PR_COUNT_TIERS = [5, 25, 100] as const
-
 export type LiftKey = 'bench' | 'squat' | 'deadlift'
 
 export const STRENGTH_STANDARDS: Record<LiftKey, { label: string; tiers: { label: string; ratio: number }[] }> = {
@@ -97,14 +94,4 @@ export function bestLiftEstimates(sets: SetForAchievements[]): Record<LiftKey, n
     best[lift] = Math.max(best[lift], estimate1RM(s.weight, s.reps))
   }
   return best
-}
-
-export interface TierProgress {
-  value: number
-  label: string
-  unlocked: boolean
-}
-
-export function tierProgress(current: number, tiers: readonly number[], labelSuffix: string): TierProgress[] {
-  return tiers.map((t) => ({ value: t, label: `${t}${labelSuffix}`, unlocked: current >= t }))
 }

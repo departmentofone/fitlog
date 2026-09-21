@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { bestLiftEstimates, countGenuinePRs, matchLift, tierProgress, type SetForAchievements } from './achievements'
+import { bestLiftEstimates, countGenuinePRs, matchLift, type SetForAchievements } from './achievements'
 
 function set(overrides: Partial<SetForAchievements>): SetForAchievements {
   return {
@@ -99,12 +99,5 @@ describe('bestLiftEstimates', () => {
   it('excludes warmup sets from the best estimate', () => {
     const sets = [set({ exercise_name: 'Deadlift', weight: 200, reps: 5, is_warmup: true })]
     expect(bestLiftEstimates(sets).deadlift).toBe(0)
-  })
-})
-
-describe('tierProgress', () => {
-  it('marks tiers unlocked once the current value reaches them', () => {
-    const result = tierProgress(32, [7, 30, 60, 90], ' days')
-    expect(result.map((t) => t.unlocked)).toEqual([true, true, false, false])
   })
 })

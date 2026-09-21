@@ -77,3 +77,29 @@ export function useEndFast() {
     },
   })
 }
+
+/** Removes a finished fast (e.g. one started by mistake and ended a minute later). */
+export function useDeleteFast() {
+  const { user } = useAuth()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (fastId: string) => {
+      const { error } = await supabase.from('fasting_sessions').delete().eq('id', fastId)
+      if (error) throw error
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['fast-history', user?.id] }),
+  })
+}
+
+/** Undo for useDeleteFast: puts the exact row back, same id and times. */
+export function useRestoreFast() {
+  const { user } = useAuth()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (fast: FastingSession) => {
+      const { error } = await supabase.from('fasting_sessions').insert(fast)
+      if (error) throw error
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['fast-history', user?.id] }),
+  })
+}

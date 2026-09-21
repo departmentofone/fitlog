@@ -3,7 +3,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { CircularProgress } from '../../components/CircularProgress'
 import { EmptyState } from '../../components/EmptyState'
 import { FireStreak } from '../../components/FireStreak'
-import { useActiveFast, useEndFast, useFastHistory, useStartFast } from '../../hooks/useFasting'
+import { SwipeToDelete } from '../../components/SwipeToDelete'
+import { useToast } from '../../components/ToastProvider'
+import { useActiveFast, useDeleteFast, useEndFast, useFastHistory, useRestoreFast, useStartFast } from '../../hooks/useFasting'
 import { haptics } from '../../lib/haptics'
 import { formatDurationLabel } from '../../lib/duration'
 import { computeDayStreaks } from '../../lib/streaks'
@@ -38,6 +40,9 @@ export function FastingTab({ quickAction }: { quickAction?: number }) {
   const { data: history = [] } = useFastHistory()
   const startFast = useStartFast()
   const endFast = useEndFast()
+  const deleteFast = useDeleteFast()
+  const restoreFast = useRestoreFast()
+  const { undoable } = useToast()
   const [customHours, setCustomHours] = useState('16')
   const [now, setNow] = useState(Date.now())
 
@@ -148,15 +153,31 @@ export function FastingTab({ quickAction }: { quickAction?: number }) {
               const durationS = (new Date(f.end_time!).getTime() - new Date(f.start_time).getTime()) / 1000
               const reached = durationS >= f.target_hours * 3600
               return (
-                <div key={f.id} className="flex items-center justify-between rounded-xl bg-slate-800/60 px-3 py-2 text-sm">
+                <SwipeToDelete
+                  key={f.id}
+                  className="rounded-xl"
+                  onDelete={() => undoable('Fast deleted', () => deleteFast.mutate(f.id), () => restoreFast.mutate(f))}
+                >
+                <div className="flex min-h-11 items-center gap-2 rounded-xl bg-slate-800/60 pl-3 text-sm">
                   <span className="text-slate-300">
                     {new Date(f.start_time).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                   </span>
-                  <span className={reached ? 'font-medium text-success' : 'text-slate-400'}>
+                  <span className={`ml-auto ${reached ? 'font-medium text-success' : 'text-slate-400'}`}>
                     {/* "12 min" rather than "0.2h" for fasts ended early */}
                     {formatDurationLabel(durationS)} <span className="font-normal text-slate-500">of {f.target_hours} h</span>
                   </span>
+                  <button
+                    type="button"
+                    onClick={() => undoable('Fast deleted', () => deleteFast.mutate(f.id), () => restoreFast.mutate(f))}
+                    aria-label="Delete this fast"
+                    className="flex h-11 w-10 shrink-0 items-center justify-center text-slate-500 active:text-red-400"
+                  >
+                    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+                      <path d="M6 6l12 12M18 6L6 18" />
+                    </svg>
+                  </button>
                 </div>
+                </SwipeToDelete>
               )
             })}
           </div>

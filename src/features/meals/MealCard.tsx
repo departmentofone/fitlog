@@ -5,6 +5,7 @@ import { useToast } from '../../components/ToastProvider'
 import {
   useAddMealItem,
   useDeleteMealItem,
+  useUpdateMealItem,
   useSetMealCompleted,
   useSignedMealPhotoUrl,
   useUploadMealPhoto,
@@ -12,6 +13,7 @@ import {
 } from '../../hooks/useMeals'
 import { haptics } from '../../lib/haptics'
 import { macrosForGrams, microsForGrams, sumMacros, sumMicros, UNAVAILABLE_FOOD_NAME } from '../../types'
+import { FoodAmountForm } from './FoodAmountForm'
 import { FoodPicker } from './FoodPicker'
 
 /**
@@ -78,6 +80,9 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
   const [adding, setAdding] = useState(false)
   const addItem = useAddMealItem()
   const deleteItem = useDeleteMealItem()
+  const updateItem = useUpdateMealItem()
+  // The logged item whose amount is being edited in place (tap a row to fix a wrong amount).
+  const [editingItemId, setEditingItemId] = useState<string | null>(null)
   const setCompleted = useSetMealCompleted()
   const { undoable } = useToast()
 
@@ -136,23 +141,57 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
                   servingLabel: item.serving_label,
                 }),
             )
+          if (editingItemId === item.id && item.food) {
+            return (
+              <FoodAmountForm
+                key={item.id}
+                food={item.food}
+                initialGrams={item.grams}
+                submitLabel="Save"
+                backLabel="Cancel"
+                onBack={() => setEditingItemId(null)}
+                onAdd={({ grams, servingLabel }) => {
+                  updateItem.mutate({ itemId: item.id, grams, servingLabel })
+                  setEditingItemId(null)
+                }}
+              />
+            )
+          }
+          const amount = item.serving_label ?? `${Math.round(item.grams * 10) / 10} g`
           return (
             <SwipeToDelete key={item.id} onDelete={removeItem} className="rounded-xl">
-              <div className="flex items-center justify-between rounded-xl bg-slate-800/60 px-3 py-2 text-sm text-slate-300">
-                <span>
-                  {item.food?.name ?? UNAVAILABLE_FOOD_NAME} · {item.serving_label ?? `${item.grams}g`}
-                </span>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-slate-500">{Math.round(m.calories)} kcal</span>
-                  <button onClick={removeItem} className="text-red-400 hover:text-red-300">
-                    ×
-                  </button>
-                </div>
+              <div className="flex items-center rounded-xl bg-slate-800/60 text-sm">
+                {/* Tap the row to change the amount; swipe left (or the × button) to remove. */}
+                <button
+                  type="button"
+                  disabled={!item.food}
+                  onClick={() => setEditingItemId(item.id)}
+                  aria-label={`Change amount of ${item.food?.name ?? UNAVAILABLE_FOOD_NAME}`}
+                  className="flex min-h-11 min-w-0 flex-1 items-center justify-between gap-3 py-2 pl-3 text-left"
+                >
+                  <span className="min-w-0">
+                    <span className="block truncate text-slate-200">{item.food?.name ?? UNAVAILABLE_FOOD_NAME}</span>
+                    <span className="block text-xs text-slate-500">{amount}</span>
+                  </span>
+                  <span className="shrink-0 text-sm font-medium text-slate-300">{Math.round(m.calories)} kcal</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={removeItem}
+                  aria-label={`Remove ${item.food?.name ?? UNAVAILABLE_FOOD_NAME}`}
+                  className="flex h-11 w-10 shrink-0 items-center justify-center text-slate-500 active:text-red-400"
+                >
+                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+                    <path d="M6 6l12 12M18 6L6 18" />
+                  </svg>
+                </button>
               </div>
             </SwipeToDelete>
           )
         })}
-        {meal.meal_items.length === 0 && <p className="text-sm text-slate-500">No items yet.</p>}
+        {meal.meal_items.length === 0 && (
+          <p className="py-1 text-sm text-slate-500">Nothing logged yet — add what you ate below.</p>
+        )}
       </div>
 
       <MacroLine macros={totals} className="mb-3" />

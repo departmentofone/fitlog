@@ -118,6 +118,18 @@ export function useCopyMealsDay() {
   })
 }
 
+/** Changes the amount of an already-logged item (previously the only fix was delete + re-add). */
+export function useUpdateMealItem() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ itemId, grams, servingLabel }: { itemId: string; grams: number; servingLabel: string | null }) => {
+      const { error } = await supabase.from('meal_items').update({ grams, serving_label: servingLabel }).eq('id', itemId)
+      if (error) throw error
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['meals'] }),
+  })
+}
+
 export function useDeleteMealItem() {
   const qc = useQueryClient()
   return useMutation({

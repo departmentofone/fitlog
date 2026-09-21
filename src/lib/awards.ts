@@ -14,6 +14,9 @@ export type AwardTier = 'bronze' | 'silver' | 'gold' | 'platinum'
 
 export interface Award {
   id: string
+  /** The ladder this tier belongs to (e.g. "workouts"), and its display name ("Workouts"). */
+  ladder: string
+  ladderName: string
   category: AwardCategory
   tier: AwardTier
   title: string
@@ -40,6 +43,7 @@ const TIERS: AwardTier[] = ['bronze', 'silver', 'gold', 'platinum']
 
 function ladder(
   id: string,
+  ladderName: string,
   category: AwardCategory,
   current: number,
   steps: { target: number; title: string }[],
@@ -48,6 +52,8 @@ function ladder(
 ): Award[] {
   return steps.map((step, i) => ({
     id: `${id}-${step.target}`,
+    ladder: id,
+    ladderName,
     category,
     tier: TIERS[Math.min(i, TIERS.length - 1)],
     title: step.title,
@@ -64,6 +70,7 @@ export function computeAwards(input: AwardInput): Award[] {
   const awards: Award[] = [
     ...ladder(
       'workouts',
+      'Workouts',
       'consistency',
       input.totalWorkouts,
       [
@@ -77,6 +84,7 @@ export function computeAwards(input: AwardInput): Award[] {
     ),
     ...ladder(
       'streak',
+      'Training streak',
       'consistency',
       input.bestWorkoutStreak,
       [
@@ -90,6 +98,7 @@ export function computeAwards(input: AwardInput): Award[] {
     ),
     ...ladder(
       'prs',
+      'Personal records',
       'strength',
       prCount,
       [
@@ -103,6 +112,7 @@ export function computeAwards(input: AwardInput): Award[] {
     ),
     ...ladder(
       'diet',
+      'On-target days',
       'nutrition',
       input.bestDietStreak,
       [
@@ -115,6 +125,7 @@ export function computeAwards(input: AwardInput): Award[] {
     ),
     ...ladder(
       'fasts',
+      'Full fasts',
       'fasting',
       input.completedFasts,
       [
@@ -137,6 +148,8 @@ export function computeAwards(input: AwardInput): Award[] {
       spec.tiers.forEach((t, i) => {
         awards.push({
           id: `lift-${lift}-${t.ratio}`,
+          ladder: `lift-${lift}`,
+          ladderName: spec.label,
           category: 'strength',
           tier: TIERS[i],
           title: `${spec.label} ${t.ratio}× bodyweight`,
@@ -158,13 +171,42 @@ export function nextUp(awards: Award[], count = 3): Award[] {
   for (const a of awards) {
     if (a.unlocked) continue
     // Only the lowest locked rung of each ladder: "50 workouts" isn't "next" while 10 is still locked.
-    const ladderId = a.id.slice(0, a.id.lastIndexOf('-'))
-    if (!byLadder.has(ladderId)) byLadder.set(ladderId, a)
+    if (!byLadder.has(a.ladder)) byLadder.set(a.ladder, a)
   }
   return [...byLadder.values()]
     .filter((a) => a.current > 0)
     .sort((a, b) => b.current / b.target - a.current / a.target)
     .slice(0, count)
+}
+
+export interface AwardLadder {
+  id: string
+  name: string
+  category: AwardCategory
+  /** Every tier, lowest first. */
+  tiers: Award[]
+  /** Highest tier earned so far, if any. */
+  earned?: Award
+  /** The next tier to aim for, if any are left. */
+  next?: Award
+}
+
+/**
+ * One entry per ladder rather than per tier: the collection shows one medal per achievement (at
+ * the tier you've reached, heading for the next) instead of a wall of mostly-locked discs.
+ */
+export function groupLadders(awards: Award[]): AwardLadder[] {
+  const ladders = new Map<string, AwardLadder>()
+  for (const a of awards) {
+    const entry = ladders.get(a.ladder) ?? { id: a.ladder, name: a.ladderName, category: a.category, tiers: [] }
+    entry.tiers.push(a)
+    ladders.set(a.ladder, entry)
+  }
+  for (const l of ladders.values()) {
+    l.earned = [...l.tiers].reverse().find((t) => t.unlocked)
+    l.next = l.tiers.find((t) => !t.unlocked)
+  }
+  return [...ladders.values()]
 }
 
 export interface PersonalRecord {
@@ -177,6 +219,8 @@ export interface PersonalRecord {
   reps: number
   /** When that best was set (ISO timestamp). */
   achievedAt: string
+  /** True when that best beat an earlier one - a first-ever log of a lift isn't a new record. */
+  improved: boolean
 }
 
 /** Best estimated 1RM per exercise (working sets only), most recently improved first. */
@@ -194,6 +238,7 @@ export function personalRecords(sets: SetForAchievements[]): PersonalRecord[] {
         weight: s.weight,
         reps: s.reps,
         achievedAt: s.created_at,
+        improved: prev !== undefined,
       })
     }
   }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { SetForAchievements } from './achievements'
-import { computeAwards, monthlyChallenge, nextUp, personalRecords } from './awards'
+import { computeAwards, groupLadders, monthlyChallenge, nextUp, personalRecords } from './awards'
 
 const set = (exercise: string, weight: number, reps: number, at: string, warmup = false): SetForAchievements => ({
   exercise_id: exercise,
@@ -68,5 +68,30 @@ describe('monthlyChallenge', () => {
       ...Array.from({ length: 10 }, (_, i) => `2026-07-${String(i + 1).padStart(2, '0')}`),
     ]
     expect(monthlyChallenge(dates, new Date(2026, 8, 5)).target).toBe(12)
+  })
+})
+
+describe('groupLadders', () => {
+  it('collapses tiers into one entry per ladder with the earned tier and the next one', () => {
+    const ladders = groupLadders(computeAwards({ ...base, totalWorkouts: 60 }))
+    const workouts = ladders.find((l) => l.id === 'workouts')!
+    expect(workouts.name).toBe('Workouts')
+    expect(workouts.tiers).toHaveLength(4)
+    expect(workouts.earned?.tier).toBe('silver')
+    expect(workouts.next?.target).toBe(150)
+    // five base ladders, no bodyweight lifts without a weight
+    expect(ladders).toHaveLength(5)
+  })
+})
+
+describe('personalRecords "improved"', () => {
+  it('marks a record improved only when it beat an earlier best', () => {
+    const [squat, bench] = personalRecords([
+      set('Squat', 100, 5, '2026-09-01'),
+      set('Squat', 105, 5, '2026-09-10'),
+      set('Bench', 80, 5, '2026-09-05'),
+    ])
+    expect(squat.improved).toBe(true)
+    expect(bench.improved).toBe(false)
   })
 })

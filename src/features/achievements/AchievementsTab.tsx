@@ -3,7 +3,16 @@ import { SkeletonCard } from '../../components/Skeleton'
 import { useAchievementsData } from '../../hooks/useAchievements'
 import { useBackToClose } from '../../hooks/useHashRoute'
 import { useExercises } from '../../hooks/useExercises'
-import { computeAwards, monthlyChallenge, nextUp, personalRecords, type Award, type AwardCategory } from '../../lib/awards'
+import {
+  computeAwards,
+  groupLadders,
+  monthlyChallenge,
+  nextUp,
+  personalRecords,
+  type Award,
+  type AwardCategory,
+  type AwardLadder,
+} from '../../lib/awards'
 import type { Exercise } from '../../types'
 import { ExerciseDetailModal } from '../workouts/ExerciseDetailModal'
 import { Medal } from './Medal'
@@ -44,38 +53,47 @@ function ProgressBar({ value }: { value: number }) {
   )
 }
 
-function AwardSheet({ award, onClose }: { award: Award; onClose: () => void }) {
+const TIER_NAME: Record<Award['tier'], string> = { bronze: 'Bronze', silver: 'Silver', gold: 'Gold', platinum: 'Platinum' }
+
+/** A ladder's details: every tier, what earns it, and progress to the next one. */
+function LadderSheet({ ladder, onClose }: { ladder: AwardLadder; onClose: () => void }) {
   useBackToClose(true, onClose)
+  const { earned, next } = ladder
   return (
     <div className="fixed inset-0 z-50 flex flex-col justify-end" onClick={onClose}>
       <div className="fade-in absolute inset-0 bg-black/60" />
       <div
         role="dialog"
         aria-modal="true"
-        aria-label={award.title}
+        aria-label={ladder.name}
         onClick={(e) => e.stopPropagation()}
-        className="sheet-up relative rounded-t-3xl border-t border-white/10 bg-slate-950 px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-center"
+        className="sheet-up relative rounded-t-3xl border-t border-white/10 bg-slate-950 px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
       >
         <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-slate-700" />
-        <div className="flex justify-center">
-          <Medal tier={award.tier} category={award.category} unlocked={award.unlocked} progress={award.current / award.target} size={88} />
-        </div>
-        <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
-          {award.tier} · {CATEGORY_LABEL[award.category]}
+        <p className="text-center text-xs font-semibold uppercase tracking-wide text-slate-500">{CATEGORY_LABEL[ladder.category]}</p>
+        <h2 className="mt-1 text-center text-xl font-semibold text-white">{ladder.name}</h2>
+        <p className="mt-1 text-center text-sm text-slate-400">
+          {earned ? `${TIER_NAME[earned.tier]} earned` : 'Not earned yet'}
+          {next ? ` · next: ${TIER_NAME[next.tier].toLowerCase()}` : ' · every tier complete'}
         </p>
-        <h2 className="mt-1 text-xl font-semibold text-white">{award.title}</h2>
-        <p className="mt-1 text-sm text-slate-400">{award.description}</p>
-        {!award.unlocked && (
-          <div className="mx-auto mt-4 max-w-xs">
-            <ProgressBar value={award.current / award.target} />
-            <p className="mt-1.5 text-xs text-slate-400">{formatProgress(award)}</p>
-          </div>
-        )}
-        {award.unlocked && (
-          <div className="mt-4 flex justify-center">
-            <ShareCardButton data={{ type: 'tier', title: award.title, value: award.tier[0].toUpperCase() + award.tier.slice(1), subtitle: award.description }} />
-          </div>
-        )}
+
+        <div className="mt-4 space-y-2">
+          {ladder.tiers.map((t) => (
+            <div key={t.id} className="flex items-center gap-3 rounded-2xl bg-slate-900 px-3 py-2">
+              <Medal tier={t.tier} category={t.category} unlocked={t.unlocked} progress={t.current / t.target} size={40} />
+              <span className="min-w-0 flex-1">
+                <span className={`block text-sm font-medium ${t.unlocked ? 'text-white' : 'text-slate-300'}`}>{t.title}</span>
+                <span className="block text-xs text-slate-500">{t.description}</span>
+              </span>
+              {t.unlocked ? (
+                <ShareCardButton data={{ type: 'tier', title: t.title, value: TIER_NAME[t.tier], subtitle: t.description }} />
+              ) : (
+                t === next && <span className="shrink-0 text-xs text-slate-400">{formatProgress(t)}</span>
+              )}
+            </div>
+          ))}
+        </div>
+
         <button onClick={onClose} className="mt-4 min-h-11 w-full rounded-xl bg-slate-800 text-sm font-medium text-slate-200">
           Close
         </button>
@@ -87,7 +105,7 @@ function AwardSheet({ award, onClose }: { award: Award; onClose: () => void }) {
 export function AchievementsTab() {
   const data = useAchievementsData()
   const { data: exercises = [] } = useExercises()
-  const [openAward, setOpenAward] = useState<Award | null>(null)
+  const [openLadder, setOpenLadder] = useState<AwardLadder | null>(null)
   const [openExercise, setOpenExercise] = useState<Exercise | null>(null)
   const [allRecords, setAllRecords] = useState(false)
 
@@ -116,6 +134,7 @@ export function AchievementsTab() {
   }
 
   const earned = awards.filter((a) => a.unlocked).length
+  const ladders = groupLadders(awards)
   const upcoming = nextUp(awards)
   const recentCutoff = Date.now() - RECENT_DAYS * 86_400_000
   const shownRecords = allRecords ? records : records.slice(0, RECORDS_SHOWN)
@@ -150,7 +169,11 @@ export function AchievementsTab() {
           <h3 className="mb-3 font-medium text-white">Almost there</h3>
           <div className="space-y-3">
             {upcoming.map((a) => (
-              <button key={a.id} onClick={() => setOpenAward(a)} className="flex w-full items-center gap-3 text-left">
+              <button
+                key={a.id}
+                onClick={() => setOpenLadder(ladders.find((l) => l.id === a.ladder) ?? null)}
+                className="flex w-full items-center gap-3 text-left"
+              >
                 <Medal tier={a.tier} category={a.category} unlocked={false} progress={a.current / a.target} size={40} />
                 <span className="min-w-0 flex-1">
                   <span className="flex items-baseline justify-between gap-2">
@@ -182,7 +205,7 @@ export function AchievementsTab() {
         ) : (
           <div className="divide-y divide-white/5">
             {shownRecords.map((r) => {
-              const isNew = new Date(r.achievedAt).getTime() >= recentCutoff
+              const isNew = r.improved && new Date(r.achievedAt).getTime() >= recentCutoff
               const exercise = exercises.find((e) => e.id === r.exerciseId)
               return (
                 <button
@@ -216,46 +239,46 @@ export function AchievementsTab() {
         )}
       </div>
 
-      {/* The long-term collection. */}
+      {/* The long-term collection: one medal per achievement, at the tier you've reached. */}
       <div className={card}>
         <div className="mb-3 flex items-baseline justify-between">
           <h3 className="font-medium text-white">Medals</h3>
           <span className="text-xs text-slate-400">
-            {earned} of {awards.length} earned
+            {earned} earned
           </span>
         </div>
-        <div className="space-y-4">
-          {CATEGORY_ORDER.map((category) => {
-            const inCategory = awards.filter((a) => a.category === category)
-            if (inCategory.length === 0) return null
+        <div className="grid grid-cols-3 gap-x-2 gap-y-4">
+          {CATEGORY_ORDER.flatMap((category) => ladders.filter((l) => l.category === category)).map((l) => {
+            const shown = l.earned ?? l.next ?? l.tiers[0]
+            const progressTo = l.next
             return (
-              <div key={category}>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{CATEGORY_LABEL[category]}</p>
-                <div className="grid grid-cols-4 gap-x-2 gap-y-3">
-                  {inCategory.map((a) => (
-                    <button
-                      key={a.id}
-                      onClick={() => setOpenAward(a)}
-                      aria-label={`${a.title}${a.unlocked ? ', earned' : `, ${formatProgress(a)}`}`}
-                      className="flex flex-col items-center gap-1 text-center"
-                    >
-                      <Medal tier={a.tier} category={a.category} unlocked={a.unlocked} progress={a.current / a.target} size={52} />
-                      <span className={`line-clamp-2 text-[11px] leading-tight ${a.unlocked ? 'text-slate-200' : 'text-slate-500'}`}>
-                        {a.title}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <button
+                key={l.id}
+                onClick={() => setOpenLadder(l)}
+                aria-label={`${l.name}: ${l.earned ? `${TIER_NAME[l.earned.tier]} earned` : 'not earned yet'}`}
+                className="flex flex-col items-center gap-1 text-center"
+              >
+                <Medal
+                  tier={shown.tier}
+                  category={l.category}
+                  unlocked={!!l.earned}
+                  progress={progressTo ? progressTo.current / progressTo.target : 1}
+                  size={56}
+                />
+                <span className={`text-xs font-medium leading-tight ${l.earned ? 'text-slate-200' : 'text-slate-400'}`}>{l.name}</span>
+                <span className="text-[11px] leading-tight text-slate-500">
+                  {l.earned ? TIER_NAME[l.earned.tier] : progressTo ? formatProgress(progressTo).replace(/ .*$/, '') + ` / ${progressTo.target}` : ''}
+                </span>
+              </button>
             )
           })}
-          {data.currentWeightKg == null && (
-            <p className="text-xs text-slate-500">Add your weight in Goals to unlock the bodyweight strength medals.</p>
-          )}
         </div>
+        {data.currentWeightKg == null && (
+          <p className="mt-4 text-xs text-slate-500">Add your weight in Goals to unlock the bodyweight strength medals.</p>
+        )}
       </div>
 
-      {openAward && <AwardSheet award={openAward} onClose={() => setOpenAward(null)} />}
+      {openLadder && <LadderSheet ladder={openLadder} onClose={() => setOpenLadder(null)} />}
       {openExercise && <ExerciseDetailModal exercise={openExercise} onClose={() => setOpenExercise(null)} />}
     </div>
   )

@@ -1,3 +1,4 @@
+import { parseDecimal } from '../../lib/number'
 import { useState } from 'react'
 import { useUserSettings } from '../../hooks/useUserSettings'
 import { calculatePlates } from './plateMath'
@@ -23,8 +24,8 @@ export function PlateCalculator() {
   const [target, setTarget] = useState('')
   const [barWeight, setBarWeight] = useState(imperial ? '45' : '20')
 
-  const targetNum = target ? parseFloat(target) : null
-  const barNum = barWeight ? parseFloat(barWeight) : null
+  const targetNum = target ? parseDecimal(target) : null
+  const barNum = barWeight ? parseDecimal(barWeight) : null
 
   const result =
     targetNum != null && !isNaN(targetNum) && targetNum > 0 && barNum != null && !isNaN(barNum) && barNum > 0
@@ -44,7 +45,7 @@ export function PlateCalculator() {
         <div className="grid grid-cols-2 gap-2.5">
           <input
             placeholder={`Target weight (${unit})`}
-            type="number"
+            type="text"
             inputMode="decimal"
             value={target}
             onChange={(e) => setTarget(e.target.value)}
@@ -52,7 +53,7 @@ export function PlateCalculator() {
           />
           <input
             placeholder={`Bar weight (${unit})`}
-            type="number"
+            type="text"
             inputMode="decimal"
             value={barWeight}
             onChange={(e) => setBarWeight(e.target.value)}

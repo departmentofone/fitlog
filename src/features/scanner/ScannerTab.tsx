@@ -1,3 +1,4 @@
+import { parseDecimal } from '../../lib/number'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useToast } from '../../components/ToastProvider'
 import { useCreateFood } from '../../hooks/useFoods'
@@ -177,10 +178,10 @@ export function ScannerTab() {
       const trimmedBarcode = barcode.trim()
       await createFood.mutateAsync({
         name: form.name.trim(),
-        caloriesPer100g: parseFloat(form.calories) || 0,
-        proteinPer100g: parseFloat(form.protein) || 0,
-        carbsPer100g: parseFloat(form.carbs) || 0,
-        fatPer100g: parseFloat(form.fat) || 0,
+        caloriesPer100g: parseDecimal(form.calories) || 0,
+        proteinPer100g: parseDecimal(form.protein) || 0,
+        carbsPer100g: parseDecimal(form.carbs) || 0,
+        fatPer100g: parseDecimal(form.fat) || 0,
         commonServings: [],
         // Only set when a barcode was actually scanned/entered, so "skip lookup, enter
         // manually" saves keep working exactly as before - see CreateFoodInput.barcode.
@@ -287,7 +288,7 @@ export function ScannerTab() {
             <div className="grid grid-cols-2 gap-2.5">
               <input
                 placeholder="Calories"
-                type="number"
+                type="text"
                 inputMode="decimal"
                 value={form.calories}
                 onChange={(e) => updateField('calories', e.target.value)}
@@ -295,7 +296,7 @@ export function ScannerTab() {
               />
               <input
                 placeholder="Protein (g)"
-                type="number"
+                type="text"
                 inputMode="decimal"
                 value={form.protein}
                 onChange={(e) => updateField('protein', e.target.value)}
@@ -303,7 +304,7 @@ export function ScannerTab() {
               />
               <input
                 placeholder="Carbs (g)"
-                type="number"
+                type="text"
                 inputMode="decimal"
                 value={form.carbs}
                 onChange={(e) => updateField('carbs', e.target.value)}
@@ -311,7 +312,7 @@ export function ScannerTab() {
               />
               <input
                 placeholder="Fat (g)"
-                type="number"
+                type="text"
                 inputMode="decimal"
                 value={form.fat}
                 onChange={(e) => updateField('fat', e.target.value)}

@@ -1,3 +1,4 @@
+import { parseDecimal } from '../../lib/number'
 import { useEffect, useState } from 'react'
 import { useToast } from '../../components/ToastProvider'
 import { estimateTDEE } from '../../lib/tdee'
@@ -47,8 +48,8 @@ export function MaintenanceCalculator() {
     setPreFilled(true)
   }, [settings, preFilled, imperial])
 
-  const weightKg = weight ? (imperial ? lbToKg(parseFloat(weight)) : parseFloat(weight)) : null
-  const heightCm = height ? (imperial ? inToCm(parseFloat(height)) : parseFloat(height)) : null
+  const weightKg = weight ? (imperial ? lbToKg(parseDecimal(weight)) : parseDecimal(weight)) : null
+  const heightCm = height ? (imperial ? inToCm(parseDecimal(height)) : parseDecimal(height)) : null
   const ageNum = age ? parseInt(age, 10) : null
 
   const maintenance =
@@ -85,21 +86,21 @@ export function MaintenanceCalculator() {
         <div className="grid grid-cols-2 gap-2.5">
           <input
             placeholder={`Weight (${weightUnit})`}
-            type="number"
-              inputMode="decimal"
+            type="text"
+            inputMode="decimal"
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
             className={fieldClass}
           />
           <input
             placeholder={`Height (${heightUnit})`}
-            type="number"
-              inputMode="decimal"
+            type="text"
+            inputMode="decimal"
             value={height}
             onChange={(e) => setHeight(e.target.value)}
             className={fieldClass}
           />
-          <input placeholder="Age" type="number"
+          <input placeholder="Age" type="text"
               inputMode="decimal" value={age} onChange={(e) => setAge(e.target.value)} className={fieldClass} />
           <select value={sex} onChange={(e) => setSex(e.target.value as Sex | '')} className={fieldClass}>
             <option value="">Sex</option>

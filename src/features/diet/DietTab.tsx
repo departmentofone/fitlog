@@ -1,3 +1,4 @@
+import { parseDecimal } from '../../lib/number'
 import { useState } from 'react'
 import { CircularProgress } from '../../components/CircularProgress'
 import { CountUp } from '../../components/CountUp'
@@ -48,7 +49,7 @@ export function DietTab() {
   }
 
   function save() {
-    const parsed = parseFloat(calorieDraft)
+    const parsed = parseDecimal(calorieDraft)
     // 0 (or a negative) is not a goal - storing it divided by zero on the progress ring.
     const calorie_goal = Number.isFinite(parsed) && parsed > 0 ? parsed : null
     updateSettings.mutate({ diet_goal: goalDraft, calorie_goal })
@@ -88,7 +89,7 @@ export function DietTab() {
               ))}
             </div>
             <input
-              type="number"
+              type="text"
               inputMode="numeric"
               placeholder="Daily calorie target"
               value={calorieDraft}

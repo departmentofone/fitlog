@@ -143,9 +143,17 @@ export function SwipeToDelete({ onDelete, children, className = '' }: SwipeToDel
         transition: deleting ? 'max-height 180ms ease-in, opacity 150ms ease-in' : undefined,
       }}
     >
-      <div className="absolute inset-0 flex items-center justify-end rounded-[inherit] bg-red-600 pr-4">
-        <span className="text-sm font-semibold text-white">Delete</span>
-      </div>
+      {/* Only exists while a swipe is under way: rows use translucent "glass" backgrounds, so a
+          permanently-rendered red layer showed through and tinted every row red. */}
+      {(dragX < 0 || deleting) && (
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 flex items-center justify-end rounded-[inherit] bg-red-600 pr-4"
+          style={{ opacity: deleting ? 1 : Math.min(1, Math.abs(dragX) / 40) }}
+        >
+          <span className="text-sm font-semibold text-on-accent">Delete</span>
+        </div>
+      )}
       <div
         ref={contentRef}
         onPointerDown={handlePointerDown}

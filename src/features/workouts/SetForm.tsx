@@ -1,3 +1,4 @@
+import { parseDecimal } from '../../lib/number'
 import { useEffect, useMemo, useState } from 'react'
 import { RestTimer } from '../../components/RestTimer'
 import { summarizeLastSets, useLastSessionSetsForExercise } from '../../hooks/useWorkouts'
@@ -41,7 +42,7 @@ function Stepper({
   inputMode: 'decimal' | 'numeric'
 }) {
   function nudge(dir: 1 | -1) {
-    const current = parseFloat(value)
+    const current = parseDecimal(value)
     const base = Number.isNaN(current) ? 0 : current
     onChange(String(Math.max(0, roundStep(base + dir * step))))
   }
@@ -59,7 +60,7 @@ function Stepper({
           −
         </button>
         <input
-          type="number"
+          type="text"
           inputMode={inputMode}
           aria-label={unit ? `${label} in ${unit}` : label}
           value={value}
@@ -137,7 +138,7 @@ function EditableSetRow({
         </button>
         <button
           onClick={() => {
-            const w = parseFloat(weight)
+            const w = parseDecimal(weight)
             const r = parseInt(reps, 10)
             if (!Number.isFinite(w) || w < 0 || !Number.isInteger(r) || r < 1) return
             onSave({ weight: w, reps: r, difficulty })
@@ -180,7 +181,7 @@ export function SetForm({
   }, [suggestedWeight])
 
   function handleAdd() {
-    const w = parseFloat(weight)
+    const w = parseDecimal(weight)
     const r = parseInt(reps, 10)
     // Reps must be a real rep; weight can be 0 (bodyweight) but never negative.
     if (!Number.isFinite(w) || w < 0 || !Number.isInteger(r) || r < 1) return

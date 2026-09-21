@@ -1,3 +1,4 @@
+import { parseDecimal } from '../../lib/number'
 import { useState } from 'react'
 import { EmptyState } from '../../components/EmptyState'
 import { SkeletonRow } from '../../components/Skeleton'
@@ -74,8 +75,8 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
       name: name.trim(),
       description: description.trim(),
       dietGoal: includeGoals ? dietGoal : null,
-      calorieGoal: includeGoals && calorieGoal ? parseFloat(calorieGoal) : null,
-      waterGoalMl: includeGoals && waterGoalMl ? parseFloat(waterGoalMl) : null,
+      calorieGoal: includeGoals && calorieGoal ? parseDecimal(calorieGoal) : null,
+      waterGoalMl: includeGoals && waterGoalMl ? parseDecimal(waterGoalMl) : null,
       workoutPresets: workoutPresets.filter((p) => selectedWorkouts.has(p.id)),
       recipes: recipes.filter((r) => selectedRecipes.has(r.id)),
       mealPresets: mealPresets.filter((p) => selectedMealPresets.has(p.id)),
@@ -129,7 +130,7 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
           </select>
           <div className="grid grid-cols-2 gap-2">
             <input
-              type="number"
+              type="text"
               inputMode="decimal"
               placeholder="Calorie goal"
               value={calorieGoal}
@@ -137,7 +138,7 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
               className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
             />
             <input
-              type="number"
+              type="text"
               inputMode="decimal"
               placeholder="Water goal (ml)"
               value={waterGoalMl}

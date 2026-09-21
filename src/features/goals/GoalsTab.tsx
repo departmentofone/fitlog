@@ -1,3 +1,4 @@
+import { parseDecimal } from '../../lib/number'
 import { useEffect, useMemo, useState } from 'react'
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { EmptyState } from '../../components/EmptyState'
@@ -57,7 +58,7 @@ function BodyMeasurementsCard() {
   }
 
   function save() {
-    const toCm = (v: string) => (imperial ? inToCm(parseFloat(v)) : parseFloat(v))
+    const toCm = (v: string) => (imperial ? inToCm(parseDecimal(v)) : parseDecimal(v))
     upsertMeasurement.mutate({
       date,
       waist_cm: values.waist ? toCm(values.waist) : null,
@@ -104,7 +105,7 @@ function BodyMeasurementsCard() {
               <input
                 key={f.key}
                 placeholder={`${f.label} (${lengthUnit})`}
-                type="number"
+                type="text"
                 inputMode="decimal"
                 value={values[f.key]}
                 onChange={(e) => setValues((prev) => ({ ...prev, [f.key]: e.target.value }))}
@@ -259,7 +260,7 @@ function GoalList({ category, title }: { category: GoalCategory; title: string }
         category,
         title: `${exName} ${targetWeight}kg`,
         targetExerciseId: exerciseId,
-        targetWeight: parseFloat(targetWeight),
+        targetWeight: parseDecimal(targetWeight),
         targetReps: targetReps ? parseInt(targetReps, 10) : null,
       })
     } else {
@@ -330,16 +331,16 @@ function GoalList({ category, title }: { category: GoalCategory; title: string }
               </select>
               <div className="grid grid-cols-2 gap-2">
                 <input
-                  type="number"
-              inputMode="decimal"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="Target weight (kg)"
                   value={targetWeight}
                   onChange={(e) => setTargetWeight(e.target.value)}
                   className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
                 />
                 <input
-                  type="number"
-              inputMode="decimal"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="Reps (optional)"
                   value={targetReps}
                   onChange={(e) => setTargetReps(e.target.value)}
@@ -407,8 +408,8 @@ export function GoalsTab() {
   }
 
   function saveStats() {
-    const toKg = (v: string) => (imperial ? lbToKg(parseFloat(v)) : parseFloat(v))
-    const toCm = (v: string) => (imperial ? inToCm(parseFloat(v)) : parseFloat(v))
+    const toKg = (v: string) => (imperial ? lbToKg(parseDecimal(v)) : parseDecimal(v))
+    const toCm = (v: string) => (imperial ? inToCm(parseDecimal(v)) : parseDecimal(v))
     updateSettings.mutate({
       current_weight: weight ? toKg(weight) : null,
       weight_goal: weightGoal ? toKg(weightGoal) : null,
@@ -438,32 +439,32 @@ export function GoalsTab() {
             <div className="grid grid-cols-2 gap-2.5">
               <input
                 placeholder={`Current weight (${weightUnit})`}
-                type="number"
-              inputMode="decimal"
+                type="text"
+                inputMode="decimal"
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
                 className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
               />
               <input
                 placeholder={`Goal weight (${weightUnit})`}
-                type="number"
-              inputMode="decimal"
+                type="text"
+                inputMode="decimal"
                 value={weightGoal}
                 onChange={(e) => setWeightGoal(e.target.value)}
                 className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
               />
               <input
                 placeholder={`Height (${heightUnit})`}
-                type="number"
-              inputMode="decimal"
+                type="text"
+                inputMode="decimal"
                 value={height}
                 onChange={(e) => setHeight(e.target.value)}
                 className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
               />
               <input
                 placeholder="Age"
-                type="number"
-              inputMode="decimal"
+                type="text"
+                inputMode="decimal"
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
                 className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"

@@ -1,3 +1,4 @@
+import { parseDecimal } from '../../lib/number'
 import { useState } from 'react'
 import { DateNav } from '../../components/DateNav'
 import { useToast } from '../../components/ToastProvider'
@@ -43,13 +44,13 @@ export function AlcoholSection() {
   function handleAdd() {
     if (!name.trim()) return
     const calories = useManual
-      ? parseFloat(manualCalories) || 0
-      : estimateAlcoholCalories(parseFloat(volumeMl) || 0, parseFloat(abvPercent) || 0)
+      ? parseDecimal(manualCalories) || 0
+      : estimateAlcoholCalories(parseDecimal(volumeMl) || 0, parseDecimal(abvPercent) || 0)
     addLog.mutate({
       date,
       name: name.trim(),
-      volumeMl: useManual ? null : parseFloat(volumeMl) || null,
-      abvPercent: useManual ? null : parseFloat(abvPercent) || null,
+      volumeMl: useManual ? null : parseDecimal(volumeMl) || null,
+      abvPercent: useManual ? null : parseDecimal(abvPercent) || null,
       calories,
     })
     reset()
@@ -114,7 +115,7 @@ export function AlcoholSection() {
           </button>
           {useManual ? (
             <input
-              type="number"
+              type="text"
               inputMode="decimal"
               placeholder="Calories"
               value={manualCalories}
@@ -124,16 +125,16 @@ export function AlcoholSection() {
           ) : (
             <div className="mb-2 grid grid-cols-2 gap-2">
               <input
-                type="number"
-              inputMode="decimal"
+                type="text"
+                inputMode="decimal"
                 placeholder="Volume (ml)"
                 value={volumeMl}
                 onChange={(e) => setVolumeMl(e.target.value)}
                 className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
               />
               <input
-                type="number"
-              inputMode="decimal"
+                type="text"
+                inputMode="decimal"
                 placeholder="ABV %"
                 value={abvPercent}
                 onChange={(e) => setAbvPercent(e.target.value)}

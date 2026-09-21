@@ -1,3 +1,4 @@
+import { parseDecimal } from '../../lib/number'
 import { useState } from 'react'
 import { useCreateFood } from '../../hooks/useFoods'
 import type { Food } from '../../types'
@@ -28,24 +29,24 @@ export function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) =
     if (!name.trim() || !calories) return
     const commonServings =
       servingLabel.trim() && servingGrams
-        ? [{ label: servingLabel.trim(), grams: parseFloat(servingGrams) }]
+        ? [{ label: servingLabel.trim(), grams: parseDecimal(servingGrams) }]
         : []
     const food = await createFood.mutateAsync({
       name: name.trim(),
-      caloriesPer100g: parseFloat(calories) || 0,
-      proteinPer100g: parseFloat(protein) || 0,
-      carbsPer100g: parseFloat(carbs) || 0,
-      fatPer100g: parseFloat(fat) || 0,
+      caloriesPer100g: parseDecimal(calories) || 0,
+      proteinPer100g: parseDecimal(protein) || 0,
+      carbsPer100g: parseDecimal(carbs) || 0,
+      fatPer100g: parseDecimal(fat) || 0,
       commonServings,
-      fiberG: parseFloat(fiber) || 0,
-      sugarG: parseFloat(sugar) || 0,
-      sodiumMg: parseFloat(sodium) || 0,
-      cholesterolMg: parseFloat(cholesterol) || 0,
-      potassiumMg: parseFloat(potassium) || 0,
-      calciumMg: parseFloat(calcium) || 0,
-      ironMg: parseFloat(iron) || 0,
-      vitaminCMg: parseFloat(vitaminC) || 0,
-      vitaminAMcg: parseFloat(vitaminA) || 0,
+      fiberG: parseDecimal(fiber) || 0,
+      sugarG: parseDecimal(sugar) || 0,
+      sodiumMg: parseDecimal(sodium) || 0,
+      cholesterolMg: parseDecimal(cholesterol) || 0,
+      potassiumMg: parseDecimal(potassium) || 0,
+      calciumMg: parseDecimal(calcium) || 0,
+      ironMg: parseDecimal(iron) || 0,
+      vitaminCMg: parseDecimal(vitaminC) || 0,
+      vitaminAMcg: parseDecimal(vitaminA) || 0,
     })
     onCreated(food)
   }
@@ -69,7 +70,7 @@ export function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) =
         <div className="grid grid-cols-2 gap-2.5">
           <input
             placeholder="Calories"
-            type="number"
+            type="text"
             inputMode="decimal"
             value={calories}
             onChange={(e) => setCalories(e.target.value)}
@@ -77,7 +78,7 @@ export function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) =
           />
           <input
             placeholder="Protein (g)"
-            type="number"
+            type="text"
             inputMode="decimal"
             value={protein}
             onChange={(e) => setProtein(e.target.value)}
@@ -85,7 +86,7 @@ export function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) =
           />
           <input
             placeholder="Carbs (g)"
-            type="number"
+            type="text"
             inputMode="decimal"
             value={carbs}
             onChange={(e) => setCarbs(e.target.value)}
@@ -93,7 +94,7 @@ export function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) =
           />
           <input
             placeholder="Fat (g)"
-            type="number"
+            type="text"
             inputMode="decimal"
             value={fat}
             onChange={(e) => setFat(e.target.value)}
@@ -110,7 +111,7 @@ export function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) =
           />
           <input
             placeholder="Grams"
-            type="number"
+            type="text"
             inputMode="decimal"
             value={servingGrams}
             onChange={(e) => setServingGrams(e.target.value)}
@@ -129,7 +130,7 @@ export function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) =
           <div className="grid grid-cols-2 gap-2.5">
             <input
               placeholder="Fiber (g)"
-              type="number"
+              type="text"
               inputMode="decimal"
               value={fiber}
               onChange={(e) => setFiber(e.target.value)}
@@ -137,7 +138,7 @@ export function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) =
             />
             <input
               placeholder="Sugar (g)"
-              type="number"
+              type="text"
               inputMode="decimal"
               value={sugar}
               onChange={(e) => setSugar(e.target.value)}
@@ -145,7 +146,7 @@ export function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) =
             />
             <input
               placeholder="Sodium (mg)"
-              type="number"
+              type="text"
               inputMode="decimal"
               value={sodium}
               onChange={(e) => setSodium(e.target.value)}
@@ -153,7 +154,7 @@ export function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) =
             />
             <input
               placeholder="Cholesterol (mg)"
-              type="number"
+              type="text"
               inputMode="decimal"
               value={cholesterol}
               onChange={(e) => setCholesterol(e.target.value)}
@@ -161,7 +162,7 @@ export function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) =
             />
             <input
               placeholder="Potassium (mg)"
-              type="number"
+              type="text"
               inputMode="decimal"
               value={potassium}
               onChange={(e) => setPotassium(e.target.value)}
@@ -169,7 +170,7 @@ export function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) =
             />
             <input
               placeholder="Calcium (mg)"
-              type="number"
+              type="text"
               inputMode="decimal"
               value={calcium}
               onChange={(e) => setCalcium(e.target.value)}
@@ -177,7 +178,7 @@ export function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) =
             />
             <input
               placeholder="Iron (mg)"
-              type="number"
+              type="text"
               inputMode="decimal"
               value={iron}
               onChange={(e) => setIron(e.target.value)}
@@ -185,7 +186,7 @@ export function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) =
             />
             <input
               placeholder="Vitamin C (mg)"
-              type="number"
+              type="text"
               inputMode="decimal"
               value={vitaminC}
               onChange={(e) => setVitaminC(e.target.value)}
@@ -193,7 +194,7 @@ export function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) =
             />
             <input
               placeholder="Vitamin A (mcg)"
-              type="number"
+              type="text"
               inputMode="decimal"
               value={vitaminA}
               onChange={(e) => setVitaminA(e.target.value)}

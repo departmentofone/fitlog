@@ -1,3 +1,4 @@
+import { parseDecimal } from '../../lib/number'
 import { useEffect, useMemo, useState } from 'react'
 import { CircularProgress } from '../../components/CircularProgress'
 import { EmptyState } from '../../components/EmptyState'
@@ -12,7 +13,7 @@ const MAX_FAST_HOURS = 168
 
 /** A negative number is truthy, so `|| 16` let "-5h" through and opened the timer at "Goal reached". */
 function clampFastHours(input: string): number {
-  const parsed = parseFloat(input)
+  const parsed = parseDecimal(input)
   if (!Number.isFinite(parsed) || parsed <= 0) return DEFAULT_FAST_HOURS
   return Math.min(parsed, MAX_FAST_HOURS)
 }
@@ -117,7 +118,7 @@ export function FastingTab({ quickAction }: { quickAction?: number }) {
           </div>
           <div className="flex gap-2">
             <input
-              type="number"
+              type="text"
               inputMode="decimal"
               value={customHours}
               min={0.5}

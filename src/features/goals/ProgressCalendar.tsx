@@ -1,3 +1,4 @@
+import { parseDecimal } from '../../lib/number'
 import { useMemo, useState } from 'react'
 import { MonthCalendar } from '../../components/MonthCalendar'
 import {
@@ -48,7 +49,7 @@ function EntryEditor({
   const [uploading, setUploading] = useState(false)
 
   function save() {
-    const parsed = parseFloat(weight)
+    const parsed = parseDecimal(weight)
     const kg = weight ? (settings?.unit_system === 'imperial' ? parsed * 0.45359237 : parsed) : null
     upsert.mutate({ date, weight: kg, notes: notes.trim() || null })
     onClose()
@@ -89,7 +90,7 @@ function EntryEditor({
       </div>
 
       <input
-        type="number"
+        type="text"
         inputMode="decimal"
         placeholder={`Weight (${unit})`}
         value={weight}

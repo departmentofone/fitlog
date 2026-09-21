@@ -1,3 +1,4 @@
+import { parseDecimal } from '../../lib/number'
 import { useState } from 'react'
 import { macrosForGrams, type Food } from '../../types'
 
@@ -15,7 +16,7 @@ export function FoodAmountForm({
   const [grams, setGrams] = useState('100')
   const [qty, setQty] = useState(1)
 
-  const baseGrams = mode === 'grams' ? parseFloat(grams) || 0 : food.common_servings[mode as number]?.grams ?? 0
+  const baseGrams = mode === 'grams' ? parseDecimal(grams) || 0 : food.common_servings[mode as number]?.grams ?? 0
   const resolvedGrams = baseGrams * qty
   const preview = macrosForGrams(food, resolvedGrams)
 
@@ -54,7 +55,7 @@ export function FoodAmountForm({
 
       {mode === 'grams' && (
         <input
-          type="number"
+          type="text"
           inputMode="decimal"
           value={grams}
           onChange={(e) => setGrams(e.target.value)}

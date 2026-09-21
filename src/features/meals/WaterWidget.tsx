@@ -1,3 +1,4 @@
+import { parseDecimal } from '../../lib/number'
 import { useState } from 'react'
 import { useAddWater, useTodayWater } from '../../hooks/useWaterLog'
 import { useUpdateSettings, useUserSettings } from '../../hooks/useUserSettings'
@@ -49,7 +50,7 @@ export function WaterWidget() {
       {editingGoal ? (
         <div className="flex gap-2">
           <input
-            type="number"
+            type="text"
             step="0.1"
             inputMode="decimal"
             placeholder="Liters/day"
@@ -59,7 +60,7 @@ export function WaterWidget() {
           />
           <button
             onClick={() => {
-              const liters = parseFloat(goalDraft)
+              const liters = parseDecimal(goalDraft)
               if (!Number.isNaN(liters) && liters > 0) updateSettings.mutate({ water_goal_ml: liters * 1000 })
               setEditingGoal(false)
             }}

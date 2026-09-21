@@ -1,3 +1,4 @@
+import { parseDecimal } from '../../lib/number'
 import { useState } from 'react'
 import { UNAVAILABLE_FOOD_NAME } from '../../types'
 import { EmptyState } from '../../components/EmptyState'
@@ -25,6 +26,8 @@ import type { Food } from '../../types'
 interface DraftIngredient {
   food: Food
   grams: number
+  /** Exactly what's in the field, so a half-typed "62," keeps its comma (grams holds the parsed value). */
+  gramsInput?: string
 }
 
 export function RecipeBuilderView({
@@ -66,8 +69,10 @@ export function RecipeBuilderView({
     setDraft((cur) => [...cur, { food, grams: 100 }])
   }
 
-  function updateDraftGrams(index: number, grams: number) {
-    setDraft((cur) => cur.map((d, i) => (i === index ? { ...d, grams } : d)))
+  function updateDraftGrams(index: number, input: string) {
+    const parsed = parseDecimal(input)
+    const grams = Number.isFinite(parsed) && parsed > 0 ? parsed : 0
+    setDraft((cur) => cur.map((d, i) => (i === index ? { ...d, grams, gramsInput: input } : d)))
   }
 
   function removeDraftIngredient(index: number) {
@@ -105,7 +110,7 @@ export function RecipeBuilderView({
           <div className="flex items-center gap-2">
             <span className="text-sm text-slate-400">Servings</span>
             <input
-              type="number"
+              type="text"
               inputMode="decimal"
               min={1}
               value={servings}
@@ -157,11 +162,10 @@ export function RecipeBuilderView({
               <div key={i} className="flex items-center gap-2 rounded-xl bg-slate-800/60 px-3 py-2">
                 <span className="flex-1 truncate text-sm text-slate-200">{d.food.name}</span>
                 <input
-                  type="number"
-              inputMode="decimal"
-                  min={0}
-                  value={d.grams}
-                  onChange={(e) => updateDraftGrams(i, parseFloat(e.target.value) || 0)}
+                  type="text"
+                  inputMode="decimal"
+                  value={d.gramsInput ?? String(d.grams)}
+                  onChange={(e) => updateDraftGrams(i, e.target.value)}
                   className="w-20 rounded-xl border border-slate-700 bg-slate-900 px-2 py-1 text-sm text-white focus:border-emerald-500 focus:outline-none"
                 />
                 <span className="text-xs text-slate-500">g</span>
@@ -283,12 +287,12 @@ function RecipeCard({
           <>
             <input
               key={recipe.servings}
-              type="number"
+              type="text"
               inputMode="decimal"
               min={0.1}
               step="any"
               defaultValue={recipe.servings}
-              onBlur={(e) => handleRescale(parseFloat(e.target.value))}
+              onBlur={(e) => handleRescale(parseDecimal(e.target.value))}
               disabled={rescaleRecipe.isPending}
               className="w-16 rounded-xl border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-white focus:border-emerald-500 focus:outline-none disabled:opacity-50"
             />
@@ -340,8 +344,8 @@ function RecipeCard({
       <div className="mb-2 flex items-center gap-2">
         <span className="text-xs text-slate-500">Add</span>
         <input
-          type="number"
-              inputMode="decimal"
+          type="text"
+          inputMode="decimal"
           min={1}
           value={servingsToAdd}
           onChange={(e) => setServingsToAdd(Math.max(1, parseInt(e.target.value, 10) || 1))}

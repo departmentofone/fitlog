@@ -1,36 +1,46 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useMemo } from 'react'
+import { rankFoods } from '../lib/foodSearch'
 import { supabase } from '../lib/supabase'
 import type { CommonServing, Food } from '../types'
 import { useAuth } from './useAuth'
 
-/** Delays reacting to a fast-changing value (e.g. keystrokes) until it settles for `delayMs`. */
-function useDebouncedValue<T>(value: T, delayMs: number): T {
-  const [debounced, setDebounced] = useState(value)
-  useEffect(() => {
-    const timer = setTimeout(() => setDebounced(value), delayMs)
-    return () => clearTimeout(timer)
-  }, [value, delayMs])
-  return debounced
-}
+const LIBRARY_PAGE = 1000
 
-export function useFoodSearch(search: string) {
+/**
+ * The whole food library this account can read (global foods + its own + ones in shared content).
+ * It's a few hundred rows, so it's fetched once and searched on the device: results appear on every
+ * keystroke with no network round trip, work offline, and can be ranked properly (see foodSearch.ts)
+ * instead of the old alphabetical `ilike` top-50, which put "Egg, whole" fifth for "egg".
+ */
+export function useFoodLibrary() {
   const { user } = useAuth()
-  const debouncedSearch = useDebouncedValue(search, 300)
   return useQuery({
-    queryKey: ['foods', debouncedSearch],
+    queryKey: ['foods', 'library', user?.id],
     enabled: !!user,
-    placeholderData: (previous) => previous,
+    staleTime: 5 * 60 * 1000,
     queryFn: async () => {
-      let query = supabase.from('foods').select('*').order('name', { ascending: true }).limit(50)
-      if (debouncedSearch.trim()) {
-        query = query.ilike('name', `%${debouncedSearch.trim()}%`)
+      const all: Food[] = []
+      // PostgREST caps a response at 1000 rows, so page until a short page comes back.
+      for (let from = 0; ; from += LIBRARY_PAGE) {
+        const { data, error } = await supabase
+          .from('foods')
+          .select('*')
+          .order('name', { ascending: true })
+          .range(from, from + LIBRARY_PAGE - 1)
+        if (error) throw error
+        all.push(...(data as Food[]))
+        if (!data || data.length < LIBRARY_PAGE) return all
       }
-      const { data, error } = await query
-      if (error) throw error
-      return data as Food[]
     },
   })
+}
+
+/** Ranked matches for `search`: the plain ingredient first, processed products last. */
+export function useFoodSearch(search: string) {
+  const library = useFoodLibrary()
+  const data = useMemo(() => (library.data ? rankFoods(library.data, search) : undefined), [library.data, search])
+  return { data, isLoading: library.isLoading, error: library.error }
 }
 
 export interface CreateFoodInput {

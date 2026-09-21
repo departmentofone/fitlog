@@ -1,6 +1,5 @@
 import { parseDecimal } from '../../lib/number'
 import { useState } from 'react'
-import { EmptyState } from '../../components/EmptyState'
 import { SkeletonRow } from '../../components/Skeleton'
 import { useToast } from '../../components/ToastProvider'
 import { useAuth } from '../../hooks/useAuth'
@@ -242,39 +241,37 @@ export function ProgramsTab() {
 
   return (
     <div className="space-y-4 p-4">
-      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+      {/* One card: what programs are, your programs (only once you have some), and the action. It was
+          two cards - an explainer and a separate empty "Programs" list. */}
+      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+        <h3 className="mb-1 font-medium text-white">Programs</h3>
         <p className="mb-3 text-sm text-slate-400">
-          Bundle workout presets, recipes, meal presets, and diet goals into one package you or a friend can import in a
-          single batch instead of preset-by-preset.
+          Bundle workout presets, recipes, meal presets and diet goals into one package that you or a friend can import
+          in one go.
         </p>
+        {isLoading && (
+          <div className="mb-3 space-y-2">
+            <SkeletonRow />
+            <SkeletonRow />
+          </div>
+        )}
+        {programs.length > 0 && (
+          <div className="mb-3 space-y-2">
+            {programs.map((program) => (
+              <ProgramCard key={program.id} program={program} isOwner={program.user_id === user?.id} />
+            ))}
+          </div>
+        )}
         {showNew ? (
           <NewProgramForm onDone={() => setShowNew(false)} />
         ) : (
           <button
             onClick={() => setShowNew(true)}
-            className="w-full rounded-xl border border-dashed border-slate-700 py-2.5 text-sm font-medium text-slate-300 transition hover:border-emerald-500 hover:text-emerald-400"
+            className="min-h-11 w-full rounded-xl border border-dashed border-slate-700 text-sm font-medium text-slate-300 transition active:border-emerald-500 active:text-emerald-400"
           >
             + New program
           </button>
         )}
-      </div>
-
-      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
-        <h3 className="mb-3 font-medium text-white">Programs</h3>
-        {isLoading && (
-          <div className="space-y-2">
-            <SkeletonRow />
-            <SkeletonRow />
-          </div>
-        )}
-        {!isLoading && programs.length === 0 && (
-          <EmptyState variant="folder" message="No programs yet - build one above." />
-        )}
-        <div className="space-y-2">
-          {programs.map((program) => (
-            <ProgramCard key={program.id} program={program} isOwner={program.user_id === user?.id} />
-          ))}
-        </div>
       </div>
     </div>
   )

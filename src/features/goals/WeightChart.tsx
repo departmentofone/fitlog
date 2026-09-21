@@ -20,6 +20,8 @@ export function WeightChart() {
   const colors = useThemeChartColors()
 
   const unit = weightUnitLabel(settings?.unit_system)
+  // Range buttons only mean something once there's a trend to range over.
+  const totalWeighIns = entries.filter((e) => e.weight != null).length
 
   const points = useMemo(() => {
     const withWeight = entries.filter((e) => e.weight != null)
@@ -43,6 +45,7 @@ export function WeightChart() {
     <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-medium text-white">Weight over time</h3>
+        {totalWeighIns >= 2 && (
         <div className="flex gap-1.5">
           {RANGE_OPTIONS.map((r) => (
             <button
@@ -56,6 +59,7 @@ export function WeightChart() {
             </button>
           ))}
         </div>
+        )}
       </div>
 
       {points.length < 2 ? (

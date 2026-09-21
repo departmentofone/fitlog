@@ -33,7 +33,7 @@ const TONE_TEXT: Record<string, string> = {
  * potassium etc. don't require a tap to ever see. */
 export function MicroDashboard({ micros }: { micros: MicroTotals }) {
   const [expanded, setExpanded] = useState(false)
-  const visible = expanded ? DAILY_VALUES : DAILY_VALUES.slice(0, 6)
+  const visible = expanded ? DAILY_VALUES : DAILY_VALUES.slice(0, 4)
 
   return (
     <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">

@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import { FireStreak } from '../../components/FireStreak'
 import { MonthCalendar } from '../../components/MonthCalendar'
 import { SkeletonLine } from '../../components/Skeleton'
 import { SwipeToDelete } from '../../components/SwipeToDelete'
@@ -12,16 +11,18 @@ import {
   useRestoreSession,
   useSessionDates,
   useSessionDetailForDate,
+  todayISO,
 } from '../../hooks/useWorkouts'
 import { useWorkoutStreaks } from '../../hooks/useWorkoutStreaks'
 import { formatDuration } from '../../lib/duration'
 import { WeeklyDigestCard } from './WeeklyDigestCard'
 
-function StatTile({ label, value }: { label: string; value: string }) {
+function StatTile({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="rounded-2xl bg-slate-800/60 px-3 py-2.5 text-center">
+    <div className="rounded-2xl border-t border-white/10 bg-slate-900 px-3 py-2.5 text-center ring-1 ring-white/5">
+      <p className="text-xs text-slate-400">{label}</p>
       <p className="text-lg font-semibold text-white">{value}</p>
-      <p className="text-xs text-slate-500">{label}</p>
+      {sub && <p className="text-[11px] text-slate-500">{sub}</p>}
     </div>
   )
 }
@@ -149,23 +150,12 @@ export function HistoryView() {
 
       <WeeklyDigestCard />
 
-      <div className="rounded-3xl bg-gradient-to-br from-emerald-600/20 to-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
-        <h2 className="mb-3 text-sm font-medium text-slate-300">Streaks</h2>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-2xl bg-slate-800/60 p-3">
-            <FireStreak count={streaks?.currentStreak ?? 0} />
-            <p className="mt-1 text-xs text-slate-500">Workout streak</p>
-          </div>
-          <div className="rounded-2xl bg-slate-800/60 p-3">
-            <FireStreak count={dietStreak.data?.current ?? 0} />
-            <p className="mt-1 text-xs text-slate-500">On-target diet streak</p>
-          </div>
-        </div>
-        <div className="mt-3 grid grid-cols-3 gap-2">
-          <StatTile label="Workouts logged" value={String(streaks?.totalSessions ?? 0)} />
-          <StatTile label="Best workout streak" value={`${streaks?.bestStreak ?? 0}d`} />
-          <StatTile label="Best diet streak" value={`${dietStreak.data?.best ?? 0}d`} />
-        </div>
+      {/* Streaks as one row of three - it was two cards' worth of tiles repeating the streak pills
+          already shown on Workouts and Diet. */}
+      <div className="grid grid-cols-3 gap-2">
+        <StatTile label="Workout streak" value={`${streaks?.currentStreak ?? 0}d`} sub={`best ${streaks?.bestStreak ?? 0}d`} />
+        <StatTile label="Diet streak" value={`${dietStreak.data?.current ?? 0}d`} sub={`best ${dietStreak.data?.best ?? 0}d`} />
+        <StatTile label="Workouts" value={String(streaks?.totalSessions ?? 0)} sub="logged" />
       </div>
 
       <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
@@ -176,7 +166,7 @@ export function HistoryView() {
           markedDates={markedDates}
           selectedDate={selectedDate}
           onSelectDate={setSelectedDate}
-          maxDate={new Date().toISOString().slice(0, 10)}
+          maxDate={todayISO()}
         />
         {selectedDate && (
           <div className="mt-3">

@@ -214,19 +214,22 @@ function AutoTrackedGoalRow({ goal, exerciseName, onDelete }: { goal: Goal; exer
   }, [achieved, goal.completed, goal.id])
 
   return (
-    <div className="flex items-center gap-3 rounded-xl bg-slate-800/60 px-3 py-2">
+    <div className="flex min-h-11 items-center gap-3 rounded-xl bg-slate-800/60 pl-3 pr-2">
       <span className={`flex-1 text-sm ${goal.completed ? 'text-slate-500 line-through' : 'text-white'}`}>
         {exerciseName} · {goal.target_weight}kg{goal.target_reps ? ` × ${goal.target_reps}` : ''}
       </span>
-      {goal.completed && <span className="shrink-0 text-xs text-emerald-400">✓ Hit!</span>}
-      <button onClick={onDelete} className="text-red-400 hover:text-red-300">
-        ×
+      {goal.completed && <span className="shrink-0 text-xs text-success">✓ Hit!</span>}
+      <button onClick={onDelete} aria-label={`Delete goal ${exerciseName}`} className="-mr-2 flex h-11 w-10 shrink-0 items-center justify-center text-slate-500 active:text-red-400">
+                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
       </button>
     </div>
   )
 }
 
-function GoalList({ category, title }: { category: GoalCategory; title: string }) {
+/** All goals in one card (it used to be two - "Workout goals" and "Custom goals"). */
+function GoalList() {
   const { data: goals = [] } = useGoals()
   const { data: exercises = [] } = useExercises()
   const createGoal = useCreateGoal()
@@ -241,7 +244,8 @@ function GoalList({ category, title }: { category: GoalCategory; title: string }
   const [targetWeight, setTargetWeight] = useState('')
   const [targetReps, setTargetReps] = useState('')
 
-  const filtered = goals.filter((g) => g.category === category)
+  const filtered = goals
+  const category: GoalCategory = autoTrack ? 'workout' : 'custom'
 
   function reset() {
     setTitleInput('')
@@ -272,7 +276,7 @@ function GoalList({ category, title }: { category: GoalCategory; title: string }
 
   return (
     <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
-      <h3 className="mb-3 font-medium text-white">{title}</h3>
+      <h3 className="mb-3 font-medium text-white">Goals</h3>
       <div className="mb-3 space-y-1.5">
         {filtered.map((g) =>
           g.target_exercise_id ? (
@@ -285,7 +289,7 @@ function GoalList({ category, title }: { category: GoalCategory; title: string }
               }
             />
           ) : (
-            <div key={g.id} className="flex items-center gap-3 rounded-xl bg-slate-800/60 px-3 py-2">
+            <div key={g.id} className="flex min-h-11 items-center gap-3 rounded-xl bg-slate-800/60 pl-3 pr-2">
               <input
                 type="checkbox"
                 checked={g.completed}
@@ -297,24 +301,27 @@ function GoalList({ category, title }: { category: GoalCategory; title: string }
               </span>
               <button
                 onClick={() => undoable(`Deleted "${g.title}"`, () => deleteGoal.mutate(g.id), () => restoreGoal.mutate(g))}
-                className="text-red-400 hover:text-red-300"
+                aria-label={`Delete goal ${g.title}`}
+                className="-mr-2 flex h-11 w-10 shrink-0 items-center justify-center text-slate-500 active:text-red-400"
               >
-                ×
+                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
               </button>
             </div>
           ),
         )}
-        {filtered.length === 0 && <EmptyState variant="trophy" message="No goals yet." />}
+        {filtered.length === 0 && (
+          <EmptyState variant="trophy" message="Set a lift to hit, or anything else you're working toward." />
+        )}
       </div>
 
       {adding ? (
         <div className="space-y-2">
-          {category === 'workout' && (
-            <label className="flex items-center gap-1.5 text-xs text-slate-400">
-              <input type="checkbox" checked={autoTrack} onChange={(e) => setAutoTrack(e.target.checked)} className="h-3.5 w-3.5 accent-emerald-500" />
-              Auto-track from an exercise
-            </label>
-          )}
+          <label className="flex min-h-11 items-center gap-2 text-sm text-slate-300">
+            <input type="checkbox" checked={autoTrack} onChange={(e) => setAutoTrack(e.target.checked)} className="h-5 w-5 accent-emerald-500" />
+            A lift to hit (ticks itself off when you log it)
+          </label>
           {autoTrack ? (
             <>
               <select
@@ -517,8 +524,7 @@ export function GoalsTab() {
 
       <ProgressCalendar />
 
-      <GoalList category="workout" title="Workout goals" />
-      <GoalList category="custom" title="Custom goals" />
+      <GoalList />
     </div>
   )
 }

@@ -52,6 +52,7 @@ const QUICK_ADD_ICONS = {
 }
 
 const QUICK_PARAM_TABS: Record<string, Tab> = { set: 'workouts', meal: 'meals', fast: 'fasting' }
+const LOGGING_TABS: Tab[] = ['workouts', 'meals', 'diet', 'fasting']
 
 /**
  * Achievement watching reads the user's whole training/diet history, so it only mounts once the
@@ -130,7 +131,9 @@ function App() {
   }
   const nonceFor = (target: Tab) => (quickAction?.tab === target ? quickAction.nonce : undefined)
 
-  const quickAddActions: QuickAddAction[] = onSettings
+  // The + button is for logging, so it only floats over the screens where you log things - on the
+  // calculator, programs, settings and the like it just covered content.
+  const quickAddActions: QuickAddAction[] = !tab || !LOGGING_TABS.includes(tab)
     ? []
     : [
         { key: 'fast', label: 'Start a fast', icon: QUICK_ADD_ICONS.fast, onSelect: () => quickAdd('fasting') },

@@ -14,8 +14,9 @@ const ACTIVITY_OPTIONS: { value: ActivityLevel; label: string; hint: string }[] 
   { value: 'very_active', label: 'Very active', hint: 'Physical job or 2x/day training' },
 ]
 
+const labelClass = 'flex flex-col gap-1 text-xs font-medium text-slate-400'
 const fieldClass =
-  'rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none'
+  'h-11 rounded-xl border border-slate-700 bg-slate-800 px-3 text-base font-normal text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none'
 
 export function MaintenanceCalculator() {
   const { data: settings } = useUserSettings()
@@ -79,35 +80,31 @@ export function MaintenanceCalculator() {
       <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
         <h3 className="mb-1 font-medium text-white">Maintenance calculator</h3>
         <p className="mb-3 text-sm text-slate-400">
-          Estimates your daily maintenance calories (Mifflin-St Jeor). Pre-filled from your profile if you've set one — change
-          any field to try a different scenario.
+          Your estimated daily maintenance calories, pre-filled from your profile. Change anything to try a scenario.
         </p>
 
         <div className="grid grid-cols-2 gap-2.5">
-          <input
-            placeholder={`Weight (${weightUnit})`}
-            type="text"
-            inputMode="decimal"
-            value={weight}
-            onChange={(e) => setWeight(e.target.value)}
-            className={fieldClass}
-          />
-          <input
-            placeholder={`Height (${heightUnit})`}
-            type="text"
-            inputMode="decimal"
-            value={height}
-            onChange={(e) => setHeight(e.target.value)}
-            className={fieldClass}
-          />
-          <input placeholder="Age" type="text"
-              inputMode="decimal" value={age} onChange={(e) => setAge(e.target.value)} className={fieldClass} />
+          <label className={labelClass}>
+            Weight ({weightUnit})
+            <input type="text" inputMode="decimal" value={weight} onChange={(e) => setWeight(e.target.value)} className={fieldClass} />
+          </label>
+          <label className={labelClass}>
+            Height ({heightUnit})
+            <input type="text" inputMode="decimal" value={height} onChange={(e) => setHeight(e.target.value)} className={fieldClass} />
+          </label>
+          <label className={labelClass}>
+            Age
+            <input type="text" inputMode="numeric" value={age} onChange={(e) => setAge(e.target.value)} className={fieldClass} />
+          </label>
+          <label className={labelClass}>
+            Sex
           <select value={sex} onChange={(e) => setSex(e.target.value as Sex | '')} className={fieldClass}>
             <option value="">Sex</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
             <option value="other">Other</option>
           </select>
+          </label>
         </div>
 
         <p className="mb-1.5 mt-3 text-xs text-slate-500">Activity level</p>

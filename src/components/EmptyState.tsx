@@ -49,8 +49,9 @@ const ICONS: Record<EmptyStateVariant, ReactNode> = {
 }
 
 /**
- * A small, tasteful illustration + message for "nothing here yet" moments,
- * so an empty list reads as an invitation rather than a dead end.
+ * One quiet line for "nothing here yet": a small icon and a message that says what will appear and
+ * how. It used to be a 48px icon tile over centred text (~100px), which across the many empty
+ * sections of a new account made whole screens feel like placeholders.
  */
 export function EmptyState({
   variant,
@@ -62,18 +63,17 @@ export function EmptyState({
   className?: string
 }) {
   return (
-    <div className={`flex flex-col items-center gap-2 py-3 text-center ${className}`}>
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10">
-        <svg
-          viewBox="0 0 24 24"
-          className="h-6 w-6 text-emerald-400/70"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-        >
-          {ICONS[variant]}
-        </svg>
-      </div>
+    <div className={`flex items-center gap-2.5 py-1 ${className}`}>
+      <svg
+        viewBox="0 0 24 24"
+        className="h-5 w-5 shrink-0 text-slate-500"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        aria-hidden="true"
+      >
+        {ICONS[variant]}
+      </svg>
       <p className="text-sm text-slate-500">{message}</p>
     </div>
   )

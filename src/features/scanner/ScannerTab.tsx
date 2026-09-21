@@ -246,7 +246,11 @@ export function ScannerTab() {
           </div>
         )}
 
-        {camera.cameraError && <p className="mt-2 text-xs text-red-400">{camera.cameraError}</p>}
+        {!camera.supported ? (
+          <p className="mt-2 text-xs text-slate-500">Camera scanning isn't available on this device — type the barcode instead.</p>
+        ) : (
+          camera.cameraError && <p className="mt-2 text-xs text-red-400">{camera.cameraError}</p>
+        )}
 
         {!reviewing && (
           <button

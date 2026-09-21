@@ -1,6 +1,5 @@
 import { parseDecimal } from '../../lib/number'
 import { useState } from 'react'
-import { DateNav } from '../../components/DateNav'
 import { useToast } from '../../components/ToastProvider'
 import {
   estimateAlcoholCalories,
@@ -56,28 +55,56 @@ export function AlcoholSection() {
     reset()
   }
 
+  const isToday = date === todayISO()
+  const shiftDate = (days: number) => {
+    const d = new Date(`${date}T00:00:00`)
+    d.setDate(d.getDate() + days)
+    setDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`)
+  }
+  const dayLabel = isToday
+    ? 'Today'
+    : new Date(`${date}T00:00:00`).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })
+  const navButton = 'flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 active:bg-slate-800 disabled:opacity-30'
+
   return (
     <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
-      <h3 className="mb-3 font-medium text-white">Alcohol</h3>
-      <DateNav date={date} max={todayISO()} onChange={setDate} />
-
-      <div className="my-3 rounded-2xl bg-slate-800/60 p-3 text-center">
-        <p className="text-lg font-semibold text-white">{Math.round(totalCalories)} kcal</p>
-        <p className="text-xs text-slate-500">{logs.length} drink{logs.length === 1 ? '' : 's'} logged</p>
+      {/* Compact header: day switcher inline, and the totals only once there's something to total -
+          previously a full date bar plus a big "0 kcal / 0 drinks" box every day. */}
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <div>
+          <h3 className="font-medium text-white">Alcohol</h3>
+          {logs.length > 0 && (
+            <p className="text-xs text-slate-400">
+              {logs.length} drink{logs.length === 1 ? '' : 's'} · {Math.round(totalCalories)} kcal
+            </p>
+          )}
+        </div>
+        <div className="flex items-center">
+          <button type="button" aria-label="Previous day" onClick={() => shiftDate(-1)} className={navButton}>
+            ‹
+          </button>
+          <span className="min-w-16 text-center text-xs font-medium text-slate-300">{dayLabel}</span>
+          <button type="button" aria-label="Next day" disabled={isToday} onClick={() => shiftDate(1)} className={navButton}>
+            ›
+          </button>
+        </div>
       </div>
 
       {logs.length > 0 && (
         <div className="mb-3 space-y-1.5">
           {logs.map((l) => (
-            <div key={l.id} className="flex items-center justify-between rounded-xl bg-slate-800/60 px-3 py-2 text-sm text-slate-300">
+            <div key={l.id} className="flex min-h-11 items-center justify-between rounded-xl bg-slate-800/60 pl-3 text-sm text-slate-300">
               <span>{l.name}</span>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1">
                 <span className="text-xs text-slate-500">{Math.round(l.calories)} kcal</span>
                 <button
                   onClick={() => undoable(`Removed ${l.name}`, () => deleteLog.mutate(l.id), () => addLog.mutate({ date, name: l.name, volumeMl: l.volume_ml, abvPercent: l.abv_percent, calories: l.calories }))}
-                  className="text-red-400 hover:text-red-300"
+                  aria-label={`Remove ${l.name}`}
+                  className="flex h-11 w-10 items-center justify-center text-slate-500 active:text-red-400"
                 >
-                  ×
+                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+                    <path d="M6 6l12 12M18 6L6 18" />
+                  </svg>
                 </button>
               </div>
             </div>

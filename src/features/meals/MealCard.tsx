@@ -12,7 +12,7 @@ import {
   type MealWithItems,
 } from '../../hooks/useMeals'
 import { haptics } from '../../lib/haptics'
-import { macrosForGrams, microsForGrams, sumMacros, sumMicros, UNAVAILABLE_FOOD_NAME } from '../../types'
+import { macrosForGrams, sumMacros, UNAVAILABLE_FOOD_NAME } from '../../types'
 import { FoodAmountForm } from './FoodAmountForm'
 import { FoodPicker } from './FoodPicker'
 
@@ -87,11 +87,10 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
   const { undoable } = useToast()
 
   const totals = sumMacros(meal.meal_items.map((i) => macrosForGrams(i.food, i.grams)))
-  const micros = sumMicros(meal.meal_items.map((i) => microsForGrams(i.food, i.grams)))
 
   if (meal.completed) {
     return (
-      <div className="w-full rounded-2xl bg-slate-900/70 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5 transition hover:ring-emerald-500/30">
+      <div className="relative w-full rounded-2xl bg-slate-900/70 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5 transition hover:ring-emerald-500/30">
         <button
           onClick={() => setCompleted.mutate({ mealId: meal.id, completed: false })}
           className="block w-full text-left"
@@ -105,11 +104,9 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
             <span className="font-semibold text-emerald-400">{Math.round(totals.calories)} kcal</span>
           </p>
           <MacroLine macros={totals} />
-          <p className="mt-1 text-xs text-slate-500">
-            Fiber {Math.round(micros.fiber)}g · Sodium {Math.round(micros.sodium)}mg · Sugar {Math.round(micros.sugar)}g
-          </p>
         </button>
-        <div className="mt-2 flex justify-end">
+        {/* Photo sits in the corner rather than on a row of its own. */}
+        <div className="absolute right-3 bottom-3">
           <MealPhotoControl meal={meal} />
         </div>
       </div>
@@ -121,8 +118,12 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
       <div className="mb-2 flex items-center justify-between gap-2">
         <h3 className="font-medium text-white">{meal.name}</h3>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-emerald-400">{Math.round(totals.calories)} kcal</span>
-          <MealPhotoControl meal={meal} />
+          {meal.meal_items.length > 0 && (
+            <>
+              <span className="text-xs text-emerald-400">{Math.round(totals.calories)} kcal</span>
+              <MealPhotoControl meal={meal} />
+            </>
+          )}
         </div>
       </div>
 
@@ -194,7 +195,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
         )}
       </div>
 
-      <MacroLine macros={totals} className="mb-3" />
+      {meal.meal_items.length > 0 && <MacroLine macros={totals} className="mb-3" />}
 
       {adding ? (
         <FoodPicker

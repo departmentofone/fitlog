@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { BOTTOM_NAV_CHOICES, MAX_BOTTOM_NAV_EXTRAS, resolveBottomNavExtras } from '../../components/Layout'
 import { TabIcon } from '../../components/TabIcon'
+import { Toggle } from '../../components/Toggle'
 import { useAuth } from '../../hooks/useAuth'
 import { useUpdateSettings, useUserSettings } from '../../hooks/useUserSettings'
 import { formatBuildTime } from '../../lib/buildInfo'
@@ -54,46 +55,39 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="space-y-4 p-4">
-      <button onClick={onBack} className="text-sm text-slate-400 hover:text-slate-200">
+      <button onClick={onBack} className="-my-2 -ml-2 min-h-11 px-2 text-sm text-slate-400">
         ← Back
       </button>
 
-      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
-        <div className="flex items-center justify-between gap-4">
+      {/* Settings are grouped into a few cards of short rows - it used to be one card per switch, each
+          with a paragraph of explanation. */}
+      <div className="divide-y divide-white/5 rounded-3xl border-t border-white/10 bg-slate-900 px-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+        <div className="flex items-center justify-between gap-4 py-3">
           <div>
-            <h3 className="font-medium text-white">Ask about preworkout</h3>
-            <p className="mt-0.5 text-xs text-slate-500">
-              When on, you'll be asked once a day when starting a workout. Turn off if you don't use preworkout.
-            </p>
+            <h3 className="text-sm font-medium text-white">Ask about preworkout</h3>
+            <p className="text-xs text-slate-500">Once a day, when you start a workout</p>
           </div>
-          <input
-            type="checkbox"
+          <Toggle
+            label="Ask about preworkout"
             checked={settings?.ask_preworkout ?? true}
-            onChange={(e) => updateSettings.mutate({ ask_preworkout: e.target.checked })}
-            className="h-6 w-6 shrink-0 accent-emerald-500"
+            onChange={(next) => updateSettings.mutate({ ask_preworkout: next })}
           />
         </div>
-      </div>
-
-      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between gap-4 py-3">
           <div>
-            <h3 className="font-medium text-white">Motion & haptics</h3>
-            <p className="mt-0.5 text-xs text-slate-500">
-              Small vibrations for logged sets, PRs, streaks, and other key moments. Only affects devices that support it.
-            </p>
+            <h3 className="text-sm font-medium text-white">Haptics</h3>
+            <p className="text-xs text-slate-500">Small vibrations for sets, PRs and streaks</p>
           </div>
-          <input
-            type="checkbox"
+          <Toggle
+            label="Haptics"
             checked={settings?.haptics_enabled ?? true}
-            onChange={(e) => updateSettings.mutate({ haptics_enabled: e.target.checked })}
-            className="h-6 w-6 shrink-0 accent-emerald-500"
+            onChange={(next) => updateSettings.mutate({ haptics_enabled: next })}
           />
         </div>
       </div>
 
       <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
-        <h3 className="mb-2 font-medium text-white">Appearance</h3>
+        <h3 className="mb-2 font-medium text-white">Display</h3>
         <p className="mb-1.5 text-xs text-slate-500">Theme</p>
         <div className="mb-3 grid grid-cols-3 gap-1.5">
           {(['system', 'light', 'dark'] as const).map((t) => (
@@ -108,8 +102,8 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
             </button>
           ))}
         </div>
-        <p className="mb-1.5 text-xs text-slate-500">Color palette</p>
-        <div className="grid grid-cols-3 gap-1.5">
+        <p className="mb-1.5 text-xs text-slate-500">Accent colour</p>
+        <div className="mb-3 flex gap-2" role="radiogroup" aria-label="Accent colour">
           {[
             { value: 'emerald', label: 'Emerald', dot: '#34d399' },
             { value: 'violet', label: 'Violet', dot: '#a78bfa' },
@@ -119,15 +113,31 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
           ].map((p) => (
             <button
               key={p.value}
+              role="radio"
+              aria-checked={(settings?.color_palette ?? 'emerald') === p.value}
+              aria-label={p.label}
               onClick={() => updateSettings.mutate({ color_palette: p.value })}
-              className={`flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-xs font-medium transition ${
-                (settings?.color_palette ?? 'emerald') === p.value
-                  ? 'bg-slate-700 text-white ring-1 ring-white/20'
+              className={`flex h-11 w-11 items-center justify-center rounded-full transition ${
+                (settings?.color_palette ?? 'emerald') === p.value ? 'ring-2 ring-white/70' : ''
+              }`}
+            >
+              <span className="h-7 w-7 rounded-full" style={{ background: p.dot }} />
+            </button>
+          ))}
+        </div>
+        <p className="mb-1.5 text-xs text-slate-500">Units</p>
+        <div className="grid grid-cols-2 gap-1.5">
+          {(['metric', 'imperial'] as const).map((u) => (
+            <button
+              key={u}
+              onClick={() => updateSettings.mutate({ unit_system: u })}
+              className={`rounded-xl px-3 py-2 text-sm font-medium transition capitalize ${
+                (settings?.unit_system ?? 'metric') === u
+                  ? 'bg-emerald-600 text-on-accent'
                   : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
               }`}
             >
-              <span className="h-2.5 w-2.5 rounded-full" style={{ background: p.dot }} />
-              {p.label}
+              {u === 'metric' ? 'Metric (kg, cm)' : 'Imperial (lb, in)'}
             </button>
           ))}
         </div>
@@ -173,27 +183,8 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
       <PushNotificationsCard />
 
       <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
-        <h3 className="mb-2 font-medium text-white">Units</h3>
-        <div className="grid grid-cols-2 gap-1.5">
-          {(['metric', 'imperial'] as const).map((u) => (
-            <button
-              key={u}
-              onClick={() => updateSettings.mutate({ unit_system: u })}
-              className={`rounded-xl px-3 py-2 text-sm font-medium transition capitalize ${
-                (settings?.unit_system ?? 'metric') === u
-                  ? 'bg-emerald-600 text-on-accent'
-                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-              }`}
-            >
-              {u === 'metric' ? 'Metric (kg, cm)' : 'Imperial (lb, in)'}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <p className="mb-1 text-xs text-slate-500">Signed in as</p>
-        <p className="mb-4 truncate text-sm text-white">{user?.email}</p>
+        <p className="mb-2 truncate text-sm text-white">{user?.email}</p>
 
         {changingPassword ? (
           <div className="mb-3 space-y-2">
@@ -234,23 +225,23 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
         ) : (
           <button
             onClick={() => setChangingPassword(true)}
-            className="mb-2 w-full rounded-xl bg-slate-800 py-2.5 font-medium text-slate-200 transition hover:bg-slate-700"
+            className="flex min-h-11 w-full items-center justify-between border-t border-white/5 text-left text-sm font-medium text-slate-200 disabled:opacity-50"
           >
-            Change password
+            Change password <span aria-hidden="true" className="text-slate-500">›</span>
           </button>
         )}
 
         <button
           onClick={handleExport}
           disabled={exporting}
-          className="mb-2 w-full rounded-xl bg-slate-800 py-2.5 font-medium text-slate-200 transition hover:bg-slate-700 disabled:opacity-50"
+          className="flex min-h-11 w-full items-center justify-between border-t border-white/5 text-left text-sm font-medium text-slate-200 disabled:opacity-50"
         >
-          {exporting ? 'Preparing export…' : 'Export my data'}
+          {exporting ? 'Preparing export…' : 'Export my data'} <span aria-hidden="true" className="text-slate-500">›</span>
         </button>
 
         <button
           onClick={() => supabase.auth.signOut()}
-          className="w-full rounded-xl bg-slate-800 py-2.5 font-medium text-slate-200 transition hover:bg-red-600/80 hover:text-white"
+          className="flex min-h-11 w-full items-center justify-between border-t border-white/5 text-left text-sm font-medium text-slate-200 disabled:opacity-50"
         >
           Sign out
         </button>

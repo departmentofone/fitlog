@@ -134,20 +134,27 @@ export function DietTab() {
             )}
           </div>
         )}
-      </div>
-
-      <div
-        onClick={() => setShowBreakdown(true)}
-        className="cursor-pointer rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5 transition hover:ring-emerald-500/30"
-      >
-        <div className="mb-2 flex items-center justify-between">
-          <h3 className="text-sm font-medium text-slate-300">Consumed today</h3>
-          <span className="text-xs text-slate-500">Tap for breakdown</span>
-        </div>
-        <p className="text-2xl font-bold text-emerald-400">
-          <CountUp value={totals.calories} suffix=" kcal" />
-        </p>
-        <MacroLine macros={totals} className="mt-1 text-sm" />
+        {!editing && (
+          <div className="mt-3 flex items-center justify-between gap-2 border-t border-white/5 pt-2.5">
+            <div className="min-w-0 text-sm">
+              <span className="font-semibold text-white">
+                <CountUp value={totals.calories} /> kcal
+              </span>{' '}
+              <span className="text-slate-400">eaten</span>
+              <MacroLine macros={totals} className="text-xs" />
+            </div>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                setShowBreakdown(true)
+              }}
+              className="-mr-2 min-h-11 shrink-0 px-2 text-xs font-medium text-emerald-400"
+            >
+              Breakdown
+            </button>
+          </div>
+        )}
       </div>
 
       <MicroDashboard micros={micros} />

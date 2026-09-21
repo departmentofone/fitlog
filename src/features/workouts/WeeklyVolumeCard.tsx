@@ -1,3 +1,4 @@
+import { MuscleDiagram, type MuscleIntensity } from '../../components/MuscleDiagram'
 import { MUSCLE_GROUPS } from '../../types'
 import { useSessionDates, useWeeklyVolumeByMuscleGroup } from '../../hooks/useWorkouts'
 
@@ -44,6 +45,7 @@ export function WeeklyVolumeCard() {
   if (sorted.length === 0) return null
 
   const max = sorted[0].volume
+  const weeklyIntensity: MuscleIntensity = Object.fromEntries(sorted.map((v) => [v.muscleGroup, v.volume]))
 
   const thisWeekTotal = volumes.reduce((sum, v) => sum + v.volume, 0)
   const last28DaysTotal = last28DaysVolumes.reduce((sum, v) => sum + v.volume, 0)
@@ -60,6 +62,10 @@ export function WeeklyVolumeCard() {
   return (
     <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <h3 className="mb-3 text-sm font-medium text-slate-300">Last 7 days · volume by muscle group</h3>
+      {/* At-a-glance balance first (what you've hit and what you've skipped), exact numbers below. */}
+      <div className="mb-4">
+        <MuscleDiagram intensity={weeklyIntensity} size={96} showLegend />
+      </div>
       <div className="space-y-2">
         {sorted.map((v) => (
           <div key={v.muscleGroup}>

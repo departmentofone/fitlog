@@ -64,40 +64,7 @@ export function MealsTab({ quickAction }: { quickAction?: number }) {
     <div className="space-y-4 p-4">
       <DateNav date={date} max={todayISO()} onChange={setDate} />
 
-      <div className="grid grid-cols-2 gap-2">
-        <button
-          onClick={() => setShowTrends((v) => !v)}
-          className={`flex-1 rounded-xl px-3 py-1.5 text-xs font-medium transition ${
-            showTrends ? 'bg-emerald-600 text-on-accent' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-          }`}
-        >
-          Trends
-        </button>
-        <button
-          onClick={() => setShowPresets(true)}
-          className="flex-1 rounded-xl bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700"
-        >
-          Presets
-        </button>
-        <button
-          onClick={() => setShowRecipes(true)}
-          className="rounded-xl bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700"
-        >
-          Recipes
-        </button>
-        <CopyDayButton
-          disabled={meals.length === 0}
-          onCopy={(targetDate) => {
-            copyDay.mutate({ fromDate: date, toDate: targetDate })
-            show(`Copying to ${targetDate}…`)
-          }}
-        />
-      </div>
-
-      {showTrends && <TrendsChart />}
-
-      <WaterWidget />
-
+      {/* Totals first: the day's number is what you open this tab to see. */}
       <div
         onClick={() => setShowBreakdown(true)}
         className="cursor-pointer rounded-3xl bg-gradient-to-br from-emerald-600/20 to-slate-900 p-4 shadow-[var(--glow-shadow)] ring-1 ring-white/5 transition hover:ring-emerald-500/30"
@@ -124,6 +91,36 @@ export function MealsTab({ quickAction }: { quickAction?: number }) {
       >
         + Add {nextPreset.toLowerCase()}
       </button>
+
+      {/* Other ways to fill the day, and the look-back view - one quiet row instead of a 2x2 grid above
+          everything. */}
+      <div className="flex gap-2">
+        <button onClick={() => setShowPresets(true)} className="min-h-9 flex-1 rounded-xl px-2 text-xs font-medium transition bg-slate-800/60 text-slate-400 active:bg-slate-700">
+          Presets
+        </button>
+        <button onClick={() => setShowRecipes(true)} className="min-h-9 flex-1 rounded-xl px-2 text-xs font-medium transition bg-slate-800/60 text-slate-400 active:bg-slate-700">
+          Recipes
+        </button>
+        <CopyDayButton
+          disabled={meals.length === 0}
+          onCopy={(targetDate) => {
+            copyDay.mutate({ fromDate: date, toDate: targetDate })
+            show(`Copying to ${targetDate}…`)
+          }}
+        />
+        <button
+          onClick={() => setShowTrends((v) => !v)}
+          aria-pressed={showTrends}
+          className={`min-h-9 flex-1 rounded-xl px-2 text-xs font-medium transition ${showTrends ? 'bg-emerald-600 text-on-accent' : 'bg-slate-800/60 text-slate-400 active:bg-slate-700'}`}
+        >
+          Trends
+        </button>
+      </div>
+
+      {showTrends && <TrendsChart />}
+
+      {/* Water is logged for today only, so it's hidden when looking back at another day. */}
+      {date === todayISO() && <WaterWidget />}
 
       {showBreakdown && <NutritionBreakdownModal meals={meals} onClose={() => setShowBreakdown(false)} />}
     </div>

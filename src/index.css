@@ -56,9 +56,18 @@ html, body, #root {
   /* Reference glow for the one hero/stat card per screen - not every card, just the one that
      matters most (matches the mockup's restraint: this is an accent, not a default). */
   --glow-shadow: 0 0 40px -12px rgba(52, 211, 153, 0.45);
+  /* Body map (MuscleDiagram): outline, head/hands, untrained muscle, and the gap between muscles. */
+  --body-base: rgba(255, 255, 255, 0.05);
+  --body-decor: rgba(255, 255, 255, 0.08);
+  --body-muscle: rgba(255, 255, 255, 0.13);
+  --body-line: rgba(11, 15, 30, 0.9);
 }
 html[data-theme="light"] {
   --glow-shadow: 0 0 32px -10px rgba(34, 185, 133, 0.35);
+  --body-base: rgba(15, 23, 42, 0.05);
+  --body-decor: rgba(15, 23, 42, 0.08);
+  --body-muscle: rgba(15, 23, 42, 0.13);
+  --body-line: rgba(255, 255, 255, 0.95);
 }
 
 body {

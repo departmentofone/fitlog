@@ -5,6 +5,7 @@ import { EmptyState } from '../../components/EmptyState'
 import { FireStreak } from '../../components/FireStreak'
 import { useActiveFast, useEndFast, useFastHistory, useStartFast } from '../../hooks/useFasting'
 import { haptics } from '../../lib/haptics'
+import { formatDurationLabel } from '../../lib/duration'
 import { computeDayStreaks } from '../../lib/streaks'
 import { FastingStages } from './FastingStages'
 
@@ -144,14 +145,16 @@ export function FastingTab({ quickAction }: { quickAction?: number }) {
         ) : (
           <div className="space-y-1.5">
             {history.map((f) => {
-              const durationH = (new Date(f.end_time!).getTime() - new Date(f.start_time).getTime()) / 3_600_000
+              const durationS = (new Date(f.end_time!).getTime() - new Date(f.start_time).getTime()) / 1000
+              const reached = durationS >= f.target_hours * 3600
               return (
                 <div key={f.id} className="flex items-center justify-between rounded-xl bg-slate-800/60 px-3 py-2 text-sm">
                   <span className="text-slate-300">
                     {new Date(f.start_time).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                   </span>
-                  <span className="text-slate-500">
-                    {durationH.toFixed(1)}h <span className="text-slate-600">(target {f.target_hours}h)</span>
+                  <span className={reached ? 'font-medium text-success' : 'text-slate-400'}>
+                    {/* "12 min" rather than "0.2h" for fasts ended early */}
+                    {formatDurationLabel(durationS)} <span className="font-normal text-slate-500">of {f.target_hours} h</span>
                   </span>
                 </div>
               )

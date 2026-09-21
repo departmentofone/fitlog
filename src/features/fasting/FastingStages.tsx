@@ -71,13 +71,25 @@ function activeStageId(elapsedHours: number | null | undefined): string | null {
 /** Reference card explaining what's happening physiologically at different points in a fast. */
 export function FastingStages({ elapsedHours }: { elapsedHours?: number | null }) {
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [showAll, setShowAll] = useState(false)
   const activeId = activeStageId(elapsedHours)
+  // Collapsed by default: during a fast show just the stage you're in; otherwise only the heading.
+  const visible = showAll ? STAGES : STAGES.filter((s) => s.id === activeId)
 
   return (
     <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
-      <p className="mb-2 text-sm font-medium text-white">What's happening during a fast</p>
-      <div className="space-y-1.5">
-        {STAGES.map((stage) => {
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-sm font-medium text-white">What's happening during a fast</p>
+        <button
+          onClick={() => setShowAll((v) => !v)}
+          aria-expanded={showAll}
+          className="-my-2 -mr-2 min-h-11 shrink-0 px-2 text-xs font-medium text-emerald-400"
+        >
+          {showAll ? 'Hide stages' : `All ${STAGES.length} stages`}
+        </button>
+      </div>
+      <div className={`space-y-1.5 ${visible.length > 0 ? 'mt-2' : ''}`}>
+        {visible.map((stage) => {
           const isOpen = expandedId === stage.id
           const isActive = stage.id === activeId
           return (

@@ -26,7 +26,7 @@ import {
   useUpdateSet,
 } from '../../hooks/useWorkouts'
 import { estimate1RM } from '../../lib/oneRepMax'
-import type { Exercise } from '../../types'
+import type { Exercise, MuscleGroup } from '../../types'
 import { ExerciseDetailModal } from './ExerciseDetailModal'
 import { ExercisePicker } from './ExercisePicker'
 import { ExerciseSummaryBox } from './ExerciseSummaryBox'
@@ -131,10 +131,16 @@ export function WorkoutsTab({
     return map
   }, [sets])
 
-  const musclesTrained = useMemo(
-    () => Array.from(new Set(sets.flatMap((s) => (s.exercise ? [s.exercise.muscle_group] : [])))),
-    [sets],
-  )
+  // Working sets per muscle today - drives the body-map heatmap (warm-ups don't count as training).
+  const setsPerMuscle = useMemo(() => {
+    const counts: Partial<Record<MuscleGroup, number>> = {}
+    for (const s of sets) {
+      if (!s.exercise || s.is_warmup) continue
+      counts[s.exercise.muscle_group] = (counts[s.exercise.muscle_group] ?? 0) + 1
+    }
+    return counts
+  }, [sets])
+  const musclesTrained = Object.keys(setsPerMuscle)
 
   // Distinct superset groups logged today, labeled "A", "B", ... in the order they first appear.
   const supersetLabels = useMemo(() => buildSupersetLabels(sets), [sets])
@@ -260,33 +266,11 @@ export function WorkoutsTab({
         }}
       />
 
-      <div className="flex gap-2">
-        <button
-          onClick={() => setShowPresets(true)}
-          className="flex-1 rounded-xl bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700"
-        >
-          Presets
-        </button>
-        <button
-          onClick={onOpenHistory}
-          className="flex-1 rounded-xl bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700"
-        >
-          History
-        </button>
-        <CopyDayButton
-          disabled={sets.length === 0}
-          onCopy={(targetDate) => {
-            copyDay.mutate({ fromDate: date, toDate: targetDate })
-            show(`Copying to ${targetDate}…`)
-          }}
-        />
-      </div>
-
-      <FireStreak count={streaks?.currentStreak ?? 0} label="day streak" />
-
       {sessionLoading ? (
         <SkeletonCard lines={2} />
       ) : !session ? (
+        <>
+        <FireStreak count={streaks?.currentStreak ?? 0} label="day streak" />
         <PreworkoutGate
           loading={startSession.isPending}
           onAnswer={(pw) => startSession.mutate({ preworkout: pw, date })}
@@ -296,70 +280,35 @@ export function WorkoutsTab({
             logRestDay.mutate(date, { onSuccess: () => show('Rest day logged — streak stays alive') })
           }}
         />
+        </>
       ) : (
         <>
-          <div className="flex items-center justify-between rounded-3xl bg-gradient-to-br from-emerald-600/20 to-slate-900 px-4 py-3 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
-            <div>
-              <p className="text-xs text-slate-400">{isToday ? "Today's" : 'Total'} moved</p>
-              <p className="text-2xl font-bold text-white">
-                {sets.reduce((sum, s) => (s.is_warmup ? sum : sum + s.weight * s.reps), 0).toLocaleString()}{' '}
-                <span className="text-sm font-medium text-slate-400">kg</span>
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
+          {/* One session card: what you've moved, the session clock and the streak together, instead of
+              three separate rows pushing the workout itself down the screen. */}
+          <div className="rounded-3xl bg-gradient-to-br from-emerald-600/20 to-slate-900 px-4 pb-2 pt-3 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs text-slate-400">{isToday ? "Today's" : 'Total'} moved</p>
+                <p className="text-2xl font-bold text-white">
+                  {sets.reduce((sum, s) => (s.is_warmup ? sum : sum + s.weight * s.reps), 0).toLocaleString()}{' '}
+                  <span className="text-sm font-medium text-slate-400">kg</span>
+                </p>
+              </div>
               <button
                 onClick={() => setPreworkout.mutate({ sessionId: session.id, preworkout: !session.preworkout })}
-                className={`rounded-full px-3 py-1 text-xs font-medium transition ${
-                  session.preworkout
-                    ? 'bg-emerald-600/20 text-emerald-400'
-                    : 'bg-slate-800 text-slate-500 hover:text-slate-300'
+                aria-pressed={session.preworkout}
+                className={`min-h-8 rounded-full px-3 text-xs font-medium transition ${
+                  session.preworkout ? 'bg-emerald-600/20 text-emerald-400' : 'bg-slate-800 text-slate-500'
                 }`}
               >
                 Preworkout
               </button>
-              {sets.length > 0 && (
-                <button
-                  onClick={() => {
-                    if (!confirmingDelete) {
-                      setConfirmingDelete(true)
-                      return
-                    }
-                    const snapshot = { ...session, workout_sets: sets }
-                    setConfirmingDelete(false)
-                    setActiveExercise(null)
-                    setActiveSuperset(null)
-                    setAppendPicking(false)
-                    undoable(
-                      'Workout deleted',
-                      () => deleteSession.mutate(session.id),
-                      () => restoreSession.mutate(snapshot),
-                    )
-                  }}
-                  onBlur={() => setConfirmingDelete(false)}
-                  aria-label="Delete workout"
-                  className={`rounded-full px-3 py-1 text-xs font-medium transition ${
-                    confirmingDelete
-                      ? 'bg-red-600 text-on-accent'
-                      : 'bg-slate-800 text-slate-500 hover:text-red-400'
-                  }`}
-                >
-                  {confirmingDelete ? (
-                    'Tap to confirm'
-                  ) : (
-                    <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M3 6h18" />
-                      <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                      <line x1="10" y1="11" x2="10" y2="17" />
-                      <line x1="14" y1="11" x2="14" y2="17" />
-                    </svg>
-                  )}
-                </button>
-              )}
+            </div>
+            <div className="mt-2 flex items-center justify-between border-t border-white/5 pt-1.5">
+              <SessionTimer session={session} />
+              <FireStreak count={streaks?.currentStreak ?? 0} label="day streak" />
             </div>
           </div>
-
-          <SessionTimer session={session} />
 
           {(() => {
             const setForm = activeExercise && (
@@ -504,6 +453,29 @@ export function WorkoutsTab({
             )
           })()}
 
+          {/* Secondary tools, next to where you add exercises rather than at the top of the screen. */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowPresets(true)}
+              className="min-h-9 flex-1 rounded-xl bg-slate-800/60 px-3 text-xs font-medium text-slate-400 active:bg-slate-700"
+            >
+              Presets
+            </button>
+            <button
+              onClick={onOpenHistory}
+              className="min-h-9 flex-1 rounded-xl bg-slate-800/60 px-3 text-xs font-medium text-slate-400 active:bg-slate-700"
+            >
+              History
+            </button>
+            <CopyDayButton
+              disabled={sets.length === 0}
+              onCopy={(targetDate) => {
+                copyDay.mutate({ fromDate: date, toDate: targetDate })
+                show(`Copying to ${targetDate}…`)
+              }}
+            />
+          </div>
+
           {(() => {
             const hiddenIds = new Set<string>()
             if (activeExercise) hiddenIds.add(activeExercise.id)
@@ -536,12 +508,42 @@ export function WorkoutsTab({
 
           {musclesTrained.length > 0 && (
             <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
-              <h3 className="mb-2 text-center text-sm font-medium text-slate-300">Muscle groups worked</h3>
-              <MuscleDiagram selected={musclesTrained} size={90} />
+              <h3 className="mb-3 text-center text-sm font-medium text-slate-300">Muscles worked · working sets</h3>
+              <MuscleDiagram intensity={setsPerMuscle} size={110} showLegend />
             </div>
           )}
 
           <WeeklyVolumeCard />
+
+          {/* Destructive and rare, so it lives at the very bottom - still tap-to-confirm with undo. */}
+          {sets.length > 0 && (
+            <div className="flex justify-center pb-2">
+              <button
+                onClick={() => {
+                  if (!confirmingDelete) {
+                    setConfirmingDelete(true)
+                    return
+                  }
+                  const snapshot = { ...session, workout_sets: sets }
+                  setConfirmingDelete(false)
+                  setActiveExercise(null)
+                  setActiveSuperset(null)
+                  setAppendPicking(false)
+                  undoable(
+                    'Workout deleted',
+                    () => deleteSession.mutate(session.id),
+                    () => restoreSession.mutate(snapshot),
+                  )
+                }}
+                onBlur={() => setConfirmingDelete(false)}
+                className={`min-h-11 rounded-xl px-4 text-sm font-medium transition ${
+                  confirmingDelete ? 'bg-red-600 text-on-accent' : 'text-slate-500 active:text-red-400'
+                }`}
+              >
+                {confirmingDelete ? 'Tap again to delete this workout' : 'Delete this workout'}
+              </button>
+            </div>
+          )}
         </>
       )}
 

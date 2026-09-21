@@ -60,8 +60,6 @@ export function DietTab() {
 
   return (
     <div className="space-y-4 p-4">
-      <FireStreak count={streak.data?.current ?? 0} label="on-target streak" />
-
       <div
         onClick={!editing ? startEditing : undefined}
         className={`rounded-3xl bg-gradient-to-br from-emerald-600/20 to-slate-900 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5 transition ${
@@ -70,7 +68,12 @@ export function DietTab() {
       >
         <div className="mb-2 flex items-center justify-between">
           <h2 className="text-sm font-medium text-slate-300">Diet goal</h2>
-          {!editing && <span className="text-xs text-slate-500">Tap to edit</span>}
+          {!editing &&
+            ((streak.data?.current ?? 0) > 0 ? (
+              <FireStreak count={streak.data?.current ?? 0} label="on-target streak" />
+            ) : (
+              <span className="text-xs text-slate-500">Tap to edit</span>
+            ))}
         </div>
 
         {editing ? (

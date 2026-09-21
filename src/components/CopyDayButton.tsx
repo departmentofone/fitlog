@@ -17,7 +17,7 @@ export function CopyDayButton({
       <button
         disabled={disabled}
         onClick={() => setOpen(true)}
-        className="flex-1 rounded-xl bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:bg-slate-700 disabled:opacity-40"
+        className="min-h-9 flex-1 rounded-xl bg-slate-800/60 px-3 text-xs font-medium text-slate-400 transition active:bg-slate-700 disabled:opacity-40"
       >
         {label}
       </button>

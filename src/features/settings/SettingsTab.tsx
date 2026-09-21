@@ -151,8 +151,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
           </span>
         </div>
         <p className="mb-3 text-xs text-slate-500">
-          Workouts and Meals are always there. Pick up to {MAX_BOTTOM_NAV_EXTRAS} more for one-tap access — everything else is
-          under More.
+          Pin up to {MAX_BOTTOM_NAV_EXTRAS} more next to Workouts and Meals.
         </p>
         <div className="grid grid-cols-3 gap-1.5">
           {BOTTOM_NAV_CHOICES.map((choice) => {

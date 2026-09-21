@@ -153,8 +153,8 @@ export function HistoryView() {
       {/* Streaks as one row of three - it was two cards' worth of tiles repeating the streak pills
           already shown on Workouts and Diet. */}
       <div className="grid grid-cols-3 gap-2">
-        <StatTile label="Workout streak" value={`${streaks?.currentStreak ?? 0}d`} sub={`best ${streaks?.bestStreak ?? 0}d`} />
-        <StatTile label="Diet streak" value={`${dietStreak.data?.current ?? 0}d`} sub={`best ${dietStreak.data?.best ?? 0}d`} />
+        <StatTile label="Training" value={`${streaks?.currentStreak ?? 0}d`} sub={`streak · best ${streaks?.bestStreak ?? 0}`} />
+        <StatTile label="Diet" value={`${dietStreak.data?.current ?? 0}d`} sub={`streak · best ${dietStreak.data?.best ?? 0}`} />
         <StatTile label="Workouts" value={String(streaks?.totalSessions ?? 0)} sub="logged" />
       </div>
 

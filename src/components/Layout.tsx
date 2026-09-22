@@ -246,8 +246,10 @@ export function Layout({
       {/* Ambient glow blobs - fixed behind the whole app. They're already heavily blurred, so the
           translucent cards over them read as frosted glass without paying for a backdrop-filter on
           every card (reserved for the header, nav, and floating layers). */}
-      <div className="pointer-events-none fixed -left-16 -top-16 z-0 h-64 w-64 rounded-full bg-emerald-400/40 blur-[90px]" />
-      <div className="pointer-events-none fixed -bottom-24 -right-16 z-0 h-64 w-64 rounded-full bg-amber-400/25 blur-[90px]" />
+      <div className="aurora-a pointer-events-none fixed -left-16 -top-16 z-0 h-64 w-64 rounded-full bg-emerald-400/40 blur-[90px]" />
+      <div className="aurora-b pointer-events-none fixed -bottom-24 -right-16 z-0 h-64 w-64 rounded-full bg-amber-400/25 blur-[90px]" />
+      {/* Third glow for light mode's aurora only (hidden in dark - see index.css). */}
+      <div className="aurora-c pointer-events-none fixed z-0 hidden rounded-full" />
 
       <header className="relative z-10 flex items-center justify-between gap-2 border-b border-white/10 bg-slate-950/40 py-1.5 pl-4 pr-2 pt-[max(0.375rem,env(safe-area-inset-top))] backdrop-blur-xl">
         <div className="flex items-center gap-2">

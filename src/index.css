@@ -137,11 +137,13 @@ body {
 
 html[data-theme="light"] {
   --color-success: #166534;
-  --color-slate-950: #eef2fa;
-  /* Opaque enough that cards separate from the pale canvas without relying on blur. */
-  --color-slate-900: rgba(255, 255, 255, 0.78);
-  --color-slate-800: rgba(255, 255, 255, 0.4);
-  --color-slate-700: rgba(15, 23, 42, 0.12);
+  --color-slate-950: #edf1f8;
+  /* Glass, not paper: half-transparent white so the aurora tints every card (see "Aurora Glass
+     - light" at the end of this file for the frost, edges and shadows that go with it). */
+  --color-slate-900: rgba(255, 255, 255, 0.52);
+  /* Surfaces inside a card (inputs, chips, rows) sit a step more opaque so they still read. */
+  --color-slate-800: rgba(255, 255, 255, 0.6);
+  --color-slate-700: rgba(15, 23, 42, 0.1);
   --color-slate-600: #64748b;
   --color-slate-500: #475569;
   --color-slate-400: #33415a;
@@ -154,7 +156,7 @@ html, body {
   background: var(--color-slate-950, #0b0f1e);
 }
 html[data-theme="light"] body {
-  background: #eef2fa;
+  background: #edf1f8;
 }
 
 html[data-palette="violet"] {
@@ -213,4 +215,90 @@ html[data-palette="amber"] {
       right: min(0px, calc((100% - 44px) / 2));
     }
   }
+}
+
+/*
+ * "Aurora Glass" - light. Dark mode already reads as glass because translucent cards sit over
+ * glowing colour on a deep canvas; light mode had near-opaque white cards on a flat pale canvas
+ * with grey drop shadows, so it looked like plain paper. Everything below is scoped to light mode
+ * only - dark mode is untouched.
+ */
+
+/* A real aurora behind everything: three large, soft, saturated glows instead of one faint one. */
+html[data-theme="light"] .aurora-a {
+  width: 22rem;
+  height: 22rem;
+  top: -6rem;
+  left: -7rem;
+  background: rgba(52, 211, 153, 0.55);
+  filter: blur(80px);
+}
+html[data-theme="light"] .aurora-b {
+  width: 22rem;
+  height: 22rem;
+  bottom: -7rem;
+  right: -7rem;
+  background: rgba(251, 191, 36, 0.4);
+  filter: blur(90px);
+}
+html[data-theme="light"] .aurora-c {
+  display: block;
+  width: 18rem;
+  height: 18rem;
+  top: 38%;
+  right: -8rem;
+  background: rgba(129, 140, 248, 0.38);
+  filter: blur(90px);
+}
+
+/* Frosted glass: blur + saturate what's behind the translucent cards, sheets and bars. */
+html[data-theme="light"] .bg-slate-900,
+html[data-theme="light"] .bg-slate-950\/40,
+html[data-theme="light"] .bg-slate-950\/60,
+html[data-theme="light"] .bg-slate-950\/90 {
+  -webkit-backdrop-filter: blur(18px) saturate(1.6);
+  backdrop-filter: blur(18px) saturate(1.6);
+}
+
+/* Glass edges: a bright top highlight instead of a dark hairline ("white" is remapped to navy in
+   light mode, which turned every card's highlight border into a grey line). */
+html[data-theme="light"] .border-white\/10 {
+  border-color: rgba(255, 255, 255, 0.9);
+}
+html[data-theme="light"] .border-white\/5 {
+  border-color: rgba(15, 23, 42, 0.06);
+}
+
+/* Soft, tinted shadows instead of heavy grey ones. */
+html[data-theme="light"] .shadow-black\/20,
+html[data-theme="light"] .shadow-black\/30,
+html[data-theme="light"] .shadow-black\/40 {
+  --tw-shadow-color: rgba(51, 65, 120, 0.1);
+}
+
+/* Readable colour on a light surface: the dark-mode 400 shades are ~1.5-2.5:1 on white. These are
+   4.3-4.8:1. Fills (rings, bars, the body map) darken with them, which also suits a light canvas. */
+html[data-theme="light"] {
+  --color-emerald-300: #0f9e6e;
+  --color-emerald-400: #0b7f58;
+  --color-blue-400: #2563eb;
+  --color-amber-400: #b45309;
+  --color-orange-400: #c2410c;
+  --color-red-400: #dc2626;
+}
+html[data-theme="light"][data-palette="violet"] {
+  --color-emerald-300: #8b5cf6;
+  --color-emerald-400: #7c3aed;
+}
+html[data-theme="light"][data-palette="cyan"] {
+  --color-emerald-300: #0891b2;
+  --color-emerald-400: #0e7490;
+}
+html[data-theme="light"][data-palette="rose"] {
+  --color-emerald-300: #f43f5e;
+  --color-emerald-400: #e11d48;
+}
+html[data-theme="light"][data-palette="amber"] {
+  --color-emerald-300: #d97706;
+  --color-emerald-400: #b45309;
 }

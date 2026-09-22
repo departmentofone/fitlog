@@ -58,6 +58,28 @@ export function useStartSession() {
   })
 }
 
+/**
+ * Saves the workout's note (one per session, like Strong's workout note - how it went, what changed).
+ * An empty note is stored as null, which removes it.
+ */
+export function useSetSessionNote() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ sessionId, notes }: { sessionId: string; notes: string }) => {
+      const trimmed = notes.trim()
+      const { error } = await supabase
+        .from('workout_sessions')
+        .update({ notes: trimmed ? trimmed : null })
+        .eq('id', sessionId)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['session'] })
+      qc.invalidateQueries({ queryKey: ['session-detail'] })
+    },
+  })
+}
+
 /** Creates today's session (if missing) or updates its preworkout flag. Used from Settings. */
 export function useSetPreworkout() {
   const { user } = useAuth()
@@ -171,6 +193,31 @@ function buildSetRow(s: StoredSet, sessionId: string) {
   return row
 }
 
+/**
+ * Keeps an exercise's set numbers consecutive within a session (1, 2, 3...), so deleting set 1 turns
+ * the old set 2 into set 1 everywhere. With `openSlot`, that number is left free and later sets move
+ * up one - used by undo to put a deleted set back where it was.
+ */
+async function renumberExerciseSets(sessionId: string, exerciseId: string, openSlot?: number) {
+  const { data, error } = await supabase
+    .from('workout_sets')
+    .select('id, set_number')
+    .eq('session_id', sessionId)
+    .eq('exercise_id', exerciseId)
+    .order('set_number', { ascending: true })
+    .order('created_at', { ascending: true })
+  if (error) throw error
+  let next = 1
+  for (const row of (data ?? []) as { id: string; set_number: number }[]) {
+    if (next === openSlot) next++
+    if (row.set_number !== next) {
+      const { error: updateError } = await supabase.from('workout_sets').update({ set_number: next }).eq('id', row.id)
+      if (updateError) throw updateError
+    }
+    next++
+  }
+}
+
 export function useSessionSets(sessionId: string | null | undefined) {
   return useQuery({
     queryKey: ['sets', sessionId],
@@ -198,6 +245,7 @@ export function useAddSet(sessionId: string | null | undefined) {
       difficulty,
       isWarmup,
       supersetGroup,
+      restore,
     }: {
       exerciseId: string
       setNumber: number
@@ -207,8 +255,11 @@ export function useAddSet(sessionId: string | null | undefined) {
       isWarmup?: boolean
       /** Non-null to log this set as part of a superset/circuit group (see migration_v18). */
       supersetGroup?: number | null
+      /** Undoing a delete: make room at `setNumber` so the set goes back into its old place. */
+      restore?: boolean
     }) => {
       if (!sessionId) throw new Error('No active session')
+      if (restore) await renumberExerciseSets(sessionId, exerciseId, setNumber)
       const row = buildSetRow(
         { exercise_id: exerciseId, set_number: setNumber, weight, reps, difficulty, is_warmup: isWarmup ?? false, superset_group: supersetGroup },
         sessionId,
@@ -263,8 +314,15 @@ export function useDeleteSet(_sessionId: string | null | undefined) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (setId: string) => {
+      const { data: target, error: readError } = await supabase
+        .from('workout_sets')
+        .select('session_id, exercise_id')
+        .eq('id', setId)
+        .maybeSingle()
+      if (readError) throw readError
       const { error } = await supabase.from('workout_sets').delete().eq('id', setId)
       if (error) throw error
+      if (target) await renumberExerciseSets(target.session_id, target.exercise_id)
     },
     // A set can be deleted from views keyed by session id (`['sets', id]`) or by date
     // (History's `session-detail`/`session-dates`) - invalidate both broadly rather than
@@ -294,7 +352,7 @@ export function useRestoreSession() {
       if (!user) throw new Error('Not signed in')
       const { data: created, error: sessionError } = await supabase
         .from('workout_sessions')
-        .insert({ user_id: user.id, date: snapshot.date, preworkout: snapshot.preworkout })
+        .insert({ user_id: user.id, date: snapshot.date, preworkout: snapshot.preworkout, notes: snapshot.notes ?? null })
         .select()
         .single()
       if (sessionError) throw sessionError

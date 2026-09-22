@@ -108,6 +108,9 @@ function DayDetail({ date }: { date: string }) {
           </button>
         </div>
       </div>
+      {session.notes && (
+        <p className="mb-2 whitespace-pre-wrap rounded-lg bg-slate-800/60 px-2.5 py-1.5 text-xs text-slate-300">{session.notes}</p>
+      )}
       <div className="space-y-2">
         {Array.from(grouped.entries()).map(([name, sets]) => (
           <div key={name} className="text-xs text-slate-300">

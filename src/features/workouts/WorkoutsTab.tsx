@@ -32,6 +32,7 @@ import { ExerciseSummaryBox } from './ExerciseSummaryBox'
 import { PresetsView } from './PresetsView'
 import { PreworkoutGate } from './PreworkoutGate'
 import { SessionTimer } from './SessionTimer'
+import { SessionNote } from './SessionNote'
 import { SetForm } from './SetForm'
 import { WeeklyVolumeCard } from './WeeklyVolumeCard'
 
@@ -235,6 +236,7 @@ export function WorkoutsTab({
           difficulty: target.difficulty,
           isWarmup: target.is_warmup,
           supersetGroup: target.superset_group,
+          restore: true,
         }),
     )
   }
@@ -503,6 +505,8 @@ export function WorkoutsTab({
               </div>
             )
           })()}
+
+          {session && <SessionNote session={session} />}
 
           <WeeklyVolumeCard todaySetsPerMuscle={setsPerMuscle} />
 

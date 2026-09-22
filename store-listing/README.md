@@ -70,19 +70,25 @@ FitLog is a tracking tool, not medical advice. Talk to a professional before sta
 ## Android package name
 
 ```
-com.fitlog.app
+com.departmentofone.fitlog
 ```
 
-Chosen 2026-09-20; checked as unused by any published Play app. **Permanent** once uploaded - it
-can never be changed, and it is what the Play Store URL
-(`play.google.com/store/apps/details?id=com.fitlog.app`) is built from. Enter it in PWABuilder
-instead of the default it suggests (`app.vercel.fitlog_two_gamma.twa`), which would bake the
-temporary Vercel hostname into the ID forever.
+`com.fitlog.app` (chosen 2026-09-20) turned out to already be reserved by someone else on Play -
+Console rejected it with "This package name is already in use," even though no app is published
+under it. Package names are a permanent, global namespace: once any app anywhere has ever used one,
+it's gone forever for every developer, with no appeal. Switched to `com.departmentofone.fitlog`
+(2026-09-22), matching the "Department of One" developer/publisher name.
+
+**Permanent** once uploaded - it can never be changed, and it is what the Play Store URL
+(`play.google.com/store/apps/details?id=com.departmentofone.fitlog`) is built from. Enter it in
+PWABuilder instead of the default it suggests (`app.vercel.fitlog_two_gamma.twa`), which would bake
+the temporary Vercel hostname into the ID forever. If this one also turns out to be taken, the
+fallbacks are `app.departmentofone.fitlog`, then `com.deptofone.fitlog`.
 
 After the first upload, write the app-link file with it:
 
 ```
-node scripts/set-assetlinks.mjs com.fitlog.app <upload-key SHA-256> <Play app-signing SHA-256>
+node scripts/set-assetlinks.mjs com.departmentofone.fitlog <upload-key SHA-256> <Play app-signing SHA-256>
 ```
 
 ## Graphics

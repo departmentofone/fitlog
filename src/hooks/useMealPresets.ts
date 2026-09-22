@@ -68,6 +68,63 @@ export function useCreateMealPresetFromMeal() {
   })
 }
 
+/** Creates a preset with no items yet - the Foods tab's "add to preset" flow fills it in afterward. */
+export function useCreateMealPreset() {
+  const { user } = useAuth()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (name: string) => {
+      if (!user) throw new Error('Not signed in')
+      const { data, error } = await supabase.from('meal_presets').insert({ user_id: user.id, name }).select().single()
+      if (error) throw error
+      return data
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['meal-presets', user?.id] }),
+  })
+}
+
+export function useRenameMealPreset() {
+  const { user } = useAuth()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ presetId, name }: { presetId: string; name: string }) => {
+      const { error } = await supabase.from('meal_presets').update({ name }).eq('id', presetId)
+      if (error) throw error
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['meal-presets', user?.id] }),
+  })
+}
+
+/** Adds one food into an existing preset - the Foods tab's "add to preset" action. */
+export function useAddMealPresetItem() {
+  const { user } = useAuth()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (input: { presetId: string; foodId: string; grams: number; servingLabel: string | null }) => {
+      const { error } = await supabase.from('meal_preset_items').insert({
+        preset_id: input.presetId,
+        food_id: input.foodId,
+        grams: input.grams,
+        serving_label: input.servingLabel,
+      })
+      if (error) throw error
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['meal-presets', user?.id] }),
+  })
+}
+
+export function useRemoveMealPresetItem() {
+  const { user } = useAuth()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (itemId: string) => {
+      const { error } = await supabase.from('meal_preset_items').delete().eq('id', itemId)
+      if (error) throw error
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['meal-presets', user?.id] }),
+  })
+}
+
 export function useSetMealPresetShared() {
   const { user } = useAuth()
   const qc = useQueryClient()

@@ -1,65 +1,71 @@
 import { parseDecimal } from '../../lib/number'
 import { useState } from 'react'
-import { useCreateFood } from '../../hooks/useFoods'
+import { useCreateFood, useUpdateFood } from '../../hooks/useFoods'
 import type { Food } from '../../types'
 
-/** Form for creating a brand-new food (macros per 100g, an optional common serving, and optional micros). */
-export function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) => void; onCancel: () => void }) {
+/**
+ * Form for creating a brand-new food, or editing one you own (pass `food`) - same fields either
+ * way, just backed by a different mutation. Used by FoodPicker (create, while logging a meal) and
+ * the Foods tab (create or edit, while managing the library).
+ */
+export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved: (food: Food) => void; onCancel: () => void }) {
   const createFood = useCreateFood()
-  const [name, setName] = useState('')
-  const [calories, setCalories] = useState('')
-  const [protein, setProtein] = useState('')
-  const [carbs, setCarbs] = useState('')
-  const [fat, setFat] = useState('')
-  const [servingLabel, setServingLabel] = useState('')
-  const [servingGrams, setServingGrams] = useState('')
+  const updateFood = useUpdateFood()
+  const saving = food ? updateFood : createFood
+  const [name, setName] = useState(food?.name ?? '')
+  const [calories, setCalories] = useState(food ? String(food.calories_per_100g) : '')
+  const [protein, setProtein] = useState(food ? String(food.protein_per_100g) : '')
+  const [carbs, setCarbs] = useState(food ? String(food.carbs_per_100g) : '')
+  const [fat, setFat] = useState(food ? String(food.fat_per_100g) : '')
+  const [servingLabel, setServingLabel] = useState(food?.common_servings[0]?.label ?? '')
+  const [servingGrams, setServingGrams] = useState(food?.common_servings[0] ? String(food.common_servings[0].grams) : '')
 
   const [showMicros, setShowMicros] = useState(false)
-  const [fiber, setFiber] = useState('')
-  const [sugar, setSugar] = useState('')
-  const [sodium, setSodium] = useState('')
-  const [cholesterol, setCholesterol] = useState('')
-  const [potassium, setPotassium] = useState('')
-  const [calcium, setCalcium] = useState('')
-  const [iron, setIron] = useState('')
-  const [vitaminC, setVitaminC] = useState('')
-  const [vitaminA, setVitaminA] = useState('')
+  const [fiber, setFiber] = useState(food ? String(food.fiber_g) : '')
+  const [sugar, setSugar] = useState(food ? String(food.sugar_g) : '')
+  const [sodium, setSodium] = useState(food ? String(food.sodium_mg) : '')
+  const [cholesterol, setCholesterol] = useState(food ? String(food.cholesterol_mg) : '')
+  const [potassium, setPotassium] = useState(food ? String(food.potassium_mg) : '')
+  const [calcium, setCalcium] = useState(food ? String(food.calcium_mg) : '')
+  const [iron, setIron] = useState(food ? String(food.iron_mg) : '')
+  const [vitaminC, setVitaminC] = useState(food ? String(food.vitamin_c_mg) : '')
+  const [vitaminA, setVitaminA] = useState(food ? String(food.vitamin_a_mcg) : '')
 
-  async function handleCreate() {
+  async function handleSave() {
     if (!name.trim() || !calories) return
     const commonServings =
       servingLabel.trim() && servingGrams
         ? [{ label: servingLabel.trim(), grams: parseDecimal(servingGrams) }]
         : []
-    let food: Food
-    try {
-      food = await createFood.mutateAsync({
-        name: name.trim(),
-        caloriesPer100g: parseDecimal(calories) || 0,
-        proteinPer100g: parseDecimal(protein) || 0,
-        carbsPer100g: parseDecimal(carbs) || 0,
-        fatPer100g: parseDecimal(fat) || 0,
-        commonServings,
-        fiberG: parseDecimal(fiber) || 0,
-        sugarG: parseDecimal(sugar) || 0,
-        sodiumMg: parseDecimal(sodium) || 0,
-        cholesterolMg: parseDecimal(cholesterol) || 0,
-        potassiumMg: parseDecimal(potassium) || 0,
-        calciumMg: parseDecimal(calcium) || 0,
-        ironMg: parseDecimal(iron) || 0,
-        vitaminCMg: parseDecimal(vitaminC) || 0,
-        vitaminAMcg: parseDecimal(vitaminA) || 0,
-      })
-    } catch {
-      return // shown under the button via createFood.isError
+    const input = {
+      name: name.trim(),
+      caloriesPer100g: parseDecimal(calories) || 0,
+      proteinPer100g: parseDecimal(protein) || 0,
+      carbsPer100g: parseDecimal(carbs) || 0,
+      fatPer100g: parseDecimal(fat) || 0,
+      commonServings,
+      fiberG: parseDecimal(fiber) || 0,
+      sugarG: parseDecimal(sugar) || 0,
+      sodiumMg: parseDecimal(sodium) || 0,
+      cholesterolMg: parseDecimal(cholesterol) || 0,
+      potassiumMg: parseDecimal(potassium) || 0,
+      calciumMg: parseDecimal(calcium) || 0,
+      ironMg: parseDecimal(iron) || 0,
+      vitaminCMg: parseDecimal(vitaminC) || 0,
+      vitaminAMcg: parseDecimal(vitaminA) || 0,
     }
-    onCreated(food)
+    try {
+      const saved = food ? await updateFood.mutateAsync({ id: food.id, ...input }) : await createFood.mutateAsync(input)
+      onSaved(saved)
+    } catch {
+      return // shown under the button via saving.isError
+    }
   }
 
   return (
     <div className="rounded-2xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="font-medium text-white">New food</h3>
+        <h3 className="font-medium text-white">{food ? 'Edit food' : 'New food'}</h3>
         <button onClick={onCancel} className="text-sm text-slate-400 hover:text-slate-200">
           Cancel
         </button>
@@ -209,13 +215,13 @@ export function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) =
         )}
 
         <button
-          onClick={handleCreate}
-          disabled={!name.trim() || !calories || createFood.isPending}
+          onClick={handleSave}
+          disabled={!name.trim() || !calories || saving.isPending}
           className="w-full rounded-xl bg-emerald-600 py-2.5 font-medium text-on-accent hover:brightness-90 disabled:opacity-50"
         >
-          {createFood.isPending ? 'Saving…' : 'Create food'}
+          {saving.isPending ? 'Saving…' : food ? 'Save changes' : 'Create food'}
         </button>
-        {createFood.isError && (
+        {saving.isError && (
           <p role="alert" className="text-center text-xs text-red-400">
             Couldn't save this food. Check your connection and try again.
           </p>

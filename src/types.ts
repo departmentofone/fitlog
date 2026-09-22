@@ -102,6 +102,18 @@ export interface Food {
   vitamin_a_mcg: number
   common_servings: CommonServing[]
   barcode: string | null
+  /** Null = the default shared library. Set on foods that belong to an opt-in regional pack
+   *  (migration_v22) - hidden from search unless the account has turned that pack on. */
+  pack: string | null
+  created_at: string
+}
+
+/** A personal tag on a food (own, global, or packed) - one account's organization, not shared (migration_v22). */
+export interface FoodLabel {
+  id: string
+  user_id: string
+  food_id: string
+  label: string
   created_at: string
 }
 
@@ -140,6 +152,7 @@ export type Tab =
   | 'history'
   | 'achievements'
   | 'programs'
+  | 'foods'
   | 'calculator'
   | 'whatsnew'
   | 'about'
@@ -164,6 +177,8 @@ export interface UserSettings {
   bottom_nav_tabs: Tab[]
   /** When the user agreed to the health-data disclosure (null = not yet asked/agreed). */
   health_data_consent_at: string | null
+  /** Opt-in regional food packs this account has turned on, e.g. ['serbia'] (migration_v22). */
+  enabled_food_packs: string[]
   updated_at: string
 }
 

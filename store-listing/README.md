@@ -17,7 +17,7 @@ FitLog: Workout & Meal Tracker
 Free workout, meal & macro tracker. No ads, no paywalls, no premium tier.
 ```
 
-**Full description** (4,000 max, ~2,300 used)
+**Full description** (4,000 max, ~2,615 used)
 
 ```
 FitLog is a workout log, meal and macro tracker, and fasting timer in one app. It's completely free: no ads, no paywalls, and no premium tier. Every feature is available to everyone.
@@ -25,6 +25,7 @@ FitLog is a workout log, meal and macro tracker, and fasting timer in one app. I
 LOG YOUR TRAINING
 • Log sets in seconds with big +/− steppers for weight and reps, with your last weight filled in for you
 • Rate each set's effort (RPE) and mark warm-up sets
+• A note on every workout, plus pinned notes on each exercise
 • Built-in rest timer between sets
 • Supersets and circuits, with rest after each full round
 • Exercise history, personal records, and estimated 1-rep max charts
@@ -35,7 +36,8 @@ LOG YOUR TRAINING
 TRACK WHAT YOU EAT
 • Meals with calories, protein, carbs, and fat, plus fiber, sugar, sodium, and other micronutrients
 • Barcode scanner for packaged foods (powered by Open Food Facts)
-• Custom foods, recipes that scale by servings, and meal presets
+• A food library you control: edit or delete the foods you add, tag any food with your own labels, and turn on regional product packs if you want them
+• Custom foods, recipes that scale by servings, and meal presets with a dedicated editor to build and update them
 • Copy a whole day of meals in one tap
 • Water and alcohol tracking
 • Daily totals, trends, and a nutrition breakdown
@@ -55,7 +57,7 @@ MADE TO BE QUICK
 • Export all of your data at any time
 
 PRIVATE BY DEFAULT
-Your logs are visible only to you, unless you choose to share a preset, recipe, or program. FitLog has no ads, no trackers, and no data selling. You can delete your account, and all of its data, from Settings or on the web.
+Your logs are visible only to you, unless you choose to share a preset, recipe, or program. Foods you add are private to your account too. FitLog has no ads, no trackers, and no data selling. You can delete your account, and all of its data, from Settings or on the web.
 
 WHY IT'S FREE
 FitLog started as a personal project and grew into something worth sharing. There are no premium plans and there never will be, because nobody should be locked out of a feature.

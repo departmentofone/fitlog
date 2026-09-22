@@ -20,7 +20,7 @@ export function FoodPicker({ onAdd, onCancel }: FoodPickerProps) {
   if (creating) {
     return (
       <NewFoodForm
-        onCreated={(food) => {
+        onSaved={(food) => {
           // Leave the form and go straight to choosing an amount for the new food.
           setCreating(false)
           setSelected(food)

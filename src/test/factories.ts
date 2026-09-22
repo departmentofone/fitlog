@@ -20,6 +20,7 @@ export function makeFood(overrides: Partial<Food> = {}): Food {
     vitamin_a_mcg: 0,
     common_servings: [],
     barcode: null,
+    pack: null,
     created_at: '2024-01-01T00:00:00.000Z',
     ...overrides,
   }

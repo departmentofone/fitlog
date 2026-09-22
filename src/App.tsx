@@ -22,6 +22,7 @@ const FastingTab = lazy(() => import('./features/fasting/FastingTab').then((m) =
 const GoalsTab = lazy(() => import('./features/goals/GoalsTab').then((m) => ({ default: m.GoalsTab })))
 const AchievementsTab = lazy(() => import('./features/achievements/AchievementsTab').then((m) => ({ default: m.AchievementsTab })))
 const ProgramsTab = lazy(() => import('./features/programs/ProgramsTab').then((m) => ({ default: m.ProgramsTab })))
+const FoodsTab = lazy(() => import('./features/foods/FoodsTab').then((m) => ({ default: m.FoodsTab })))
 const MaintenanceCalculatorTab = lazy(() =>
   import('./features/calculator/MaintenanceCalculatorTab').then((m) => ({ default: m.MaintenanceCalculatorTab })),
 )
@@ -183,6 +184,7 @@ function App() {
           {tab === 'history' && <HistoryView />}
           {tab === 'achievements' && <AchievementsTab />}
           {tab === 'programs' && <ProgramsTab />}
+          {tab === 'foods' && <FoodsTab />}
           {tab === 'calculator' && <MaintenanceCalculatorTab />}
           {tab === 'whatsnew' && <WhatsNewTab />}
             {tab === 'about' && <AboutTab />}

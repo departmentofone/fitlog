@@ -56,6 +56,13 @@ const PATHS: Record<Tab | 'more', ReactNode> = {
       <path d="M8 8h8M8 12h8M8 16h5" />
     </>
   ),
+  foods: (
+    <>
+      <path d="M4 8l1.5-4h13L20 8" />
+      <path d="M4 8h16l-1.5 12a2 2 0 0 1-2 1.8H7.5a2 2 0 0 1-2-1.8L4 8z" />
+      <path d="M9 12v5M12 12v5M15 12v5" />
+    </>
+  ),
   calculator: (
     <>
       <rect x="5" y="3" width="14" height="18" rx="2" />

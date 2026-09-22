@@ -81,7 +81,7 @@ For every row: **Processed ephemerally? No.** Data is **not shared**. Purposes u
 | Health and fitness → **Health info** | Yes | Optional | App functionality | Body weight, height, body measurements, meals and nutrition, water, alcohol, fasting |
 | Health and fitness → **Fitness info** | Yes | Required | App functionality | Workouts, sets, reps, weights, effort ratings, rest days, activity level, goals |
 | Photos and videos → **Photos** | Yes | Optional | App functionality | Progress photos and meal photos the user adds |
-| App activity → **Other user-generated content** | Yes | Optional | App functionality | Custom foods, recipes, presets, programs, exercise notes |
+| App activity → **Other user-generated content** | Yes | Optional | App functionality | Custom foods, recipes, presets, programs, exercise notes, workout notes, food labels |
 | App info and performance → **Crash logs** | Yes | Required (automatic) | Analytics | Error messages and stack traces, recorded only while signed in |
 | App info and performance → **Diagnostics** | Yes | Required (automatic) | Analytics | Browser user-agent and page recorded with each error |
 | Device or other IDs → **Device or other IDs** | Yes | Optional | App functionality | Push-notification subscription (only if notifications are turned on) |

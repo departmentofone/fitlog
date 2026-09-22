@@ -20,6 +20,7 @@ export const DEFAULT_SETTINGS: Omit<UserSettings, 'user_id' | 'updated_at'> = {
   haptics_enabled: true,
   bottom_nav_tabs: [],
   health_data_consent_at: null,
+  enabled_food_packs: [],
 }
 
 export function useUserSettings() {

@@ -38,15 +38,21 @@ export function ExerciseDetailModal({ exercise, onClose }: { exercise: Exercise;
   const bestOneRm = working.reduce((max, h) => Math.max(max, estimate1RM(h.weight, h.reps)), 0)
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-4 sm:items-center" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] sm:items-center" onClick={onClose}>
       <div
-        className="max-h-[85vh] w-full max-w-sm overflow-y-auto rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-xl shadow-[var(--glow-shadow)] ring-1 ring-white/10"
+        className="max-h-[calc(var(--app-height)-2rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] w-full max-w-sm overflow-y-auto overscroll-contain rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-xl shadow-[var(--glow-shadow)] ring-1 ring-white/10"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-3 flex items-center justify-between">
           <h3 className="font-medium text-white">{exercise.name}</h3>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-200">
-            ×
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="-my-2 -mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-slate-400 active:bg-white/10"
+          >
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
           </button>
         </div>
 

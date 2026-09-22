@@ -50,7 +50,7 @@ export function PresetsManagerView() {
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder='Preset name (e.g. "Usual breakfast")'
-            className="flex-1 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="min-w-0 flex-1 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
           />
           <button
             disabled={!newName.trim() || createPreset.isPending}
@@ -60,11 +60,11 @@ export function PresetsManagerView() {
               setCreating(false)
               setOpenId(created.id)
             }}
-            className="rounded-xl bg-emerald-600 px-4 text-sm font-medium text-on-accent disabled:opacity-50"
+            className="shrink-0 rounded-xl bg-emerald-600 px-4 text-sm font-medium text-on-accent disabled:opacity-50"
           >
             Create
           </button>
-          <button onClick={() => setCreating(false)} className="rounded-xl bg-slate-800 px-3 text-sm text-slate-300">
+          <button onClick={() => setCreating(false)} className="shrink-0 rounded-xl bg-slate-800 px-3 text-sm text-slate-300">
             Cancel
           </button>
         </div>

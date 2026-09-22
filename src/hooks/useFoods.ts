@@ -38,9 +38,10 @@ export function useFoodLibrary() {
 }
 
 /**
- * Ranked matches for `search`: the plain ingredient first, processed products last. Foods in a
- * pack the account hasn't turned on (see the Foods tab) are left out entirely - this is what
- * actually keeps them out of everyday search, not just out of the default list.
+ * Ranked matches for `search`: the plain ingredient first, processed products last. Shared-library
+ * foods (`user_id` null) in a pack the account hasn't turned on (see the Foods tab) are left out
+ * entirely - this is what actually keeps them out of everyday search, not just out of the default
+ * list. A `pack` value on a food you own is just your own label and never hides it from you.
  */
 export function useFoodSearch(search: string) {
   const library = useFoodLibrary()
@@ -48,7 +49,7 @@ export function useFoodSearch(search: string) {
   const enabledPacks = settings?.enabled_food_packs ?? []
   const data = useMemo(() => {
     if (!library.data) return undefined
-    const visible = library.data.filter((f) => !f.pack || enabledPacks.includes(f.pack))
+    const visible = library.data.filter((f) => f.user_id || !f.pack || enabledPacks.includes(f.pack))
     return rankFoods(visible, search)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [library.data, search, enabledPacks.join(',')])

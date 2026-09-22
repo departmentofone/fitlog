@@ -302,3 +302,51 @@ html[data-theme="light"][data-palette="amber"] {
   --color-emerald-300: #d97706;
   --color-emerald-400: #b45309;
 }
+
+/*
+ * "Aurora Glass" - dark, glassier variant. Self-contained on purpose: deleting this block restores
+ * the previous, flatter dark look exactly. Light mode is unaffected (every rule is scoped to
+ * html:not([data-theme="light"])).
+ */
+
+/* More colour to see through the glass: bigger, stronger glows plus a third, indigo one. */
+html:not([data-theme="light"]) .aurora-a {
+  width: 20rem;
+  height: 20rem;
+  top: -5rem;
+  left: -6rem;
+  background: rgba(52, 211, 153, 0.5);
+  filter: blur(80px);
+}
+html:not([data-theme="light"]) .aurora-b {
+  width: 20rem;
+  height: 20rem;
+  bottom: -6rem;
+  right: -6rem;
+  background: rgba(251, 191, 36, 0.3);
+  filter: blur(90px);
+}
+html:not([data-theme="light"]) .aurora-c {
+  display: block;
+  width: 17rem;
+  height: 17rem;
+  top: 40%;
+  right: -7rem;
+  background: rgba(99, 102, 241, 0.4);
+  filter: blur(90px);
+}
+
+/* Frosted cards with a faint sheen: lighter at the top-left, as if catching light, fading clearer. */
+html:not([data-theme="light"]) .bg-slate-900 {
+  background-image: linear-gradient(150deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 65%);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  backdrop-filter: blur(16px) saturate(1.5);
+}
+
+/* Brighter glass edges. */
+html:not([data-theme="light"]) .border-white\/10 {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+html:not([data-theme="light"]) .ring-white\/5 {
+  --tw-ring-color: rgba(255, 255, 255, 0.1);
+}

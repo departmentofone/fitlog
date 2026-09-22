@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { consumeSharedText } from '../../lib/shareTarget'
 import type { Food } from '../../types'
 import { FoodAmountForm } from './FoodAmountForm'
 import { FoodSearchPanel } from './FoodSearchPanel'
@@ -10,7 +11,9 @@ interface FoodPickerProps {
 }
 
 export function FoodPicker({ onAdd, onCancel }: FoodPickerProps) {
-  const [search, setSearch] = useState('')
+  // Something shared in from another app (App.tsx's share_target handling) prefills search the
+  // first time a picker opens after that, then it's consumed - it won't reappear on a later add.
+  const [search, setSearch] = useState(() => consumeSharedText() ?? '')
   const [selected, setSelected] = useState<Food | null>(null)
   const [creating, setCreating] = useState(false)
 

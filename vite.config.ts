@@ -78,6 +78,25 @@ export default defineConfig({
         // A shortcut tapped while FitLog is already open reuses that window and navigates it.
         launch_handler: { client_mode: ['navigate-existing', 'auto'] },
         prefer_related_applications: false,
+        // Points browsers' install UI at the real Play listing (doesn't require the app to be
+        // live yet - it's just a hint, and prefer_related_applications stays false so PWA install
+        // is never blocked in its favor).
+        related_applications: [
+          {
+            platform: 'play',
+            id: 'com.departmentofone.fitlog',
+            url: 'https://play.google.com/store/apps/details?id=com.departmentofone.fitlog',
+          },
+        ],
+        // Lets someone share a link or a bit of text (a recipe URL, "2 eggs, 100g rice") into
+        // FitLog from another app's share sheet. GET + query params only, no file/photo sharing -
+        // that would need a service-worker POST handler. App.tsx reads title/text/url off the
+        // URL once on launch; FoodPicker's search box picks up whatever it finds.
+        share_target: {
+          action: '/',
+          method: 'GET',
+          params: { title: 'share-title', text: 'share-text', url: 'share-url' },
+        },
         icons: [
           { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },

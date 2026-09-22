@@ -5,11 +5,13 @@ import { TabErrorBoundary } from './components/TabErrorBoundary'
 import { Layout, type QuickAddAction } from './components/Layout'
 import { OnboardingTour } from './components/OnboardingTour'
 import { SkeletonCard } from './components/Skeleton'
+import { useToast } from './components/ToastProvider'
 import { useApplyTheme } from './hooks/useApplyTheme'
 import { useAuth } from './hooks/useAuth'
 import { useCelebrateUnlocks } from './hooks/useCelebrateUnlocks'
 import { useHashRoute } from './hooks/useHashRoute'
 import { useUserSettings } from './hooks/useUserSettings'
+import { storeSharedText } from './lib/shareTarget'
 import type { Tab } from './types'
 
 const WorkoutsTab = lazy(() => import('./features/workouts/WorkoutsTab').then((m) => ({ default: m.WorkoutsTab })))
@@ -77,6 +79,7 @@ function App() {
   const { user, loading, recoveringPassword, finishPasswordRecovery } = useAuth()
   const { route, navigate, goBack } = useHashRoute()
   const { data: settings, isLoading: settingsLoading } = useUserSettings()
+  const { show: showToast } = useToast()
   // A quick-add request for the tab it navigates to: the tab performs the action (open the
   // exercise picker, add a meal, jump to the fast picker) whenever the nonce changes.
   const [quickAction, setQuickAction] = useState<{ tab: Tab; nonce: number } | null>(null)
@@ -93,6 +96,24 @@ function App() {
     setQuickAction({ tab: target, nonce: Date.now() })
     navigate(target)
   }, [user, navigate])
+  // The OS share sheet (manifest `share_target`) hands a shared link/text back as ?share-title=&
+  // share-text=&share-url= - stash whatever's present for FoodPicker's search box to pick up once,
+  // strip the params, and land on Meals so it's ready to use.
+  useEffect(() => {
+    if (!user) return
+    const params = new URLSearchParams(window.location.search)
+    const parts = ['share-title', 'share-text', 'share-url'].map((key) => params.get(key)).filter((v): v is string => !!v)
+    if (parts.length === 0) return
+    params.delete('share-title')
+    params.delete('share-text')
+    params.delete('share-url')
+    const search = params.toString()
+    history.replaceState(history.state, '', `${window.location.pathname}${search ? `?${search}` : ''}${window.location.hash}`)
+    storeSharedText(parts.join(' — '))
+    showToast('Shared to FitLog — tap + on a meal to search for it')
+    setQuickAction({ tab: 'meals', nonce: Date.now() })
+    navigate('meals')
+  }, [user, navigate, showToast])
   // Drop the request once the user leaves that tab, so coming back later doesn't replay it.
   useEffect(() => {
     if (quickAction && route !== quickAction.tab) setQuickAction(null)

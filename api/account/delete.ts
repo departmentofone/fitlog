@@ -36,7 +36,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const anonKey = process.env.VITE_SUPABASE_ANON_KEY
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!supabaseUrl || !anonKey || !serviceRoleKey) {
-    return res.status(503).json({ error: 'Account deletion is not configured yet. Please email msolarovsocial@gmail.com.' })
+    return res.status(503).json({ error: 'Account deletion is not configured yet. Please email departmentofone.app@gmail.com.' })
   }
 
   const token = req.headers.authorization?.match(/^Bearer (.+)$/)?.[1]
@@ -64,7 +64,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.error('account deletion failed', userId, err)
     return res
       .status(500)
-      .json({ error: "We couldn't finish deleting your account. Please try again, or email msolarovsocial@gmail.com and we'll do it for you." })
+      .json({ error: "We couldn't finish deleting your account. Please try again, or email departmentofone.app@gmail.com and we'll do it for you." })
   }
 
   return res.status(200).json({ deleted: true })

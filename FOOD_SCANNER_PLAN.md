@@ -117,7 +117,7 @@ native-first-with-fallback split.** Concretely:
   GETs — treat the official docs page as authoritative and re-check before
   launch in case limits change.)
 - **Required header:** set a descriptive `User-Agent` in the form
-  `AppName/Version (contact-email)`, e.g. `FitLog/1.0 (msolarovsocial@gmail.com)`
+  `AppName/Version (contact-email)`, e.g. `FitLog/1.0 (departmentofone.app@gmail.com)`
   — this is explicitly requested by OFF's API docs so they can identify and
   whitelist/contact well-behaved clients instead of blocking them.
 - **License / attribution (ODbL):** OFF's terms of use

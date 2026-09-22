@@ -64,7 +64,7 @@ FitLog is a tracking tool, not medical advice. Talk to a professional before sta
 ```
 
 **Category:** Health & Fitness · **Tags:** Workout tracker, Calorie counter, Fitness, Nutrition, Intermittent fasting
-**Contact email:** msolarovsocial@gmail.com · **Website:** https://fitlog-two-gamma.vercel.app ·
+**Contact email:** departmentofone.app@gmail.com · **Website:** https://fitlog-two-gamma.vercel.app ·
 **Privacy policy:** https://fitlog-two-gamma.vercel.app/privacy
 
 ## Android package name

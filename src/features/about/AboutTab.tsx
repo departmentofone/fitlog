@@ -1,7 +1,7 @@
 import { formatBuildTime } from '../../lib/buildInfo'
 import { isAndroidApp } from '../../lib/platform'
 
-const FEEDBACK_EMAIL = 'msolarovsocial@gmail.com'
+const FEEDBACK_EMAIL = 'departmentofone.app@gmail.com'
 /** Set to the real Buy Me a Coffee page once it exists - until then the button is a disabled placeholder. */
 const DONATE_URL: string | null = null
 

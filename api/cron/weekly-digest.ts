@@ -22,7 +22,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: 'Push notifications are not configured yet.' })
   }
 
-  webpush.setVapidDetails('mailto:msolarovsocial@gmail.com', vapidPublicKey, vapidPrivateKey)
+  webpush.setVapidDetails('mailto:departmentofone.app@gmail.com', vapidPublicKey, vapidPrivateKey)
 
   // service_role bypasses RLS - safe here because this only ever runs server-side in Vercel,
   // never in a browser, and the key is a server-only env var.

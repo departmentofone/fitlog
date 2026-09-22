@@ -31,23 +31,28 @@ export function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) =
       servingLabel.trim() && servingGrams
         ? [{ label: servingLabel.trim(), grams: parseDecimal(servingGrams) }]
         : []
-    const food = await createFood.mutateAsync({
-      name: name.trim(),
-      caloriesPer100g: parseDecimal(calories) || 0,
-      proteinPer100g: parseDecimal(protein) || 0,
-      carbsPer100g: parseDecimal(carbs) || 0,
-      fatPer100g: parseDecimal(fat) || 0,
-      commonServings,
-      fiberG: parseDecimal(fiber) || 0,
-      sugarG: parseDecimal(sugar) || 0,
-      sodiumMg: parseDecimal(sodium) || 0,
-      cholesterolMg: parseDecimal(cholesterol) || 0,
-      potassiumMg: parseDecimal(potassium) || 0,
-      calciumMg: parseDecimal(calcium) || 0,
-      ironMg: parseDecimal(iron) || 0,
-      vitaminCMg: parseDecimal(vitaminC) || 0,
-      vitaminAMcg: parseDecimal(vitaminA) || 0,
-    })
+    let food: Food
+    try {
+      food = await createFood.mutateAsync({
+        name: name.trim(),
+        caloriesPer100g: parseDecimal(calories) || 0,
+        proteinPer100g: parseDecimal(protein) || 0,
+        carbsPer100g: parseDecimal(carbs) || 0,
+        fatPer100g: parseDecimal(fat) || 0,
+        commonServings,
+        fiberG: parseDecimal(fiber) || 0,
+        sugarG: parseDecimal(sugar) || 0,
+        sodiumMg: parseDecimal(sodium) || 0,
+        cholesterolMg: parseDecimal(cholesterol) || 0,
+        potassiumMg: parseDecimal(potassium) || 0,
+        calciumMg: parseDecimal(calcium) || 0,
+        ironMg: parseDecimal(iron) || 0,
+        vitaminCMg: parseDecimal(vitaminC) || 0,
+        vitaminAMcg: parseDecimal(vitaminA) || 0,
+      })
+    } catch {
+      return // shown under the button via createFood.isError
+    }
     onCreated(food)
   }
 
@@ -208,8 +213,13 @@ export function NewFoodForm({ onCreated, onCancel }: { onCreated: (food: Food) =
           disabled={!name.trim() || !calories || createFood.isPending}
           className="w-full rounded-xl bg-emerald-600 py-2.5 font-medium text-on-accent hover:brightness-90 disabled:opacity-50"
         >
-          Create food
+          {createFood.isPending ? 'Saving…' : 'Create food'}
         </button>
+        {createFood.isError && (
+          <p role="alert" className="text-center text-xs text-red-400">
+            Couldn't save this food. Check your connection and try again.
+          </p>
+        )}
       </div>
     </div>
   )

@@ -15,7 +15,16 @@ export function FoodPicker({ onAdd, onCancel }: FoodPickerProps) {
   const [creating, setCreating] = useState(false)
 
   if (creating) {
-    return <NewFoodForm onCreated={(food) => setSelected(food)} onCancel={() => setCreating(false)} />
+    return (
+      <NewFoodForm
+        onCreated={(food) => {
+          // Leave the form and go straight to choosing an amount for the new food.
+          setCreating(false)
+          setSelected(food)
+        }}
+        onCancel={() => setCreating(false)}
+      />
+    )
   }
 
   if (selected) {

@@ -309,22 +309,23 @@ html[data-theme="light"][data-palette="amber"] {
  * html:not([data-theme="light"])).
  */
 
-/* More colour to see through the glass: bigger, stronger glows plus a third, indigo one. */
+/* More colour to see through the glass: wide, soft corner glows (spread out rather than intense
+   hot spots) plus a third, indigo one. */
 html:not([data-theme="light"]) .aurora-a {
-  width: 20rem;
-  height: 20rem;
-  top: -5rem;
-  left: -6rem;
-  background: rgba(52, 211, 153, 0.5);
-  filter: blur(80px);
+  width: 30rem;
+  height: 30rem;
+  top: -10rem;
+  left: -10rem;
+  background: rgba(52, 211, 153, 0.26);
+  filter: blur(120px);
 }
 html:not([data-theme="light"]) .aurora-b {
-  width: 20rem;
-  height: 20rem;
-  bottom: -6rem;
-  right: -6rem;
-  background: rgba(251, 191, 36, 0.3);
-  filter: blur(90px);
+  width: 30rem;
+  height: 30rem;
+  bottom: -10rem;
+  right: -10rem;
+  background: rgba(251, 191, 36, 0.16);
+  filter: blur(130px);
 }
 html:not([data-theme="light"]) .aurora-c {
   display: block;
@@ -332,20 +333,20 @@ html:not([data-theme="light"]) .aurora-c {
   height: 17rem;
   top: 40%;
   right: -7rem;
-  background: rgba(99, 102, 241, 0.4);
+  background: rgba(99, 102, 241, 0.3);
   filter: blur(90px);
 }
 
 /* Frosted cards with a faint sheen: lighter at the top-left, as if catching light, fading clearer. */
 html:not([data-theme="light"]) .bg-slate-900 {
-  background-image: linear-gradient(150deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 65%);
+  background-image: linear-gradient(150deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 65%);
   -webkit-backdrop-filter: blur(16px) saturate(1.5);
   backdrop-filter: blur(16px) saturate(1.5);
 }
 
 /* Brighter glass edges. */
 html:not([data-theme="light"]) .border-white\/10 {
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.16);
 }
 html:not([data-theme="light"]) .ring-white\/5 {
   --tw-ring-color: rgba(255, 255, 255, 0.1);

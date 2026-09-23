@@ -9,21 +9,26 @@ import type { Tab } from '../types'
  */
 export type Route = Tab | 'settings'
 
-const ROUTES: Route[] = [
-  'workouts',
-  'meals',
-  'scanner',
-  'diet',
-  'fasting',
-  'goals',
-  'history',
-  'achievements',
-  'programs',
-  'calculator',
-  'whatsnew',
-  'about',
-  'settings',
-]
+// A Record rather than a list so TypeScript flags a new tab that's missing here. Foods and
+// Community were missed once, so a reload or the back button dropped you on Workouts.
+const ROUTE_KEYS: Record<Route, true> = {
+  workouts: true,
+  meals: true,
+  scanner: true,
+  diet: true,
+  fasting: true,
+  goals: true,
+  history: true,
+  achievements: true,
+  programs: true,
+  foods: true,
+  community: true,
+  calculator: true,
+  whatsnew: true,
+  about: true,
+  settings: true,
+}
+const ROUTES = Object.keys(ROUTE_KEYS) as Route[]
 
 const DEFAULT_ROUTE: Route = 'workouts'
 

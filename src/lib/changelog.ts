@@ -8,6 +8,17 @@ export interface ChangelogEntry {
 // "What's new" reads from, and it's the only place that content lives (no other data source).
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: '2026-09-24',
+    title: 'Tips for every tab',
+    changes: [
+      'Each tab now opens with a short tip on what it does, with a real example. Close it once and it stays closed',
+      'Empty Community sections explain what belongs there instead of looking blank',
+      'Settings → "Show welcome and tips again" brings them all back',
+      'Reloading or going back on Foods or Community no longer jumps you to Workouts',
+      'Weights like 102.5 kg now fit in the set form on smaller phones',
+    ],
+  },
+  {
     date: '2026-09-23',
     title: 'Diets and meal plans',
     changes: [

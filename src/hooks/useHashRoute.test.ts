@@ -6,6 +6,8 @@ describe('parseRoute', () => {
     expect(parseRoute('#/meals')).toBe('meals')
     expect(parseRoute('#/settings')).toBe('settings')
     expect(parseRoute('#achievements')).toBe('achievements')
+    expect(parseRoute('#/foods')).toBe('foods')
+    expect(parseRoute('#/community')).toBe('community')
   })
 
   it('falls back to workouts for an empty or unknown hash', () => {

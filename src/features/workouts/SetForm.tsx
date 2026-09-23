@@ -47,7 +47,9 @@ function Stepper({
     onChange(String(Math.max(0, roundStep(base + dir * step))))
   }
   const buttonClass =
-    'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-800 text-lg font-semibold text-slate-200 active:bg-slate-700'
+    'flex h-11 w-10 min-[380px]:w-11 shrink-0 items-center justify-center rounded-xl bg-slate-800 text-lg font-semibold text-slate-200 active:bg-slate-700'
+  // On a 360px-wide phone the field is only ~50px wide, so "72.5" or "102.5" got clipped at text-lg.
+  const sizeClass = value.length >= 5 ? 'text-sm' : value.length === 4 ? 'text-base' : 'text-lg'
 
   return (
     <div className="flex flex-col gap-1">
@@ -55,7 +57,7 @@ function Stepper({
         {label}
         {unit && <span className="text-slate-500"> ({unit})</span>}
       </span>
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-1 min-[380px]:gap-1.5">
         <button type="button" onClick={() => nudge(-1)} aria-label={`Decrease ${label.toLowerCase()} by ${step}`} className={buttonClass}>
           −
         </button>
@@ -66,7 +68,7 @@ function Stepper({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           min={0}
-          className="h-11 w-full min-w-0 rounded-xl border border-slate-700 bg-slate-800 px-1 text-center text-lg font-semibold text-white focus:border-emerald-500 focus:outline-none"
+          className={`h-11 w-full min-w-0 rounded-xl border border-slate-700 bg-slate-800 px-0.5 text-center font-semibold tabular-nums text-white focus:border-emerald-500 focus:outline-none ${sizeClass}`}
         />
         <button type="button" onClick={() => nudge(1)} aria-label={`Increase ${label.toLowerCase()} by ${step}`} className={buttonClass}>
           +
@@ -232,13 +234,13 @@ export function SetForm({
                 key={s.id}
                 onClick={() => setEditingSetId(s.id)}
                 aria-label={`Edit set ${s.set_number}`}
-                className="flex min-h-11 w-full items-center justify-between rounded-xl bg-slate-800/60 px-3 py-2 text-left text-sm text-slate-300 transition active:bg-slate-800"
+                className="flex min-h-11 w-full items-center justify-between gap-2 rounded-xl bg-slate-800/60 px-3 py-2 text-left text-sm text-slate-300 transition active:bg-slate-800"
               >
                 <span>
                   Set {s.set_number} · {s.weight} kg × {s.reps} reps
-                  {s.is_warmup && <span className="ml-1.5 text-amber-400">(warm-up)</span>}
+                  {s.is_warmup && <span className="ml-1.5 whitespace-nowrap text-amber-400">(warm-up)</span>}
                 </span>
-                <span className="text-xs text-slate-500">RPE {s.difficulty}</span>
+                <span className="shrink-0 text-xs text-slate-500">RPE {s.difficulty}</span>
               </button>
             ),
           )}

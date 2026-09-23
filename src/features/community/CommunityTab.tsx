@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
 import { EmptyState } from '../../components/EmptyState'
+import { ExplainerCard } from '../../components/ExplainerCard'
+import { COMMUNITY_EXPLAINERS } from '../../lib/explainers'
 import { MacroLine } from '../../components/MacroLine'
 import { SkeletonCard } from '../../components/Skeleton'
 import { useToast } from '../../components/ToastProvider'
@@ -652,14 +654,12 @@ export function CommunityTab() {
           </button>
         </div>
       ) : visible.length === 0 ? (
-        <EmptyState
-          variant="folder"
-          message={
-            items.length === 0
-              ? 'Nothing shared yet. Turn on "Share to Community" on one of your presets or recipes and it will show up here.'
-              : 'Nothing matches that search.'
-          }
-        />
+        search.trim() ? (
+          <EmptyState variant="folder" message="Nothing matches that search." />
+        ) : (
+          // An empty section explains what belongs in it, with an example, instead of looking bare.
+          <ExplainerCard explainer={COMMUNITY_EXPLAINERS[filter]} />
+        )
       ) : (
         <div className="space-y-3">
           {visible.map((item) => (

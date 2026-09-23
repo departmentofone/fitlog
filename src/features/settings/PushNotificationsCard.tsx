@@ -3,10 +3,9 @@ import { useAuth } from '../../hooks/useAuth'
 import { subscribeToPush, unsubscribeFromPush, useIsPushSubscribed, usePushPermission } from '../../hooks/usePushSubscription'
 
 /**
- * Scaffolding for push notifications - see PUSH_NOTIFICATIONS.md. Subscribing works end to end
- * up through storing the subscription, but push_subscriptions doesn't exist in the database yet
- * and nothing sends a real push. This card is here so the client half is real and testable; the
- * sending half (Vercel cron -> web-push) is a separate, not-yet-enabled piece.
+ * Push notifications on/off - see PUSH_NOTIFICATIONS.md. Subscriptions are stored in
+ * push_subscriptions; the Vercel crons (weekly digest, streak check) send the pushes once the
+ * VAPID keys and CRON_SECRET are set in Vercel.
  */
 export function PushNotificationsCard() {
   const { user } = useAuth()
@@ -40,7 +39,7 @@ export function PushNotificationsCard() {
     <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
       <h3 className="mb-1 font-medium text-white">Notifications</h3>
       <p className="mb-3 text-xs text-slate-500">
-        Get your weekly digest as a push notification instead of only seeing it in the app.
+        A summary of your week every Sunday, and an evening heads-up when your workout streak is about to end.
       </p>
 
       {permission === 'denied' ? (

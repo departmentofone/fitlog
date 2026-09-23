@@ -102,19 +102,20 @@ node scripts/set-assetlinks.mjs com.departmentofone.fitlog <upload-key SHA-256> 
 |---|---|---|
 | App icon | `icon-512.png` | 512×512, 32-bit PNG, full square (Play rounds the corners) |
 | Feature graphic | `feature-graphic-1024x500.png` | 1024×500, 24-bit PNG, no alpha |
-| Phone screenshots (4) | `phone-screenshots/1-workouts.png` … `4-more.png` | 1080×1920 (9:16), 24-bit PNG, ≤ 8 MB each |
+| Phone screenshots (6) | `phone-screenshots/1-workouts.png` … `6-more.png` | 1080×1920 (9:16), 24-bit PNG, ≤ 8 MB each |
 
-Upload the screenshots in file-name order. The same four images (with alpha) live in
-`public/screenshots/` for the PWA manifest's richer install sheet.
+Upload the screenshots in file-name order (1 Workouts, 2 Set logging, 3 Meals, 4 Community,
+5 Diets, 6 More menu). Workouts, Set logging, Meals and More are also copied to
+`public/screenshots/` for the PWA manifest's install sheet (same file names as before).
 
 ### How they were made
-Captured from the real app (the developer's own account, 15 Sep 2026) at a 360×640 viewport and 3×
-scale, rendered with the Sora font embedded. The feature graphic is composed from the first two
-screenshots. To re-shoot after a redesign, follow the same approach: a 360×640 viewport, DOM → PNG
-at scale 3, then flatten the alpha channel with sharp for Play.
-
-**Before uploading, check you're happy publishing what's visible:** exercise names, weights, and
-meal totals from your real log (no email address or other personal identifiers appear).
+Captured on 24 Sep 2026 from the real app running locally with a demo account: realistic workout
+and meal data, real foods and exercises from the database, and the official Community diets.
+Nothing personal is shown, and writes were blocked so no real data changed. 360×640 viewport at 3×
+scale (the More menu at 405×720 at 2.67× so the whole menu fits), Sora embedded, alpha flattened
+with sharp. The feature graphic (logo, tagline and two straight phone screens, no tilt) was
+rendered the same way from screenshots 1 and 4. The previous feature graphic was a broken capture:
+tilted, cropped, and with a stray scrollbar.
 
 ### Nice to have (not required)
 - 7-inch and 10-inch tablet screenshots (only if you want the listing to look good on tablets).

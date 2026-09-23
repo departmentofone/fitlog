@@ -210,10 +210,10 @@ function ProgramCard({ program, isOwner }: { program: Program; isOwner: boolean 
       {isOwner ? (
         <label className="mb-2 flex items-center gap-1.5 text-xs text-slate-400">
           <input type="checkbox" checked={program.is_shared} onChange={(e) => setShared.mutate({ programId: program.id, isShared: e.target.checked })} className="h-3.5 w-3.5 accent-emerald-500" />
-          Shared with friend
+          Share to Community
         </label>
       ) : (
-        <p className="mb-2 text-xs text-emerald-400">Shared by a friend</p>
+        <p className="mb-2 text-xs text-emerald-400">From Community</p>
       )}
 
       {hasGoals && (
@@ -246,8 +246,8 @@ export function ProgramsTab() {
       <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
         <h3 className="mb-1 font-medium text-white">Programs</h3>
         <p className="mb-3 text-sm text-slate-400">
-          Bundle workout presets, recipes, meal presets and diet goals into one package that you or a friend can import
-          in one go.
+          Bundle workout presets, recipes, meal presets and diet goals into one package. Share it to Community and
+          anyone can import it in one go.
         </p>
         {isLoading && (
           <div className="mb-3 space-y-2">

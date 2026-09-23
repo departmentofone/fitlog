@@ -169,7 +169,7 @@ export function PresetsManagerView() {
                             onChange={(e) => setShared.mutate({ presetId: preset.id, isShared: e.target.checked })}
                             className="h-3.5 w-3.5 accent-emerald-500"
                           />
-                          Shared with friend
+                          Share to Community
                         </label>
                         <div className="flex gap-3 text-xs">
                           <button
@@ -197,7 +197,7 @@ export function PresetsManagerView() {
                       </div>
                     </>
                   )}
-                  {!isOwn && <p className="text-xs text-emerald-400">Shared by a friend</p>}
+                  {!isOwn && <p className="text-xs text-emerald-400">From Community</p>}
                 </div>
               )}
             </div>

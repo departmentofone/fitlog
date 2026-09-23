@@ -335,10 +335,10 @@ function RecipeCard({
             onChange={(e) => onSetShared(e.target.checked)}
             className="h-3.5 w-3.5 accent-emerald-500"
           />
-          Shared with friend
+          Share to Community
         </label>
       ) : (
-        <p className="mb-2 text-xs text-emerald-400">Shared by a friend</p>
+        <p className="mb-2 text-xs text-emerald-400">From Community</p>
       )}
 
       <div className="mb-2 flex items-center gap-2">

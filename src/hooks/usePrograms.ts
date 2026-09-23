@@ -12,9 +12,14 @@ export function usePrograms() {
     queryKey: ['programs', user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase.from('programs').select('*').order('created_at', { ascending: false })
+      // Only your own - shared and official items are browsed in the Community tab (see useMealPresets).
+      const { data, error } = await supabase
+        .from('programs')
+        .select('*')
+        .eq('user_id', user!.id)
+        .order('created_at', { ascending: false })
       if (error) throw error
-      return data as unknown as Program[]
+      return (data as unknown as Program[]).filter((p) => !p.is_official)
     },
   })
 }
@@ -101,7 +106,10 @@ export function useSetProgramShared() {
       const { error } = await supabase.from('programs').update({ is_shared: isShared }).eq('id', programId)
       if (error) throw error
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['programs', user?.id] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['programs', user?.id] })
+      qc.invalidateQueries({ queryKey: ['community'] })
+    },
   })
 }
 

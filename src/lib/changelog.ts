@@ -8,6 +8,18 @@ export interface ChangelogEntry {
 // "What's new" reads from, and it's the only place that content lives (no other data source).
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: '2026-09-23',
+    title: 'Community, a Foods tab, and clearer rest days',
+    changes: [
+      'New Community tab: browse meal presets, recipes, workouts and programs people have shared, and save your own copy in one tap',
+      'Official meal presets to start with - real meals with standard portions, from Greek yogurt bowls to salmon dinners',
+      '"Share to Community" replaces "Shared with friend", and your own lists now only show your own presets',
+      'New Foods tab: manage your food library, label any food, and build meal presets directly',
+      'Logging a rest day now shows a clear confirmation card with Undo, instead of a greyed-out line',
+      'The Calculator tab now shows Calories and Plates as two big, clearly labeled choices',
+    ],
+  },
+  {
     date: '2026-09-16',
     title: 'Rest days, a real micro dashboard, and more',
     changes: [

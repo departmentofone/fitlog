@@ -19,6 +19,10 @@ export interface MealPreset {
   user_id: string
   name: string
   is_shared: boolean
+  /** See WorkoutPreset in types.ts - same three Community fields (migration_v28). */
+  is_official?: boolean
+  source_id?: string | null
+  description?: string | null
   created_at: string
   meal_preset_items: MealPresetItem[]
 }
@@ -29,12 +33,16 @@ export function useMealPresets() {
     queryKey: ['meal-presets', user?.id],
     enabled: !!user,
     queryFn: async () => {
+      // Only your own. Other people's shared items live in the Community tab, where you save a
+      // copy - otherwise every shared item on FitLog would show up in everyone's list. Official
+      // items are Community-only too, even for the account that owns them.
       const { data, error } = await supabase
         .from('meal_presets')
         .select('*, meal_preset_items(*, food:foods(*))')
+        .eq('user_id', user!.id)
         .order('created_at', { ascending: false })
       if (error) throw error
-      return data as unknown as MealPreset[]
+      return (data as unknown as MealPreset[]).filter((p) => !p.is_official)
     },
   })
 }
@@ -133,7 +141,10 @@ export function useSetMealPresetShared() {
       const { error } = await supabase.from('meal_presets').update({ is_shared: isShared }).eq('id', presetId)
       if (error) throw error
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['meal-presets', user?.id] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['meal-presets', user?.id] })
+      qc.invalidateQueries({ queryKey: ['community'] })
+    },
   })
 }
 

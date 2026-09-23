@@ -16,12 +16,14 @@ export function useRecipes() {
     queryKey: ['recipes', user?.id],
     enabled: !!user,
     queryFn: async () => {
+      // Only your own - shared and official items are browsed in the Community tab (see useMealPresets).
       const { data, error } = await supabase
         .from('recipes')
         .select('*, recipe_ingredients(*, food:foods(*))')
+        .eq('user_id', user!.id)
         .order('created_at', { ascending: false })
       if (error) throw error
-      return data as unknown as RecipeWithIngredients[]
+      return (data as unknown as RecipeWithIngredients[]).filter((r) => !r.is_official)
     },
   })
 }
@@ -119,7 +121,10 @@ export function useSetRecipeShared() {
       const { error } = await supabase.from('recipes').update({ is_shared: isShared }).eq('id', recipeId)
       if (error) throw error
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['recipes', user?.id] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['recipes', user?.id] })
+      qc.invalidateQueries({ queryKey: ['community'] })
+    },
   })
 }
 

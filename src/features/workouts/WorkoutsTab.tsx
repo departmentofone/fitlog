@@ -5,7 +5,7 @@ import { FireStreak } from '../../components/FireStreak'
 import { useToast } from '../../components/ToastProvider'
 import { SkeletonCard } from '../../components/Skeleton'
 import { haptics } from '../../lib/haptics'
-import { useLogRestDay, useRestDays } from '../../hooks/useRestDays'
+import { useDeleteRestDay, useLogRestDay, useRestDays } from '../../hooks/useRestDays'
 import { useUserSettings } from '../../hooks/useUserSettings'
 import { useWorkoutStreaks } from '../../hooks/useWorkoutStreaks'
 import {
@@ -31,6 +31,7 @@ import { ExercisePicker } from './ExercisePicker'
 import { ExerciseSummaryBox } from './ExerciseSummaryBox'
 import { PresetsView } from './PresetsView'
 import { PreworkoutGate } from './PreworkoutGate'
+import { RestDayCard } from './RestDayCard'
 import { SessionTimer } from './SessionTimer'
 import { SessionNote } from './SessionNote'
 import { SetForm } from './SetForm'
@@ -90,6 +91,7 @@ export function WorkoutsTab({
   const copyDay = useCopyWorkoutDay()
   const { data: restDays = [] } = useRestDays()
   const logRestDay = useLogRestDay()
+  const deleteRestDay = useDeleteRestDay()
   const restDayLogged = restDays.includes(date)
 
   const [activeExercise, setActiveExercise] = useState<Exercise | null>(null)
@@ -271,15 +273,16 @@ export function WorkoutsTab({
       ) : !session ? (
         <>
         <FireStreak count={streaks?.currentStreak ?? 0} label="day streak" />
-        <PreworkoutGate
-          loading={startSession.isPending}
-          onAnswer={(pw) => startSession.mutate({ preworkout: pw, date })}
-          restDayLogged={restDayLogged}
-          onLogRestDay={() => {
-            haptics.tap()
-            logRestDay.mutate(date, { onSuccess: () => show('Rest day logged — streak stays alive') })
-          }}
-        />
+        {restDayLogged ? (
+          <RestDayCard undoing={deleteRestDay.isPending} onUndo={() => deleteRestDay.mutate(date)} />
+        ) : (
+          <PreworkoutGate
+            loading={startSession.isPending}
+            onAnswer={(pw) => startSession.mutate({ preworkout: pw, date })}
+            logRestDayPending={logRestDay.isPending}
+            onLogRestDay={() => logRestDay.mutate(date, { onSuccess: () => haptics.success() })}
+          />
+        )}
         </>
       ) : (
         <>

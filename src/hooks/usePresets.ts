@@ -19,12 +19,14 @@ export function usePresets() {
     queryKey: ['presets', user?.id],
     enabled: !!user,
     queryFn: async () => {
+      // Only your own - shared and official items are browsed in the Community tab (see useMealPresets).
       const { data, error } = await supabase
         .from('workout_presets')
         .select('*, workout_preset_items(*, exercise:exercises(*))')
+        .eq('user_id', user!.id)
         .order('created_at', { ascending: false })
       if (error) throw error
-      return data as unknown as PresetWithItems[]
+      return (data as unknown as PresetWithItems[]).filter((p) => !p.is_official)
     },
   })
 }
@@ -67,7 +69,10 @@ export function useSetPresetShared() {
       const { error } = await supabase.from('workout_presets').update({ is_shared: isShared }).eq('id', presetId)
       if (error) throw error
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['presets', user?.id] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['presets', user?.id] })
+      qc.invalidateQueries({ queryKey: ['community'] })
+    },
   })
 }
 

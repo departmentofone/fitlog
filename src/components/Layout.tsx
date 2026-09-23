@@ -29,6 +29,7 @@ const TABS: { key: Tab; label: string; group: TabGroup | null }[] = [
   { key: 'achievements', label: 'Achievements', group: 'progress' },
   { key: 'programs', label: 'Programs', group: 'tools' },
   { key: 'foods', label: 'Foods', group: 'tools' },
+  { key: 'community', label: 'Community', group: 'tools' },
   { key: 'calculator', label: 'Calculator', group: 'tools' },
   { key: 'whatsnew', label: "What's new", group: null },
   { key: 'about', label: 'About', group: null },

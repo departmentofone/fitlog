@@ -142,11 +142,11 @@ export function PresetsView({
                     onChange={(e) => setShared.mutate({ presetId: preset.id, isShared: e.target.checked })}
                     className="h-3.5 w-3.5 accent-emerald-500"
                   />
-                  Shared with friend
+                  Share to Community
                 </label>
               )}
               {preset.user_id !== user?.id && (
-                <p className="mb-2 text-xs text-emerald-400">Shared by a friend</p>
+                <p className="mb-2 text-xs text-emerald-400">From Community</p>
               )}
               <button
                 onClick={() => {

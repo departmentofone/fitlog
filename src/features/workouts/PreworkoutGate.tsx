@@ -2,12 +2,13 @@ export function PreworkoutGate({
   onAnswer,
   loading,
   onLogRestDay,
-  restDayLogged,
+  logRestDayPending,
 }: {
   onAnswer: (preworkout: boolean) => void
   loading?: boolean
+  /** Once logged, WorkoutsTab swaps this whole prompt for RestDayCard. */
   onLogRestDay?: () => void
-  restDayLogged?: boolean
+  logRestDayPending?: boolean
 }) {
   return (
     <div className="p-4">
@@ -33,10 +34,10 @@ export function PreworkoutGate({
         {onLogRestDay && (
           <button
             onClick={onLogRestDay}
-            disabled={restDayLogged}
-            className="mt-4 text-xs font-medium text-slate-500 underline decoration-dotted transition hover:text-emerald-400 disabled:no-underline"
+            disabled={logRestDayPending}
+            className="mt-4 text-xs font-medium text-slate-500 underline decoration-dotted transition hover:text-emerald-400 disabled:opacity-50"
           >
-            {restDayLogged ? "Rest day logged - your streak's safe" : "Not training today? Log a rest day instead"}
+            {logRestDayPending ? 'Logging rest day…' : 'Not training today? Log a rest day instead'}
           </button>
         )}
       </div>

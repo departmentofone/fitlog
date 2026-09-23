@@ -191,9 +191,14 @@ html[data-palette="amber"] {
 @keyframes sheet-up {
   from { transform: translateY(100%); }
 }
+/* A confirmation arriving (e.g. "Rest day logged") - a small settle, not a bounce. */
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.96); }
+}
 @media (prefers-reduced-motion: no-preference) {
   .fade-in { animation: fade-in 200ms ease-out; }
   .sheet-up { animation: sheet-up 250ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+  .pop-in { animation: pop-in 250ms cubic-bezier(0.2, 0.8, 0.2, 1); }
 }
 
 /*

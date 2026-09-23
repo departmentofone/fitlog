@@ -23,6 +23,7 @@ const GoalsTab = lazy(() => import('./features/goals/GoalsTab').then((m) => ({ d
 const AchievementsTab = lazy(() => import('./features/achievements/AchievementsTab').then((m) => ({ default: m.AchievementsTab })))
 const ProgramsTab = lazy(() => import('./features/programs/ProgramsTab').then((m) => ({ default: m.ProgramsTab })))
 const FoodsTab = lazy(() => import('./features/foods/FoodsTab').then((m) => ({ default: m.FoodsTab })))
+const CommunityTab = lazy(() => import('./features/community/CommunityTab').then((m) => ({ default: m.CommunityTab })))
 const MaintenanceCalculatorTab = lazy(() =>
   import('./features/calculator/MaintenanceCalculatorTab').then((m) => ({ default: m.MaintenanceCalculatorTab })),
 )
@@ -185,6 +186,7 @@ function App() {
           {tab === 'achievements' && <AchievementsTab />}
           {tab === 'programs' && <ProgramsTab />}
           {tab === 'foods' && <FoodsTab />}
+          {tab === 'community' && <CommunityTab />}
           {tab === 'calculator' && <MaintenanceCalculatorTab />}
           {tab === 'whatsnew' && <WhatsNewTab />}
             {tab === 'about' && <AboutTab />}

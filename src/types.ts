@@ -153,6 +153,7 @@ export type Tab =
   | 'achievements'
   | 'programs'
   | 'foods'
+  | 'community'
   | 'calculator'
   | 'whatsnew'
   | 'about'
@@ -217,6 +218,11 @@ export interface WorkoutPreset {
   user_id: string
   name: string
   is_shared: boolean
+  /** Curated by FitLog, badged "Official" in Community. Optional: absent before migration_v28. */
+  is_official?: boolean
+  /** On a copy saved from Community, the item it came from (migration_v28). */
+  source_id?: string | null
+  description?: string | null
   created_at: string
 }
 
@@ -226,6 +232,11 @@ export interface Recipe {
   name: string
   servings: number
   is_shared: boolean
+  /** Curated by FitLog, badged "Official" in Community. Optional: absent before migration_v28. */
+  is_official?: boolean
+  /** On a copy saved from Community, the item it came from (migration_v28). */
+  source_id?: string | null
+  description?: string | null
   created_at: string
 }
 
@@ -280,6 +291,10 @@ export interface Program {
   workouts: ProgramWorkout[]
   recipes: ProgramRecipe[]
   meal_presets: ProgramMealPreset[]
+  /** Curated by FitLog, badged "Official" in Community. Optional: absent before migration_v28. */
+  is_official?: boolean
+  /** On a copy saved from Community, the item it came from (migration_v28). */
+  source_id?: string | null
   created_at: string
 }
 

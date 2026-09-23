@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { normalizeFoodText } from '../lib/foodSearch'
 import { supabase } from '../lib/supabase'
-import type { Exercise, Food, Program } from '../types'
+import type { DietWithFoods, Exercise, Food, MealPlanWithItems, Program } from '../types'
 import { useAuth } from './useAuth'
 import type { MealPreset } from './useMealPresets'
 import type { PresetWithItems } from './usePresets'
@@ -14,10 +14,13 @@ import type { RecipeWithIngredients } from './useRecipes'
  * card can show "Saved".
  */
 export type CommunityItem =
-  | { kind: 'meal'; id: string; name: string; description: string | null; isOfficial: boolean; isMine: boolean; createdAt: string; meal: MealPreset }
-  | { kind: 'recipe'; id: string; name: string; description: string | null; isOfficial: boolean; isMine: boolean; createdAt: string; recipe: RecipeWithIngredients }
-  | { kind: 'workout'; id: string; name: string; description: string | null; isOfficial: boolean; isMine: boolean; createdAt: string; workout: PresetWithItems }
-  | { kind: 'program'; id: string; name: string; description: string | null; isOfficial: boolean; isMine: boolean; createdAt: string; program: Program }
+  | { kind: 'meal'; id: string; name: string; description: string | null; isOfficial: boolean; isMine: boolean; ownerId: string; createdAt: string; meal: MealPreset }
+  | { kind: 'recipe'; id: string; name: string; description: string | null; isOfficial: boolean; isMine: boolean; ownerId: string; createdAt: string; recipe: RecipeWithIngredients }
+  | { kind: 'workout'; id: string; name: string; description: string | null; isOfficial: boolean; isMine: boolean; ownerId: string; createdAt: string; workout: PresetWithItems }
+  | { kind: 'program'; id: string; name: string; description: string | null; isOfficial: boolean; isMine: boolean; ownerId: string; createdAt: string; program: Program }
+  /** `dietName` is set when the plan is one of a diet's sample days (migration_v29). */
+  | { kind: 'plan'; id: string; name: string; description: string | null; isOfficial: boolean; isMine: boolean; ownerId: string; createdAt: string; plan: MealPlanWithItems; dietName: string | null }
+  | { kind: 'diet'; id: string; name: string; description: string | null; isOfficial: boolean; isMine: boolean; ownerId: string; createdAt: string; diet: DietWithFoods; plans: MealPlanWithItems[] }
 
 export type CommunityKind = CommunityItem['kind']
 
@@ -27,6 +30,8 @@ export const REPORT_TYPE: Record<CommunityKind, string> = {
   recipe: 'recipe',
   workout: 'workout_preset',
   program: 'program',
+  plan: 'meal_plan',
+  diet: 'diet',
 }
 
 // Plenty for browsing today; revisit with paging once there's real traffic.
@@ -50,6 +55,8 @@ export function communitySearchText(item: CommunityItem): string {
     const p = item.program
     parts.push(...p.workouts.map((w) => w.name), ...p.recipes.map((r) => r.name), ...p.meal_presets.map((m) => m.name))
   }
+  if (item.kind === 'plan') parts.push(item.dietName ?? '', ...item.plan.meal_plan_items.map((i) => i.food?.name ?? ''))
+  if (item.kind === 'diet') parts.push(...item.diet.diet_foods.map((f) => f.food?.name ?? ''), ...item.plans.map((p) => p.name))
   return normalizeFoodText(parts.join(' '))
 }
 
@@ -59,13 +66,22 @@ export function useCommunity() {
     queryKey: ['community', user?.id],
     enabled: !!user,
     queryFn: async (): Promise<CommunityItem[]> => {
-      const [meals, recipes, workouts, programs] = await Promise.all([
+      const [meals, recipes, workouts, programs, plans, diets] = await Promise.all([
         supabase.from('meal_presets').select('*, meal_preset_items(*, food:foods(*))').eq('is_shared', true).order('created_at', { ascending: false }).limit(PAGE),
         supabase.from('recipes').select('*, recipe_ingredients(*, food:foods(*))').eq('is_shared', true).order('created_at', { ascending: false }).limit(PAGE),
         supabase.from('workout_presets').select('*, workout_preset_items(*, exercise:exercises(*))').eq('is_shared', true).order('created_at', { ascending: false }).limit(PAGE),
         supabase.from('programs').select('*').eq('is_shared', true).order('created_at', { ascending: false }).limit(PAGE),
+        // Standalone plans only - a diet's sample plans come in with the diet below.
+        supabase.from('meal_plans').select('*, meal_plan_items(*, food:foods(*))').eq('is_shared', true).is('diet_id', null).order('created_at', { ascending: false }).limit(PAGE),
+        supabase.from('diets').select('*, diet_foods(diet_id, food_id, food:foods(*)), meal_plans(*, meal_plan_items(*, food:foods(*)))').eq('is_shared', true).order('created_at', { ascending: false }).limit(PAGE),
       ])
-      for (const r of [meals, recipes, workouts, programs]) if (r.error) throw r.error
+      // One type failing (e.g. a table a pending migration hasn't created yet) shouldn't blank
+      // the whole tab - skip that type. Only fail if nothing loaded at all.
+      const results = [meals, recipes, workouts, programs, plans, diets]
+      const failed = results.filter((r) => r.error)
+      if (failed.length === results.length) throw failed[0].error
+      for (const r of failed) console.warn('Community: skipped a type that failed to load', r.error)
+      const rows = <T,>(r: { data: unknown; error: unknown }) => (r.error ? [] : ((r.data ?? []) as T[]))
 
       const base = (row: { id: string; name: string; user_id: string; created_at: string; is_official?: boolean; description?: string | null }) => ({
         id: row.id,
@@ -73,14 +89,30 @@ export function useCommunity() {
         description: row.description?.trim() || null,
         isOfficial: !!row.is_official,
         isMine: row.user_id === user?.id,
+        ownerId: row.user_id,
         createdAt: row.created_at,
       })
 
       return sortCommunity([
-        ...(meals.data as unknown as MealPreset[]).filter((m) => m.meal_preset_items.length > 0).map((meal) => ({ kind: 'meal' as const, ...base(meal), meal })),
-        ...(recipes.data as unknown as RecipeWithIngredients[]).filter((r) => r.recipe_ingredients.length > 0).map((recipe) => ({ kind: 'recipe' as const, ...base(recipe), recipe })),
-        ...(workouts.data as unknown as PresetWithItems[]).filter((w) => w.workout_preset_items.length > 0).map((workout) => ({ kind: 'workout' as const, ...base(workout), workout })),
-        ...(programs.data as unknown as Program[]).map((program) => ({ kind: 'program' as const, ...base(program), program })),
+        ...rows<MealPreset>(meals).filter((m) => m.meal_preset_items.length > 0).map((meal) => ({ kind: 'meal' as const, ...base(meal), meal })),
+        ...rows<RecipeWithIngredients>(recipes).filter((r) => r.recipe_ingredients.length > 0).map((recipe) => ({ kind: 'recipe' as const, ...base(recipe), recipe })),
+        ...rows<PresetWithItems>(workouts).filter((w) => w.workout_preset_items.length > 0).map((workout) => ({ kind: 'workout' as const, ...base(workout), workout })),
+        ...rows<Program>(programs).map((program) => ({ kind: 'program' as const, ...base(program), program })),
+        ...rows<MealPlanWithItems>(plans)
+          .filter((p) => p.meal_plan_items.length > 0)
+          .map((plan) => ({ kind: 'plan' as const, ...base(plan), plan, dietName: null })),
+        ...rows<DietWithFoods & { meal_plans: MealPlanWithItems[] }>(diets)
+          .filter((d) => d.diet_foods.length > 0)
+          .flatMap((diet) => {
+            const samples = [...diet.meal_plans].sort((a, b) => a.created_at.localeCompare(b.created_at))
+            return [
+              { kind: 'diet' as const, ...base(diet), diet, plans: samples },
+              // Sample days are browsable as plans too, labeled with the diet they come from.
+              ...samples
+                .filter((p) => p.meal_plan_items.length > 0)
+                .map((plan) => ({ kind: 'plan' as const, ...base({ ...plan, is_official: diet.is_official, user_id: diet.user_id }), plan, dietName: diet.name })),
+            ]
+          }),
       ])
     },
   })
@@ -131,14 +163,71 @@ async function ownExerciseId(userId: string, exercise: Exercise, cache: Map<stri
   return id
 }
 
-/** Saves a copy of a meal preset, recipe or workout preset into your account. */
+/** Copies a meal plan (and its items) into your account; returns the new plan's id. */
+async function copyPlan(userId: string, plan: MealPlanWithItems, dietId: string | null, foods: Map<string, string>): Promise<string> {
+  const { data, error } = await supabase
+    .from('meal_plans')
+    .insert({ user_id: userId, name: plan.name, description: plan.description, days: plan.days, diet_id: dietId, source_id: plan.id })
+    .select('id')
+    .single()
+  if (error) throw error
+  const rows = []
+  for (const i of plan.meal_plan_items) {
+    if (!i.food) continue
+    rows.push({
+      plan_id: data.id, day_index: i.day_index, meal_name: i.meal_name, meal_order: i.meal_order, item_order: i.item_order,
+      food_id: await ownFoodId(userId, i.food, foods), grams: i.grams, serving_label: i.serving_label,
+    })
+  }
+  if (rows.length > 0) {
+    const { error: itemsError } = await supabase.from('meal_plan_items').insert(rows)
+    if (itemsError) throw itemsError
+  }
+  return data.id as string
+}
+
+/**
+ * Saves a copy of a meal preset, recipe, workout preset, meal plan or diet into your account.
+ * A diet brings its sample plans along; with `follow`, you also start following the copy.
+ */
 export function useSaveCommunityItem() {
   const { user } = useAuth()
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async (item: Exclude<CommunityItem, { kind: 'program' }>) => {
+    mutationFn: async ({ item, follow = false }: { item: Exclude<CommunityItem, { kind: 'program' }>; follow?: boolean }) => {
       if (!user) throw new Error('Not signed in')
       const foods = new Map<string, string>()
+
+      if (item.kind === 'plan') {
+        await copyPlan(user.id, item.plan, null, foods)
+        return
+      }
+
+      if (item.kind === 'diet') {
+        const { data: diet, error } = await supabase
+          .from('diets')
+          .insert({ user_id: user.id, name: item.name, description: item.description, source_id: item.id })
+          .select('id')
+          .single()
+        if (error) throw error
+        const rows = []
+        for (const f of item.diet.diet_foods) {
+          if (!f.food) continue
+          rows.push({ diet_id: diet.id, food_id: await ownFoodId(user.id, f.food, foods) })
+        }
+        if (rows.length > 0) {
+          const { error: foodsError } = await supabase.from('diet_foods').upsert(rows, { ignoreDuplicates: true })
+          if (foodsError) throw foodsError
+        }
+        for (const plan of item.plans) await copyPlan(user.id, plan, diet.id, foods)
+        if (follow) {
+          const { error: settingsError } = await supabase
+            .from('user_settings')
+            .upsert({ user_id: user.id, active_diet_id: diet.id, updated_at: new Date().toISOString() }, { onConflict: 'user_id' })
+          if (settingsError) throw settingsError
+        }
+        return
+      }
 
       if (item.kind === 'meal') {
         const { data: preset, error } = await supabase
@@ -202,9 +291,15 @@ export function useSaveCommunityItem() {
         if (itemsError) throw itemsError
       }
     },
-    onSuccess: (_data, item) => {
-      const key = item.kind === 'meal' ? 'meal-presets' : item.kind === 'recipe' ? 'recipes' : 'presets'
-      qc.invalidateQueries({ queryKey: [key] })
+    onSuccess: (_data, { item }) => {
+      const keys: Record<string, string[]> = {
+        meal: ['meal-presets'],
+        recipe: ['recipes'],
+        workout: ['presets'],
+        plan: ['meal-plans'],
+        diet: ['diets', 'meal-plans', 'user-settings'],
+      }
+      for (const key of keys[item.kind]) qc.invalidateQueries({ queryKey: [key] })
       qc.invalidateQueries({ queryKey: ['foods'] })
       qc.invalidateQueries({ queryKey: ['exercises'] })
     },
@@ -225,5 +320,68 @@ export function useReportCommunityItem() {
       })
       if (error) throw error
     },
+  })
+}
+
+/** True for the account that runs FitLog (is_site_owner, v25) - it gets moderation tools. */
+export function useIsSiteOwner() {
+  const { user } = useAuth()
+  return useQuery({
+    queryKey: ['is-site-owner', user?.id],
+    enabled: !!user,
+    staleTime: Infinity,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('is_site_owner')
+      if (error) return false
+      return data === true
+    },
+  })
+}
+
+export interface CommunityReport {
+  id: string
+  item_type: string
+  item_id: string
+  item_name: string | null
+  reason: string | null
+  created_at: string
+}
+
+/** Reports - only the owner can read them (RLS); everyone else just gets an empty list. */
+export function useCommunityReports(enabled: boolean) {
+  return useQuery({
+    queryKey: ['community-reports'],
+    enabled,
+    queryFn: async () => {
+      const { data, error } = await supabase.from('community_reports').select('*').order('created_at', { ascending: false })
+      if (error) throw error
+      return data as CommunityReport[]
+    },
+  })
+}
+
+/** Owner only: takes an item out of Community (it stays in its creator's account) and clears its reports. */
+export function useModerateCommunityItem() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ itemType, itemId }: { itemType: string; itemId: string }) => {
+      const { error } = await supabase.rpc('moderate_community_item', { p_type: itemType, p_id: itemId })
+      if (error) throw error
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['community'] })
+      qc.invalidateQueries({ queryKey: ['community-reports'] })
+    },
+  })
+}
+
+export function useDismissReport() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (reportId: string) => {
+      const { error } = await supabase.from('community_reports').delete().eq('id', reportId)
+      if (error) throw error
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['community-reports'] }),
   })
 }

@@ -1,4 +1,5 @@
 import { parseDecimal } from '../../lib/number'
+import { useShareGate } from '../../hooks/useShareGate'
 import { useState } from 'react'
 import { UNAVAILABLE_FOOD_NAME } from '../../types'
 import { EmptyState } from '../../components/EmptyState'
@@ -44,6 +45,7 @@ export function RecipeBuilderView({
   const createRecipe = useCreateRecipe()
   const deleteRecipe = useDeleteRecipe()
   const setShared = useSetRecipeShared()
+  const gate = useShareGate()
   const addToMeal = useAddRecipeToMeal()
   const { show, undoable } = useToast()
 
@@ -223,7 +225,7 @@ export function RecipeBuilderView({
                   () => createRecipe.mutate({ name: recipe.name, servings: recipe.servings, ingredients }),
                 )
               }}
-              onSetShared={(isShared) => setShared.mutate({ recipeId: recipe.id, isShared })}
+              onSetShared={(isShared) => gate.request(isShared, (on) => setShared.mutate({ recipeId: recipe.id, isShared: on }))}
               onAddToMeal={(mealId, servingsToAdd, mealName) => {
                 addToMeal.mutate(
                   { recipe, mealId, servingsToAdd },
@@ -239,6 +241,7 @@ export function RecipeBuilderView({
           ))}
         </div>
       </div>
+      {gate.sheet}
     </div>
   )
 }

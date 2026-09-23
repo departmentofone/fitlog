@@ -1,4 +1,5 @@
 import { parseDecimal } from '../../lib/number'
+import { useShareGate } from '../../hooks/useShareGate'
 import { useState } from 'react'
 import { SkeletonRow } from '../../components/Skeleton'
 import { useToast } from '../../components/ToastProvider'
@@ -166,6 +167,7 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
 
 function ProgramCard({ program, isOwner }: { program: Program; isOwner: boolean }) {
   const setShared = useSetProgramShared()
+  const gate = useShareGate()
   const deleteProgram = useDeleteProgram()
   const restoreProgram = useRestoreProgram()
   const importProgram = useImportProgram()
@@ -209,7 +211,7 @@ function ProgramCard({ program, isOwner }: { program: Program; isOwner: boolean 
 
       {isOwner ? (
         <label className="mb-2 flex items-center gap-1.5 text-xs text-slate-400">
-          <input type="checkbox" checked={program.is_shared} onChange={(e) => setShared.mutate({ programId: program.id, isShared: e.target.checked })} className="h-3.5 w-3.5 accent-emerald-500" />
+          <input type="checkbox" checked={program.is_shared} onChange={(e) => gate.request(e.target.checked, (on) => setShared.mutate({ programId: program.id, isShared: on }))} className="h-3.5 w-3.5 accent-emerald-500" />
           Share to Community
         </label>
       ) : (
@@ -230,6 +232,7 @@ function ProgramCard({ program, isOwner }: { program: Program; isOwner: boolean 
       >
         {importProgram.isPending ? 'Importing…' : 'Import into my account'}
       </button>
+      {gate.sheet}
     </div>
   )
 }

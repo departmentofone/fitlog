@@ -36,9 +36,10 @@ password you use elsewhere.
 - **Controlled substances:** the app lets users **log alcoholic drinks they consumed** (Diet →
   Alcohol). It doesn't promote or sell alcohol. Answer the "references to alcohol" question
   **Yes**, as a tracking/reference-only use. Being accurate here matters more than a lower rating.
-- **User interaction / user-generated content:** **Yes**. Users can publish presets, recipes, and
-  programs (name and contents) that other users can see and import. There is no chat, messaging,
-  or free-form public posting.
+- **User interaction / user-generated content:** **Yes**. Users can share presets, recipes,
+  programs, meal plans and diets (name, description and contents) to Community, where other users
+  can see and save a copy. There is no chat, messaging, or free-form public posting, and names and
+  emails are never shown.
 - Shares the user's current physical location with other users: **No**.
 - Digital purchases: **No**.
 - Unrestricted web browsing: **No** (the app only shows its own site).
@@ -113,7 +114,19 @@ and never uploaded.
 | Advertising ID | Not used. The TWA manifest must not declare `com.google.android.gms.permission.AD_ID`; check the generated Android manifest. |
 | Account deletion | Yes. In-app, plus `https://fitlog-two-gamma.vercel.app/delete-account` |
 
-## 9. Prominent disclosure (already implemented)
+## 9. User-generated content policy (already implemented)
+
+Community makes FitLog a UGC app under Play's User Generated Content policy. What's in place:
+- **Rules accepted before sharing:** the first "Share to Community" shows the Community guidelines
+  (no offensive, sexual or hateful content, no personal details, no spam, no medical claims) and
+  requires "I agree". Stored in `user_settings.community_guidelines_accepted_at`.
+- **In-app reporting:** every item from someone else has a Report button (`community_reports`).
+- **Blocking:** "Hide items from this person" hides all of that account's items; undo and "Show
+  them again" are available (`user_settings.hidden_community_users`).
+- **Moderation:** the owner account sees a Reports panel in Community and can remove any item
+  (`moderate_community_item`), which unshares it and clears its reports. Review reports regularly.
+
+## 10. Prominent disclosure (already implemented)
 
 Play's User Data policy wants health data collection disclosed in the app, not only in the policy.
 After sign-in, FitLog shows a one-time **"Your health and fitness data"** screen that explains what's

@@ -20,7 +20,7 @@ function meal(id: string, opts: { official?: boolean; createdAt: string; name?: 
       food: makeFood({ id: `f${i}`, name: f }),
     })),
   }
-  return { kind: 'meal', id, name: preset.name, description: null, isOfficial: !!opts.official, isMine: false, createdAt: opts.createdAt, meal: preset }
+  return { kind: 'meal', id, name: preset.name, description: null, isOfficial: !!opts.official, isMine: false, ownerId: 'someone', createdAt: opts.createdAt, meal: preset }
 }
 
 describe('sortCommunity', () => {

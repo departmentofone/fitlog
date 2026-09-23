@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useShareGate } from '../../hooks/useShareGate'
 import { UNAVAILABLE_FOOD_NAME } from '../../types'
 import {
   useCreateMealPresetFromMeal,
@@ -32,6 +33,7 @@ export function MealPresetsView({
   const restorePreset = useRestoreMealPreset()
   const loadPreset = useLoadMealPreset()
   const setShared = useSetMealPresetShared()
+  const gate = useShareGate()
   const { undoable } = useToast()
 
   const [savingMealId, setSavingMealId] = useState<string | null>(null)
@@ -129,7 +131,7 @@ export function MealPresetsView({
                   <input
                     type="checkbox"
                     checked={preset.is_shared}
-                    onChange={(e) => setShared.mutate({ presetId: preset.id, isShared: e.target.checked })}
+                    onChange={(e) => gate.request(e.target.checked, (on) => setShared.mutate({ presetId: preset.id, isShared: on }))}
                     className="h-3.5 w-3.5 accent-emerald-500"
                   />
                   Share to Community
@@ -151,6 +153,7 @@ export function MealPresetsView({
           ))}
         </div>
       </div>
+      {gate.sheet}
     </div>
   )
 }

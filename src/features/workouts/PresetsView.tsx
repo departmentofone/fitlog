@@ -1,4 +1,5 @@
 import { UNAVAILABLE_EXERCISE_NAME } from '../../types'
+import { useShareGate } from '../../hooks/useShareGate'
 import { useState } from 'react'
 import {
   useCreatePresetFromSets,
@@ -45,6 +46,7 @@ export function PresetsView({
   const restorePreset = useRestorePreset()
   const loadPreset = useLoadPreset(sessionId)
   const setShared = useSetPresetShared()
+  const gate = useShareGate()
   const { undoable } = useToast()
 
   const [showSaveForm, setShowSaveForm] = useState(false)
@@ -139,7 +141,7 @@ export function PresetsView({
                   <input
                     type="checkbox"
                     checked={preset.is_shared}
-                    onChange={(e) => setShared.mutate({ presetId: preset.id, isShared: e.target.checked })}
+                    onChange={(e) => gate.request(e.target.checked, (on) => setShared.mutate({ presetId: preset.id, isShared: on }))}
                     className="h-3.5 w-3.5 accent-emerald-500"
                   />
                   Share to Community
@@ -162,6 +164,7 @@ export function PresetsView({
           ))}
         </div>
       </div>
+      {gate.sheet}
     </div>
   )
 }

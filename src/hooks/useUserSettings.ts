@@ -21,6 +21,9 @@ export const DEFAULT_SETTINGS: Omit<UserSettings, 'user_id' | 'updated_at'> = {
   bottom_nav_tabs: [],
   health_data_consent_at: null,
   enabled_food_packs: [],
+  active_diet_id: null,
+  community_guidelines_accepted_at: null,
+  hidden_community_users: [],
 }
 
 export function useUserSettings() {

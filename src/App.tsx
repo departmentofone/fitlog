@@ -193,7 +193,7 @@ function App() {
           </Suspense>
         </TabErrorBoundary>
       </Layout>
-      <OnboardingTour />
+      <OnboardingTour onOpenCommunity={() => navigate('community')} />
     </>
   )
 }

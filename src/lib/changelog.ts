@@ -9,6 +9,17 @@ export interface ChangelogEntry {
 export const CHANGELOG: ChangelogEntry[] = [
   {
     date: '2026-09-23',
+    title: 'Diets and meal plans',
+    changes: [
+      'Follow a diet like Mediterranean, DASH, Keto or plant-based: its foods come first when you add food, and anything off-diet gets a small flag',
+      'Meal plans: a full day of meals you can log in one tap, or combine up to 7 days into a week',
+      'Official diets come with a sample day built only from their own foods',
+      'Community guidelines, plus ways to report or hide what other people share',
+      'A shorter, friendlier welcome for new accounts',
+    ],
+  },
+  {
+    date: '2026-09-23',
     title: 'Community, a Foods tab, and clearer rest days',
     changes: [
       'New Community tab: browse meal presets, recipes, workouts and programs people have shared, and save your own copy in one tap',

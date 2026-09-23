@@ -7,6 +7,8 @@ import { EmptyState } from '../../components/EmptyState'
 import { SkeletonRow } from '../../components/Skeleton'
 import { NewFoodForm } from '../meals/NewFoodForm'
 import { FoodRow } from './FoodRow'
+import { DietsView } from './DietsView'
+import { MealPlansView } from './MealPlansView'
 import { PresetsManagerView } from './PresetsManagerView'
 
 const PACK_LABELS: Record<string, string> = { serbia: 'Serbian products' }
@@ -22,7 +24,7 @@ function packLabel(pack: string): string {
  * (FoodPicker) stays focused on searching and adding - this is where the library itself gets curated.
  */
 export function FoodsTab() {
-  const [view, setView] = useState<'library' | 'presets'>('library')
+  const [view, setView] = useState<FoodsView>('library')
   const [search, setSearch] = useState('')
   const [activeLabel, setActiveLabel] = useState<string | null>(null)
   const [creating, setCreating] = useState(false)
@@ -42,32 +44,28 @@ export function FoodsTab() {
     return rankFoods(list, search, 300)
   }, [library.data, search, activeLabel, byFood])
 
-  if (view === 'presets') {
+  const switcher = (
+    <div className="flex rounded-full bg-slate-900 p-1 ring-1 ring-white/5" role="tablist" aria-label="Foods">
+      {FOODS_VIEWS.map((v) => (
+        <TabButton key={v.value} active={view === v.value} onClick={() => setView(v.value)}>
+          {v.label}
+        </TabButton>
+      ))}
+    </div>
+  )
+
+  if (view !== 'library') {
     return (
       <div className="space-y-4 p-4">
-        <div className="flex rounded-full bg-slate-900 p-1 ring-1 ring-white/5">
-          <TabButton active={false} onClick={() => setView('library')}>
-            Library
-          </TabButton>
-          <TabButton active onClick={() => setView('presets')}>
-            Presets
-          </TabButton>
-        </div>
-        <PresetsManagerView />
+        {switcher}
+        {view === 'presets' ? <PresetsManagerView /> : view === 'plans' ? <MealPlansView /> : <DietsView />}
       </div>
     )
   }
 
   return (
     <div className="space-y-4 p-4">
-      <div className="flex rounded-full bg-slate-900 p-1 ring-1 ring-white/5">
-        <TabButton active onClick={() => setView('library')}>
-          Library
-        </TabButton>
-        <TabButton active={false} onClick={() => setView('presets')}>
-          Presets
-        </TabButton>
-      </div>
+      {switcher}
 
       {availablePacks.length > 0 && (
         <div className="space-y-2">
@@ -158,11 +156,21 @@ export function FoodsTab() {
   )
 }
 
+type FoodsView = 'library' | 'presets' | 'plans' | 'diets'
+
+const FOODS_VIEWS: { value: FoodsView; label: string }[] = [
+  { value: 'library', label: 'Library' },
+  { value: 'presets', label: 'Presets' },
+  { value: 'plans', label: 'Plans' },
+  { value: 'diets', label: 'Diets' },
+]
+
 function TabButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: string }) {
   return (
     <button
       onClick={onClick}
-      aria-pressed={active}
+      role="tab"
+      aria-selected={active}
       className={`min-h-9 flex-1 rounded-full text-sm font-semibold transition ${
         active ? 'bg-emerald-500/15 text-emerald-400' : 'text-slate-400'
       }`}

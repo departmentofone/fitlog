@@ -13,6 +13,7 @@ import {
 } from '../../hooks/useMeals'
 import { haptics } from '../../lib/haptics'
 import { macrosForGrams, sumMacros, UNAVAILABLE_FOOD_NAME } from '../../types'
+import { useActiveDiet } from '../../hooks/useDiets'
 import { FoodAmountForm } from './FoodAmountForm'
 import { FoodPicker } from './FoodPicker'
 
@@ -87,6 +88,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
   const { undoable } = useToast()
 
   const totals = sumMacros(meal.meal_items.map((i) => macrosForGrams(i.food, i.grams)))
+  const { diet, foodIds } = useActiveDiet()
 
   if (meal.completed) {
     return (
@@ -172,7 +174,12 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
                 >
                   <span className="min-w-0">
                     <span className="block truncate text-slate-200">{item.food?.name ?? UNAVAILABLE_FOOD_NAME}</span>
-                    <span className="block text-xs text-slate-500">{amount}</span>
+                    <span className="block text-xs text-slate-500">
+                      {amount}
+                      {diet && item.food && !foodIds.has(item.food_id) && (
+                        <span className="ml-1.5 rounded bg-amber-500/15 px-1.5 py-px text-[10px] font-medium text-amber-400">Not on {diet.name}</span>
+                      )}
+                    </span>
                   </span>
                   <span className="shrink-0 text-sm font-medium text-slate-300">{Math.round(m.calories)} kcal</span>
                 </button>

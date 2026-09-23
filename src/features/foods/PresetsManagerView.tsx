@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useShareGate } from '../../hooks/useShareGate'
 import { useAuth } from '../../hooks/useAuth'
 import {
   useAddMealPresetItem,
@@ -30,6 +31,7 @@ export function PresetsManagerView() {
   const deletePreset = useDeleteMealPreset()
   const restorePreset = useRestoreMealPreset()
   const setShared = useSetMealPresetShared()
+  const gate = useShareGate()
   const addItem = useAddMealPresetItem()
   const removeItem = useRemoveMealPresetItem()
   const { undoable } = useToast()
@@ -166,11 +168,12 @@ export function PresetsManagerView() {
                           <input
                             type="checkbox"
                             checked={preset.is_shared}
-                            onChange={(e) => setShared.mutate({ presetId: preset.id, isShared: e.target.checked })}
+                            onChange={(e) => gate.request(e.target.checked, (on) => setShared.mutate({ presetId: preset.id, isShared: on }))}
                             className="h-3.5 w-3.5 accent-emerald-500"
                           />
                           Share to Community
                         </label>
+{gate.sheet}
                         <div className="flex gap-3 text-xs">
                           <button
                             onClick={() => {

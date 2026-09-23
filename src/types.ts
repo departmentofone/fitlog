@@ -180,6 +180,12 @@ export interface UserSettings {
   health_data_consent_at: string | null
   /** Opt-in regional food packs this account has turned on, e.g. ['serbia'] (migration_v22). */
   enabled_food_packs: string[]
+  /** The diet this account is following, if any (migration_v29). Optional: absent before it. */
+  active_diet_id?: string | null
+  /** When this account agreed to the Community guidelines - asked before the first share (v29). */
+  community_guidelines_accepted_at?: string | null
+  /** People whose Community items this account chose to hide (v29). */
+  hidden_community_users?: string[]
   updated_at: string
 }
 
@@ -319,6 +325,61 @@ export interface Goal {
   target_weight: number | null
   target_reps: number | null
   created_at: string
+}
+
+/** A list of foods you eat on a given diet (Keto, Mediterranean...) - see migration_v29. */
+export interface Diet {
+  id: string
+  user_id: string
+  name: string
+  description: string | null
+  is_shared: boolean
+  is_official?: boolean
+  source_id?: string | null
+  created_at: string
+}
+
+export interface DietFoodRow {
+  diet_id: string
+  food_id: string
+  /** Null when RLS hides it (another user's private food) - see macrosForGrams. */
+  food: Food | null
+}
+
+export interface DietWithFoods extends Diet {
+  diet_foods: DietFoodRow[]
+}
+
+/** One day of meals, or up to 7 days combined into a week (migration_v29). */
+export interface MealPlan {
+  id: string
+  user_id: string
+  name: string
+  description: string | null
+  days: number
+  /** Set when this is one of a diet's sample plans. */
+  diet_id: string | null
+  is_shared: boolean
+  is_official?: boolean
+  source_id?: string | null
+  created_at: string
+}
+
+export interface MealPlanItem {
+  id: string
+  plan_id: string
+  day_index: number
+  meal_name: string
+  meal_order: number
+  item_order: number
+  food_id: string
+  grams: number
+  serving_label: string | null
+  food: Food | null
+}
+
+export interface MealPlanWithItems extends MealPlan {
+  meal_plan_items: MealPlanItem[]
 }
 
 export interface MacroTotals {

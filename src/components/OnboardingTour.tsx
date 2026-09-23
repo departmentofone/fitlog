@@ -1,12 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useUpdateSettings, useUserSettings } from '../hooks/useUserSettings'
+import { ONBOARDING_REPLAY_EVENT, ONBOARDING_STORAGE_KEY } from '../lib/onboarding'
 import type { Tab } from '../types'
 import { BOTTOM_NAV_CHOICES, MAX_BOTTOM_NAV_EXTRAS, resolveBottomNavExtras } from './Layout'
 import { TabIcon } from './TabIcon'
 
-// v2: the three-step tour (welcome, pin sections, Community). Bumped from the old key so everyone
-// sees it once, including people who went through the old navigation tour.
-const STORAGE_KEY = 'fitlog-onboarded-v2'
+const STORAGE_KEY = ONBOARDING_STORAGE_KEY
 
 function hasSeenTour(): boolean {
   try {
@@ -48,6 +47,16 @@ export function OnboardingTour({ onOpenCommunity }: { onOpenCommunity: () => voi
   const initialPins = resolveBottomNavExtras(settings)
   const [pins, setPins] = useState<Tab[] | null>(null)
   const picked = pins ?? initialPins
+
+  useEffect(() => {
+    function reopen() {
+      setStep(0)
+      setPins(null)
+      setDismissed(false)
+    }
+    window.addEventListener(ONBOARDING_REPLAY_EVENT, reopen)
+    return () => window.removeEventListener(ONBOARDING_REPLAY_EVENT, reopen)
+  }, [])
 
   if (dismissed) return null
 

@@ -6,6 +6,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { useUpdateSettings, useUserSettings } from '../../hooks/useUserSettings'
 import { formatBuildTime } from '../../lib/buildInfo'
 import { exportUserData } from '../../lib/exportData'
+import { replayOnboarding } from '../../lib/onboarding'
 import { supabase } from '../../lib/supabase'
 import type { Tab } from '../../types'
 import { DeleteAccountCard } from './DeleteAccountCard'
@@ -236,6 +237,13 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
           className="flex min-h-11 w-full items-center justify-between border-t border-white/5 text-left text-sm font-medium text-slate-200 disabled:opacity-50"
         >
           {exporting ? 'Preparing export…' : 'Export my data'} <span aria-hidden="true" className="text-slate-500">›</span>
+        </button>
+
+        <button
+          onClick={replayOnboarding}
+          className="flex min-h-11 w-full items-center justify-between border-t border-white/5 text-left text-sm font-medium text-slate-200"
+        >
+          Show welcome again <span aria-hidden="true" className="text-slate-500">›</span>
         </button>
 
         <button

@@ -13,6 +13,8 @@ import {
   type MealWithItems,
 } from '../../hooks/useMeals'
 import { haptics } from '../../lib/haptics'
+import { formatFoodAmount } from '../../lib/units'
+import { useUserSettings } from '../../hooks/useUserSettings'
 import { macrosForGrams, sumMacros, UNAVAILABLE_FOOD_NAME } from '../../types'
 import { useActiveDiet } from '../../hooks/useDiets'
 import { FoodAmountForm } from './FoodAmountForm'
@@ -79,6 +81,7 @@ function MealPhotoControl({ meal }: { meal: MealWithItems }) {
 }
 
 export function MealCard({ meal }: { meal: MealWithItems }) {
+  const { data: settings } = useUserSettings()
   const [adding, setAdding] = useState(false)
   const addItem = useAddMealItem()
   const deleteItem = useDeleteMealItem()
@@ -161,7 +164,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
               />
             )
           }
-          const amount = item.serving_label ?? `${Math.round(item.grams * 10) / 10} g`
+          const amount = item.serving_label ?? formatFoodAmount(item.grams, settings?.unit_system)
           return (
             <SwipeToDelete key={item.id} onDelete={removeItem} className="rounded-xl">
               <div className="flex items-center rounded-xl bg-slate-800/60 text-sm">

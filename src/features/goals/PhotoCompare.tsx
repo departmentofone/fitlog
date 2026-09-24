@@ -1,16 +1,18 @@
 import { useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import { useSignedPhotoUrl } from '../../hooks/useProgressEntries'
-import type { ProgressEntry } from '../../types'
+import { useUserSettings } from '../../hooks/useUserSettings'
+import { formatWeight } from '../../lib/units'
+import type { ProgressEntry, UnitSystem } from '../../types'
 
-function formatCaption(entry: ProgressEntry | undefined) {
+function formatCaption(entry: ProgressEntry | undefined, unit: UnitSystem | undefined) {
   if (!entry) return ''
   const date = new Date(entry.date + 'T00:00:00').toLocaleDateString(undefined, {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
   })
-  return entry.weight != null ? `${date} · ${entry.weight}kg` : date
+  return entry.weight != null ? `${date} · ${formatWeight(entry.weight, unit, '')}` : date
 }
 
 function clampPercent(value: number) {
@@ -20,6 +22,7 @@ function clampPercent(value: number) {
 function BeforeAfterSlider({ before, after }: { before: ProgressEntry | undefined; after: ProgressEntry | undefined }) {
   const { data: beforeUrl } = useSignedPhotoUrl(before?.photo_path)
   const { data: afterUrl } = useSignedPhotoUrl(after?.photo_path)
+  const { data: settings } = useUserSettings()
   const [percent, setPercent] = useState(50)
   const [dragging, setDragging] = useState(false)
 
@@ -92,8 +95,8 @@ function BeforeAfterSlider({ before, after }: { before: ProgressEntry | undefine
       </div>
 
       <div className="mt-1 flex items-center justify-between text-xs text-slate-400">
-        <span>{formatCaption(before)}</span>
-        <span>{formatCaption(after)}</span>
+        <span>{formatCaption(before, settings?.unit_system)}</span>
+        <span>{formatCaption(after, settings?.unit_system)}</span>
       </div>
     </div>
   )

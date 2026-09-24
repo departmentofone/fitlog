@@ -142,6 +142,12 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
             </button>
           ))}
         </div>
+        <p className="mt-1.5 text-xs text-slate-500">
+          {(settings?.unit_system ?? 'metric') === 'metric'
+            ? 'Weights in kg, measurements in cm, food in g, drinks in ml.'
+            : 'Weights in lb, measurements in inches, food in oz, drinks in fl oz.'}{' '}
+          Nutrients stay in grams.
+        </p>
       </div>
 
       <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">

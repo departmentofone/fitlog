@@ -15,6 +15,8 @@ import { EmptyState } from '../../components/EmptyState'
 import { SkeletonRow } from '../../components/Skeleton'
 import { useToast } from '../../components/ToastProvider'
 import { UNAVAILABLE_FOOD_NAME } from '../../types'
+import { useUserSettings } from '../../hooks/useUserSettings'
+import { formatFoodAmount } from '../../lib/units'
 import { FoodPicker } from '../meals/FoodPicker'
 
 /**
@@ -25,6 +27,7 @@ import { FoodPicker } from '../meals/FoodPicker'
  */
 export function PresetsManagerView() {
   const { user } = useAuth()
+  const { data: settings } = useUserSettings()
   const { data: presets = [], isLoading } = useMealPresets()
   const createPreset = useCreateMealPreset()
   const renamePreset = useRenameMealPreset()
@@ -122,7 +125,7 @@ export function PresetsManagerView() {
                     <div key={item.id} className="flex items-center justify-between gap-2 rounded-lg bg-slate-800/60 px-2.5 py-1.5">
                       <span className="truncate text-xs text-slate-300">{item.food?.name ?? UNAVAILABLE_FOOD_NAME}</span>
                       <div className="flex shrink-0 items-center gap-2">
-                        <span className="text-xs text-slate-500">{item.grams}g</span>
+                        <span className="text-xs text-slate-500">{formatFoodAmount(item.grams, settings?.unit_system)}</span>
                         {isOwn && (
                           <button
                             onClick={() =>

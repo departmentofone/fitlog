@@ -7,12 +7,21 @@ import {
   useAlcoholLogsForDate,
   useDeleteAlcoholLog,
 } from '../../hooks/useAlcoholLogs'
+import { useUserSettings } from '../../hooks/useUserSettings'
 import { todayISO } from '../../hooks/useWorkouts'
+import { flOzToMl, fromDisplayVolume, toDisplayVolume, volumeUnitLabel } from '../../lib/units'
 
 const COMMON_DRINKS = [
   { name: 'Beer (500ml, 5%)', volumeMl: 500, abvPercent: 5 },
   { name: 'Wine (150ml, 12%)', volumeMl: 150, abvPercent: 12 },
   { name: 'Shot (40ml, 40%)', volumeMl: 40, abvPercent: 40 },
+]
+
+// US standard pours, rather than the metric sizes converted to odd fl oz figures.
+const COMMON_DRINKS_IMPERIAL = [
+  { name: 'Beer (12 fl oz, 5%)', volumeMl: flOzToMl(12), abvPercent: 5 },
+  { name: 'Wine (5 fl oz, 12%)', volumeMl: flOzToMl(5), abvPercent: 12 },
+  { name: 'Shot (1.5 fl oz, 40%)', volumeMl: flOzToMl(1.5), abvPercent: 40 },
 ]
 
 export function AlcoholSection() {
@@ -21,10 +30,14 @@ export function AlcoholSection() {
   const addLog = useAddAlcoholLog()
   const deleteLog = useDeleteAlcoholLog()
   const { undoable } = useToast()
+  const { data: settings } = useUserSettings()
+  const unit = settings?.unit_system
+  const commonDrinks = unit === 'imperial' ? COMMON_DRINKS_IMPERIAL : COMMON_DRINKS
 
   const [adding, setAdding] = useState(false)
   const [name, setName] = useState('')
-  const [volumeMl, setVolumeMl] = useState('')
+  /** In the user's unit (ml or fl oz); converted to ml when logged. */
+  const [volume, setVolume] = useState('')
   const [abvPercent, setAbvPercent] = useState('')
   const [manualCalories, setManualCalories] = useState('')
   const [useManual, setUseManual] = useState(false)
@@ -33,7 +46,7 @@ export function AlcoholSection() {
 
   function reset() {
     setName('')
-    setVolumeMl('')
+    setVolume('')
     setAbvPercent('')
     setManualCalories('')
     setUseManual(false)
@@ -42,13 +55,14 @@ export function AlcoholSection() {
 
   function handleAdd() {
     if (!name.trim()) return
+    const volumeMl = fromDisplayVolume(parseDecimal(volume) || 0, unit)
     const calories = useManual
       ? parseDecimal(manualCalories) || 0
-      : estimateAlcoholCalories(parseDecimal(volumeMl) || 0, parseDecimal(abvPercent) || 0)
+      : estimateAlcoholCalories(volumeMl, parseDecimal(abvPercent) || 0)
     addLog.mutate({
       date,
       name: name.trim(),
-      volumeMl: useManual ? null : parseDecimal(volumeMl) || null,
+      volumeMl: useManual ? null : volumeMl || null,
       abvPercent: useManual ? null : parseDecimal(abvPercent) || null,
       calories,
     })
@@ -122,12 +136,12 @@ export function AlcoholSection() {
             className="mb-2 w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
           />
           <div className="mb-2 flex flex-wrap gap-1.5">
-            {COMMON_DRINKS.map((d) => (
+            {commonDrinks.map((d) => (
               <button
                 key={d.name}
                 onClick={() => {
                   setName(d.name)
-                  setVolumeMl(String(d.volumeMl))
+                  setVolume(String(toDisplayVolume(d.volumeMl, unit)))
                   setAbvPercent(String(d.abvPercent))
                   setUseManual(false)
                 }}
@@ -154,9 +168,9 @@ export function AlcoholSection() {
               <input
                 type="text"
                 inputMode="decimal"
-                placeholder="Volume (ml)"
-                value={volumeMl}
-                onChange={(e) => setVolumeMl(e.target.value)}
+                placeholder={`Volume (${volumeUnitLabel(unit)})`}
+                value={volume}
+                onChange={(e) => setVolume(e.target.value)}
                 className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
               />
               <input

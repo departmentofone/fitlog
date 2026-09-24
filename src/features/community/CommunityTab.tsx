@@ -30,7 +30,7 @@ import { computeRecipeMacros, useRecipes, useSetRecipeShared } from '../../hooks
 import { useUpdateSettings, useUserSettings } from '../../hooks/useUserSettings'
 import { haptics } from '../../lib/haptics'
 import { normalizeFoodText } from '../../lib/foodSearch'
-import { displayWeightValue, weightUnitLabel } from '../../lib/units'
+import { displayWeightValue, formatFoodAmount, weightUnitLabel } from '../../lib/units'
 import { macrosForGrams, sumMacros, UNAVAILABLE_EXERCISE_NAME, UNAVAILABLE_FOOD_NAME, type UnitSystem } from '../../types'
 
 const FILTERS: { value: CommunityKind | 'all'; label: string }[] = [
@@ -150,7 +150,7 @@ function Preview({ item, unit }: { item: CommunityItem; unit: UnitSystem | undef
             <span className="min-w-0 text-slate-200">{i.food?.name ?? UNAVAILABLE_FOOD_NAME}</span>
             <span className="shrink-0 text-right text-xs text-slate-500">
               {i.serving_label ? `${i.serving_label} · ` : ''}
-              {Math.round(i.grams)} g
+              {formatFoodAmount(i.grams, unit, 0)}
             </span>
           </li>
         ))}
@@ -205,7 +205,7 @@ function Preview({ item, unit }: { item: CommunityItem; unit: UnitSystem | undef
                   {meal.items.map((i) => (
                     <li key={i.id} className="flex items-baseline justify-between gap-3 py-0.5 text-sm">
                       <span className="min-w-0 text-slate-200">{i.food?.name ?? UNAVAILABLE_FOOD_NAME}</span>
-                      <span className="shrink-0 text-xs text-slate-500">{i.serving_label ?? `${Math.round(i.grams)} g`}</span>
+                      <span className="shrink-0 text-xs text-slate-500">{i.serving_label ?? formatFoodAmount(i.grams, unit, 0)}</span>
                     </li>
                   ))}
                 </ul>

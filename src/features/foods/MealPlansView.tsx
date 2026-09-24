@@ -19,6 +19,8 @@ import {
 } from '../../hooks/useMealPlans'
 import { todayISO } from '../../hooks/useWorkouts'
 import { haptics } from '../../lib/haptics'
+import { formatFoodAmount } from '../../lib/units'
+import { useUserSettings } from '../../hooks/useUserSettings'
 import { averageDay, DEFAULT_PLAN_MEALS, groupPlan, nextMealOrder } from '../../lib/mealPlans'
 import { UNAVAILABLE_FOOD_NAME, type MealPlanWithItems } from '../../types'
 import { FoodPicker } from '../meals/FoodPicker'
@@ -36,6 +38,7 @@ interface AddTarget {
 
 function PlanCard({ plan, dietName, open, onToggle }: { plan: MealPlanWithItems; dietName: string | null; open: boolean; onToggle: () => void }) {
   const { show, undoable } = useToast()
+  const { data: settings } = useUserSettings()
   const update = useUpdateMealPlan()
   const del = useDeleteMealPlan()
   const restore = useRestoreMealPlan()
@@ -137,7 +140,7 @@ function PlanCard({ plan, dietName, open, onToggle }: { plan: MealPlanWithItems;
                   <li key={i.id} className="flex items-center justify-between gap-2 text-sm">
                     <span className="min-w-0 truncate text-slate-200">{i.food?.name ?? UNAVAILABLE_FOOD_NAME}</span>
                     <span className="flex shrink-0 items-center gap-1">
-                      <span className="text-xs text-slate-500">{i.serving_label ?? `${Math.round(i.grams)} g`}</span>
+                      <span className="text-xs text-slate-500">{i.serving_label ?? formatFoodAmount(i.grams, settings?.unit_system, 0)}</span>
                       <button
                         onClick={() =>
                           undoable(

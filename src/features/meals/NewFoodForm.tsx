@@ -1,6 +1,8 @@
 import { parseDecimal } from '../../lib/number'
 import { useState } from 'react'
 import { useCreateFood, useUpdateFood } from '../../hooks/useFoods'
+import { useUserSettings } from '../../hooks/useUserSettings'
+import { fromDisplayFoodAmount, toDisplayFoodAmount } from '../../lib/units'
 import type { Food } from '../../types'
 
 /**
@@ -18,7 +20,13 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
   const [carbs, setCarbs] = useState(food ? String(food.carbs_per_100g) : '')
   const [fat, setFat] = useState(food ? String(food.fat_per_100g) : '')
   const [servingLabel, setServingLabel] = useState(food?.common_servings[0]?.label ?? '')
-  const [servingGrams, setServingGrams] = useState(food?.common_servings[0] ? String(food.common_servings[0].grams) : '')
+  // Nutrition stays "per 100 g" (the database's basis), but the serving's weight is typed in the
+  // user's unit - g, or oz for imperial.
+  const { data: settings } = useUserSettings()
+  const [unit] = useState(settings?.unit_system)
+  const firstServing = food?.common_servings[0]
+  const [initialServingAmount] = useState(firstServing ? String(toDisplayFoodAmount(firstServing.grams, unit)) : '')
+  const [servingAmount, setServingAmount] = useState(initialServingAmount)
 
   const [showMicros, setShowMicros] = useState(false)
   const [fiber, setFiber] = useState(food ? String(food.fiber_g) : '')
@@ -34,8 +42,16 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
   async function handleSave() {
     if (!name.trim() || !calories) return
     const commonServings =
-      servingLabel.trim() && servingGrams
-        ? [{ label: servingLabel.trim(), grams: parseDecimal(servingGrams) }]
+      servingLabel.trim() && servingAmount
+        ? [
+            {
+              label: servingLabel.trim(),
+              grams:
+                firstServing && servingAmount === initialServingAmount
+                  ? firstServing.grams
+                  : fromDisplayFoodAmount(parseDecimal(servingAmount), unit),
+            },
+          ]
         : []
     const input = {
       name: name.trim(),
@@ -112,7 +128,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
             className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
           />
         </div>
-        <p className="text-xs text-slate-500">Optional common serving (e.g. "1 small egg" = 38g):</p>
+        <p className="text-xs text-slate-500">Optional common serving (e.g. "1 small egg" = {unit === 'imperial' ? '1.3 oz' : '38g'}):</p>
         <div className="grid grid-cols-2 gap-2.5">
           <input
             placeholder="Label"
@@ -121,11 +137,11 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
             className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
           />
           <input
-            placeholder="Grams"
+            placeholder={unit === 'imperial' ? 'Ounces' : 'Grams'}
             type="text"
             inputMode="decimal"
-            value={servingGrams}
-            onChange={(e) => setServingGrams(e.target.value)}
+            value={servingAmount}
+            onChange={(e) => setServingAmount(e.target.value)}
             className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
           />
         </div>

@@ -2,11 +2,19 @@ import type { UnitSystem } from '../types'
 
 const KG_PER_LB = 0.45359237
 const CM_PER_IN = 2.54
+const ML_PER_FL_OZ = 29.5735295625
+const G_PER_OZ = 28.349523125
 
 export const kgToLb = (kg: number) => kg / KG_PER_LB
 export const lbToKg = (lb: number) => lb * KG_PER_LB
 export const cmToIn = (cm: number) => cm / CM_PER_IN
 export const inToCm = (inches: number) => inches * CM_PER_IN
+export const mlToFlOz = (ml: number) => ml / ML_PER_FL_OZ
+export const flOzToMl = (flOz: number) => flOz * ML_PER_FL_OZ
+export const gToOz = (g: number) => g / G_PER_OZ
+export const ozToG = (oz: number) => oz * G_PER_OZ
+
+const round1 = (n: number) => Math.round(n * 10) / 10
 
 export function weightUnitLabel(unit: UnitSystem | undefined): 'kg' | 'lb' {
   return unit === 'imperial' ? 'lb' : 'kg'
@@ -46,4 +54,45 @@ export function toDisplayTotal(kg: number, unit: UnitSystem | undefined): number
 /** The -/+ nudge on a weight stepper: the smallest common plate jump in each system. */
 export function weightStep(unit: UnitSystem | undefined): number {
   return unit === 'imperial' ? 5 : 2.5
+}
+
+/*
+ * Drinks (water, alcohol) are stored in ml and food portions in grams. Imperial shows fl oz / oz,
+ * rounded to 0.1 so a typed value survives the round trip through storage; metric passes through.
+ * Nutrients (protein, carbs, fiber...) stay in grams in both systems - US labels use grams too.
+ */
+
+export function volumeUnitLabel(unit: UnitSystem | undefined): 'ml' | 'fl oz' {
+  return unit === 'imperial' ? 'fl oz' : 'ml'
+}
+
+export function toDisplayVolume(ml: number, unit: UnitSystem | undefined): number {
+  return unit === 'imperial' ? round1(mlToFlOz(ml)) : ml
+}
+
+export function fromDisplayVolume(value: number, unit: UnitSystem | undefined): number {
+  return unit === 'imperial' ? flOzToMl(value) : value
+}
+
+export function formatVolume(ml: number, unit: UnitSystem | undefined): string {
+  return `${toDisplayVolume(ml, unit)} ${volumeUnitLabel(unit)}`
+}
+
+export function foodUnitLabel(unit: UnitSystem | undefined): 'g' | 'oz' {
+  return unit === 'imperial' ? 'oz' : 'g'
+}
+
+export function toDisplayFoodAmount(g: number, unit: UnitSystem | undefined): number {
+  return unit === 'imperial' ? round1(gToOz(g)) : g
+}
+
+export function fromDisplayFoodAmount(value: number, unit: UnitSystem | undefined): number {
+  return unit === 'imperial' ? ozToG(value) : value
+}
+
+/** "150 g" / "5.3 oz". Grams round to `gramDecimals` places (screens differ: whole vs 0.1 g). */
+export function formatFoodAmount(g: number, unit: UnitSystem | undefined, gramDecimals = 1): string {
+  if (unit === 'imperial') return `${round1(gToOz(g))} oz`
+  const f = 10 ** gramDecimals
+  return `${Math.round(g * f) / f} g`
 }

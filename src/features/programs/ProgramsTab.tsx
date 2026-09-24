@@ -15,6 +15,8 @@ import {
 } from '../../hooks/usePrograms'
 import { usePresets } from '../../hooks/usePresets'
 import { useRecipes } from '../../hooks/useRecipes'
+import { useUserSettings } from '../../hooks/useUserSettings'
+import { fromDisplayVolume, volumeUnitLabel } from '../../lib/units'
 import type { DietGoal, Program } from '../../types'
 
 function CheckList<T extends { id: string; name: string }>({
@@ -55,7 +57,10 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
   const [includeGoals, setIncludeGoals] = useState(false)
   const [dietGoal, setDietGoal] = useState<DietGoal>('deficit')
   const [calorieGoal, setCalorieGoal] = useState('')
-  const [waterGoalMl, setWaterGoalMl] = useState('2000')
+  // Typed in the unit the form opened with (ml, or fl oz for imperial); stored as ml.
+  const { data: settings } = useUserSettings()
+  const [unit] = useState(settings?.unit_system)
+  const [waterGoal, setWaterGoal] = useState(unit === 'imperial' ? '68' : '2000')
   const [selectedWorkouts, setSelectedWorkouts] = useState<Set<string>>(new Set())
   const [selectedRecipes, setSelectedRecipes] = useState<Set<string>>(new Set())
   const [selectedMealPresets, setSelectedMealPresets] = useState<Set<string>>(new Set())
@@ -76,7 +81,7 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
       description: description.trim(),
       dietGoal: includeGoals ? dietGoal : null,
       calorieGoal: includeGoals && calorieGoal ? parseDecimal(calorieGoal) : null,
-      waterGoalMl: includeGoals && waterGoalMl ? parseDecimal(waterGoalMl) : null,
+      waterGoalMl: includeGoals && waterGoal ? fromDisplayVolume(parseDecimal(waterGoal), unit) : null,
       workoutPresets: workoutPresets.filter((p) => selectedWorkouts.has(p.id)),
       recipes: recipes.filter((r) => selectedRecipes.has(r.id)),
       mealPresets: mealPresets.filter((p) => selectedMealPresets.has(p.id)),
@@ -140,9 +145,9 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
             <input
               type="text"
               inputMode="decimal"
-              placeholder="Water goal (ml)"
-              value={waterGoalMl}
-              onChange={(e) => setWaterGoalMl(e.target.value)}
+              placeholder={`Water goal (${volumeUnitLabel(unit)})`}
+              value={waterGoal}
+              onChange={(e) => setWaterGoal(e.target.value)}
               className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
             />
           </div>

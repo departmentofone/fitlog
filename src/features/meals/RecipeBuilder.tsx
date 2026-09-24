@@ -22,12 +22,14 @@ import {
   type RecipeWithIngredients,
 } from '../../hooks/useRecipes'
 import { haptics } from '../../lib/haptics'
+import { foodUnitLabel, fromDisplayFoodAmount, toDisplayFoodAmount } from '../../lib/units'
+import { useUserSettings } from '../../hooks/useUserSettings'
 import type { Food } from '../../types'
 
 interface DraftIngredient {
   food: Food
   grams: number
-  /** Exactly what's in the field, so a half-typed "62," keeps its comma (grams holds the parsed value). */
+  /** Exactly what's in the field (g or oz), so a half-typed "62," keeps its comma (grams holds the parsed value). */
   gramsInput?: string
 }
 
@@ -48,6 +50,8 @@ export function RecipeBuilderView({
   const gate = useShareGate()
   const addToMeal = useAddRecipeToMeal()
   const { show, undoable } = useToast()
+  const { data: settings } = useUserSettings()
+  const unit = settings?.unit_system
 
   const [name, setName] = useState('')
   const [servings, setServings] = useState(1)
@@ -73,7 +77,7 @@ export function RecipeBuilderView({
 
   function updateDraftGrams(index: number, input: string) {
     const parsed = parseDecimal(input)
-    const grams = Number.isFinite(parsed) && parsed > 0 ? parsed : 0
+    const grams = Number.isFinite(parsed) && parsed > 0 ? fromDisplayFoodAmount(parsed, unit) : 0
     setDraft((cur) => cur.map((d, i) => (i === index ? { ...d, grams, gramsInput: input } : d)))
   }
 
@@ -166,11 +170,11 @@ export function RecipeBuilderView({
                 <input
                   type="text"
                   inputMode="decimal"
-                  value={d.gramsInput ?? String(d.grams)}
+                  value={d.gramsInput ?? String(toDisplayFoodAmount(d.grams, unit))}
                   onChange={(e) => updateDraftGrams(i, e.target.value)}
                   className="w-20 rounded-xl border border-slate-700 bg-slate-900 px-2 py-1 text-sm text-white focus:border-emerald-500 focus:outline-none"
                 />
-                <span className="text-xs text-slate-500">g</span>
+                <span className="text-xs text-slate-500">{foodUnitLabel(unit)}</span>
                 <button onClick={() => removeDraftIngredient(i)} className="text-red-400 hover:text-red-300">
                   ×
                 </button>

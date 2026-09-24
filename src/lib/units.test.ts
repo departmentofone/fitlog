@@ -2,13 +2,25 @@ import { describe, expect, it } from 'vitest'
 import {
   cmToIn,
   displayWeightValue,
+  flOzToMl,
+  foodUnitLabel,
+  formatFoodAmount,
+  formatVolume,
   formatWeight,
+  fromDisplayFoodAmount,
+  fromDisplayVolume,
   fromDisplayWeight,
+  gToOz,
+  mlToFlOz,
+  ozToG,
   inToCm,
   kgToLb,
   lbToKg,
+  toDisplayFoodAmount,
   toDisplayTotal,
+  toDisplayVolume,
   toDisplayWeight,
+  volumeUnitLabel,
   weightStep,
   weightUnitLabel,
 } from './units'
@@ -97,5 +109,65 @@ describe('weightStep', () => {
     expect(weightStep('metric')).toBe(2.5)
     expect(weightStep(undefined)).toBe(2.5)
     expect(weightStep('imperial')).toBe(5)
+  })
+})
+
+describe('volume (drinks)', () => {
+  it('converts ml to fl oz and back', () => {
+    expect(mlToFlOz(29.5735295625)).toBeCloseTo(1, 10)
+    expect(flOzToMl(mlToFlOz(500))).toBeCloseTo(500, 6)
+  })
+
+  it('labels ml / fl oz', () => {
+    expect(volumeUnitLabel('metric')).toBe('ml')
+    expect(volumeUnitLabel(undefined)).toBe('ml')
+    expect(volumeUnitLabel('imperial')).toBe('fl oz')
+  })
+
+  it('passes metric through and rounds imperial to 0.1 fl oz', () => {
+    expect(toDisplayVolume(250, 'metric')).toBe(250)
+    expect(fromDisplayVolume(250, 'metric')).toBe(250)
+    expect(toDisplayVolume(2000, 'imperial')).toBe(67.6)
+  })
+
+  it('round-trips typed fl oz through ml storage', () => {
+    for (const flOz of [1.5, 5, 8, 12, 16, 64]) {
+      expect(toDisplayVolume(fromDisplayVolume(flOz, 'imperial'), 'imperial')).toBe(flOz)
+    }
+  })
+
+  it('formats with the unit', () => {
+    expect(formatVolume(500, 'metric')).toBe('500 ml')
+    expect(formatVolume(flOzToMl(12), 'imperial')).toBe('12 fl oz')
+  })
+})
+
+describe('food amounts', () => {
+  it('converts g to oz and back', () => {
+    expect(gToOz(28.349523125)).toBeCloseTo(1, 10)
+    expect(ozToG(gToOz(150))).toBeCloseTo(150, 6)
+  })
+
+  it('labels g / oz', () => {
+    expect(foodUnitLabel('metric')).toBe('g')
+    expect(foodUnitLabel('imperial')).toBe('oz')
+  })
+
+  it('passes metric through and rounds imperial to 0.1 oz', () => {
+    expect(toDisplayFoodAmount(33.333, 'metric')).toBe(33.333)
+    expect(fromDisplayFoodAmount(100, 'metric')).toBe(100)
+    expect(toDisplayFoodAmount(100, 'imperial')).toBe(3.5)
+  })
+
+  it('round-trips typed oz through gram storage', () => {
+    for (const oz of [0.5, 1, 3.5, 4, 6.2, 16]) {
+      expect(toDisplayFoodAmount(fromDisplayFoodAmount(oz, 'imperial'), 'imperial')).toBe(oz)
+    }
+  })
+
+  it('formats grams at the requested precision, and oz to 0.1', () => {
+    expect(formatFoodAmount(33.36, 'metric')).toBe('33.4 g')
+    expect(formatFoodAmount(33.36, 'metric', 0)).toBe('33 g')
+    expect(formatFoodAmount(150, 'imperial')).toBe('5.3 oz')
   })
 })

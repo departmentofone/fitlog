@@ -12,12 +12,18 @@
 }
 
 :root {
-  color-scheme: light dark;
+  /* Native controls (the date field's calendar icon, checkboxes, scrollbars) follow the app's own
+     theme, not the phone's - "light dark" let a dark-mode phone draw white icons on the light theme.
+     Dark is the default look; useApplyTheme sets data-theme="light" for the light one. */
+  color-scheme: dark;
   /* Overridden by src/lib/viewportHeight.ts with the real measured height as soon as JS runs -
      100dvh is just the pre-JS fallback. iOS standalone-PWA mode has a WebKit bug where 100dvh
      under-reports the true screen height by a small amount, leaving a gap of the page's own
      background below anything sized to it (the bottom nav, in this app's case). */
   --app-height: 100dvh;
+}
+:root[data-theme='light'] {
+  color-scheme: light;
 }
 
 html, body, #root {

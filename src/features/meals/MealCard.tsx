@@ -1,3 +1,4 @@
+import { formatWhole } from '../../lib/number'
 import { useRef, useState } from 'react'
 import { MacroLine } from '../../components/MacroLine'
 import { SwipeToDelete } from '../../components/SwipeToDelete'
@@ -103,7 +104,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
           </div>
           <p className="mb-1 text-sm text-slate-400">
             {meal.meal_items.length} item{meal.meal_items.length === 1 ? '' : 's'} ·{' '}
-            <span className="font-semibold text-emerald-400">{Math.round(totals.calories)} kcal</span>
+            <span className="font-semibold text-emerald-400">{formatWhole(totals.calories)} kcal</span>
           </p>
           <MacroLine macros={totals} />
         </button>
@@ -122,7 +123,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
         <div className="flex items-center gap-2">
           {meal.meal_items.length > 0 && (
             <>
-              <span className="text-xs text-emerald-400">{Math.round(totals.calories)} kcal</span>
+              <span className="text-xs text-emerald-400">{formatWhole(totals.calories)} kcal</span>
               <MealPhotoControl meal={meal} />
             </>
           )}

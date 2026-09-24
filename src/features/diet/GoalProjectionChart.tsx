@@ -1,3 +1,4 @@
+import { formatWhole } from '../../lib/number'
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { estimateTDEE, projectGoal } from '../../lib/tdee'
 import { useUserSettings } from '../../hooks/useUserSettings'
@@ -48,7 +49,7 @@ export function GoalProjectionChart() {
     return (
       <Card>
         <p className="text-sm text-amber-400">
-          Your {settings.calorie_goal} kcal target won't get you there — your estimated maintenance is ~{tdee} kcal, so
+          Your {formatWhole(settings.calorie_goal)} kcal target won't get you there — your estimated maintenance is ~{formatWhole(tdee)} kcal, so
           you'll need to {projection.direction === 'lose' ? 'lower' : 'raise'} your calorie target to make progress toward{' '}
           {projection.direction === 'lose' ? 'losing' : 'gaining'} weight.
         </p>
@@ -78,7 +79,7 @@ export function GoalProjectionChart() {
       </p>
       <div className="h-48 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+          <LineChart data={data} margin={{ top: 4, right: 24, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
             <XAxis
               dataKey="label"
@@ -92,7 +93,9 @@ export function GoalProjectionChart() {
               axisLine={false}
               tickLine={false}
               width={40}
-              domain={['dataMin - 1', 'dataMax + 1']}
+              domain={[(min: number) => Math.floor(min - 1), (max: number) => Math.ceil(max + 1)]}
+              allowDecimals={false}
+              tickCount={6}
             />
             <Tooltip
               contentStyle={{ background: colors.tooltipBg, border: `1px solid ${colors.tooltipBorder}`, borderRadius: 8, fontFamily: CHART_FONT }}
@@ -104,7 +107,7 @@ export function GoalProjectionChart() {
         </ResponsiveContainer>
       </div>
       <p className="mt-2 text-xs text-slate-500">
-        Estimate based on your Mifflin-St Jeor maintenance (~{tdee} kcal/day) — actual results vary.
+        Estimate based on your Mifflin-St Jeor maintenance (~{formatWhole(tdee)} kcal/day) — actual results vary.
       </p>
     </Card>
   )

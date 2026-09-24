@@ -37,11 +37,17 @@ export const REPORT_TYPE: Record<CommunityKind, string> = {
 // Plenty for browsing today; revisit with paging once there's real traffic.
 const PAGE = 200
 
-/** Official first (in the order they were curated), then everyone else's, newest first. */
+// Official items follow the filter chips' order, so the diets lead instead of the twelve meal
+// presets that happened to be curated first.
+const OFFICIAL_KIND_ORDER: CommunityItem['kind'][] = ['diet', 'plan', 'meal', 'recipe', 'workout', 'program']
+
+/** Official first (by type, then in the order they were curated), then everyone else's, newest first. */
 export function sortCommunity(items: CommunityItem[]): CommunityItem[] {
   return [...items].sort((a, b) => {
     if (a.isOfficial !== b.isOfficial) return a.isOfficial ? -1 : 1
-    return a.isOfficial ? a.createdAt.localeCompare(b.createdAt) : b.createdAt.localeCompare(a.createdAt)
+    if (!a.isOfficial) return b.createdAt.localeCompare(a.createdAt)
+    const byKind = OFFICIAL_KIND_ORDER.indexOf(a.kind) - OFFICIAL_KIND_ORDER.indexOf(b.kind)
+    return byKind || a.createdAt.localeCompare(b.createdAt)
   })
 }
 

@@ -76,7 +76,7 @@ export function TrendsChart() {
       ) : (
         <div className="h-56 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+            <BarChart data={chartData} margin={{ top: 4, right: 24, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
               <XAxis
                 dataKey="label"

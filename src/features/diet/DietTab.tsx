@@ -1,4 +1,4 @@
-import { parseDecimal } from '../../lib/number'
+import { parseDecimal, formatWhole } from '../../lib/number'
 import { useState } from 'react'
 import { CircularProgress } from '../../components/CircularProgress'
 import { CountUp } from '../../components/CountUp'
@@ -70,7 +70,7 @@ export function DietTab() {
           <h2 className="text-sm font-medium text-slate-300">Diet goal</h2>
           {!editing &&
             ((streak.data?.current ?? 0) > 0 ? (
-              <FireStreak count={streak.data?.current ?? 0} label="on-target streak" />
+              <FireStreak count={streak.data?.current ?? 0} label="day on-target streak" />
             ) : (
               <span className="text-xs text-slate-500">Tap to edit</span>
             ))}
@@ -120,9 +120,9 @@ export function DietTab() {
           <div className="flex items-center gap-4">
             <div className="flex-1">
               <p className="text-3xl font-bold text-white">
-                {calorieGoal} <span className="text-lg font-medium text-slate-400">kcal</span>
+                {formatWhole(calorieGoal)} <span className="text-lg font-medium text-slate-400">kcal</span>
               </p>
-              <p className="mb-3 text-xs capitalize text-slate-500">{dietGoal} target</p>
+              <p className="mb-3 text-xs text-slate-500">{dietGoal.charAt(0).toUpperCase() + dietGoal.slice(1)} target</p>
               {info && <p className={`text-sm font-medium ${TONE_CLASSES[info.tone]}`}>{info.text}</p>}
             </div>
             {info && (

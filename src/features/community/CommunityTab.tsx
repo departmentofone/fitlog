@@ -1,3 +1,4 @@
+import { formatWhole } from '../../lib/number'
 import { useMemo, useState } from 'react'
 import { EmptyState } from '../../components/EmptyState'
 import { ExplainerCard } from '../../components/ExplainerCard'
@@ -83,7 +84,7 @@ function Summary({ item }: { item: CommunityItem }) {
     return (
       <div className="space-y-0.5">
         <p className="text-xs text-slate-400">
-          {plural(item.meal.meal_preset_items.length, 'food')} · <span className="font-semibold text-slate-200">{Math.round(totals.calories)} kcal</span>
+          {plural(item.meal.meal_preset_items.length, 'food')} · <span className="font-semibold text-slate-200">{formatWhole(totals.calories)} kcal</span>
         </p>
         <MacroLine macros={totals} />
       </div>
@@ -255,7 +256,7 @@ function Preview({ item, unit }: { item: CommunityItem; unit: UnitSystem | undef
       {section('Meal presets', p.meal_presets.map((m) => m.name))}
       {(p.diet_goal || p.calorie_goal != null) && (
         <p className="text-xs text-slate-400">
-          Includes diet goals{p.calorie_goal != null ? ` · ${Math.round(p.calorie_goal)} kcal/day` : ''}
+          Includes diet goals{p.calorie_goal != null ? ` · ${formatWhole(p.calorie_goal)} kcal/day` : ''}
         </p>
       )}
     </div>
@@ -407,7 +408,8 @@ function CommunityCard({
             onClick={handleSave}
             disabled={busy || done}
             className={`flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl text-sm font-semibold transition ${
-              done ? 'bg-emerald-500/15 text-emerald-400' : 'bg-emerald-600 text-on-accent disabled:opacity-60'
+              // Tonal, not solid: a solid green button on every card made the feed shout.
+              done ? 'text-emerald-400 ring-1 ring-white/5' : 'bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/30 disabled:opacity-60'
             }`}
           >
             {done ? (

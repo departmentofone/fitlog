@@ -6,7 +6,9 @@ import type { MicroTotals } from '../../types'
 // to *get enough of* read as a warning only while you're clearly short of it.
 const LIMIT_KEYS = new Set<keyof MicroTotals>(['sodium', 'cholesterol', 'sugar'])
 
-function toneFor(key: keyof MicroTotals, pct: number): 'good' | 'neutral' | 'warn' {
+function toneFor(key: keyof MicroTotals, value: number, pct: number): 'none' | 'good' | 'neutral' | 'warn' {
+  // Nothing logged yet isn't a warning - a red "0g" fiber before breakfast just read as an alarm.
+  if (value <= 0) return 'none'
   if (LIMIT_KEYS.has(key)) {
     if (pct >= 100) return 'warn'
     if (pct >= 70) return 'neutral'
@@ -18,11 +20,13 @@ function toneFor(key: keyof MicroTotals, pct: number): 'good' | 'neutral' | 'war
 }
 
 const TONE_BAR: Record<string, string> = {
+  none: 'bg-slate-600',
   good: 'bg-emerald-500',
   neutral: 'bg-amber-400',
   warn: 'bg-red-500',
 }
 const TONE_TEXT: Record<string, string> = {
+  none: 'text-slate-400',
   good: 'text-emerald-400',
   neutral: 'text-amber-400',
   warn: 'text-red-400',
@@ -51,7 +55,7 @@ export function MicroDashboard({ micros }: { micros: MicroTotals }) {
           const value = micros[d.key]
           const pct = percentDV(value, d.dv)
           const clamped = Math.max(0, Math.min(100, pct))
-          const tone = toneFor(d.key, pct)
+          const tone = toneFor(d.key, value, pct)
           return (
             <div key={d.key} className="rounded-xl bg-slate-800/60 p-2.5">
               <p className="text-[11px] font-medium uppercase tracking-wide text-slate-500">{d.label}</p>

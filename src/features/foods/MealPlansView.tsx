@@ -1,3 +1,4 @@
+import { formatWhole } from '../../lib/number'
 import { useMemo, useState } from 'react'
 import { useShareGate } from '../../hooks/useShareGate'
 import { EmptyState } from '../../components/EmptyState'
@@ -129,7 +130,7 @@ function PlanCard({ plan, dietName, open, onToggle }: { plan: MealPlanWithItems;
             <div key={meal.name} className="rounded-xl bg-slate-800/50 p-2.5">
               <p className="mb-1 flex justify-between text-xs font-semibold text-slate-300">
                 <span>{meal.name}</span>
-                <span className="font-normal text-slate-500">{Math.round(meal.totals.calories)} kcal</span>
+                <span className="font-normal text-slate-500">{formatWhole(meal.totals.calories)} kcal</span>
               </p>
               <ul className="space-y-0.5">
                 {meal.items.map((i) => (

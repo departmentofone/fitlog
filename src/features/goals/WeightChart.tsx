@@ -74,7 +74,7 @@ export function WeightChart() {
       ) : (
         <div className="h-48 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={points} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+            <LineChart data={points} margin={{ top: 4, right: 24, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
               <XAxis
                 dataKey="label"
@@ -88,7 +88,9 @@ export function WeightChart() {
                 axisLine={false}
                 tickLine={false}
                 width={44}
-                domain={['dataMin - 1', 'dataMax + 1']}
+                domain={[(min: number) => Math.floor(min - 1), (max: number) => Math.ceil(max + 1)]}
+                allowDecimals={false}
+                tickCount={6}
               />
               <Tooltip
                 contentStyle={{ background: colors.tooltipBg, border: `1px solid ${colors.tooltipBorder}`, borderRadius: 8, fontFamily: CHART_FONT }}

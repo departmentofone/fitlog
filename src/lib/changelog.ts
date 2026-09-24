@@ -9,9 +9,16 @@ export interface ChangelogEntry {
 export const CHANGELOG: ChangelogEntry[] = [
   {
     date: '2026-09-24',
-    title: 'Clearer Community, smaller fixes',
+    title: 'Clearer Community, lots of polish',
     changes: [
       'Empty Community sections explain what belongs there, with a real example, instead of looking blank',
+      'Community now leads with diets, and its buttons are calmer',
+      'Exercise names on workout cards show in full instead of being cut off',
+      'Calories use thousands separators everywhere (2,300 kcal)',
+      'Chart dates no longer get cut off at the right edge',
+      'The plate calculator labels its fields, and its cards no longer touch',
+      'The Light theme now draws the date picker and checkboxes in light colours too',
+      'Micronutrients stay grey until you log something, instead of flashing red',
       'Reloading or going back on Foods or Community no longer jumps you to Workouts',
       'Weights like 102.5 kg now fit in the set form on smaller phones',
     ],

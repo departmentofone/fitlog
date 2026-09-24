@@ -28,7 +28,8 @@ export function ExerciseSummaryBox({
             Superset {supersetLabel}
           </p>
         )}
-        <p className="mb-1 truncate pr-6 text-sm font-medium text-white">{name}</p>
+        {/* Two lines, not one: in the two-column grid a single line cut most names to "Dumbbell Lat…". */}
+        <p className="mb-1 line-clamp-2 break-words pr-7 text-sm font-medium leading-snug text-white">{name}</p>
         <p className="text-xs text-slate-400">
           S{sets.length} · R{topSet.reps} · {topSet.weight}kg
         </p>
@@ -40,7 +41,7 @@ export function ExerciseSummaryBox({
             onOpenDetail()
           }}
           aria-label="View progress"
-          className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full text-slate-500 hover:bg-white/5 hover:text-emerald-400"
+          className="absolute top-0 right-0 flex h-10 w-10 items-center justify-center rounded-full text-slate-500 hover:bg-white/5 hover:text-emerald-400"
         >
           <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="3 17 9 11 13 15 21 7" />

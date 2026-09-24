@@ -157,7 +157,7 @@ function BodyMeasurementsCard() {
               </div>
               <div className="h-36 w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+                  <LineChart data={chartData} margin={{ top: 4, right: 24, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
                     <XAxis
                       dataKey="label"
@@ -171,7 +171,9 @@ function BodyMeasurementsCard() {
                       axisLine={false}
                       tickLine={false}
                       width={40}
-                      domain={['dataMin - 1', 'dataMax + 1']}
+                      domain={[(min: number) => Math.floor(min - 1), (max: number) => Math.ceil(max + 1)]}
+                      allowDecimals={false}
+                      tickCount={6}
                     />
                     <Tooltip
                       contentStyle={{ background: colors.tooltipBg, border: `1px solid ${colors.tooltipBorder}`, borderRadius: 8, fontFamily: CHART_FONT }}

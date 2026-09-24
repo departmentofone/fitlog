@@ -1,4 +1,4 @@
-import { parseDecimal } from '../../lib/number'
+import { parseDecimal, formatWhole } from '../../lib/number'
 import { useShareGate } from '../../hooks/useShareGate'
 import { useState } from 'react'
 import { UNAVAILABLE_FOOD_NAME } from '../../types'
@@ -181,7 +181,7 @@ export function RecipeBuilderView({
 
         {draft.length > 0 && (
           <div className="mb-3 rounded-xl bg-slate-800/60 px-3 py-2">
-            <p className="mb-1 text-sm font-medium text-white">{Math.round(draftMacros.total.calories)} kcal total</p>
+            <p className="mb-1 text-sm font-medium text-white">{formatWhole(draftMacros.total.calories)} kcal total</p>
             <MacroLine macros={draftMacros.total} />
           </div>
         )}
@@ -325,7 +325,7 @@ function RecipeCard({
 
       <div className="mb-2 rounded-xl bg-slate-900/60 px-3 py-2">
         <p className="text-xs text-slate-400">
-          Total: {Math.round(macros.total.calories)} kcal · Per serving: {Math.round(perServing.calories)} kcal
+          Total: {formatWhole(macros.total.calories)} kcal · Per serving: {Math.round(perServing.calories)} kcal
         </p>
         <MacroLine macros={perServing} />
       </div>

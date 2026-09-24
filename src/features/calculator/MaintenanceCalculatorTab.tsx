@@ -92,7 +92,8 @@ export function MaintenanceCalculatorTab() {
         })}
       </div>
 
-      <div role="tabpanel">{mode === 'maintenance' ? <MaintenanceCalculator /> : <PlateCalculator />}</div>
+      {/* Both calculators render two cards as a fragment - space them like the rest of the tab. */}
+      <div role="tabpanel" className="space-y-4">{mode === 'maintenance' ? <MaintenanceCalculator /> : <PlateCalculator />}</div>
     </div>
   )
 }

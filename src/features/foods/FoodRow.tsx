@@ -37,7 +37,6 @@ export function FoodRow({ food, labels }: { food: Food; labels: string[] }) {
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
           {food.pack && <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-medium text-amber-400">{food.pack}</span>}
-          {!food.user_id && !food.pack && <span className="text-[10px] text-slate-600">shared</span>}
           {isOwn && <span className="text-[10px] text-emerald-500">yours</span>}
         </div>
       </button>

@@ -65,7 +65,10 @@ export function CountUp({ value, durationMs = 600, format, decimals = 0, suffix 
     }
   }, [value, durationMs])
 
-  const formatted = format ? format(display) : `${display.toFixed(decimals)}${suffix}`
+  // Grouped like every other number in the app ("1,333 kcal", not "1333 kcal").
+  const formatted = format
+    ? format(display)
+    : `${display.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}${suffix}`
 
   return <span className={className}>{formatted}</span>
 }

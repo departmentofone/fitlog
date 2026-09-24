@@ -1,4 +1,4 @@
-import { parseDecimal } from '../../lib/number'
+import { parseDecimal, formatWhole } from '../../lib/number'
 import { useEffect, useState } from 'react'
 import { useToast } from '../../components/ToastProvider'
 import { estimateTDEE } from '../../lib/tdee'
@@ -64,7 +64,7 @@ export function MaintenanceCalculator() {
   function applyGoal(goal: DietGoal) {
     if (maintenance == null) return
     const calorie_goal = goal === 'deficit' ? cuttingGoal! : goal === 'surplus' ? bulkingGoal! : maintenance
-    updateSettings.mutate({ calorie_goal, diet_goal: goal }, { onSuccess: () => show(`Calorie goal set to ${calorie_goal} kcal`) })
+    updateSettings.mutate({ calorie_goal, diet_goal: goal }, { onSuccess: () => show(`Calorie goal set to ${formatWhole(calorie_goal)} kcal`) })
   }
 
   function saveStatsToProfile() {
@@ -139,7 +139,7 @@ export function MaintenanceCalculator() {
         ) : (
           <div className="space-y-2.5">
             <div className="rounded-2xl bg-slate-800/60 p-3 text-center">
-              <p className="text-2xl font-semibold text-white">{maintenance} kcal</p>
+              <p className="text-2xl font-semibold text-white">{formatWhole(maintenance)} kcal</p>
               <p className="text-xs text-slate-500">Estimated maintenance</p>
             </div>
             <div className="grid grid-cols-2 gap-2.5">

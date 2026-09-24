@@ -132,7 +132,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
             <button
               key={u}
               onClick={() => updateSettings.mutate({ unit_system: u })}
-              className={`rounded-xl px-3 py-2 text-sm font-medium transition capitalize ${
+              className={`rounded-xl px-3 py-2 text-sm font-medium transition ${
                 (settings?.unit_system ?? 'metric') === u
                   ? 'bg-emerald-600 text-on-accent'
                   : 'bg-slate-800 text-slate-300 hover:bg-slate-700'

@@ -15,3 +15,8 @@ export function parseDecimal(input: string | number | null | undefined): number 
   if (!/^-?(\d+\.?\d*|\.\d+)$/.test(normalized)) return Number.NaN
   return Number.parseFloat(normalized)
 }
+
+/** A whole number with thousands grouping, e.g. 2300 -> "2,300" - how calories are shown everywhere. */
+export function formatWhole(n: number | null | undefined): string {
+  return n == null ? '-' : Math.round(n).toLocaleString()
+}

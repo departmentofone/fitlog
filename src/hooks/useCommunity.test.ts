@@ -33,6 +33,12 @@ describe('sortCommunity', () => {
     ])
     expect(sorted.map((i) => i.id)).toEqual(['official-1', 'official-2', 'user-new', 'user-old'])
   })
+
+  it('leads the official items with diets, whatever order they were curated in', () => {
+    const diet = { ...meal('official-diet', { official: true, createdAt: '2026-09-20T00:00:00Z' }), kind: 'diet' } as unknown as CommunityItem
+    const sorted = sortCommunity([meal('official-meal', { official: true, createdAt: '2026-09-10T00:00:00Z' }), diet])
+    expect(sorted.map((i) => i.id)).toEqual(['official-diet', 'official-meal'])
+  })
 })
 
 describe('communitySearchText', () => {

@@ -1,3 +1,4 @@
+import { formatWhole } from '../../lib/number'
 import { useEffect, useState } from 'react'
 import { CopyDayButton } from '../../components/CopyDayButton'
 import { DateNav } from '../../components/DateNav'
@@ -73,7 +74,7 @@ export function MealsTab({ quickAction }: { quickAction?: number }) {
           <h3 className="text-sm font-medium text-slate-300">{date === todayISO() ? "Today's totals" : 'Totals'}</h3>
           <span className="text-xs text-slate-500">Tap for breakdown</span>
         </div>
-        <p className="text-2xl font-bold text-emerald-400">{Math.round(totals.calories)} kcal</p>
+        <p className="text-2xl font-bold text-emerald-400">{formatWhole(totals.calories)} kcal</p>
         <MacroLine macros={totals} className="mt-1 text-sm" />
       </div>
 

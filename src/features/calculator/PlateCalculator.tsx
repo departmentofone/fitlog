@@ -42,23 +42,30 @@ export function PlateCalculator() {
           Work out which plates to load on each side of the bar to hit a target total weight.
         </p>
 
+        {/* Visible labels: the bar field starts filled in (20 / 45), so a placeholder alone left a
+            bare number with nothing saying what it was. */}
         <div className="grid grid-cols-2 gap-2.5">
-          <input
-            placeholder={`Target weight (${unit})`}
-            type="text"
-            inputMode="decimal"
-            value={target}
-            onChange={(e) => setTarget(e.target.value)}
-            className={fieldClass}
-          />
-          <input
-            placeholder={`Bar weight (${unit})`}
-            type="text"
-            inputMode="decimal"
-            value={barWeight}
-            onChange={(e) => setBarWeight(e.target.value)}
-            className={fieldClass}
-          />
+          <label className="flex min-w-0 flex-col gap-1">
+            <span className="text-xs text-slate-400">Target ({unit})</span>
+            <input
+              placeholder={imperial ? 'e.g. 225' : 'e.g. 100'}
+              type="text"
+              inputMode="decimal"
+              value={target}
+              onChange={(e) => setTarget(e.target.value)}
+              className={`${fieldClass} w-full min-w-0`}
+            />
+          </label>
+          <label className="flex min-w-0 flex-col gap-1">
+            <span className="text-xs text-slate-400">Bar ({unit})</span>
+            <input
+              type="text"
+              inputMode="decimal"
+              value={barWeight}
+              onChange={(e) => setBarWeight(e.target.value)}
+              className={`${fieldClass} w-full min-w-0`}
+            />
+          </label>
         </div>
         <p className="mt-2.5 text-xs text-slate-500">
           Available plates: {availablePlates.map(formatWeight).join(', ')} {unit}

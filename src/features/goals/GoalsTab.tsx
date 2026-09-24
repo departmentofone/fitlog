@@ -8,7 +8,7 @@ import { useUpdateSettings, useUserSettings } from '../../hooks/useUserSettings'
 import { useExercises } from '../../hooks/useExercises'
 import { useExerciseHistory } from '../../hooks/useWorkouts'
 import { useBodyMeasurements, useUpsertBodyMeasurement, type BodyMeasurement } from '../../hooks/useBodyMeasurements'
-import { cmToIn, inToCm, kgToLb, lbToKg } from '../../lib/units'
+import { cmToIn, formatWeight, fromDisplayWeight, inToCm, kgToLb, lbToKg, weightUnitLabel } from '../../lib/units'
 import { CHART_FONT, useThemeChartColors } from '../../lib/useChartColors'
 import type { ActivityLevel, Goal, GoalCategory, Sex } from '../../types'
 import { ProgressCalendar } from './ProgressCalendar'
@@ -205,6 +205,7 @@ const ACTIVITY_OPTIONS: { value: ActivityLevel; label: string }[] = [
 function AutoTrackedGoalRow({ goal, exerciseName, onDelete }: { goal: Goal; exerciseName: string; onDelete: () => void }) {
   const { data: history = [] } = useExerciseHistory(goal.target_exercise_id ?? undefined)
   const toggleGoal = useToggleGoal()
+  const { data: settings } = useUserSettings()
 
   const achieved = history.some(
     (h) => !h.is_warmup && h.weight >= (goal.target_weight ?? 0) && h.reps >= (goal.target_reps ?? 1),
@@ -218,7 +219,7 @@ function AutoTrackedGoalRow({ goal, exerciseName, onDelete }: { goal: Goal; exer
   return (
     <div className="flex min-h-11 items-center gap-3 rounded-xl bg-slate-800/60 pl-3 pr-2">
       <span className={`flex-1 text-sm ${goal.completed ? 'text-slate-500 line-through' : 'text-white'}`}>
-        {exerciseName} · {goal.target_weight}kg{goal.target_reps ? ` × ${goal.target_reps}` : ''}
+        {exerciseName} · {formatWeight(goal.target_weight ?? 0, settings?.unit_system, '')}{goal.target_reps ? ` × ${goal.target_reps}` : ''}
       </span>
       {goal.completed && <span className="shrink-0 text-xs text-success">✓ Hit!</span>}
       <button onClick={onDelete} aria-label={`Delete goal ${exerciseName}`} className="-mr-2 flex h-11 w-10 shrink-0 items-center justify-center text-slate-500 active:text-red-400">
@@ -239,6 +240,8 @@ function GoalList() {
   const deleteGoal = useDeleteGoal()
   const restoreGoal = useRestoreGoal()
   const { undoable } = useToast()
+  const { data: settings } = useUserSettings()
+  const unit = settings?.unit_system
   const [titleInput, setTitleInput] = useState('')
   const [adding, setAdding] = useState(false)
   const [autoTrack, setAutoTrack] = useState(false)
@@ -264,9 +267,9 @@ function GoalList() {
       const exName = exercises.find((e) => e.id === exerciseId)?.name ?? 'Exercise'
       createGoal.mutate({
         category,
-        title: `${exName} ${targetWeight}kg`,
+        title: `${exName} ${targetWeight}${weightUnitLabel(unit)}`,
         targetExerciseId: exerciseId,
-        targetWeight: parseDecimal(targetWeight),
+        targetWeight: fromDisplayWeight(parseDecimal(targetWeight), unit),
         targetReps: targetReps ? parseInt(targetReps, 10) : null,
       })
     } else {
@@ -342,7 +345,7 @@ function GoalList() {
                 <input
                   type="text"
                   inputMode="decimal"
-                  placeholder="Target weight (kg)"
+                  placeholder={`Target weight (${weightUnitLabel(unit)})`}
                   value={targetWeight}
                   onChange={(e) => setTargetWeight(e.target.value)}
                   className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"

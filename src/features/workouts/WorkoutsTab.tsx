@@ -25,6 +25,7 @@ import {
   useUpdateSet,
 } from '../../hooks/useWorkouts'
 import { estimate1RM } from '../../lib/oneRepMax'
+import { toDisplayTotal, weightUnitLabel } from '../../lib/units'
 import type { Exercise, MuscleGroup } from '../../types'
 import { ExerciseDetailModal } from './ExerciseDetailModal'
 import { ExercisePicker } from './ExercisePicker'
@@ -293,8 +294,11 @@ export function WorkoutsTab({
               <div>
                 <p className="text-xs text-slate-400">{isToday ? "Today's" : 'Total'} moved</p>
                 <p className="text-2xl font-bold text-white">
-                  {sets.reduce((sum, s) => (s.is_warmup ? sum : sum + s.weight * s.reps), 0).toLocaleString()}{' '}
-                  <span className="text-sm font-medium text-slate-400">kg</span>
+                  {toDisplayTotal(
+                    sets.reduce((sum, s) => (s.is_warmup ? sum : sum + s.weight * s.reps), 0),
+                    settings?.unit_system,
+                  ).toLocaleString()}{' '}
+                  <span className="text-sm font-medium text-slate-400">{weightUnitLabel(settings?.unit_system)}</span>
                 </p>
               </div>
               <button

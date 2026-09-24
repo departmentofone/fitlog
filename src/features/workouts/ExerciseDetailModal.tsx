@@ -4,8 +4,10 @@ import { useMemo, useState } from 'react'
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { SkeletonLine } from '../../components/Skeleton'
 import { useExerciseNote, useSetExerciseNote } from '../../hooks/useExerciseNotes'
+import { useUserSettings } from '../../hooks/useUserSettings'
 import { useExerciseHistory } from '../../hooks/useWorkouts'
 import { estimate1RM } from '../../lib/oneRepMax'
+import { formatWeight, toDisplayTotal, weightUnitLabel } from '../../lib/units'
 import type { Exercise } from '../../types'
 
 export function ExerciseDetailModal({ exercise, onClose }: { exercise: Exercise; onClose: () => void }) {
@@ -14,6 +16,8 @@ export function ExerciseDetailModal({ exercise, onClose }: { exercise: Exercise;
   const { data: history = [], isLoading } = useExerciseHistory(exercise.id)
   const { data: savedNote } = useExerciseNote(exercise.id)
   const setNote = useSetExerciseNote()
+  const { data: settings } = useUserSettings()
+  const unit = settings?.unit_system
 
   const [editingNote, setEditingNote] = useState(false)
   const [noteDraft, setNoteDraft] = useState('')
@@ -30,9 +34,9 @@ export function ExerciseDetailModal({ exercise, onClose }: { exercise: Exercise;
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([date, oneRm]) => ({
         label: new Date(date + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
-        oneRm: Math.round(oneRm),
+        oneRm: Math.round(toDisplayTotal(oneRm, unit)),
       }))
-  }, [working])
+  }, [working, unit])
 
   const bestWeight = working.reduce((max, h) => Math.max(max, h.weight), 0)
   const bestOneRm = working.reduce((max, h) => Math.max(max, estimate1RM(h.weight, h.reps)), 0)
@@ -67,11 +71,11 @@ export function ExerciseDetailModal({ exercise, onClose }: { exercise: Exercise;
           <>
             <div className="mb-3 grid grid-cols-2 gap-2">
               <div className="rounded-2xl bg-slate-800/60 p-3 text-center">
-                <p className="text-lg font-semibold text-white">{bestWeight}kg</p>
+                <p className="text-lg font-semibold text-white">{formatWeight(bestWeight, unit, '')}</p>
                 <p className="text-xs text-slate-500">Heaviest set</p>
               </div>
               <div className="rounded-2xl bg-slate-800/60 p-3 text-center">
-                <p className="text-lg font-semibold text-white">{Math.round(bestOneRm)}kg</p>
+                <p className="text-lg font-semibold text-white">{Math.round(toDisplayTotal(bestOneRm, unit))}{weightUnitLabel(unit)}</p>
                 <p className="text-xs text-slate-500">Est. 1RM</p>
               </div>
             </div>
@@ -85,7 +89,7 @@ export function ExerciseDetailModal({ exercise, onClose }: { exercise: Exercise;
                   <Tooltip
                     contentStyle={{ background: colors.tooltipBg, border: `1px solid ${colors.tooltipBorder}`, borderRadius: 8, fontFamily: CHART_FONT }}
                     labelStyle={{ color: colors.tooltipText }}
-                    formatter={(value) => [`${value} kg`, 'Est. 1RM']}
+                    formatter={(value) => [`${value} ${weightUnitLabel(unit)}`, 'Est. 1RM']}
                   />
                   <Line type="monotone" dataKey="oneRm" stroke={colors.accent} strokeWidth={2} dot={{ r: 2 }} />
                 </LineChart>

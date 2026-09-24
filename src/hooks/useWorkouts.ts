@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import type { Exercise, WorkoutSession, WorkoutSet } from '../types'
+import { formatWeight } from '../lib/units'
+import type { Exercise, UnitSystem, WorkoutSession, WorkoutSet } from '../types'
 import { useAuth } from './useAuth'
 
 /**
@@ -376,8 +377,9 @@ export interface LastSessionSetSummary {
  * Compacts a prior session's working sets into a short "Last time" string, e.g. "3×8 @ 60kg"
  * when all sets match, or "10 @ 40kg, 8 @ 50kg, 6 @ 60kg" for a pyramid/ramping scheme. Adjacent
  * sets with the same weight+reps are collapsed into one "N×reps" group. Returns '' for no sets.
+ * Weights are stored in kg and shown in `unit` ("3×8 @ 135lb" for imperial).
  */
-export function summarizeLastSets(sets: LastSessionSetSummary[]): string {
+export function summarizeLastSets(sets: LastSessionSetSummary[], unit?: UnitSystem): string {
   if (sets.length === 0) return ''
   const groups: { weight: number; reps: number; count: number }[] = []
   for (const s of sets) {
@@ -389,7 +391,10 @@ export function summarizeLastSets(sets: LastSessionSetSummary[]): string {
     }
   }
   return groups
-    .map((g) => (g.count > 1 ? `${g.count}×${g.reps} @ ${g.weight}kg` : `${g.reps} @ ${g.weight}kg`))
+    .map((g) => {
+      const weight = formatWeight(g.weight, unit, '')
+      return g.count > 1 ? `${g.count}×${g.reps} @ ${weight}` : `${g.reps} @ ${weight}`
+    })
     .join(', ')
 }
 

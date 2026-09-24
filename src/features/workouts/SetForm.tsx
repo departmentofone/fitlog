@@ -1,8 +1,10 @@
 import { parseDecimal } from '../../lib/number'
 import { useEffect, useMemo, useState } from 'react'
 import { RestTimer } from '../../components/RestTimer'
+import { useUserSettings } from '../../hooks/useUserSettings'
 import { summarizeLastSets, useLastSessionSetsForExercise } from '../../hooks/useWorkouts'
-import type { Exercise, WorkoutSet } from '../../types'
+import { formatWeight, fromDisplayWeight, toDisplayWeight, weightStep, weightUnitLabel } from '../../lib/units'
+import type { Exercise, UnitSystem, WorkoutSet } from '../../types'
 
 /** RPE (rate of perceived exertion) - the 1-10 effort scale lifters already know. */
 const RPE_LABELS: Record<number, string> = {
@@ -18,7 +20,6 @@ const RPE_LABELS: Record<number, string> = {
   10: 'Failure',
 }
 
-const WEIGHT_STEP = 2.5
 const REPS_STEP = 1
 
 function roundStep(value: number) {
@@ -83,6 +84,7 @@ interface SetFormProps {
   sessionId: string
   existingSets: WorkoutSet[]
   nextSetNumber: number
+  /** `weight` is always in kg (the stored unit), whatever the user typed it in. */
   onAdd: (input: { weight: number; reps: number; difficulty: number; isWarmup: boolean }) => void
   onDeleteSet: (id: string) => void
   onUpdateSet: (input: { setId: string; weight: number; reps: number; difficulty: number }) => void
@@ -96,16 +98,19 @@ interface SetFormProps {
 
 function EditableSetRow({
   set,
+  unit,
   onSave,
   onCancel,
   onDelete,
 }: {
   set: WorkoutSet
+  unit: UnitSystem | undefined
   onSave: (input: { weight: number; reps: number; difficulty: number }) => void
   onCancel: () => void
   onDelete: () => void
 }) {
-  const [weight, setWeight] = useState(String(set.weight))
+  const initialWeight = String(toDisplayWeight(set.weight, unit))
+  const [weight, setWeight] = useState(initialWeight)
   const [reps, setReps] = useState(String(set.reps))
   const [difficulty, setDifficulty] = useState(set.difficulty)
 
@@ -113,7 +118,7 @@ function EditableSetRow({
     <div className="rounded-xl bg-slate-800 px-3 py-2.5">
       <p className="mb-2 text-xs font-medium text-slate-400">Edit set {set.set_number}</p>
       <div className="mb-3 grid grid-cols-2 gap-2">
-        <Stepper label="Weight" unit="kg" value={weight} onChange={setWeight} step={WEIGHT_STEP} inputMode="decimal" />
+        <Stepper label="Weight" unit={weightUnitLabel(unit)} value={weight} onChange={setWeight} step={weightStep(unit)} inputMode="decimal" />
         <Stepper label="Reps" value={reps} onChange={setReps} step={REPS_STEP} inputMode="numeric" />
       </div>
       <label className="mb-1 flex justify-between text-xs text-slate-400">
@@ -143,7 +148,9 @@ function EditableSetRow({
             const w = parseDecimal(weight)
             const r = parseInt(reps, 10)
             if (!Number.isFinite(w) || w < 0 || !Number.isInteger(r) || r < 1) return
-            onSave({ weight: w, reps: r, difficulty })
+            // An untouched weight keeps its exact stored kg, so editing only the reps of an lb set
+            // doesn't nudge the weight through a rounded lb -> kg round trip.
+            onSave({ weight: weight === initialWeight ? set.weight : fromDisplayWeight(w, unit), reps: r, difficulty })
           }}
           className="min-h-11 flex-1 rounded-xl bg-emerald-600 text-sm font-medium text-on-accent hover:brightness-90"
         >
@@ -172,12 +179,16 @@ export function SetForm({
   const [difficulty, setDifficulty] = useState(6)
   const [isWarmup, setIsWarmup] = useState(false)
   const [editingSetId, setEditingSetId] = useState<string | null>(null)
+  const { data: settings, isPending: settingsPending } = useUserSettings()
+  const unit = settings?.unit_system
   const { data: lastSets = [] } = useLastSessionSetsForExercise(exercise.id, sessionId)
-  const lastTimeSummary = useMemo(() => summarizeLastSets(lastSets), [lastSets])
+  const lastTimeSummary = useMemo(() => summarizeLastSets(lastSets, unit), [lastSets, unit])
 
   // Start from the weight you last used - this session's latest set, else last session's - so a
-  // typical set is just "check reps, tap Add".
-  const suggestedWeight = existingSets.at(-1)?.weight ?? lastSets.at(-1)?.weight
+  // typical set is just "check reps, tap Add". The field holds the user's unit (kg or lb), so wait
+  // for settings before pre-filling, or an lb user could get a kg number under an "lb" label.
+  const suggestedKg = existingSets.at(-1)?.weight ?? lastSets.at(-1)?.weight
+  const suggestedWeight = suggestedKg == null || settingsPending ? undefined : toDisplayWeight(suggestedKg, unit)
   useEffect(() => {
     if (suggestedWeight != null) setWeight((w) => (w === '' ? String(suggestedWeight) : w))
   }, [suggestedWeight])
@@ -187,7 +198,7 @@ export function SetForm({
     const r = parseInt(reps, 10)
     // Reps must be a real rep; weight can be 0 (bodyweight) but never negative.
     if (!Number.isFinite(w) || w < 0 || !Number.isInteger(r) || r < 1) return
-    onAdd({ weight: w, reps: r, difficulty, isWarmup })
+    onAdd({ weight: fromDisplayWeight(w, unit), reps: r, difficulty, isWarmup })
     setReps('')
     setIsWarmup(false)
   }
@@ -219,6 +230,7 @@ export function SetForm({
               <EditableSetRow
                 key={s.id}
                 set={s}
+                unit={unit}
                 onCancel={() => setEditingSetId(null)}
                 onDelete={() => {
                   onDeleteSet(s.id)
@@ -237,7 +249,7 @@ export function SetForm({
                 className="flex min-h-11 w-full items-center justify-between gap-2 rounded-xl bg-slate-800/60 px-3 py-2 text-left text-sm text-slate-300 transition active:bg-slate-800"
               >
                 <span>
-                  Set {s.set_number} · {s.weight} kg × {s.reps} reps
+                  Set {s.set_number} · {formatWeight(s.weight, unit)} × {s.reps} reps
                   {s.is_warmup && <span className="ml-1.5 whitespace-nowrap text-amber-400">(warm-up)</span>}
                 </span>
                 <span className="shrink-0 text-xs text-slate-500">RPE {s.difficulty}</span>
@@ -260,7 +272,7 @@ export function SetForm({
         </label>
       </div>
       <div className="mb-3 grid grid-cols-2 gap-3">
-        <Stepper label="Weight" unit="kg" value={weight} onChange={setWeight} step={WEIGHT_STEP} inputMode="decimal" />
+        <Stepper label="Weight" unit={weightUnitLabel(unit)} value={weight} onChange={setWeight} step={weightStep(unit)} inputMode="decimal" />
         <Stepper label="Reps" value={reps} onChange={setReps} step={REPS_STEP} inputMode="numeric" />
       </div>
       <label className="mb-1 flex justify-between text-xs text-slate-400">

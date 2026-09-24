@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { MuscleDiagram, type MuscleIntensity } from '../../components/MuscleDiagram'
 import { MUSCLE_GROUPS } from '../../types'
+import { useUserSettings } from '../../hooks/useUserSettings'
 import { useSessionDates, useWeeklyVolumeByMuscleGroup } from '../../hooks/useWorkouts'
+import { toDisplayTotal, weightUnitLabel } from '../../lib/units'
 
 const LABELS = Object.fromEntries(MUSCLE_GROUPS.map((g) => [g.value, g.label]))
 
@@ -48,6 +50,8 @@ export function WeeklyVolumeCard({ todaySetsPerMuscle }: { todaySetsPerMuscle: M
   const { data: volumes = [] } = useWeeklyVolumeByMuscleGroup(7)
   const { data: last28DaysVolumes = [] } = useWeeklyVolumeByMuscleGroup(28)
   const { data: sessionDates = [] } = useSessionDates()
+  const { data: settings } = useUserSettings()
+  const unit = settings?.unit_system
 
   const sorted = [...volumes].filter((v) => v.volume > 0).sort((a, b) => b.volume - a.volume)
   if (sorted.length === 0 && !hasToday) return null
@@ -101,7 +105,7 @@ export function WeeklyVolumeCard({ todaySetsPerMuscle }: { todaySetsPerMuscle: M
           <div key={v.muscleGroup}>
             <div className="mb-0.5 flex items-center justify-between text-xs">
               <span className="text-slate-300">{LABELS[v.muscleGroup] ?? v.muscleGroup}</span>
-              <span className="text-slate-500">{Math.round(v.volume).toLocaleString()} kg</span>
+              <span className="text-slate-500">{Math.round(toDisplayTotal(v.volume, unit)).toLocaleString()} {weightUnitLabel(unit)}</span>
             </div>
             <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
               <div className="h-full rounded-full bg-emerald-500" style={{ width: `${(v.volume / max) * 100}%` }} />

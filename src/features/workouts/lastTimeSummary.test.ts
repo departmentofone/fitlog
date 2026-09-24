@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { summarizeLastSets } from '../../hooks/useWorkouts'
+import { lbToKg } from '../../lib/units'
 
 describe('summarizeLastSets', () => {
   it('returns an empty string for no sets', () => {
@@ -39,5 +40,18 @@ describe('summarizeLastSets', () => {
 
   it('renders a single set without a count prefix', () => {
     expect(summarizeLastSets([{ weight: 100, reps: 5 }])).toBe('5 @ 100kg')
+  })
+
+  it('shows kg-stored weights in lb for imperial users', () => {
+    expect(
+      summarizeLastSets(
+        [
+          { weight: lbToKg(135), reps: 8 },
+          { weight: lbToKg(135), reps: 8 },
+          { weight: lbToKg(155), reps: 6 },
+        ],
+        'imperial',
+      ),
+    ).toBe('2×8 @ 135lb, 6 @ 155lb')
   })
 })

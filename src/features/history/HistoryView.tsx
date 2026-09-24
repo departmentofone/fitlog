@@ -15,6 +15,7 @@ import {
 } from '../../hooks/useWorkouts'
 import { useWorkoutStreaks } from '../../hooks/useWorkoutStreaks'
 import { formatDuration } from '../../lib/duration'
+import { toDisplayWeight } from '../../lib/units'
 import { WeeklyDigestCard } from './WeeklyDigestCard'
 
 function StatTile({ label, value, sub }: { label: string; value: string; sub?: string }) {
@@ -29,6 +30,8 @@ function StatTile({ label, value, sub }: { label: string; value: string; sub?: s
 
 function DayDetail({ date }: { date: string }) {
   const { data: session, isLoading } = useSessionDetailForDate(date)
+  const { data: settings } = useUserSettings()
+  const unit = settings?.unit_system
   const deleteSet = useDeleteSet(session?.id)
   const deleteSession = useDeleteSession()
   const restoreSession = useRestoreSession()
@@ -119,10 +122,10 @@ function DayDetail({ date }: { date: string }) {
               {sets.map((s) => (
                 <SwipeToDelete key={s.id} onDelete={() => deleteSet.mutate(s.id)} className="rounded-md">
                   <span className="flex items-center gap-1 rounded-md bg-slate-900/60 py-0.5 pl-2 pr-1 text-slate-400">
-                    {s.weight}×{s.reps}
+                    {toDisplayWeight(s.weight, unit)}×{s.reps}
                     <button
                       onClick={() => deleteSet.mutate(s.id)}
-                      aria-label={`Delete set ${s.weight}×${s.reps}`}
+                      aria-label={`Delete set ${toDisplayWeight(s.weight, unit)}×${s.reps}`}
                       className="rounded px-1 text-slate-600 hover:bg-red-600/20 hover:text-red-400"
                     >
                       ×

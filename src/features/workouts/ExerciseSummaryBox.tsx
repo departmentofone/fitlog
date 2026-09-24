@@ -1,4 +1,6 @@
+import { useUserSettings } from '../../hooks/useUserSettings'
 import type { SetWithExercise } from '../../hooks/useWorkouts'
+import { formatWeight } from '../../lib/units'
 
 export function ExerciseSummaryBox({
   name,
@@ -14,6 +16,7 @@ export function ExerciseSummaryBox({
   /** e.g. "A" - when set, this exercise's sets belong to a superset and get a distinct tint/badge. */
   supersetLabel?: string
 }) {
+  const { data: settings } = useUserSettings()
   const topSet = sets.reduce((max, s) => (s.weight > max.weight ? s : max), sets[0])
 
   return (
@@ -31,7 +34,7 @@ export function ExerciseSummaryBox({
         {/* Two lines, not one: in the two-column grid a single line cut most names to "Dumbbell Lat…". */}
         <p className="mb-1 line-clamp-2 break-words pr-7 text-sm font-medium leading-snug text-white">{name}</p>
         <p className="text-xs text-slate-400">
-          S{sets.length} · R{topSet.reps} · {topSet.weight}kg
+          S{sets.length} · R{topSet.reps} · {formatWeight(topSet.weight, settings?.unit_system, '')}
         </p>
       </button>
       {onOpenDetail && (

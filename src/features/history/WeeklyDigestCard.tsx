@@ -2,12 +2,14 @@ import { CountUp } from '../../components/CountUp'
 import { useWeeklyAdherence } from '../../hooks/useDiet'
 import { useUserSettings } from '../../hooks/useUserSettings'
 import { useWeeklyDigest } from '../../hooks/useWeeklyDigest'
+import { toDisplayTotal, toDisplayWeight, weightUnitLabel } from '../../lib/units'
 
 export function WeeklyDigestCard() {
   const { data } = useWeeklyDigest()
   const { data: settings } = useUserSettings()
   const adherence = useWeeklyAdherence(settings?.calorie_goal ?? null, settings?.diet_goal ?? 'deficit')
   if (!data) return null
+  const unit = settings?.unit_system
 
   const workoutTrend = data.workoutsThisWeek - data.workoutsLastWeek
 
@@ -35,9 +37,9 @@ export function WeeklyDigestCard() {
         </div>
         <div className="rounded-2xl bg-slate-800/60 p-3">
           <p className="text-2xl font-bold text-white">
-            <CountUp value={data.totalVolume} format={(n) => Math.round(n).toLocaleString()} />
+            <CountUp value={toDisplayTotal(data.totalVolume, unit)} format={(n) => Math.round(n).toLocaleString()} />
           </p>
-          <p className="text-xs text-slate-500">kg moved</p>
+          <p className="text-xs text-slate-500">{weightUnitLabel(unit)} moved</p>
         </div>
         <div className="rounded-2xl bg-slate-800/60 p-3">
           <p className="text-2xl font-bold text-emerald-400">
@@ -67,7 +69,8 @@ export function WeeklyDigestCard() {
         <p className="mt-1 text-center text-sm text-slate-400">
           Weight {data.weightChange < 0 ? 'down' : 'up'}{' '}
           <span className={data.weightChange < 0 ? 'font-medium text-emerald-400' : 'font-medium text-amber-400'}>
-            {Math.abs(data.weightChange).toFixed(1)}kg
+            {Math.abs(toDisplayWeight(data.weightChange, unit)).toFixed(1)}
+            {weightUnitLabel(unit)}
           </span>{' '}
           this week
         </p>

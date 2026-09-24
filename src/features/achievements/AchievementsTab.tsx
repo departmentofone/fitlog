@@ -3,6 +3,7 @@ import { SkeletonCard } from '../../components/Skeleton'
 import { useAchievementsData } from '../../hooks/useAchievements'
 import { useBackToClose } from '../../hooks/useHashRoute'
 import { useExercises } from '../../hooks/useExercises'
+import { useUserSettings } from '../../hooks/useUserSettings'
 import {
   computeAwards,
   groupLadders,
@@ -13,6 +14,7 @@ import {
   type AwardCategory,
   type AwardLadder,
 } from '../../lib/awards'
+import { formatWeight, toDisplayTotal, weightUnitLabel } from '../../lib/units'
 import type { Exercise } from '../../types'
 import { ExerciseDetailModal } from '../workouts/ExerciseDetailModal'
 import { Medal } from './Medal'
@@ -111,6 +113,8 @@ function LadderSheet({ ladder, onClose }: { ladder: AwardLadder; onClose: () => 
 export function AchievementsTab() {
   const data = useAchievementsData()
   const { data: exercises = [] } = useExercises()
+  const { data: settings } = useUserSettings()
+  const unit = settings?.unit_system
   const [openLadder, setOpenLadder] = useState<AwardLadder | null>(null)
   const [openExercise, setOpenExercise] = useState<Exercise | null>(null)
   const [allRecords, setAllRecords] = useState(false)
@@ -230,12 +234,12 @@ export function AchievementsTab() {
                       )}
                     </span>
                     <span className="block text-xs text-slate-500">
-                      {r.weight} kg × {r.reps} ·{' '}
+                      {formatWeight(r.weight, unit)} × {r.reps} ·{' '}
                       {new Date(r.achievedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                     </span>
                   </span>
                   <span className="shrink-0 text-right">
-                    <span className="block text-sm font-semibold text-white">{Math.round(r.best1RM)} kg</span>
+                    <span className="block text-sm font-semibold text-white">{Math.round(toDisplayTotal(r.best1RM, unit))} {weightUnitLabel(unit)}</span>
                     <span className="block text-[11px] text-slate-500">est. 1RM</span>
                   </span>
                 </button>

@@ -88,19 +88,19 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
   const updateItem = useUpdateMealItem()
   // The logged item whose amount is being edited in place (tap a row to fix a wrong amount).
   const [editingItemId, setEditingItemId] = useState<string | null>(null)
+  // A finished meal is shown collapsed; tapping it opens it here (to check it or add a forgotten
+  // food) without un-finishing it - it used to flip the meal back to "not done" with no warning.
+  const [expanded, setExpanded] = useState(false)
   const setCompleted = useSetMealCompleted()
   const { undoable } = useToast()
 
   const totals = sumMacros(meal.meal_items.map((i) => macrosForGrams(i.food, i.grams)))
   const { diet, foodIds } = useActiveDiet()
 
-  if (meal.completed) {
+  if (meal.completed && !expanded) {
     return (
       <div className="relative w-full rounded-2xl bg-slate-900/70 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5 transition hover:ring-emerald-500/30">
-        <button
-          onClick={() => setCompleted.mutate({ mealId: meal.id, completed: false })}
-          className="block w-full text-left"
-        >
+        <button onClick={() => setExpanded(true)} aria-label={`Open ${meal.name}`} className="block w-full text-left">
           <div className="mb-1 flex items-center justify-between gap-2">
             <h3 className="font-medium text-white">{meal.name}</h3>
             <span className="rounded-full bg-emerald-600/20 px-2 py-0.5 text-xs text-emerald-400">Done</span>
@@ -146,6 +146,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
                   foodId: item.food_id,
                   grams: item.grams,
                   servingLabel: item.serving_label,
+                  createdAt: item.created_at,
                 }),
             )
           if (editingItemId === item.id && item.food) {
@@ -228,6 +229,11 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
           {meal.meal_items.length > 0 && (
             <button
               onClick={() => {
+                // Already finished (opened to look or add something): just fold it back up.
+                if (meal.completed) {
+                  setExpanded(false)
+                  return
+                }
                 haptics.success()
                 setCompleted.mutate({ mealId: meal.id, completed: true })
               }}

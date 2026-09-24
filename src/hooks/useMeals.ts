@@ -56,15 +56,18 @@ export function useAddMealItem() {
       foodId,
       grams,
       servingLabel,
+      createdAt,
     }: {
       mealId: string
       foodId: string
       grams: number
       servingLabel?: string | null
+      /** Undoing a delete: the item's original logged time, so it isn't re-stamped as now. */
+      createdAt?: string
     }) => {
       const { error } = await supabase
         .from('meal_items')
-        .insert({ meal_id: mealId, food_id: foodId, grams, serving_label: servingLabel ?? null })
+        .insert({ meal_id: mealId, food_id: foodId, grams, serving_label: servingLabel ?? null, ...(createdAt ? { created_at: createdAt } : {}) })
       if (error) throw error
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['meals'] }),

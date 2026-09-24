@@ -1,10 +1,11 @@
+import { useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
 import type { UserSettings } from '../types'
 import { useAuth } from './useAuth'
 
 export const DEFAULT_SETTINGS: Omit<UserSettings, 'user_id' | 'updated_at'> = {
-  ask_preworkout: true,
+  ask_preworkout: false,
   diet_goal: 'deficit',
   calorie_goal: null,
   water_goal_ml: 2000,
@@ -77,4 +78,33 @@ export function useUpdateSettings() {
       }
     },
   })
+}
+
+let timezoneSyncedFor: string | null = null
+
+/**
+ * Keeps user_settings.timezone matching the phone, so the times every set, meal and food is logged
+ * at (created_at, stored in UTC) can later be read in local time for stats. Only writes when the
+ * column exists (migration_v30) and the saved value differs, so it's one write per device/time zone.
+ */
+export function useSyncTimezone() {
+  const { data: settings } = useUserSettings()
+  const updateSettings = useUpdateSettings()
+  const saved = settings && 'timezone' in settings ? (settings.timezone ?? '') : undefined
+  useEffect(() => {
+    if (saved === undefined) return
+    let zone = ''
+    try {
+      zone = Intl.DateTimeFormat().resolvedOptions().timeZone ?? ''
+    } catch {
+      return
+    }
+    // Once per app session: if the save fails (offline, column missing) the refetch would bring back
+    // the old value and retry forever otherwise.
+    if (zone && zone !== saved && timezoneSyncedFor !== zone) {
+      timezoneSyncedFor = zone
+      updateSettings.mutate({ timezone: zone })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [saved])
 }

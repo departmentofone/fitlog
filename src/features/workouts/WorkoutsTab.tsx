@@ -73,7 +73,7 @@ export function WorkoutsTab({
   quickAction?: number
 }) {
   const { data: settings } = useUserSettings()
-  const askPreworkout = settings?.ask_preworkout ?? true
+  const askPreworkout = settings?.ask_preworkout ?? false
 
   const [date, setDate] = useState(todayISO())
   const isToday = date === todayISO()
@@ -240,6 +240,7 @@ export function WorkoutsTab({
           isWarmup: target.is_warmup,
           supersetGroup: target.superset_group,
           restore: true,
+          createdAt: target.created_at,
         }),
     )
   }
@@ -271,7 +272,7 @@ export function WorkoutsTab({
 
       {sessionLoading ? (
         <SkeletonCard lines={2} />
-      ) : !session ? (
+      ) : !session || (restDayLogged && sets.length === 0) ? (
         <>
         <FireStreak count={streaks?.currentStreak ?? 0} label="day streak" />
         {restDayLogged ? (
@@ -316,6 +317,20 @@ export function WorkoutsTab({
               <FireStreak count={streaks?.currentStreak ?? 0} label="day streak" />
             </div>
           </div>
+
+          {/* With the preworkout question off (the default), the workout starts on its own, so the
+              rest-day option that lives in that prompt needs a home here too. */}
+          {sets.length === 0 && !activeExercise && !activeSuperset && (
+            <div className="-my-2 text-center">
+              <button
+                onClick={() => logRestDay.mutate(date, { onSuccess: () => haptics.success() })}
+                disabled={logRestDay.isPending}
+                className="min-h-10 text-xs font-medium text-slate-500 underline decoration-dotted transition hover:text-emerald-400 disabled:opacity-50"
+              >
+                {logRestDay.isPending ? 'Logging rest day…' : 'Not training today? Log a rest day instead'}
+              </button>
+            </div>
+          )}
 
           {(() => {
             const setForm = activeExercise && (

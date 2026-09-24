@@ -70,7 +70,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
           </div>
           <Toggle
             label="Ask about preworkout"
-            checked={settings?.ask_preworkout ?? true}
+            checked={settings?.ask_preworkout ?? false}
             onChange={(next) => updateSettings.mutate({ ask_preworkout: next })}
           />
         </div>

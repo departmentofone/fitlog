@@ -12,6 +12,8 @@ export const CHANGELOG: ChangelogEntry[] = [
     title: 'Clearer Community, lots of polish',
     changes: [
       'Empty Community sections explain what belongs there, with a real example, instead of looking blank',
+      'Tap a finished meal to see it or add something you forgot - it stays finished',
+      'New accounts skip the preworkout question (switch it on in Settings), with a rest-day link right on the workout',
       'Community now leads with diets, and its buttons are calmer',
       'Exercise names on workout cards show in full instead of being cut off',
       'Calories use thousands separators everywhere (2,300 kcal)',

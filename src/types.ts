@@ -186,6 +186,9 @@ export interface UserSettings {
   community_guidelines_accepted_at?: string | null
   /** People whose Community items this account chose to hide (v29). */
   hidden_community_users?: string[]
+  /** The phone's IANA time zone, kept current by the app, so logged times can be read in local
+   *  time for stats (migration_v30). Absent before it runs. */
+  timezone?: string | null
   updated_at: string
 }
 

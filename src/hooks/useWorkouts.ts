@@ -174,6 +174,8 @@ type StoredSet = {
   difficulty: number
   is_warmup: boolean
   superset_group?: number | null
+  /** When it was originally logged - kept on undo/restore so time-of-day stats stay true. */
+  created_at?: string
 }
 
 /**
@@ -191,6 +193,7 @@ function buildSetRow(s: StoredSet, sessionId: string) {
     is_warmup: s.is_warmup,
   }
   if (s.superset_group != null) row.superset_group = s.superset_group
+  if (s.created_at) row.created_at = s.created_at
   return row
 }
 
@@ -247,6 +250,7 @@ export function useAddSet(sessionId: string | null | undefined) {
       isWarmup,
       supersetGroup,
       restore,
+      createdAt,
     }: {
       exerciseId: string
       setNumber: number
@@ -258,11 +262,13 @@ export function useAddSet(sessionId: string | null | undefined) {
       supersetGroup?: number | null
       /** Undoing a delete: make room at `setNumber` so the set goes back into its old place. */
       restore?: boolean
+      /** Undoing a delete: the set's original logged time, so it isn't re-stamped as now. */
+      createdAt?: string
     }) => {
       if (!sessionId) throw new Error('No active session')
       if (restore) await renumberExerciseSets(sessionId, exerciseId, setNumber)
       const row = buildSetRow(
-        { exercise_id: exerciseId, set_number: setNumber, weight, reps, difficulty, is_warmup: isWarmup ?? false, superset_group: supersetGroup },
+        { exercise_id: exerciseId, set_number: setNumber, weight, reps, difficulty, is_warmup: isWarmup ?? false, superset_group: supersetGroup, created_at: createdAt },
         sessionId,
       )
       const { error } = await supabase.from('workout_sets').insert(row)
@@ -353,7 +359,16 @@ export function useRestoreSession() {
       if (!user) throw new Error('Not signed in')
       const { data: created, error: sessionError } = await supabase
         .from('workout_sessions')
-        .insert({ user_id: user.id, date: snapshot.date, preworkout: snapshot.preworkout, notes: snapshot.notes ?? null })
+        // Keep the original start/log times - undoing a delete shouldn't move the workout to now.
+        .insert({
+          user_id: user.id,
+          date: snapshot.date,
+          preworkout: snapshot.preworkout,
+          notes: snapshot.notes ?? null,
+          created_at: snapshot.created_at,
+          started_at: snapshot.started_at ?? null,
+          duration_seconds: snapshot.duration_seconds ?? null,
+        })
         .select()
         .single()
       if (sessionError) throw sessionError

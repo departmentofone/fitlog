@@ -10,7 +10,7 @@ import { useApplyTheme } from './hooks/useApplyTheme'
 import { useAuth } from './hooks/useAuth'
 import { useCelebrateUnlocks } from './hooks/useCelebrateUnlocks'
 import { useHashRoute } from './hooks/useHashRoute'
-import { useUserSettings } from './hooks/useUserSettings'
+import { useSyncTimezone, useUserSettings } from './hooks/useUserSettings'
 import { storeSharedText } from './lib/shareTarget'
 import type { Tab } from './types'
 
@@ -121,6 +121,7 @@ function App() {
     if (quickAction && route !== quickAction.tab) setQuickAction(null)
   }, [route, quickAction])
   useApplyTheme()
+  useSyncTimezone()
 
   if (loading || (user && settingsLoading)) {
     return (

@@ -4,7 +4,6 @@ import { HealthConsentScreen } from './components/HealthConsentScreen'
 import { TabErrorBoundary } from './components/TabErrorBoundary'
 import { Layout, type QuickAddAction } from './components/Layout'
 import { OnboardingTour } from './components/OnboardingTour'
-import { TabTip } from './components/TabTip'
 import { SkeletonCard } from './components/Skeleton'
 import { useToast } from './components/ToastProvider'
 import { useApplyTheme } from './hooks/useApplyTheme'
@@ -175,7 +174,6 @@ function App() {
         quickAddActions={quickAddActions}
       >
         <TabErrorBoundary route={route}>
-          <TabTip tab={tab} />
           <Suspense fallback={<TabFallback />}>
           {onSettings && <SettingsTab onBack={goBack} />}
           {tab === 'workouts' && <WorkoutsTab onOpenHistory={() => navigate('history')} quickAction={nonceFor('workouts')} />}

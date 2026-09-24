@@ -9,11 +9,9 @@ export interface ChangelogEntry {
 export const CHANGELOG: ChangelogEntry[] = [
   {
     date: '2026-09-24',
-    title: 'Tips for every tab',
+    title: 'Clearer Community, smaller fixes',
     changes: [
-      'Each tab now opens with a short tip on what it does, with a real example. Close it once and it stays closed',
-      'Empty Community sections explain what belongs there instead of looking blank',
-      'Settings → "Show welcome and tips again" brings them all back',
+      'Empty Community sections explain what belongs there, with a real example, instead of looking blank',
       'Reloading or going back on Foods or Community no longer jumps you to Workouts',
       'Weights like 102.5 kg now fit in the set form on smaller phones',
     ],

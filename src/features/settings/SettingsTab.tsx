@@ -243,7 +243,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
           onClick={replayOnboarding}
           className="flex min-h-11 w-full items-center justify-between border-t border-white/5 text-left text-sm font-medium text-slate-200"
         >
-          Show welcome and tips again <span aria-hidden="true" className="text-slate-500">›</span>
+          Show welcome again <span aria-hidden="true" className="text-slate-500">›</span>
         </button>
 
         <button

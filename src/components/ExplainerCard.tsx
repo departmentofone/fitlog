@@ -11,10 +11,10 @@ function InfoIcon() {
 }
 
 /**
- * What a tab or Community section is for, plus one realistic example. The example sits in a
- * dashed box labelled "Example" so it can't be mistaken for the person's own data.
+ * What an empty Community section is for, plus one realistic example. The example sits in a
+ * dashed box labelled "Example" so it can't be mistaken for something someone shared.
  */
-export function ExplainerCard({ explainer, onClose }: { explainer: Explainer; onClose?: () => void }) {
+export function ExplainerCard({ explainer }: { explainer: Explainer }) {
   const { title, body, example } = explainer
   return (
     <section className="fade-in rounded-2xl bg-emerald-500/[0.07] p-3.5 ring-1 ring-emerald-500/25">
@@ -23,13 +23,6 @@ export function ExplainerCard({ explainer, onClose }: { explainer: Explainer; on
           <InfoIcon />
         </span>
         <h3 className="flex-1 text-sm font-semibold text-white">{title}</h3>
-        {onClose && (
-          <button onClick={onClose} aria-label="Hide this tip" className="-my-3 -mr-3 flex h-11 w-11 shrink-0 items-center justify-center text-slate-500">
-            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-              <path d="M6 6l12 12M18 6L6 18" />
-            </svg>
-          </button>
-        )}
       </div>
       <p className="mt-1 text-[13px] leading-snug text-slate-300">{body}</p>
 

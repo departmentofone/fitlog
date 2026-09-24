@@ -1,0 +1,10 @@
+{
+  "name": "fitlog-design-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FitLog's reusable UI pieces and theme, packaged for Claude Design (claude.ai/design).",
+  "type": "module",
+  "module": "./dist/index.js",
+  "types": "./dist/types/design-system/index.d.ts",
+  "style": "./dist/style.css"
+}

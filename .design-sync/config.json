@@ -1,0 +1,23 @@
+{
+  "projectId": "3a5998d3-3386-4cc4-8c33-47e954828d74",
+  "shape": "package",
+  "pkg": "fitlog-design-system",
+  "globalName": "FitLog",
+  "buildCmd": "npm run build:ds",
+  "srcDir": "../src",
+  "cssEntry": "dist/style.css",
+  "extraFonts": [
+    "fonts/sora.css"
+  ],
+  "componentSrcMap": {
+    "FitLogTheme": "FitLogTheme.tsx"
+  },
+  "dtsPropsFor": {
+    "ExplainerCard": "/** What an empty section is for, plus one realistic example shown under an Example label. */\n  explainer: { title: string; body: string; example: { name: string; lines: string[]; footer?: string } };",
+    "MacroLine": "/** Grams of protein/carbs/fat (calories is accepted but not shown). */\n  macros: { calories: number; protein: number; carbs: number; fat: number };\n  /** Text size class. Default \"text-xs\". */\n  className?: string;"
+  },
+  "provider": {
+    "component": "FitLogTheme"
+  },
+  "readmeHeader": ".design-sync/conventions.md"
+}

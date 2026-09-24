@@ -42,7 +42,8 @@ export function CountUp({ value, durationMs = 600, format, decimals = 0, suffix 
     const from = displayRef.current
     const to = value
 
-    if (from === to || prefersReducedMotion()) {
+    // durationMs <= 0 means "no animation" - dividing by it below gave NaN on the first frame.
+    if (from === to || durationMs <= 0 || prefersReducedMotion()) {
       displayRef.current = to
       setDisplay(to)
       return

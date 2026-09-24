@@ -1,0 +1,48 @@
+/*
+ * FitLog design system stylesheet: the app's own index.css (Tailwind v4 + FitLog's token remaps,
+ * light theme and accent palettes), minus the app-shell rules that pin the
+ * page to the screen - designs need to scroll like normal pages.
+ */
+@import "../src/index.css";
+
+html,
+body,
+#root {
+  height: auto;
+  min-height: 100%;
+  overflow: visible;
+}
+
+/*
+ * Safelist. Tailwind only compiles classes it finds in FitLog's source, so a design using a
+ * utility the app happens not to use (w-80, grid-cols-4...) would silently render unstyled.
+ * These generate the everyday vocabulary up front. App colours are slate (surfaces/text),
+ * emerald (accent - follows the user's palette), plus red/amber/blue/orange for states.
+ */
+@source inline("{,sm:,md:}{p,px,py,pt,pb,pl,pr,m,mx,my,mt,mb,ml,mr,gap,gap-x,gap-y,space-x,space-y}-{0,0.5,1,1.5,2,2.5,3,3.5,4,5,6,7,8,10,12,14,16,20,24}");
+@source inline("{,-}{mt,mb,ml,mr,mx,my,top,bottom,left,right,inset}-{0,0.5,1,2,3,4,6,8}");
+@source inline("{,sm:,md:}{w,h,min-w,min-h,size}-{0,1,2,3,4,5,6,7,8,9,10,11,12,14,16,20,24,28,32,36,40,44,48,56,64,72,80,96}");
+@source inline("{,sm:,md:}{w,h}-{full,auto,screen,fit,1/2,1/3,2/3,1/4,3/4}");
+@source inline("{,sm:,md:}max-w-{xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,full,none,prose,screen-sm,screen-md}");
+@source inline("{,sm:,md:}{flex,inline-flex,grid,block,inline-block,hidden,contents}");
+@source inline("{,sm:,md:}{flex-row,flex-col,flex-wrap,flex-1,flex-none,grow,shrink-0,items-start,items-center,items-end,items-baseline,items-stretch,justify-start,justify-center,justify-end,justify-between,justify-around,self-start,self-center,self-end,place-items-center}");
+@source inline("{,sm:,md:}grid-cols-{1,2,3,4,5,6,7,12}");
+@source inline("{,sm:,md:}col-span-{1,2,3,4,5,6,full}");
+@source inline("{relative,absolute,fixed,sticky,overflow-hidden,overflow-auto,overflow-x-auto,overflow-y-auto,z-0,z-10,z-20,z-30,z-40,z-50}");
+@source inline("{,sm:,md:}text-{xs,sm,base,lg,xl,2xl,3xl,4xl,5xl,6xl}");
+@source inline("font-{normal,medium,semibold,bold,extrabold}");
+@source inline("{leading-none,leading-tight,leading-snug,leading-normal,leading-relaxed,tracking-tight,tracking-normal,tracking-wide,tracking-wider,uppercase,lowercase,capitalize,text-left,text-center,text-right,truncate,line-clamp-1,line-clamp-2,line-clamp-3,tabular-nums,whitespace-nowrap,break-words,italic,underline}");
+@source inline("text-{slate,emerald,red,amber,blue,orange}-{50,{100..900..100},950}");
+@source inline("bg-{slate,emerald,red,amber,blue,orange}-{50,{100..900..100},950}{,/10,/15,/20,/30,/50,/80}");
+@source inline("{hover:,active:}bg-{slate,emerald}-{500,600,700,800}");
+@source inline("{hover:,active:}text-{slate,emerald}-{200,300,400}");
+@source inline("border-{slate,emerald,red,amber,blue,orange}-{{100..900..100},950}{,/30,/50}");
+@source inline("focus:border-emerald-500");
+@source inline("ring-{slate,emerald,red,amber,blue,orange}-{500,700,800}{,/30,/50}");
+@source inline("{text-white,text-black,bg-white,bg-black,bg-transparent,text-success,bg-success,text-on-accent,bg-white/5,bg-white/10,border-white/5,border-white/10,border-white/20,ring-white/5,ring-white/10,divide-white/5,divide-white/10}");
+@source inline("{rounded,rounded-none,rounded-sm,rounded-md,rounded-lg,rounded-xl,rounded-2xl,rounded-3xl,rounded-full,rounded-t-3xl,rounded-b-3xl,rounded-t-2xl}");
+@source inline("{border,border-0,border-2,border-t,border-b,border-l,border-r,border-dashed,border-dotted,ring-1,ring-2,ring-0,divide-y,divide-x}");
+@source inline("{shadow-sm,shadow,shadow-md,shadow-lg,shadow-xl,shadow-2xl,shadow-none,shadow-black/20,shadow-black/30,shadow-black/40,backdrop-blur-sm,backdrop-blur-md,backdrop-blur-lg,backdrop-blur-xl}");
+@source inline("{opacity-0,opacity-50,opacity-60,opacity-70,opacity-80,opacity-100,disabled:opacity-50,transition,transition-all,duration-150,duration-200,duration-300,duration-500,cursor-pointer,select-none,object-cover,aspect-square,aspect-video,focus:outline-none}");
+@source inline("bg-gradient-to-{r,b,br,bl,t}");
+@source inline("{from,to}-{slate,emerald}-{500,600,700,800,900,950}{,/20}");

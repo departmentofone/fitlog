@@ -100,7 +100,7 @@ export function WaterWidget() {
         onClick={() => addWater.mutate(-small.ml)}
         disabled={mlToday <= 0}
         aria-label={`Remove ${small.label} ${imperial ? 'fl oz' : 'ml'}`}
-        className="flex h-10 w-8 items-center justify-center rounded-xl text-lg text-slate-500 disabled:opacity-30"
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 text-lg text-slate-300 disabled:opacity-30"
       >
         −
       </button>

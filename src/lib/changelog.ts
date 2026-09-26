@@ -22,6 +22,11 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Calmer background glow that follows your accent colour, so cards look the same wherever they sit',
       'Fat is purple now instead of red, so it no longer looks like a warning',
       'Clearer headings on every card',
+      'Days read "Today", "Yesterday" or "Thu 24 Sep", with a Today button to jump back',
+      "Today's exercises are one tidy list: full names, and \"3 sets · best 70 kg × 8\" instead of \"S3 · R8 · 70kg\"",
+      'Logged sets show as a compact table (set, weight, reps, RPE), and warm-up is a simple toggle',
+      'Finished meals fold into a single line with a check mark',
+      'The Preworkout and warm-up toggles clearly show when they are on',
     ],
   },
   {

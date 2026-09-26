@@ -37,7 +37,6 @@ export function PlateCalculator() {
   return (
     <>
       <div className="card card-glow p-4">
-        <h3 className="mb-1 card-title">Plate calculator</h3>
         <p className="mb-3 text-sm text-slate-400">
           Work out which plates to load on each side of the bar to hit a target total weight.
         </p>

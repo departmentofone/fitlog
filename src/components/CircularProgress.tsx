@@ -24,7 +24,7 @@ export function CircularProgress({
   const color = TONE_COLORS[tone]
 
   return (
-    <div className="relative shrink-0" style={{ width: size, height: size }}>
+    <span className="relative block shrink-0" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
         <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="var(--color-slate-700)" strokeWidth={strokeWidth} />
         <circle
@@ -40,10 +40,10 @@ export function CircularProgress({
           className="transition-all duration-500"
         />
       </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
+      <span className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="text-sm font-bold text-white">{Math.round(clamped)}%</span>
         {label && <span className="text-[11px] text-slate-500">{label}</span>}
-      </div>
-    </div>
+      </span>
+    </span>
   )
 }

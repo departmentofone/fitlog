@@ -305,11 +305,11 @@ export function WorkoutsTab({
               <button
                 onClick={() => setPreworkout.mutate({ sessionId: session.id, preworkout: !session.preworkout })}
                 aria-pressed={session.preworkout}
-                className={`min-h-8 rounded-full px-3 text-xs font-medium transition ${
-                  session.preworkout ? 'bg-emerald-600/20 text-emerald-400' : 'bg-slate-800 text-slate-500'
+                className={`chip min-h-8 px-3 transition ${
+                  session.preworkout ? 'chip-accent' : 'border border-dashed border-slate-700 text-slate-400'
                 }`}
               >
-                Preworkout
+                {session.preworkout ? '✓ Preworkout' : '+ Preworkout'}
               </button>
             </div>
             <div className="mt-2 flex items-center justify-between border-t border-white/5 pt-1.5">
@@ -507,7 +507,7 @@ export function WorkoutsTab({
             if (entries.length === 0) return null
 
             return (
-              <div className="grid grid-cols-2 gap-3">
+              <div className="card divide-y divide-white/5 overflow-hidden">
                 {entries.map(([exerciseId, exerciseSets]) => {
                   const groupId = exerciseSets.find((s) => s.superset_group != null)?.superset_group
                   return (

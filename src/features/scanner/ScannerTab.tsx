@@ -197,7 +197,6 @@ export function ScannerTab() {
   return (
     <div className="space-y-4 p-4">
       <div className="card card-glow p-4">
-        <h3 className="mb-1 card-title">Barcode scanner</h3>
         <p className="mb-3 text-sm text-slate-400">
           Look up a packaged food by its barcode against the Open Food Facts database, review the nutrition
           numbers, and save it to your food library.

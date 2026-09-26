@@ -59,13 +59,14 @@ function MealPhotoControl({ meal }: { meal: MealWithItems }) {
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={uploadPhoto.isPending}
-          className="flex h-7 w-7 items-center justify-center rounded-lg border border-dashed border-slate-700 text-slate-500 transition hover:border-emerald-500 hover:text-emerald-400 disabled:opacity-50"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-slate-500 transition hover:bg-white/5 hover:text-emerald-400 disabled:opacity-50"
           title="Add photo"
+          aria-label="Add photo"
         >
           {uploadPhoto.isPending ? (
             <span className="text-[11px]">…</span>
           ) : (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" className="h-3.5 w-3.5">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" className="h-5 w-5">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -99,22 +100,25 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
 
   if (meal.completed && !expanded) {
     return (
-      <div className="relative w-full rounded-2xl bg-slate-900/70 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5 transition hover:ring-emerald-500/30">
-        <button onClick={() => setExpanded(true)} aria-label={`Open ${meal.name}`} className="block w-full text-left">
-          <div className="mb-1 flex items-center justify-between gap-2">
-            <h3 className="card-title">{meal.name}</h3>
-            <span className="rounded-full bg-emerald-600/20 px-2 py-0.5 text-xs text-emerald-400">Done</span>
-          </div>
-          <p className="mb-1 text-sm text-slate-400">
-            {meal.meal_items.length} item{meal.meal_items.length === 1 ? '' : 's'} ·{' '}
-            <span className="font-semibold text-emerald-400">{formatWhole(totals.calories)} kcal</span>
-          </p>
-          <MacroLine macros={totals} />
+      <div className="card flex items-center gap-3 py-3 pl-4 pr-2">
+        <button onClick={() => setExpanded(true)} aria-label={`Open ${meal.name}`} className="flex min-w-0 flex-1 items-center gap-3 text-left">
+          <span aria-hidden="true" className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-400">
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="5 12.5 10 17 19 7.5" />
+            </svg>
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="flex items-baseline justify-between gap-2">
+              <span className="card-title truncate">{meal.name}</span>
+              <span className="shrink-0 text-sm font-semibold text-white">{formatWhole(totals.calories)} kcal</span>
+            </span>
+            <span className="flex items-baseline gap-1.5 text-xs text-slate-500">
+              {meal.meal_items.length} item{meal.meal_items.length === 1 ? '' : 's'} ·
+              <MacroLine macros={totals} as="span" />
+            </span>
+          </span>
         </button>
-        {/* Photo sits in the corner rather than on a row of its own. */}
-        <div className="absolute right-3 bottom-3">
-          <MealPhotoControl meal={meal} />
-        </div>
+        <MealPhotoControl meal={meal} />
       </div>
     )
   }
@@ -222,7 +226,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
         <div className="flex gap-2">
           <button
             onClick={() => setAdding(true)}
-            className="flex-1 rounded-xl border border-dashed border-slate-700 py-2 text-sm font-medium text-slate-300 transition hover:border-emerald-500 hover:text-emerald-400"
+            className="btn btn-secondary flex-1 text-sm"
           >
             + Add food
           </button>
@@ -237,7 +241,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
                 haptics.success()
                 setCompleted.mutate({ mealId: meal.id, completed: true })
               }}
-              className="btn btn-primary px-4 py-2 text-sm"
+              className="btn btn-primary text-sm"
             >
               Done
             </button>

@@ -77,17 +77,17 @@ export function MealsTab({ quickAction, onOpenDiet }: { quickAction?: number; on
           this tab to see. Tapping it opens the full nutrient breakdown. */}
       <div className="card-hero p-4">
         <button onClick={() => setShowBreakdown(true)} className="flex w-full items-center gap-4 text-left">
-          <div className="min-w-0 flex-1">
-            <h3 className="text-sm font-medium text-slate-300">{date === todayISO() ? 'Eaten today' : 'Eaten'}</h3>
-            <p className="mt-1 text-3xl font-bold tracking-tight text-white">
+          <span className="block min-w-0 flex-1">
+            <span className="block text-sm font-medium text-slate-300">{date === todayISO() ? 'Eaten today' : 'Eaten'}</span>
+            <span className="mt-1 block text-3xl font-bold tracking-tight text-white">
               {formatWhole(totals.calories)}
               <span className="ml-1 text-base font-medium text-slate-400">
                 {calorieGoal != null ? `/ ${formatWhole(calorieGoal)} kcal` : 'kcal'}
               </span>
-            </p>
-            {goalInfo && <p className={`mt-0.5 text-sm font-medium ${TONE_CLASSES[goalInfo.tone]}`}>{goalInfo.text}</p>}
-            <MacroLine macros={totals} className="mt-2 text-sm" />
-          </div>
+            </span>
+            {goalInfo && <span className={`mt-0.5 block text-sm font-medium ${TONE_CLASSES[goalInfo.tone]}`}>{goalInfo.text}</span>}
+            <MacroLine macros={totals} as="span" className="mt-2 block text-sm" />
+          </span>
           {calorieGoal != null ? (
             <CircularProgress percent={(totals.calories / calorieGoal) * 100} tone={goalInfo?.tone ?? 'good'} />
           ) : (

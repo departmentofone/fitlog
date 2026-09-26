@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { RestTimer } from '../../components/RestTimer'
 import { useUserSettings } from '../../hooks/useUserSettings'
 import { summarizeLastSets, useLastSessionSetsForExercise } from '../../hooks/useWorkouts'
-import { formatWeight, fromDisplayWeight, toDisplayWeight, weightStep, weightUnitLabel } from '../../lib/units'
+import { fromDisplayWeight, toDisplayWeight, weightStep, weightUnitLabel } from '../../lib/units'
 import type { Exercise, UnitSystem, WorkoutSet } from '../../types'
 
 /** RPE (rate of perceived exertion) - the 1-10 effort scale lifters already know. */
@@ -211,9 +211,7 @@ export function SetForm({
         <div className="flex min-w-0 items-center gap-2">
           <h3 className="truncate card-title">{exercise.name}</h3>
           {supersetLabel && (
-            <span className="shrink-0 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-emerald-400">
-              Superset {supersetLabel}
-            </span>
+            <span className="chip chip-accent shrink-0">Superset {supersetLabel}</span>
           )}
         </div>
         <button onClick={onDone} className="-my-2 -mr-2 min-h-11 shrink-0 rounded-xl px-3 text-sm font-medium text-emerald-400 active:bg-white/5">
@@ -226,7 +224,14 @@ export function SetForm({
       <RestTimer restartKey={restTrigger} />
 
       {existingSets.length > 0 && (
-        <div className="mb-3 space-y-1">
+        // A compact table, one row per set - it used to be a stack of wrapping bubbles.
+        <div className="inset mb-3 divide-y divide-white/5 overflow-hidden">
+          <div className="grid grid-cols-[2.75rem_1fr_1fr_3rem] px-3 py-1.5 text-xs font-semibold text-slate-500">
+            <span>Set</span>
+            <span>{weightUnitLabel(unit)}</span>
+            <span>Reps</span>
+            <span className="text-right">RPE</span>
+          </div>
           {existingSets.map((s) =>
             editingSetId === s.id ? (
               <EditableSetRow
@@ -248,13 +253,19 @@ export function SetForm({
                 key={s.id}
                 onClick={() => setEditingSetId(s.id)}
                 aria-label={`Edit set ${s.set_number}`}
-                className="flex min-h-11 w-full items-center justify-between gap-2 rounded-xl bg-slate-800/60 px-3 py-2 text-left text-sm text-slate-300 transition active:bg-slate-800"
+                className="grid min-h-11 w-full grid-cols-[2.75rem_1fr_1fr_3rem] items-center px-3 text-left text-[15px] text-white transition active:bg-white/5"
               >
-                <span>
-                  Set {s.set_number} · {formatWeight(s.weight, unit)} × {s.reps} reps
-                  {s.is_warmup && <span className="ml-1.5 whitespace-nowrap text-amber-400">(warm-up)</span>}
+                <span className="flex items-center gap-1 text-slate-400">
+                  {s.set_number}
+                  {s.is_warmup && (
+                    <span title="Warm-up" className="rounded bg-amber-400/15 px-1 text-[11px] font-bold text-amber-400">
+                      W
+                    </span>
+                  )}
                 </span>
-                <span className="shrink-0 text-xs text-slate-500">RPE {s.difficulty}</span>
+                <span className="font-semibold">{toDisplayWeight(s.weight, unit)}</span>
+                <span className="font-semibold">{s.reps}</span>
+                <span className="text-right text-sm text-slate-400">{s.difficulty}</span>
               </button>
             ),
           )}
@@ -263,15 +274,13 @@ export function SetForm({
 
       <div className="mb-2 flex items-center justify-between">
         <p className="text-xs text-slate-500">Set {nextSetNumber}</p>
-        <label className="-my-2 -mr-2 flex min-h-11 items-center gap-2 px-2 text-sm text-slate-400">
-          <input
-            type="checkbox"
-            checked={isWarmup}
-            onChange={(e) => setIsWarmup(e.target.checked)}
-            className="h-5 w-5 accent-amber-500"
-          />
-          Warm-up
-        </label>
+        <button
+          onClick={() => setIsWarmup((w) => !w)}
+          aria-pressed={isWarmup}
+          className={`chip min-h-8 px-3 transition ${isWarmup ? 'chip-warn' : 'border border-dashed border-slate-700 text-slate-400'}`}
+        >
+          {isWarmup ? '✓ Warm-up' : 'Warm-up'}
+        </button>
       </div>
       <div className="mb-3 grid grid-cols-2 gap-3">
         <Stepper label="Weight" unit={weightUnitLabel(unit)} value={weight} onChange={setWeight} step={weightStep(unit)} inputMode="decimal" />

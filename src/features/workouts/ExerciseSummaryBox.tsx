@@ -19,22 +19,16 @@ export function ExerciseSummaryBox({
   const { data: settings } = useUserSettings()
   const topSet = sets.reduce((max, s) => (s.weight > max.weight ? s : max), sets[0])
 
+  const working = sets.filter((s) => !s.is_warmup).length
+
+  // A row in the day's exercise list (the list is one card; rows are divided, not separate cards).
   return (
-    <div
-      className={`relative rounded-2xl bg-slate-900 border-t shadow-lg shadow-black/20 ring-1 transition hover:ring-emerald-500/30 ${
-        supersetLabel ? 'border-emerald-500/40 ring-emerald-500/20' : 'border-white/10 ring-white/5'
-      }`}
-    >
-      <button onClick={onClick} className="w-full p-3 text-left">
-        {supersetLabel && (
-          <p className="mb-1 inline-block rounded-full bg-emerald-500/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-emerald-400">
-            Superset {supersetLabel}
-          </p>
-        )}
-        {/* Two lines, not one: in the two-column grid a single line cut most names to "Dumbbell Lat…". */}
-        <p className="mb-1 line-clamp-2 break-words pr-7 text-sm font-medium leading-snug text-white">{name}</p>
-        <p className="text-xs text-slate-400">
-          S{sets.length} · R{topSet.reps} · {formatWeight(topSet.weight, settings?.unit_system, '')}
+    <div className={`relative flex items-center ${supersetLabel ? 'border-l-2 border-emerald-500/60' : ''}`}>
+      <button onClick={onClick} className="min-w-0 flex-1 py-3 pl-4 pr-2 text-left transition active:bg-white/5">
+        {supersetLabel && <p className="eyebrow mb-0.5 text-emerald-400">Superset {supersetLabel}</p>}
+        <p className="break-words text-[15px] font-semibold leading-snug text-white">{name}</p>
+        <p className="mt-0.5 text-sm text-slate-400">
+          {working || sets.length} {(working || sets.length) === 1 ? 'set' : 'sets'} · best {formatWeight(topSet.weight, settings?.unit_system)} × {topSet.reps}
         </p>
       </button>
       {onOpenDetail && (
@@ -44,9 +38,9 @@ export function ExerciseSummaryBox({
             onOpenDetail()
           }}
           aria-label="View progress"
-          className="absolute top-0 right-0 flex h-10 w-10 items-center justify-center rounded-full text-slate-500 hover:bg-white/5 hover:text-emerald-400"
+          className="mr-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-slate-500 hover:bg-white/5 hover:text-emerald-400"
         >
-          <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="3 17 9 11 13 15 21 7" />
             <polyline points="14 7 21 7 21 14" />
           </svg>

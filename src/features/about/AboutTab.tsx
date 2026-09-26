@@ -1,4 +1,5 @@
 import { formatBuildTime } from '../../lib/buildInfo'
+import { FeedbackForm } from './FeedbackForm'
 import { isAndroidApp } from '../../lib/platform'
 
 const FEEDBACK_EMAIL = 'departmentofone.app@gmail.com'
@@ -117,12 +118,13 @@ export function AboutTab() {
         <p className="mb-3 text-sm text-slate-400">
           Found a bug, or have an idea for something to add? It goes straight to the developer.
         </p>
-        <a
-          href={`mailto:${FEEDBACK_EMAIL}`}
-          className="flex min-h-11 items-center justify-center rounded-xl bg-emerald-600 px-4 text-sm font-medium text-on-accent hover:brightness-90"
-        >
-          Email {FEEDBACK_EMAIL}
-        </a>
+        <FeedbackForm />
+        <p className="mt-3 text-center text-xs text-slate-500">
+          Or email{' '}
+          <a href={`mailto:${FEEDBACK_EMAIL}`} className="font-medium text-slate-300 underline">
+            {FEEDBACK_EMAIL}
+          </a>
+        </p>
       </div>
 
       <p className="text-center text-xs text-slate-500">Build {formatBuildTime()}</p>

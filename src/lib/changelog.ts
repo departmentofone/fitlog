@@ -8,6 +8,13 @@ export interface ChangelogEntry {
 // "What's new" reads from, and it's the only place that content lives (no other data source).
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: '2026-09-26',
+    title: 'Send feedback from the app',
+    changes: [
+      'About → Send feedback: write to the developer without leaving FitLog - bug reports, ideas or questions, with a reply to your email',
+    ],
+  },
+  {
     date: '2026-09-24',
     title: 'Clearer Community, lots of polish',
     changes: [

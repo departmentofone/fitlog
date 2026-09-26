@@ -23,6 +23,10 @@ const AREA_ICONS: Record<Area, Tab | 'progress'> = {
   community: 'community',
 }
 
+function todayLabel() {
+  return new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })
+}
+
 function SettingsIcon() {
   return (
     <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -133,9 +137,9 @@ export function Layout({
       <div className="aurora-b pointer-events-none fixed z-0 rounded-full" />
 
       <header className="relative z-10 border-b border-white/10 bg-slate-950/40 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
-        <div className={`flex min-h-14 items-center justify-between gap-2 pr-2 ${detail ? 'pl-1' : 'pl-4'}`}>
-          <div className="flex min-w-0 items-center">
-            {detail && (
+        <div className={`flex min-h-14 items-center justify-between gap-2 pr-2 ${detail ? 'pl-1' : 'pb-2.5 pl-4 pt-2'}`}>
+          {detail ? (
+            <div className="flex min-w-0 items-center">
               <button
                 onClick={onBack}
                 aria-label="Back"
@@ -143,9 +147,21 @@ export function Layout({
               >
                 <BackIcon />
               </button>
-            )}
-            <h1 className={`truncate font-bold tracking-tight text-white ${detail ? 'text-lg' : 'text-2xl'}`}>{titleOf(route)}</h1>
-          </div>
+              <h1 className="truncate text-lg font-bold tracking-tight text-white">{titleOf(route)}</h1>
+            </div>
+          ) : (
+            // The area's own icon in an accent tile, with the date over the title - carries the colour
+            // and brand the old logo gave the header, and says something beyond the screen's name.
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="area-mark flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-emerald-400">
+                {area && <TabIcon tab={AREA_ICONS[area]} className="h-[22px] w-[22px]" />}
+              </span>
+              <div className="min-w-0">
+                <p className="truncate text-xs font-medium text-slate-400">{todayLabel()}</p>
+                <h1 className="truncate text-2xl font-bold leading-tight tracking-tight text-white">{titleOf(route)}</h1>
+              </div>
+            </div>
+          )}
 
           <div className="flex shrink-0 items-center">
             <button

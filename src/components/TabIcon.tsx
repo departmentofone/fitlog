@@ -6,7 +6,7 @@ import type { Tab } from '../types'
  * caps - same as the header/quick-add icons). Replaces platform emoji, which rendered differently
  * on iOS vs Android and clashed with the app's own line icons.
  */
-const PATHS: Record<Tab | 'more', ReactNode> = {
+const PATHS: Record<Tab | 'progress', ReactNode> = {
   workouts: (
     <>
       <path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11" />
@@ -58,9 +58,8 @@ const PATHS: Record<Tab | 'more', ReactNode> = {
   ),
   foods: (
     <>
-      <path d="M4 8l1.5-4h13L20 8" />
-      <path d="M4 8h16l-1.5 12a2 2 0 0 1-2 1.8H7.5a2 2 0 0 1-2-1.8L4 8z" />
-      <path d="M9 12v5M12 12v5M15 12v5" />
+      <path d="M12 7.5c-1.4-1-3-1.5-4.6-1C4.8 7.3 3.6 10.3 4.4 14c.8 3.7 3.2 7 5.6 7 .8 0 1.3-.4 2-.4s1.2.4 2 .4c2.4 0 4.8-3.3 5.6-7 .8-3.7-.4-6.7-3-7.5-1.6-.5-3.2 0-4.6 1z" />
+      <path d="M12 7.5c0-2 1-3.8 3-4.5" />
     </>
   ),
   community: (
@@ -76,6 +75,14 @@ const PATHS: Record<Tab | 'more', ReactNode> = {
       <path d="M8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01" />
     </>
   ),
+  plates: (
+    <>
+      <path d="M2 12h20" />
+      <rect x="5" y="6" width="3" height="12" rx="1" />
+      <rect x="16" y="6" width="3" height="12" rx="1" />
+    </>
+  ),
+  progress: <path d="M3 17l6-6 4 4 8-8M15 7h6v6" />,
   whatsnew: <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z" />,
   feedback: <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v9a1.5 1.5 0 0 1-1.5 1.5H10l-4.5 4v-4h0A1.5 1.5 0 0 1 4 14.5zM8.5 9h7M8.5 12h4.5" />,
   about: (
@@ -84,17 +91,9 @@ const PATHS: Record<Tab | 'more', ReactNode> = {
       <path d="M12 11v5M12 8h.01" />
     </>
   ),
-  more: (
-    <>
-      <rect x="4" y="4" width="6" height="6" rx="1.5" />
-      <rect x="14" y="4" width="6" height="6" rx="1.5" />
-      <rect x="4" y="14" width="6" height="6" rx="1.5" />
-      <rect x="14" y="14" width="6" height="6" rx="1.5" />
-    </>
-  ),
 }
 
-export function TabIcon({ tab, className = 'h-6 w-6' }: { tab: Tab | 'more'; className?: string }) {
+export function TabIcon({ tab, className = 'h-6 w-6' }: { tab: Tab | 'progress'; className?: string }) {
   return (
     <svg
       viewBox="0 0 24 24"

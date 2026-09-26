@@ -9,6 +9,17 @@ export interface ChangelogEntry {
 export const CHANGELOG: ChangelogEntry[] = [
   {
     date: '2026-09-26',
+    title: 'A simpler layout',
+    changes: [
+      'Four places on the bottom bar - Train, Eat, Progress and Community - with their sections as tabs at the top, instead of a menu of 15 screens',
+      'Each screen now says where you are in the header',
+      'The barcode scanner opens from Foods, the calorie calculator from Diet, and the plate calculator from your workout',
+      "What's new, About, and Feedback & support (with why FitLog is free) are in Settings",
+      'Foods has a new icon that no longer looks like a bin',
+    ],
+  },
+  {
+    date: '2026-09-26',
     title: 'Send feedback from the app',
     changes: [
       'New Feedback tab (More menu): write to the developer without leaving FitLog - bug reports, ideas or questions, with a reply to your email',

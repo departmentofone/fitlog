@@ -83,7 +83,7 @@ function BodyMeasurementsCard() {
   return (
     <div
       onClick={!editing ? startEditing : undefined}
-      className={`rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5 transition ${
+      className={`card p-4 transition ${
         !editing ? 'cursor-pointer hover:ring-emerald-500/30' : ''
       }`}
     >
@@ -437,7 +437,7 @@ export function GoalsTab() {
     <div className="space-y-4 p-4">
       <div
         onClick={!editingStats ? startEditing : undefined}
-        className={`rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5 transition ${
+        className={`card card-glow p-4 transition ${
           !editingStats ? 'cursor-pointer hover:ring-emerald-500/30' : ''
         }`}
       >

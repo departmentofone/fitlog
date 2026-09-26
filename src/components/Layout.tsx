@@ -1,71 +1,25 @@
-import { useEffect, useState, type ReactNode } from 'react'
-import { useBackToClose } from '../hooks/useHashRoute'
-import { useUserSettings } from '../hooks/useUserSettings'
-import { formatBuildTime } from '../lib/buildInfo'
-import type { Tab, UserSettings } from '../types'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import type { Route } from '../hooks/useHashRoute'
+import { AREAS, areaOf, isDetailPage, titleOf, type Area } from '../lib/navigation'
+import type { Tab } from '../types'
 import { OfflineBanner } from './OfflineBanner'
 import { SearchOverlay } from './SearchOverlay'
 import { TabIcon } from './TabIcon'
 
 export type { Tab }
 
-type TabGroup = 'track' | 'progress' | 'tools'
-
-const GROUP_LABELS: Record<TabGroup, string> = {
-  track: 'Track',
-  progress: 'Progress',
-  tools: 'Tools',
-}
-const GROUP_ORDER: TabGroup[] = ['track', 'progress', 'tools']
-
-const TABS: { key: Tab; label: string; group: TabGroup | null }[] = [
-  { key: 'workouts', label: 'Workouts', group: 'track' },
-  { key: 'meals', label: 'Meals', group: 'track' },
-  { key: 'scanner', label: 'Scanner', group: 'track' },
-  { key: 'diet', label: 'Diet', group: 'track' },
-  { key: 'fasting', label: 'Fasting', group: 'track' },
-  { key: 'goals', label: 'Goals', group: 'progress' },
-  { key: 'history', label: 'History', group: 'progress' },
-  { key: 'achievements', label: 'Achievements', group: 'progress' },
-  { key: 'programs', label: 'Programs', group: 'tools' },
-  { key: 'foods', label: 'Foods', group: 'tools' },
-  { key: 'community', label: 'Community', group: 'tools' },
-  { key: 'calculator', label: 'Calculator', group: 'tools' },
-  { key: 'whatsnew', label: "What's new", group: null },
-  { key: 'about', label: 'About', group: null },
-  { key: 'feedback', label: 'Feedback', group: null },
-]
-
-const SHORT_LABELS: Partial<Record<Tab, string>> = { achievements: 'Awards' }
-const PINNED_TABS: Tab[] = ['workouts', 'meals']
-// About and What's new live permanently at the bottom of the More sheet - neither is a candidate
-// for the bottom nav bar, or part of the regular grouped destination grid.
-const FOOTER_TABS: Tab[] = ['whatsnew', 'feedback', 'about']
-const MENU_TABS = TABS.filter((t) => !FOOTER_TABS.includes(t.key))
-// Achievements and History are look-back/celebration screens, not something worth a one-tap
-// slot - excluded from bottom-bar customization (still reachable from More as usual).
-const EXCLUDED_FROM_BOTTOM_NAV: Tab[] = ['achievements', 'history']
-export const BOTTOM_NAV_CHOICES = MENU_TABS.filter(
-  (t) => !PINNED_TABS.includes(t.key) && !EXCLUDED_FROM_BOTTOM_NAV.includes(t.key),
-)
-export const MAX_BOTTOM_NAV_EXTRAS = 2
-
-/**
- * The user's extra bottom-bar tabs, cleaned up: known choices only, no duplicates, capped. Used by
- * both the bar and the Settings picker so a stale/invalid stored entry can never fill a slot.
- */
-export function resolveBottomNavExtras(settings: Pick<UserSettings, 'bottom_nav_tabs'> | undefined): Tab[] {
-  const validExtraKeys = new Set(BOTTOM_NAV_CHOICES.map((t) => t.key))
-  return Array.from(new Set(settings?.bottom_nav_tabs ?? []))
-    .filter((t) => validExtraKeys.has(t))
-    .slice(0, MAX_BOTTOM_NAV_EXTRAS)
-}
-
 export interface QuickAddAction {
   key: string
   label: string
   icon: ReactNode
   onSelect: () => void
+}
+
+const AREA_ICONS: Record<Area, Tab | 'progress'> = {
+  train: 'workouts',
+  eat: 'meals',
+  progress: 'progress',
+  community: 'community',
 }
 
 function SettingsIcon() {
@@ -86,26 +40,19 @@ function SearchIcon() {
   )
 }
 
+function BackIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M15 18l-6-6 6-6" />
+    </svg>
+  )
+}
+
 function PlusIcon() {
   return (
     <svg viewBox="0 0 24 24" className="h-6 w-6 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
       <line x1="12" y1="5" x2="12" y2="19" />
       <line x1="5" y1="12" x2="19" y2="12" />
-    </svg>
-  )
-}
-
-function LogoMark() {
-  return (
-    <svg viewBox="0 0 512 512" className="h-8 w-8 shrink-0" aria-hidden="true">
-      <rect width="512" height="512" rx="160" fill="#0b0f1e" />
-      <g stroke="#34d399" strokeWidth="34" strokeLinecap="round">
-        <line x1="96" y1="256" x2="416" y2="256" />
-        <line x1="150" y1="176" x2="150" y2="336" />
-        <line x1="362" y1="176" x2="362" y2="336" />
-        <line x1="96" y1="208" x2="96" y2="304" />
-        <line x1="416" y1="208" x2="416" y2="304" />
-      </g>
     </svg>
   )
 }
@@ -146,103 +93,35 @@ function QuickAddFab({ actions }: { actions: QuickAddAction[] }) {
   )
 }
 
-function MoreSheet({ active, onPick, onClose }: { active: Tab | null; onPick: (tab: Tab) => void; onClose: () => void }) {
-  useBackToClose(true, onClose)
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
-
-  return (
-    <div className="fixed inset-0 z-50 flex flex-col justify-end" onClick={onClose}>
-      <div className="fade-in absolute inset-0 bg-black/60" />
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="All sections"
-        onClick={(e) => e.stopPropagation()}
-        className="sheet-up relative max-h-[85%] overflow-y-auto rounded-t-3xl border-t border-white/10 bg-slate-950 px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-2xl"
-      >
-        <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-slate-700" />
-        <div className="space-y-4">
-          {GROUP_ORDER.map((group) => (
-            <div key={group}>
-              <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                {GROUP_LABELS[group]}
-              </p>
-              <div className="grid grid-cols-3 gap-2">
-                {MENU_TABS.filter((t) => t.group === group).map((tab) => {
-                  const isActive = active === tab.key
-                  return (
-                    <button
-                      key={tab.key}
-                      onClick={() => onPick(tab.key)}
-                      aria-current={isActive ? 'page' : undefined}
-                      className={`flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-2xl px-2 py-3 text-xs font-semibold transition ${
-                        isActive ? 'bg-emerald-500/15 text-emerald-400' : 'bg-slate-900 text-slate-300'
-                      }`}
-                    >
-                      <TabIcon tab={tab.key} />
-                      {tab.label}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-4 flex gap-2 border-t border-white/10 pt-3">
-          {FOOTER_TABS.map((key) => {
-            const tab = TABS.find((t) => t.key === key)!
-            const isActive = active === key
-            return (
-              <button
-                key={key}
-                onClick={() => onPick(key)}
-                aria-current={isActive ? 'page' : undefined}
-                className={`flex min-h-11 flex-1 items-center justify-center gap-2 rounded-2xl text-sm font-semibold transition ${
-                  isActive ? 'bg-emerald-500/15 text-emerald-400' : 'text-slate-300'
-                }`}
-              >
-                <TabIcon tab={key} className="h-5 w-5" />
-                {tab.label}
-              </button>
-            )
-          })}
-        </div>
-        <p className="mt-2 text-center text-xs text-slate-500">Build {formatBuildTime()}</p>
-      </div>
-    </div>
-  )
-}
-
 export function Layout({
-  active,
-  onChange,
-  onOpenSettings,
+  route,
+  onNavigate,
+  onBack,
   quickAddActions,
   children,
 }: {
-  active: Tab | null
-  onChange: (tab: Tab) => void
-  onOpenSettings: () => void
+  route: Route
+  onNavigate: (route: Route) => void
+  onBack: () => void
   quickAddActions?: QuickAddAction[]
   children: ReactNode
 }) {
-  const [moreOpen, setMoreOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
-  const { data: settings } = useUserSettings()
+  const area = areaOf(route)
+  const detail = isDetailPage(route)
+  const sections = !detail ? (AREAS.find((a) => a.key === area)?.sections ?? []) : []
 
-  const bottomBarTabs = [...PINNED_TABS, ...resolveBottomNavExtras(settings)]
-    .map((key) => TABS.find((t) => t.key === key))
-    .filter((t): t is (typeof TABS)[number] => !!t)
-  // "More" reads as selected whenever the current screen is one that only lives in the More sheet.
-  const moreIsActive = active != null && !bottomBarTabs.some((t) => t.key === active)
+  // The section last open in each area, so switching areas and back returns where you were.
+  const lastSection = useRef<Partial<Record<Area, Tab>>>({})
+  useEffect(() => {
+    if (area && !detail) lastSection.current[area] = route as Tab
+  }, [area, detail, route])
+
+  function openArea(key: Area) {
+    const first = AREAS.find((a) => a.key === key)!.sections[0].route
+    // Tapping the area you're already in goes back to its first section.
+    onNavigate(key === area && !detail ? first : (lastSection.current[key] ?? first))
+  }
 
   return (
     <div className="relative flex h-[var(--app-height)] flex-col overflow-hidden overscroll-none bg-slate-950">
@@ -254,28 +133,63 @@ export function Layout({
       {/* Third glow for light mode's aurora only (hidden in dark - see index.css). */}
       <div className="aurora-c pointer-events-none fixed z-0 hidden rounded-full" />
 
-      <header className="relative z-10 flex items-center justify-between gap-2 border-b border-white/10 bg-slate-950/40 py-1.5 pl-4 pr-2 pt-[max(0.375rem,env(safe-area-inset-top))] backdrop-blur-xl">
-        <div className="flex items-center gap-2">
-          <LogoMark />
-          <h1 className="text-lg font-semibold tracking-tight text-white">FitLog</h1>
+      <header className="relative z-10 border-b border-white/10 bg-slate-950/40 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
+        <div className={`flex min-h-14 items-center justify-between gap-2 pr-2 ${detail ? 'pl-1' : 'pl-4'}`}>
+          <div className="flex min-w-0 items-center">
+            {detail && (
+              <button
+                onClick={onBack}
+                aria-label="Back"
+                className="flex h-11 w-11 items-center justify-center rounded-full text-slate-300 transition active:bg-white/10"
+              >
+                <BackIcon />
+              </button>
+            )}
+            <h1 className={`truncate font-bold tracking-tight text-white ${detail ? 'text-lg' : 'text-2xl'}`}>{titleOf(route)}</h1>
+          </div>
+
+          <div className="flex shrink-0 items-center">
+            <button
+              onClick={() => setSearchOpen(true)}
+              aria-label="Search"
+              className="flex h-11 w-11 items-center justify-center rounded-full text-slate-400 transition active:bg-white/10"
+            >
+              <SearchIcon />
+            </button>
+            {route !== 'settings' && (
+              <button
+                onClick={() => onNavigate('settings')}
+                aria-label="Settings"
+                className="flex h-11 w-11 items-center justify-center rounded-full text-slate-400 transition active:bg-white/10"
+              >
+                <SettingsIcon />
+              </button>
+            )}
+          </div>
         </div>
 
-        <div className="flex items-center">
-          <button
-            onClick={() => setSearchOpen(true)}
-            aria-label="Search"
-            className="flex h-11 w-11 items-center justify-center rounded-full text-slate-400 transition active:bg-white/10"
+        {sections.length > 1 && (
+          <nav
+            aria-label="Sections"
+            className="flex gap-1 overflow-x-auto px-3 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
-            <SearchIcon />
-          </button>
-          <button
-            onClick={onOpenSettings}
-            aria-label="Settings"
-            className="flex h-11 w-11 items-center justify-center rounded-full text-slate-400 transition active:bg-white/10"
-          >
-            <SettingsIcon />
-          </button>
-        </div>
+            {sections.map((s) => {
+              const isActive = s.route === route
+              return (
+                <button
+                  key={s.route}
+                  onClick={() => onNavigate(s.route)}
+                  aria-current={isActive ? 'page' : undefined}
+                  className={`min-h-9 shrink-0 rounded-full px-3.5 text-sm font-semibold transition ${
+                    isActive ? 'bg-white/10 text-white' : 'text-slate-400 active:bg-white/5'
+                  }`}
+                >
+                  {s.label}
+                </button>
+              )
+            })}
+          </nav>
+        )}
       </header>
 
       <div className="relative z-10">
@@ -286,7 +200,7 @@ export function Layout({
           No z-index here on purpose: a z-index would make <main> its own stacking context, trapping
           every full-screen sheet/modal a screen renders (z-50) underneath the bottom nav. Being
           later in the DOM than the glow blobs already paints it above them. */}
-      <main className="relative flex-1 overflow-y-auto overscroll-none pb-20">{children}</main>
+      <main className="relative flex-1 overflow-y-auto overscroll-none pb-24">{children}</main>
 
       {quickAddActions && quickAddActions.length > 0 && (
         <div className="pointer-events-none absolute inset-x-0 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-20">
@@ -296,47 +210,29 @@ export function Layout({
 
       <nav
         aria-label="Main"
-        className="relative z-10 flex shrink-0 gap-1 border-t border-white/10 bg-slate-950/60 px-2 pb-[env(safe-area-inset-bottom)] pt-1 backdrop-blur-xl"
+        className="relative z-10 flex shrink-0 border-t border-white/10 bg-slate-950/60 px-2 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl"
       >
-        {bottomBarTabs.map((tab) => {
-          const isActive = active === tab.key
+        {AREAS.map((a) => {
+          const isActive = area === a.key
           return (
             <button
-              key={tab.key}
-              onClick={() => onChange(tab.key)}
+              key={a.key}
+              onClick={() => openArea(a.key)}
               aria-current={isActive ? 'page' : undefined}
-              className={`my-1 flex min-h-12 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl py-1.5 text-[11px] font-semibold transition ${
-                isActive ? 'bg-emerald-500/15 text-emerald-400' : 'text-slate-500'
+              className={`flex min-h-16 min-w-0 flex-1 flex-col items-center justify-center gap-1 text-[11px] font-semibold transition ${
+                isActive ? 'text-emerald-400' : 'text-slate-500'
               }`}
             >
-              <TabIcon tab={tab.key} />
-              <span className="max-w-full truncate">{SHORT_LABELS[tab.key] ?? tab.label}</span>
+              <span
+                className={`flex h-8 w-14 items-center justify-center rounded-full transition ${isActive ? 'bg-emerald-500/15' : ''}`}
+              >
+                <TabIcon tab={AREA_ICONS[a.key]} />
+              </span>
+              <span className="max-w-full truncate">{a.label}</span>
             </button>
           )
         })}
-        <button
-          onClick={() => setMoreOpen(true)}
-          aria-haspopup="dialog"
-          aria-expanded={moreOpen}
-          className={`my-1 flex min-h-12 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl py-1.5 text-[11px] font-semibold transition ${
-            moreIsActive ? 'bg-emerald-500/15 text-emerald-400' : 'text-slate-500'
-          }`}
-        >
-          <TabIcon tab="more" />
-          <span>More</span>
-        </button>
       </nav>
-
-      {moreOpen && (
-        <MoreSheet
-          active={active}
-          onClose={() => setMoreOpen(false)}
-          onPick={(tab) => {
-            onChange(tab)
-            setMoreOpen(false)
-          }}
-        />
-      )}
 
       {searchOpen && <SearchOverlay onClose={() => setSearchOpen(false)} />}
     </div>

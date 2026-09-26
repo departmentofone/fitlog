@@ -26,7 +26,7 @@ const TONE_CLASSES: Record<string, string> = {
   neutral: 'text-blue-400',
 }
 
-export function DietTab() {
+export function DietTab({ onOpenCalculator }: { onOpenCalculator: () => void }) {
   const { data: settings } = useUserSettings()
   const updateSettings = useUpdateSettings()
   const { data: meals = [] } = useMealsForDate(todayISO())
@@ -156,6 +156,17 @@ export function DietTab() {
           </div>
         )}
       </div>
+
+      <button
+        onClick={onOpenCalculator}
+        className="flex min-h-12 w-full items-center justify-between gap-3 tile px-4 text-left text-sm"
+      >
+        <span>
+          <span className="font-medium text-white">Not sure what target to set?</span>{' '}
+          <span className="text-slate-400">Work out your maintenance calories.</span>
+        </span>
+        <span aria-hidden="true" className="text-lg text-slate-500">›</span>
+      </button>
 
       <MicroDashboard micros={micros} />
 

@@ -24,6 +24,7 @@ const ROUTE_KEYS: Record<Route, true> = {
   foods: true,
   community: true,
   calculator: true,
+  plates: true,
   whatsnew: true,
   about: true,
   feedback: true,

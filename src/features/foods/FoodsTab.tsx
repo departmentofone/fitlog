@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { TabIcon } from '../../components/TabIcon'
 import { normalizeFoodText, rankFoods } from '../../lib/foodSearch'
 import { useFoodLabels } from '../../hooks/useFoodLabels'
 import { useFoodLibrary } from '../../hooks/useFoods'
@@ -23,7 +24,7 @@ function packLabel(pack: string): string {
  * organization, turn regional packs on/off, and add a food straight into a preset. Meal logging
  * (FoodPicker) stays focused on searching and adding - this is where the library itself gets curated.
  */
-export function FoodsTab() {
+export function FoodsTab({ onOpenScanner }: { onOpenScanner: () => void }) {
   const [view, setView] = useState<FoodsView>('library')
   const [search, setSearch] = useState('')
   const [activeLabel, setActiveLabel] = useState<string | null>(null)
@@ -96,12 +97,18 @@ export function FoodsTab() {
         </div>
       )}
 
-      <input
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search foods…"
-        className="w-full field px-3 py-2.5"
-      />
+      <div className="flex gap-2">
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search foods…"
+          className="min-w-0 flex-1 field px-3 py-2.5"
+        />
+        <button onClick={onOpenScanner} className="btn btn-secondary shrink-0 px-3 text-sm">
+          <TabIcon tab="scanner" className="h-5 w-5" />
+          Scan
+        </button>
+      </div>
 
       {allLabels.length > 0 && (
         <div className="flex flex-wrap gap-1.5">

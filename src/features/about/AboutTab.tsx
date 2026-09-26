@@ -28,15 +28,6 @@ export function AboutTab() {
 
 
       <div className={cardClass}>
-        <h3 className="mb-2 text-sm font-medium text-white">Tip: customize your bottom bar</h3>
-        <p className="text-sm leading-relaxed text-slate-400">
-          Workouts and Meals are always in the bottom bar, and everything else is under{' '}
-          <span className="font-medium text-slate-200">More</span>. You can pin two more sections next to them from{' '}
-          <span className="font-medium text-slate-200">Settings</span> (the gear, top-right) → Bottom bar.
-        </p>
-      </div>
-
-      <div className={cardClass}>
         <h3 className="mb-2 text-sm font-medium text-white">Data & privacy</h3>
         <p className="text-sm leading-relaxed text-slate-400">
           Your data is private to your account — it's never sold, never used for ads, and FitLog has no trackers.

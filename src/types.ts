@@ -155,6 +155,7 @@ export type Tab =
   | 'foods'
   | 'community'
   | 'calculator'
+  | 'plates'
   | 'whatsnew'
   | 'about'
   | 'feedback'
@@ -176,6 +177,7 @@ export interface UserSettings {
   color_palette: string
   haptics_enabled: boolean
   /** Extra bottom-nav shortcuts beyond the always-pinned Workouts/Meals (max 2). */
+  /** No longer used: the bottom bar is fixed since the 2026-09 navigation rework. */
   bottom_nav_tabs: Tab[]
   /** When the user agreed to the health-data disclosure (null = not yet asked/agreed). */
   health_data_consent_at: string | null

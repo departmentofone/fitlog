@@ -65,10 +65,10 @@ function isFinalMemberOfRound(
 }
 
 export function WorkoutsTab({
-  onOpenHistory,
+  onOpenPlates,
   quickAction,
 }: {
-  onOpenHistory: () => void
+  onOpenPlates: () => void
   /** Changes when the quick-add "Log a set" action fires - opens today's exercise picker. */
   quickAction?: number
 }) {
@@ -484,10 +484,10 @@ export function WorkoutsTab({
               Presets
             </button>
             <button
-              onClick={onOpenHistory}
+              onClick={onOpenPlates}
               className="min-h-9 flex-1 rounded-xl bg-slate-800/60 px-3 text-xs font-medium text-slate-400 active:bg-slate-700"
             >
-              History
+              Plates
             </button>
             <CopyDayButton
               disabled={sets.length === 0}

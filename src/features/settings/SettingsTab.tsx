@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { BOTTOM_NAV_CHOICES, MAX_BOTTOM_NAV_EXTRAS, resolveBottomNavExtras } from '../../components/Layout'
 import { TabIcon } from '../../components/TabIcon'
+import type { Route } from '../../hooks/useHashRoute'
 import { Toggle } from '../../components/Toggle'
 import { useAuth } from '../../hooks/useAuth'
 import { useUpdateSettings, useUserSettings } from '../../hooks/useUserSettings'
@@ -8,11 +8,17 @@ import { formatBuildTime } from '../../lib/buildInfo'
 import { exportUserData } from '../../lib/exportData'
 import { replayOnboarding } from '../../lib/onboarding'
 import { supabase } from '../../lib/supabase'
-import type { Tab } from '../../types'
 import { DeleteAccountCard } from './DeleteAccountCard'
 import { PushNotificationsCard } from './PushNotificationsCard'
 
-export function SettingsTab({ onBack }: { onBack: () => void }) {
+// About, What's new and Feedback (with Buy me a coffee) live here rather than on a main screen.
+const FITLOG_LINKS = [
+  { route: 'whatsnew', label: "What's new" },
+  { route: 'feedback', label: 'Feedback & support' },
+  { route: 'about', label: 'About FitLog' },
+] as const
+
+export function SettingsTab({ onOpen }: { onOpen: (route: Route) => void }) {
   const { user } = useAuth()
   const { data: settings } = useUserSettings()
   const updateSettings = useUpdateSettings()
@@ -56,13 +62,9 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="space-y-4 p-4">
-      <button onClick={onBack} className="-my-2 -ml-2 min-h-11 px-2 text-sm text-slate-400">
-        ← Back
-      </button>
-
       {/* Settings are grouped into a few cards of short rows - it used to be one card per switch, each
           with a paragraph of explanation. */}
-      <div className="divide-y divide-white/5 rounded-3xl border-t border-white/10 bg-slate-900 px-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="divide-y divide-white/5 card px-4">
         <div className="flex items-center justify-between gap-4 py-3">
           <div>
             <h3 className="text-sm font-medium text-white">Ask about preworkout</h3>
@@ -150,42 +152,6 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
         </p>
       </div>
 
-      <div className="card p-4">
-        <div className="mb-1 flex items-baseline justify-between">
-          <h3 className="font-medium text-white">Bottom bar</h3>
-          <span className="text-xs text-slate-500">
-            {resolveBottomNavExtras(settings).length} of {MAX_BOTTOM_NAV_EXTRAS} slots used
-          </span>
-        </div>
-        <p className="mb-3 text-xs text-slate-500">
-          Pin up to {MAX_BOTTOM_NAV_EXTRAS} more next to Workouts and Meals.
-        </p>
-        <div className="grid grid-cols-3 gap-1.5">
-          {BOTTOM_NAV_CHOICES.map((choice) => {
-            const extras = resolveBottomNavExtras(settings)
-            const isSelected = extras.includes(choice.key)
-            const atMax = extras.length >= MAX_BOTTOM_NAV_EXTRAS
-            return (
-              <button
-                key={choice.key}
-                disabled={!isSelected && atMax}
-                aria-pressed={isSelected}
-                onClick={() => {
-                  const next: Tab[] = isSelected ? extras.filter((t) => t !== choice.key) : [...extras, choice.key]
-                  updateSettings.mutate({ bottom_nav_tabs: next })
-                }}
-                className={`flex min-h-16 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2.5 text-xs font-medium transition disabled:opacity-30 ${
-                  isSelected ? 'bg-emerald-600 text-on-accent' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                }`}
-              >
-                <TabIcon tab={choice.key} className="h-5 w-5" />
-                {choice.label}
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
       <PushNotificationsCard />
 
       <div className="card p-4">
@@ -258,6 +224,20 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
         >
           Sign out
         </button>
+      </div>
+
+      <div className="card px-4 py-1">
+        {FITLOG_LINKS.map((link, i) => (
+          <button
+            key={link.route}
+            onClick={() => onOpen(link.route)}
+            className={`flex min-h-12 w-full items-center gap-3 text-left text-sm font-medium text-slate-200 ${i > 0 ? 'border-t border-white/5' : ''}`}
+          >
+            <TabIcon tab={link.route} className="h-5 w-5 text-slate-400" />
+            <span className="flex-1">{link.label}</span>
+            <span aria-hidden="true" className="text-slate-500">›</span>
+          </button>
+        ))}
       </div>
 
       <DeleteAccountCard onExport={handleExport} exporting={exporting} />

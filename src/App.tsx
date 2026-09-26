@@ -27,6 +27,9 @@ const CommunityTab = lazy(() => import('./features/community/CommunityTab').then
 const MaintenanceCalculatorTab = lazy(() =>
   import('./features/calculator/MaintenanceCalculatorTab').then((m) => ({ default: m.MaintenanceCalculatorTab })),
 )
+const PlateCalculatorTab = lazy(() =>
+  import('./features/calculator/MaintenanceCalculatorTab').then((m) => ({ default: m.PlateCalculatorTab })),
+)
 const AboutTab = lazy(() => import('./features/about/AboutTab').then((m) => ({ default: m.AboutTab })))
 const FeedbackTab = lazy(() => import('./features/feedback/FeedbackTab').then((m) => ({ default: m.FeedbackTab })))
 const WhatsNewTab = lazy(() => import('./features/about/WhatsNewTab').then((m) => ({ default: m.WhatsNewTab })))
@@ -169,29 +172,25 @@ function App() {
   return (
     <>
       <AchievementWatcher />
-      <Layout
-        active={tab}
-        onChange={navigate}
-        onOpenSettings={() => navigate('settings')}
-        quickAddActions={quickAddActions}
-      >
+      <Layout route={route} onNavigate={navigate} onBack={goBack} quickAddActions={quickAddActions}>
         <TabErrorBoundary route={route}>
           <Suspense fallback={<TabFallback />}>
-          {onSettings && <SettingsTab onBack={goBack} />}
-          {tab === 'workouts' && <WorkoutsTab onOpenHistory={() => navigate('history')} quickAction={nonceFor('workouts')} />}
+          {onSettings && <SettingsTab onOpen={navigate} />}
+          {tab === 'workouts' && <WorkoutsTab onOpenPlates={() => navigate('plates')} quickAction={nonceFor('workouts')} />}
           {tab === 'meals' && <MealsTab quickAction={nonceFor('meals')} />}
           {tab === 'scanner' && <ScannerTab />}
-          {tab === 'diet' && <DietTab />}
+          {tab === 'diet' && <DietTab onOpenCalculator={() => navigate('calculator')} />}
           {tab === 'fasting' && <FastingTab quickAction={nonceFor('fasting')} />}
           {tab === 'goals' && <GoalsTab />}
           {tab === 'history' && <HistoryView />}
           {tab === 'achievements' && <AchievementsTab />}
           {tab === 'programs' && <ProgramsTab />}
-          {tab === 'foods' && <FoodsTab />}
+          {tab === 'foods' && <FoodsTab onOpenScanner={() => navigate('scanner')} />}
           {tab === 'community' && <CommunityTab />}
           {tab === 'calculator' && <MaintenanceCalculatorTab />}
+          {tab === 'plates' && <PlateCalculatorTab />}
           {tab === 'whatsnew' && <WhatsNewTab />}
-            {tab === 'about' && <AboutTab />}
+          {tab === 'about' && <AboutTab />}
           {tab === 'feedback' && <FeedbackTab />}
           </Suspense>
         </TabErrorBoundary>

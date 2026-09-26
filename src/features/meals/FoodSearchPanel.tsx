@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useHideQuickAdd } from '../../components/QuickAddVisibility'
 import { useActiveDiet } from '../../hooks/useDiets'
 import { useFoodLibrary, useFoodSearch } from '../../hooks/useFoods'
 import { useFrequentFoods } from '../../hooks/useFrequentFoods'
@@ -27,6 +28,7 @@ interface FoodSearchPanelProps {
 
 /** Search box + frequently-used pills + ranked results, with an entry point to create a new food. */
 export function FoodSearchPanel({ search, onSearchChange, onSelectFood, onCreateNew, onCancel }: FoodSearchPanelProps) {
+  useHideQuickAdd()
   const { data: results = [], isLoading } = useFoodSearch(search)
   const { data: library = [] } = useFoodLibrary()
   const { data: frequent = [] } = useFrequentFoods()

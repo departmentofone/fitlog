@@ -2,10 +2,13 @@ import { formatWhole } from '../../lib/number'
 import { useEffect, useState } from 'react'
 import { CopyDayButton } from '../../components/CopyDayButton'
 import { DateNav } from '../../components/DateNav'
+import { CircularProgress } from '../../components/CircularProgress'
 import { MacroLine } from '../../components/MacroLine'
 import { SkeletonCard } from '../../components/Skeleton'
 import { useToast } from '../../components/ToastProvider'
+import { remainingCaloriesInfo } from '../../hooks/useDiet'
 import { useCopyMealsDay, dailyTotals, useCreateMeal, useMealsForDate } from '../../hooks/useMeals'
+import { useUserSettings } from '../../hooks/useUserSettings'
 import { todayISO } from '../../hooks/useWorkouts'
 import { NutritionBreakdownModal } from '../nutrition/NutritionBreakdownModal'
 import { MealCard } from './MealCard'
@@ -16,7 +19,9 @@ import { WaterWidget } from './WaterWidget'
 
 const MEAL_PRESETS = ['Breakfast', 'Lunch', 'Dinner', 'Snack']
 
-export function MealsTab({ quickAction }: { quickAction?: number }) {
+const TONE_CLASSES = { good: 'text-emerald-400', warn: 'text-red-400', neutral: 'text-blue-400' } as const
+
+export function MealsTab({ quickAction, onOpenDiet }: { quickAction?: number; onOpenDiet: () => void }) {
   const [date, setDate] = useState(todayISO())
   const { data: meals = [], isLoading } = useMealsForDate(date)
   const createMeal = useCreateMeal()
@@ -28,6 +33,9 @@ export function MealsTab({ quickAction }: { quickAction?: number }) {
   const [showRecipes, setShowRecipes] = useState(false)
 
   const totals = dailyTotals(meals)
+  const { data: settings } = useUserSettings()
+  const calorieGoal = settings?.calorie_goal ?? null
+  const goalInfo = calorieGoal != null ? remainingCaloriesInfo(totals.calories, calorieGoal, settings?.diet_goal ?? 'deficit') : null
   const usedNames = new Set(meals.map((m) => m.name))
   const nextPreset = MEAL_PRESETS.find((p) => !usedNames.has(p)) ?? 'Meal'
   const [pendingAdd, setPendingAdd] = useState(false)
@@ -65,17 +73,32 @@ export function MealsTab({ quickAction }: { quickAction?: number }) {
     <div className="space-y-4 p-4">
       <DateNav date={date} max={todayISO()} onChange={setDate} />
 
-      {/* Totals first: the day's number is what you open this tab to see. */}
-      <div
-        onClick={() => setShowBreakdown(true)}
-        className="cursor-pointer card-hero p-4 transition hover:ring-emerald-500/30"
-      >
-        <div className="mb-2 flex items-center justify-between">
-          <h3 className="text-sm font-medium text-slate-300">{date === todayISO() ? "Today's totals" : 'Totals'}</h3>
-          <span className="text-xs text-slate-500">Tap for breakdown</span>
-        </div>
-        <p className="text-2xl font-bold text-emerald-400">{formatWhole(totals.calories)} kcal</p>
-        <MacroLine macros={totals} className="mt-1 text-sm" />
+      {/* Totals first: the day's number, measured against the goal set in Diet, is what you open
+          this tab to see. Tapping it opens the full nutrient breakdown. */}
+      <div className="card-hero p-4">
+        <button onClick={() => setShowBreakdown(true)} className="flex w-full items-center gap-4 text-left">
+          <div className="min-w-0 flex-1">
+            <h3 className="text-sm font-medium text-slate-300">{date === todayISO() ? 'Eaten today' : 'Eaten'}</h3>
+            <p className="mt-1 text-3xl font-bold tracking-tight text-white">
+              {formatWhole(totals.calories)}
+              <span className="ml-1 text-base font-medium text-slate-400">
+                {calorieGoal != null ? `/ ${formatWhole(calorieGoal)} kcal` : 'kcal'}
+              </span>
+            </p>
+            {goalInfo && <p className={`mt-0.5 text-sm font-medium ${TONE_CLASSES[goalInfo.tone]}`}>{goalInfo.text}</p>}
+            <MacroLine macros={totals} className="mt-2 text-sm" />
+          </div>
+          {calorieGoal != null ? (
+            <CircularProgress percent={(totals.calories / calorieGoal) * 100} tone={goalInfo?.tone ?? 'good'} />
+          ) : (
+            <span aria-hidden="true" className="text-xl text-slate-500">›</span>
+          )}
+        </button>
+        {calorieGoal == null && (
+          <button onClick={onOpenDiet} className="mt-3 min-h-11 w-full border-t border-white/5 pt-2 text-left text-sm font-semibold text-emerald-400">
+            Set a daily calorie target ›
+          </button>
+        )}
       </div>
 
       {/* Water is logged for today only, so it's hidden when looking back at another day. */}
@@ -91,7 +114,7 @@ export function MealsTab({ quickAction }: { quickAction?: number }) {
         id="meals-add"
         onClick={() => createMeal.mutate({ date, name: nextPreset })}
         disabled={createMeal.isPending}
-        className="w-full rounded-2xl border border-dashed border-slate-700 py-3 font-medium text-slate-300 transition hover:border-emerald-500 hover:text-emerald-400"
+        className="btn btn-secondary min-h-12 w-full"
       >
         + Add {nextPreset.toLowerCase()}
       </button>

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useHideQuickAdd } from '../../components/QuickAddVisibility'
 import { MuscleDiagram } from '../../components/MuscleDiagram'
 import { useCreateExercise, useExercises } from '../../hooks/useExercises'
 import { MUSCLE_GROUPS, type Exercise, type MuscleGroup } from '../../types'
@@ -25,6 +26,7 @@ export function ExercisePicker({
   onConfirmSelection,
   maxSelectable = DEFAULT_MAX_SELECTABLE,
 }: ExercisePickerProps) {
+  useHideQuickAdd()
   const { data: exercises = [] } = useExercises()
   const createExercise = useCreateExercise()
   const [search, setSearch] = useState('')

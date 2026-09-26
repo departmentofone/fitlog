@@ -1,4 +1,5 @@
 import { parseDecimal } from '../../lib/number'
+import { useHideQuickAdd } from '../../components/QuickAddVisibility'
 import { useEffect, useMemo, useState } from 'react'
 import { RestTimer } from '../../components/RestTimer'
 import { useUserSettings } from '../../hooks/useUserSettings'
@@ -174,6 +175,7 @@ export function SetForm({
   restTrigger,
   supersetLabel,
 }: SetFormProps) {
+  useHideQuickAdd()
   const [weight, setWeight] = useState('')
   const [reps, setReps] = useState('')
   const [difficulty, setDifficulty] = useState(6)

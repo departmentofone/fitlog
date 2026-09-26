@@ -4,6 +4,7 @@ import { HealthConsentScreen } from './components/HealthConsentScreen'
 import { TabErrorBoundary } from './components/TabErrorBoundary'
 import { Layout, type QuickAddAction } from './components/Layout'
 import { OnboardingTour } from './components/OnboardingTour'
+import { QuickAddVisibilityProvider } from './components/QuickAddVisibility'
 import { SkeletonCard } from './components/Skeleton'
 import { useToast } from './components/ToastProvider'
 import { useApplyTheme } from './hooks/useApplyTheme'
@@ -172,29 +173,31 @@ function App() {
   return (
     <>
       <AchievementWatcher />
-      <Layout route={route} onNavigate={navigate} onBack={goBack} quickAddActions={quickAddActions}>
-        <TabErrorBoundary route={route}>
-          <Suspense fallback={<TabFallback />}>
-          {onSettings && <SettingsTab onOpen={navigate} />}
-          {tab === 'workouts' && <WorkoutsTab onOpenPlates={() => navigate('plates')} quickAction={nonceFor('workouts')} />}
-          {tab === 'meals' && <MealsTab quickAction={nonceFor('meals')} />}
-          {tab === 'scanner' && <ScannerTab />}
-          {tab === 'diet' && <DietTab onOpenCalculator={() => navigate('calculator')} />}
-          {tab === 'fasting' && <FastingTab quickAction={nonceFor('fasting')} />}
-          {tab === 'goals' && <GoalsTab />}
-          {tab === 'history' && <HistoryView />}
-          {tab === 'achievements' && <AchievementsTab />}
-          {tab === 'programs' && <ProgramsTab />}
-          {tab === 'foods' && <FoodsTab onOpenScanner={() => navigate('scanner')} />}
-          {tab === 'community' && <CommunityTab />}
-          {tab === 'calculator' && <MaintenanceCalculatorTab />}
-          {tab === 'plates' && <PlateCalculatorTab />}
-          {tab === 'whatsnew' && <WhatsNewTab />}
-          {tab === 'about' && <AboutTab />}
-          {tab === 'feedback' && <FeedbackTab />}
-          </Suspense>
-        </TabErrorBoundary>
-      </Layout>
+      <QuickAddVisibilityProvider>
+        <Layout route={route} onNavigate={navigate} onBack={goBack} quickAddActions={quickAddActions}>
+          <TabErrorBoundary route={route}>
+            <Suspense fallback={<TabFallback />}>
+              {onSettings && <SettingsTab onOpen={navigate} />}
+              {tab === 'workouts' && <WorkoutsTab onOpenPlates={() => navigate('plates')} quickAction={nonceFor('workouts')} />}
+              {tab === 'meals' && <MealsTab quickAction={nonceFor('meals')} onOpenDiet={() => navigate('diet')} />}
+              {tab === 'scanner' && <ScannerTab />}
+              {tab === 'diet' && <DietTab onOpenCalculator={() => navigate('calculator')} />}
+              {tab === 'fasting' && <FastingTab quickAction={nonceFor('fasting')} />}
+              {tab === 'goals' && <GoalsTab />}
+              {tab === 'history' && <HistoryView />}
+              {tab === 'achievements' && <AchievementsTab />}
+              {tab === 'programs' && <ProgramsTab />}
+              {tab === 'foods' && <FoodsTab onOpenScanner={() => navigate('scanner')} />}
+              {tab === 'community' && <CommunityTab />}
+              {tab === 'calculator' && <MaintenanceCalculatorTab />}
+              {tab === 'plates' && <PlateCalculatorTab />}
+              {tab === 'whatsnew' && <WhatsNewTab />}
+              {tab === 'about' && <AboutTab />}
+              {tab === 'feedback' && <FeedbackTab />}
+            </Suspense>
+          </TabErrorBoundary>
+        </Layout>
+      </QuickAddVisibilityProvider>
       <OnboardingTour onOpenCommunity={() => navigate('community')} />
     </>
   )

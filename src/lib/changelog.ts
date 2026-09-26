@@ -16,6 +16,9 @@ export const CHANGELOG: ChangelogEntry[] = [
       'The barcode scanner opens from Foods, the calorie calculator from Diet, and the plate calculator from your workout',
       "What's new, About, and Feedback & support (with why FitLog is free) are in Settings",
       'Foods has a new icon that no longer looks like a bin',
+      "Meals shows today's calories against your goal, with what's left, right at the top",
+      'The + button steps aside while you log a set or search for a food, instead of covering the buttons',
+      'One clear Add exercise button, with Superset next to it',
     ],
   },
   {

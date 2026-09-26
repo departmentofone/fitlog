@@ -452,13 +452,13 @@ export function WorkoutsTab({
             }
 
             return (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="flex gap-2">
                 <button
                   onClick={() => {
                     setPickerMode('solo')
                     setPicking(true)
                   }}
-                  className="rounded-2xl border border-dashed border-slate-700 py-3 text-sm font-medium text-slate-300 transition hover:border-emerald-500 hover:text-emerald-400"
+                  className="btn btn-primary min-h-12 flex-1"
                 >
                   + Add exercise
                 </button>
@@ -467,9 +467,9 @@ export function WorkoutsTab({
                     setPickerMode('superset')
                     setPicking(true)
                   }}
-                  className="rounded-2xl border border-dashed border-emerald-700/50 py-3 text-sm font-medium text-emerald-400/90 transition hover:border-emerald-500 hover:text-emerald-300"
+                  className="btn btn-secondary min-h-12 text-sm"
                 >
-                  + Add superset
+                  + Superset
                 </button>
               </div>
             )

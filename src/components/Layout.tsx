@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useQuickAddHidden } from './QuickAddVisibility'
 import type { Route } from '../hooks/useHashRoute'
 import { AREAS, areaOf, isDetailPage, titleOf, type Area } from '../lib/navigation'
 import type { Tab } from '../types'
@@ -107,6 +108,7 @@ export function Layout({
   children: ReactNode
 }) {
   const [searchOpen, setSearchOpen] = useState(false)
+  const quickAddHidden = useQuickAddHidden()
   const area = areaOf(route)
   const detail = isDetailPage(route)
   const sections = !detail ? (AREAS.find((a) => a.key === area)?.sections ?? []) : []
@@ -202,7 +204,7 @@ export function Layout({
           later in the DOM than the glow blobs already paints it above them. */}
       <main className="relative flex-1 overflow-y-auto overscroll-none pb-24">{children}</main>
 
-      {quickAddActions && quickAddActions.length > 0 && (
+      {!quickAddHidden && quickAddActions && quickAddActions.length > 0 && (
         <div className="pointer-events-none absolute inset-x-0 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-20">
           <QuickAddFab actions={quickAddActions} />
         </div>

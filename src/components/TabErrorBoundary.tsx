@@ -52,8 +52,8 @@ export class TabErrorBoundary extends Component<Props, State> {
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-slate-400">
             {stale
-              ? 'FitLog updated while you had it open. Reload to pick up the new version — nothing you logged is affected.'
-              : "Sorry — something went wrong loading this screen. Your logged data is safe. Try again, or reload the app."}
+              ? 'FitLog updated while you had it open. Reload to get the new version. Nothing you logged is affected.'
+              : "This screen didn't load. Your logged data is safe. Try again, or reload the app."}
           </p>
           <button
             type="button"

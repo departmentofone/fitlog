@@ -207,7 +207,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
           )
         })}
         {meal.meal_items.length === 0 && (
-          <p className="py-1 text-sm text-slate-500">Nothing logged yet — add what you ate below.</p>
+          <p className="py-1 text-sm text-slate-500">Nothing logged yet. Add what you ate below.</p>
         )}
       </div>
 

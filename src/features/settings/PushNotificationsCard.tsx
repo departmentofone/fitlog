@@ -54,7 +54,7 @@ export function PushNotificationsCard() {
             isSubscribed ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-emerald-600 text-on-accent hover:brightness-90'
           }`}
         >
-          {pending ? 'Working…' : isSubscribed ? 'Notifications on — turn off' : 'Enable notifications'}
+          {pending ? 'Working…' : isSubscribed ? 'Turn off notifications' : 'Enable notifications'}
         </button>
       )}
 

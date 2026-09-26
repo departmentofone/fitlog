@@ -88,7 +88,7 @@ export function PresetsManagerView() {
           <SkeletonRow />
         </div>
       )}
-      {!isLoading && presets.length === 0 && <EmptyState variant="list" message="No presets yet — make one above." />}
+      {!isLoading && presets.length === 0 && <EmptyState variant="list" message="No presets yet. Make one above." />}
 
       <div className="space-y-2">
         {presets.map((preset) => {

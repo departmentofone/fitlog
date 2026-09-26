@@ -49,7 +49,7 @@ export function GoalProjectionChart() {
     return (
       <Card>
         <p className="text-sm text-amber-400">
-          Your {formatWhole(settings.calorie_goal)} kcal target won't get you there — your estimated maintenance is ~{formatWhole(tdee)} kcal, so
+          Your {formatWhole(settings.calorie_goal)} kcal target won't get you there. Your estimated maintenance is ~{formatWhole(tdee)} kcal, so
           you'll need to {projection.direction === 'lose' ? 'lower' : 'raise'} your calorie target to make progress toward{' '}
           {projection.direction === 'lose' ? 'losing' : 'gaining'} weight.
         </p>
@@ -71,7 +71,7 @@ export function GoalProjectionChart() {
     <Card>
       <p className="mb-3 text-sm text-slate-400">
         At this rate, about <span className="font-semibold text-white">{totalDays} days</span> (~{weeks} weeks) to reach{' '}
-        {displayWeightValue(settings.weight_goal!, settings.unit_system)} {unitLabel} — around{' '}
+        {displayWeightValue(settings.weight_goal!, settings.unit_system)} {unitLabel}, around{' '}
         <span className="font-semibold text-white">
           {projection.targetDate.toLocaleDateString(undefined, { month: 'long', day: 'numeric' })}
         </span>
@@ -107,7 +107,7 @@ export function GoalProjectionChart() {
         </ResponsiveContainer>
       </div>
       <p className="mt-2 text-xs text-slate-500">
-        Estimate based on your Mifflin-St Jeor maintenance (~{formatWhole(tdee)} kcal/day) — actual results vary.
+        Estimate based on your Mifflin-St Jeor maintenance (~{formatWhole(tdee)} kcal/day). Actual results vary.
       </p>
     </Card>
   )

@@ -50,8 +50,8 @@ export function FeedbackTab() {
             I don't want to lock anyone out of any feature, and not everyone can pay for this kind of thing.
           </p>
           <p>
-            If it's been useful to you, a coffee helps cover the costs of keeping it running. Completely optional,
-            always appreciated.
+            If it's been useful to you, a coffee helps cover the costs of keeping it running. It's
+            optional, and I appreciate it.
           </p>
         </div>
         {showDonate &&

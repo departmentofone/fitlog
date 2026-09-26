@@ -80,7 +80,7 @@ export function PlateCalculator() {
             <div>
               <p className="mb-1.5 text-xs text-slate-500">Per side (load the same on both sides)</p>
               {result.perSide.length === 0 ? (
-                <p className="text-sm text-slate-400">No plates needed — bar only</p>
+                <p className="text-sm text-slate-400">No plates needed, just the bar</p>
               ) : (
                 <div className="flex flex-wrap items-end gap-1.5">
                   {result.perSide.map((p, i) => {

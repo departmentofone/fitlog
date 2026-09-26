@@ -10,10 +10,10 @@ function buildFlags(micros: MicroTotals, foodNames: string[]): { text: string; t
   const flags: { text: string; tone: 'warn' | 'good' | 'info' }[] = []
 
   const sodiumPct = percentDV(micros.sodium, 2300)
-  if (sodiumPct >= 100) flags.push({ text: `Sodium at ${sodiumPct}% DV — high`, tone: 'warn' })
+  if (sodiumPct >= 100) flags.push({ text: `Sodium at ${sodiumPct}% DV, high`, tone: 'warn' })
 
   const fiberPct = percentDV(micros.fiber, 28)
-  if (fiberPct < 15 && micros.fiber >= 0) flags.push({ text: `Fiber at ${fiberPct}% DV — low`, tone: 'info' })
+  if (fiberPct < 15 && micros.fiber >= 0) flags.push({ text: `Fiber at ${fiberPct}% DV, low`, tone: 'info' })
 
   if (percentDV(micros.vitaminC, 90) >= 100) flags.push({ text: 'Vitamin C goal met', tone: 'good' })
   if (percentDV(micros.potassium, 4700) >= 50) flags.push({ text: 'Strong potassium intake', tone: 'good' })

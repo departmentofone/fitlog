@@ -141,7 +141,7 @@ export function RestTimer({ restartKey }: { restartKey: number }) {
   if (phase === 'done') {
     return (
       <div className="mb-3 flex items-center justify-center rounded-xl bg-emerald-600/20 py-3 text-sm font-medium text-emerald-400">
-        Rest over — go again
+        Rest over. Go again
       </div>
     )
   }

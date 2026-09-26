@@ -129,14 +129,14 @@ export function FoodSearchPanel({ search, onSearchChange, onSelectFood, onCreate
           )}
           {ordered.length > MAX_RESULTS && (
             <p className="px-1 pt-1 text-xs text-slate-500">
-              Showing the {MAX_RESULTS} best matches — type more to narrow it down.
+              Showing the {MAX_RESULTS} best matches. Type more to narrow it down.
             </p>
           )}
         </div>
       )}
 
       {!searching && frequent.length === 0 && (
-        <p className="mb-3 px-1 text-sm text-slate-500">Type a food to search — the foods you log most will show up here.</p>
+        <p className="mb-3 px-1 text-sm text-slate-500">Type a food to search. The foods you log most will show up here.</p>
       )}
 
       <button

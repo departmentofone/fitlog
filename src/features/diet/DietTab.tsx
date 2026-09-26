@@ -115,7 +115,7 @@ export function DietTab({ onOpenCalculator }: { onOpenCalculator: () => void }) 
             </div>
           </div>
         ) : calorieGoal == null ? (
-          <p className="text-sm text-slate-400">No calorie goal set yet — tap here to set one.</p>
+          <p className="text-sm text-slate-400">No calorie goal set yet. Tap here to set one.</p>
         ) : (
           <div className="flex items-center gap-4">
             <div className="flex-1">

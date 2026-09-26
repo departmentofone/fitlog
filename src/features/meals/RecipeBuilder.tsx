@@ -208,7 +208,7 @@ export function RecipeBuilderView({
           </div>
         )}
         {!isLoading && recipes.length === 0 && (
-          <EmptyState variant="folder" message="No recipes yet — build one above." />
+          <EmptyState variant="folder" message="No recipes yet. Build one above." />
         )}
         <div className="space-y-2">
           {recipes.map((recipe) => (

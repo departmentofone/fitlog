@@ -112,7 +112,7 @@ export function PresetsView({
         {!isLoading && presets.length === 0 && (
           <EmptyState
             variant="dumbbell"
-            message="No presets yet — log a workout, then save it as a preset to quickly reuse it later."
+            message="No presets yet. Log a workout, then save it as a preset to reuse it."
           />
         )}
         <div className="space-y-2">

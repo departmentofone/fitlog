@@ -103,7 +103,7 @@ export function MealPresetsView({
           </div>
         )}
         {!isLoading && presets.length === 0 && (
-          <EmptyState variant="list" message='No presets yet — save a logged meal above ("usual breakfast", etc).' />
+          <EmptyState variant="list" message='No presets yet. Save a logged meal above, like your usual breakfast.' />
         )}
         <div className="space-y-2">
           {presets.map((preset) => (

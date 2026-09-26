@@ -105,7 +105,7 @@ function useBarcodeCameraScanner(onDetected: (code: string) => void) {
       }
       rafRef.current = requestAnimationFrame(tick)
     } catch {
-      setCameraError('Could not access the camera — you can still enter the barcode manually below.')
+      setCameraError('Could not access the camera. You can still enter the barcode below.')
       setScanning(false)
     }
   }, [stop, supported])
@@ -246,7 +246,7 @@ export function ScannerTab() {
         )}
 
         {!camera.supported ? (
-          <p className="mt-2 text-xs text-slate-500">Camera scanning isn't available on this device — type the barcode instead.</p>
+          <p className="mt-2 text-xs text-slate-500">Camera scanning isn't available on this device. Type the barcode instead.</p>
         ) : (
           camera.cameraError && <p className="mt-2 text-xs text-red-400">{camera.cameraError}</p>
         )}
@@ -260,7 +260,7 @@ export function ScannerTab() {
             }}
             className="mt-2.5 text-xs font-medium text-slate-400 hover:text-slate-200"
           >
-            Skip lookup — enter details manually
+            Skip lookup and enter details manually
           </button>
         )}
       </div>
@@ -276,7 +276,7 @@ export function ScannerTab() {
 
           {notFound && (
             <p className="mb-3 text-sm text-amber-400">
-              No match for that barcode on Open Food Facts — enter the details manually below.
+              No match for that barcode on Open Food Facts. Enter the details below.
             </p>
           )}
 

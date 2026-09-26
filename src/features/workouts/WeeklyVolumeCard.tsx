@@ -116,7 +116,7 @@ export function WeeklyVolumeCard({ todaySetsPerMuscle }: { todaySetsPerMuscle: M
       )}
       {showing === 'week' && showDeloadHint && (
         <p className="mt-3 rounded-xl bg-amber-500/10 px-3 py-2 text-xs text-amber-400">
-          This week's volume is ~{percentAbove}% above your recent average — a lighter day might be worth considering.
+          This week's volume is ~{percentAbove}% above your recent average. A lighter day might help.
         </p>
       )}
     </div>

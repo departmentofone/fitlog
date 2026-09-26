@@ -150,7 +150,7 @@ export function FoodsTab({ onOpenScanner }: { onOpenScanner: () => void }) {
           message={
             normalizeFoodText(search)
               ? `No foods match "${search.trim()}".`
-              : 'No foods to show — add one above.'
+              : 'No foods to show. Add one above.'
           }
         />
       )}

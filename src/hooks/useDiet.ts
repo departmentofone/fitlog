@@ -99,7 +99,7 @@ export function remainingCaloriesInfo(consumed: number, goal: number, type: Diet
   }
   if (type === 'surplus') {
     if (remaining > 0) return { remaining, text: `${Math.round(remaining)} kcal to go`, tone: 'neutral' }
-    return { remaining, text: `Goal reached! +${Math.round(-remaining)} kcal over`, tone: 'good' }
+    return { remaining, text: `Goal reached, +${Math.round(-remaining)} kcal over`, tone: 'good' }
   }
   // maintenance
   const band = goal * 0.1

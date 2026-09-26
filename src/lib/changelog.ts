@@ -83,7 +83,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     title: 'Rest days, a real micro dashboard, and more',
     changes: [
       'Log a rest day so 1-2 days off in a row no longer breaks your workout streak',
-      'A real always-visible micronutrient dashboard on the Diet tab, not just buried in a modal',
+      'The Diet tab now shows your micronutrients at all times, outside the breakdown modal',
       'A rest timer that counts down between sets, with a notification when it hits zero',
       "A \"last time\" hint while logging a set, so you're not guessing your previous numbers",
       'Weekly nutrition adherence score - how many of the last 7 logged days hit your goal',

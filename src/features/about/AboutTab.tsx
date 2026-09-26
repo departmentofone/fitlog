@@ -13,7 +13,7 @@ export function AboutTab() {
       <div className={cardClass}>
         <h3 className="mb-2 card-title">What this app does</h3>
         <p className="text-sm leading-relaxed text-slate-400">
-          FitLog logs your workouts — sets, reps, weight, muscle groups, and personal records — alongside your meals,
+          FitLog logs your workouts (sets, reps, weight, muscle groups and personal records) alongside your meals,
           macros, and calories. It also tracks fasting windows and hands out achievements as you go. You can build
           reusable workout and meal programs and share them, instead of re-entering the same routine every time.
         </p>
@@ -21,8 +21,8 @@ export function AboutTab() {
 
       <div className={cardClass}>
         <p className="text-sm leading-relaxed text-slate-400">
-          <span className="font-medium text-white">Free, no ads, no paywalls.</span> Every feature is available to
-          everyone, with no paid features whatsoever.
+          <span className="font-medium text-white">Free, with no ads.</span> Every feature is available to
+          everyone. Nothing is behind a paywall.
         </p>
       </div>
 
@@ -30,7 +30,7 @@ export function AboutTab() {
       <div className={cardClass}>
         <h3 className="mb-2 card-title">Data & privacy</h3>
         <p className="text-sm leading-relaxed text-slate-400">
-          Your data is private to your account — it's never sold, never used for ads, and FitLog has no trackers.
+          Your data is private to your account. It isn't sold or used for ads, and FitLog has no trackers.
           You can export everything or delete your account at any time from Settings.
         </p>
         <a

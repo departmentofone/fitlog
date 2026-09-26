@@ -99,7 +99,7 @@ export function AddToPresetSheet({ food, onClose }: { food: Food; onClose: () =>
 
         {isLoading && <p className="py-4 text-center text-sm text-slate-500">Loading…</p>}
         {!isLoading && ownPresets.length === 0 && !creatingNew && (
-          <EmptyState variant="list" message="No presets yet — make one above." />
+          <EmptyState variant="list" message="No presets yet. Make one above." />
         )}
         <div className="space-y-1.5">
           {ownPresets.map((p) => (

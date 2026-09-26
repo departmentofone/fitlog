@@ -26,7 +26,7 @@ export function OfflineBanner() {
       <div className="flex items-center justify-center gap-1.5 bg-amber-500/15 px-4 py-1.5 text-xs font-medium text-amber-400">
         <span>Offline</span>
         <span className="text-amber-400/70">
-          {pending > 0 ? `— ${pending} change${pending === 1 ? '' : 's'} will sync when you're back` : '— changes will sync automatically'}
+          {pending > 0 ? `· ${pending} change${pending === 1 ? '' : 's'} will sync when you're back` : '· changes will sync automatically'}
         </span>
       </div>
     )
@@ -43,7 +43,7 @@ export function OfflineBanner() {
   if (showSynced) {
     return (
       <div className="flex items-center justify-center gap-1.5 bg-success/15 px-4 py-1.5 text-xs font-medium text-success">
-        <span>Back online — synced</span>
+        <span>Back online, all synced</span>
       </div>
     )
   }

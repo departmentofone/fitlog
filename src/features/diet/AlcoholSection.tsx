@@ -81,7 +81,7 @@ export function AlcoholSection() {
   const navButton = 'flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 active:bg-slate-800 disabled:opacity-30'
 
   return (
-    <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="card p-4">
       {/* Compact header: day switcher inline, and the totals only once there's something to total -
           previously a full date bar plus a big "0 kcal / 0 drinks" box every day. */}
       <div className="mb-3 flex items-center justify-between gap-2">
@@ -187,7 +187,7 @@ export function AlcoholSection() {
             <button onClick={reset} className="flex-1 rounded-xl bg-slate-700 py-2 text-sm text-slate-300 hover:bg-slate-600">
               Cancel
             </button>
-            <button onClick={handleAdd} disabled={!name.trim()} className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90 disabled:opacity-50">
+            <button onClick={handleAdd} disabled={!name.trim()} className="btn btn-primary flex-1 py-2 text-sm">
               Add
             </button>
           </div>

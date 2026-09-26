@@ -57,7 +57,7 @@ export function HealthConsentScreen() {
           type="button"
           disabled={updateSettings.isPending || declining}
           onClick={() => updateSettings.mutate({ health_data_consent_at: new Date().toISOString() })}
-          className="mt-3 min-h-12 w-full rounded-xl bg-emerald-600 font-semibold text-on-accent transition hover:brightness-90 disabled:opacity-50"
+          className="btn btn-primary mt-3 min-h-12 w-full"
         >
           {updateSettings.isPending ? 'Saving…' : 'Agree and continue'}
         </button>

@@ -29,7 +29,7 @@ export function DateNav({
         value={date}
         max={max}
         onChange={(e) => onChange(e.target.value)}
-        className="min-w-0 flex-1 rounded-xl border border-slate-700 bg-slate-800 px-2 py-2 text-sm text-white focus:border-emerald-500 focus:outline-none"
+        className="min-w-0 flex-1 field px-2 py-2 text-sm"
       />
       <button
         onClick={() => shift(1)}

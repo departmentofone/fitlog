@@ -70,14 +70,14 @@ export function ExercisePicker({
 
   if (creating) {
     return (
-      <div className="rounded-2xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="card p-4">
         <h3 className="mb-3 font-medium text-white">New exercise</h3>
         <input
           autoFocus
           placeholder="Exercise name (e.g. Incline DB Press)"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="mb-4 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+          className="mb-4 w-full field px-3 py-2.5"
         />
         <MuscleDiagram selected={muscleGroup} onSelect={setMuscleGroup} />
         <div className="mt-4 grid grid-cols-3 gap-1.5">
@@ -105,7 +105,7 @@ export function ExercisePicker({
           <button
             onClick={handleCreate}
             disabled={!name.trim() || !muscleGroup || createExercise.isPending}
-            className="flex-1 rounded-xl bg-emerald-600 py-2.5 font-medium text-on-accent hover:brightness-90 disabled:opacity-50"
+            className="btn btn-primary flex-1 py-2.5"
           >
             Create
           </button>
@@ -120,7 +120,7 @@ export function ExercisePicker({
         placeholder="Search exercises…"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="mb-3 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+        className="mb-3 w-full field px-3 py-2.5"
       />
       {multiSelect && (
         <p className="mb-2 text-xs text-slate-400">
@@ -162,7 +162,7 @@ export function ExercisePicker({
       {multiSelect && selected.length >= 2 && (
         <button
           onClick={() => onConfirmSelection?.(selected)}
-          className="mb-3 w-full rounded-xl bg-emerald-600 py-2.5 font-medium text-on-accent hover:brightness-90"
+          className="btn btn-primary mb-3 w-full py-2.5"
         >
           Group {selected.length} exercises as a superset
         </button>

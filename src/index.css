@@ -190,6 +190,68 @@ html[data-palette="amber"] {
   --color-emerald-600: #b45309;
 }
 
+/*
+ * Component classes - the one place a card, button, field or chip gets its look. In the components
+ * layer so any utility on the same element (p-5, text-center, flex-1, w-full...) still wins.
+ * Radii: `card` 24px (screen-level surfaces), `tile` 16px (list items, sub-cards), 12px for
+ * controls (buttons, fields, inset rows), full for pills. Padding is left to the call site.
+ */
+@layer components {
+  .card {
+    @apply rounded-3xl border-t border-white/10 bg-slate-900 shadow-lg shadow-black/20 ring-1 ring-white/5;
+  }
+  /* The one card per screen that matters most (today's totals, the running workout). */
+  .card-hero {
+    @apply rounded-3xl bg-gradient-to-br from-emerald-600/20 to-slate-900 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5;
+  }
+  .card-glow {
+    @apply shadow-[var(--glow-shadow)];
+  }
+  .tile {
+    @apply rounded-2xl border-t border-white/10 bg-slate-900 ring-1 ring-white/5;
+  }
+  /* A row or group sitting inside a card. */
+  .inset {
+    @apply rounded-xl bg-slate-800/60;
+  }
+
+  .btn {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 font-semibold transition disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply bg-emerald-600 text-on-accent hover:brightness-95 active:brightness-90;
+  }
+  .btn-secondary {
+    @apply bg-slate-800 text-slate-200 hover:bg-slate-700;
+  }
+  .btn-ghost {
+    @apply text-slate-300 hover:bg-white/5 active:bg-white/10;
+  }
+  .btn-danger {
+    @apply bg-red-600 text-on-accent hover:brightness-95 active:brightness-90;
+  }
+
+  .field {
+    @apply rounded-xl border border-slate-700 bg-slate-800 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+  .chip-neutral {
+    @apply bg-slate-800 text-slate-300;
+  }
+  .chip-accent {
+    @apply bg-emerald-500/15 text-emerald-400;
+  }
+  .chip-warn {
+    @apply bg-amber-400/15 text-amber-400;
+  }
+  .chip-danger {
+    @apply bg-red-500/15 text-red-400;
+  }
+}
+
 /* Overlay motion - one duration pair for every sheet/backdrop. */
 @keyframes fade-in {
   from { opacity: 0; }
@@ -264,6 +326,8 @@ html[data-theme="light"] .aurora-c {
 
 /* Frosted glass: blur + saturate what's behind the translucent cards, sheets and bars. */
 html[data-theme="light"] .bg-slate-900,
+html[data-theme="light"] .card,
+html[data-theme="light"] .tile,
 html[data-theme="light"] .bg-slate-950\/40,
 html[data-theme="light"] .bg-slate-950\/60,
 html[data-theme="light"] .bg-slate-950\/90 {
@@ -273,7 +337,9 @@ html[data-theme="light"] .bg-slate-950\/90 {
 
 /* Glass edges: a bright top highlight instead of a dark hairline ("white" is remapped to navy in
    light mode, which turned every card's highlight border into a grey line). */
-html[data-theme="light"] .border-white\/10 {
+html[data-theme="light"] .border-white\/10,
+html[data-theme="light"] .card,
+html[data-theme="light"] .tile {
   border-color: rgba(255, 255, 255, 0.9);
 }
 html[data-theme="light"] .border-white\/5 {
@@ -283,7 +349,9 @@ html[data-theme="light"] .border-white\/5 {
 /* Soft, tinted shadows instead of heavy grey ones. */
 html[data-theme="light"] .shadow-black\/20,
 html[data-theme="light"] .shadow-black\/30,
-html[data-theme="light"] .shadow-black\/40 {
+html[data-theme="light"] .shadow-black\/40,
+html[data-theme="light"] .card,
+html[data-theme="light"] .card-hero {
   --tw-shadow-color: rgba(51, 65, 120, 0.1);
 }
 
@@ -349,16 +417,23 @@ html:not([data-theme="light"]) .aurora-c {
 }
 
 /* Frosted cards with a faint sheen: lighter at the top-left, as if catching light, fading clearer. */
-html:not([data-theme="light"]) .bg-slate-900 {
+html:not([data-theme="light"]) .bg-slate-900,
+html:not([data-theme="light"]) .card,
+html:not([data-theme="light"]) .tile {
   background-image: linear-gradient(150deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 65%);
   -webkit-backdrop-filter: blur(16px) saturate(1.5);
   backdrop-filter: blur(16px) saturate(1.5);
 }
 
 /* Brighter glass edges. */
-html:not([data-theme="light"]) .border-white\/10 {
+html:not([data-theme="light"]) .border-white\/10,
+html:not([data-theme="light"]) .card,
+html:not([data-theme="light"]) .tile {
   border-color: rgba(255, 255, 255, 0.16);
 }
-html:not([data-theme="light"]) .ring-white\/5 {
+html:not([data-theme="light"]) .ring-white\/5,
+html:not([data-theme="light"]) .card,
+html:not([data-theme="light"]) .card-hero,
+html:not([data-theme="light"]) .tile {
   --tw-ring-color: rgba(255, 255, 255, 0.1);
 }

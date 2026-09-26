@@ -1,6 +1,6 @@
 import { formatBuildTime } from '../../lib/buildInfo'
 
-const cardClass = 'rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5'
+const cardClass = 'card p-4'
 
 export function AboutTab() {
   return (

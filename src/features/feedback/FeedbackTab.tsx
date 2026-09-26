@@ -5,7 +5,7 @@ const FEEDBACK_EMAIL = 'departmentofone.app@gmail.com'
 /** Set to the real Buy Me a Coffee page once it exists - until then the button is a disabled placeholder. */
 const DONATE_URL: string | null = null
 
-const cardClass = 'rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5'
+const cardClass = 'card p-4'
 
 function CoffeeIcon() {
   return (

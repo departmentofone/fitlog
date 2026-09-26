@@ -89,7 +89,7 @@ export function DeleteAccountCard({ onExport, exporting }: { onExport: () => voi
                 setError(null)
               }}
               disabled={deleting}
-              className="min-h-11 flex-1 rounded-xl bg-slate-800 text-sm text-slate-300 disabled:opacity-50"
+              className="btn btn-secondary flex-1 text-sm disabled:opacity-50"
             >
               Cancel
             </button>

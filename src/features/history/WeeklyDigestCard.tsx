@@ -14,7 +14,7 @@ export function WeeklyDigestCard() {
   const workoutTrend = data.workoutsThisWeek - data.workoutsLastWeek
 
   return (
-    <div className="rounded-3xl bg-gradient-to-br from-emerald-600/20 via-slate-900 to-slate-900 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+    <div className="card-hero p-4">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="font-medium text-white">Your week</h2>
         <span className="text-xs text-slate-500">Last 7 days</span>

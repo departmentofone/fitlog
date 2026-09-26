@@ -120,7 +120,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
   }
 
   return (
-    <div className="rounded-2xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="card p-4">
       <div className="mb-2 flex items-center justify-between gap-2">
         <h3 className="font-medium text-white">{meal.name}</h3>
         <div className="flex items-center gap-2">
@@ -138,7 +138,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
           const m = macrosForGrams(item.food, item.grams)
           const removeItem = () =>
             undoable(
-              `Removed ${item.food?.name ?? UNAVAILABLE_FOOD_NAME}`,
+`Removed ${item.food?.name ?? UNAVAILABLE_FOOD_NAME}`,
               () => deleteItem.mutate(item.id),
               () =>
                 addItem.mutate({
@@ -237,7 +237,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
                 haptics.success()
                 setCompleted.mutate({ mealId: meal.id, completed: true })
               }}
-              className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-on-accent transition hover:brightness-90"
+              className="btn btn-primary px-4 py-2 text-sm"
             >
               Done
             </button>

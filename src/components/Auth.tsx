@@ -16,7 +16,7 @@ const SUBMIT_LABELS: Record<Mode, string> = {
 }
 
 const inputClass =
-  'h-12 rounded-xl border border-slate-700 bg-slate-800 px-3 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none'
+  'h-12 field px-3 '
 
 export function AuthScreen() {
   const [mode, setMode] = useState<Mode>('sign-in')
@@ -132,7 +132,7 @@ export function AuthScreen() {
           <button
             type="submit"
             disabled={loading}
-            className="mt-2 min-h-12 rounded-xl bg-emerald-600 font-semibold text-on-accent transition hover:brightness-90 disabled:opacity-50"
+            className="btn btn-primary mt-2 min-h-12"
           >
             {loading ? 'Please wait…' : SUBMIT_LABELS[mode]}
           </button>
@@ -218,7 +218,7 @@ export function SetNewPasswordScreen({ onDone }: { onDone: () => void }) {
         <button
           type="submit"
           disabled={loading}
-          className="mt-2 min-h-12 rounded-xl bg-emerald-600 font-semibold text-on-accent transition hover:brightness-90 disabled:opacity-50"
+          className="btn btn-primary mt-2 min-h-12"
         >
           {loading ? 'Saving…' : 'Save password'}
         </button>

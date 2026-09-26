@@ -90,21 +90,21 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
   }
 
   return (
-    <div className="rounded-2xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="card p-4">
       <h3 className="mb-3 font-medium text-white">New program</h3>
       <div className="mb-3 space-y-2.5">
         <input
           placeholder="Program name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+          className="w-full field px-3 py-2.5"
         />
         <textarea
           placeholder="Description (optional)"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={2}
-          className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+          className="w-full field px-3 py-2.5 text-sm"
         />
       </div>
 
@@ -127,7 +127,7 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
           <select
             value={dietGoal}
             onChange={(e) => setDietGoal(e.target.value as DietGoal)}
-            className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:outline-none"
+            className="w-full field px-3 py-2 text-sm"
           >
             <option value="deficit">Deficit</option>
             <option value="maintenance">Maintenance</option>
@@ -140,7 +140,7 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
               placeholder="Calorie goal"
               value={calorieGoal}
               onChange={(e) => setCalorieGoal(e.target.value)}
-              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="field px-3 py-2 text-sm"
             />
             <input
               type="text"
@@ -148,7 +148,7 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
               placeholder={`Water goal (${volumeUnitLabel(unit)})`}
               value={waterGoal}
               onChange={(e) => setWaterGoal(e.target.value)}
-              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="field px-3 py-2 text-sm"
             />
           </div>
         </div>
@@ -161,7 +161,7 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
         <button
           onClick={handleSave}
           disabled={!name.trim() || !hasAnyContent || createProgram.isPending}
-          className="flex-1 rounded-xl bg-emerald-600 py-2.5 text-sm font-medium text-on-accent hover:brightness-90 disabled:opacity-50"
+          className="btn btn-primary flex-1 py-2.5 text-sm"
         >
           Save program
         </button>
@@ -193,7 +193,7 @@ function ProgramCard({ program, isOwner }: { program: Program; isOwner: boolean 
   }
 
   return (
-    <div className="rounded-xl bg-slate-800/60 p-3">
+    <div className="inset p-3">
       <div className="mb-1 flex items-center justify-between">
         <h4 className="text-sm font-medium text-white">{program.name}</h4>
         {isOwner && (
@@ -233,7 +233,7 @@ function ProgramCard({ program, isOwner }: { program: Program; isOwner: boolean 
       <button
         onClick={handleImport}
         disabled={importProgram.isPending}
-        className="w-full rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90 disabled:opacity-50"
+        className="btn btn-primary w-full py-2 text-sm"
       >
         {importProgram.isPending ? 'Importing…' : 'Import into my account'}
       </button>
@@ -251,7 +251,7 @@ export function ProgramsTab() {
     <div className="space-y-4 p-4">
       {/* One card: what programs are, your programs (only once you have some), and the action. It was
           two cards - an explainer and a separate empty "Programs" list. */}
-      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="card p-4">
         <h3 className="mb-1 font-medium text-white">Programs</h3>
         <p className="mb-3 text-sm text-slate-400">
           Bundle workout presets, recipes, meal presets and diet goals into one package. Share it to Community and

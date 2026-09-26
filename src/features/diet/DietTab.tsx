@@ -97,18 +97,18 @@ export function DietTab() {
               placeholder="Daily calorie target"
               value={calorieDraft}
               onChange={(e) => setCalorieDraft(e.target.value)}
-              className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="w-full field px-3 py-2"
             />
             <div className="flex gap-2">
               <button
                 onClick={() => setEditing(false)}
-                className="flex-1 rounded-xl bg-slate-800 py-2 text-sm text-slate-300 hover:bg-slate-700"
+                className="btn btn-secondary flex-1 text-sm"
               >
                 Cancel
               </button>
               <button
                 onClick={save}
-                className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90"
+                className="btn btn-primary flex-1 py-2 text-sm"
               >
                 Save
               </button>

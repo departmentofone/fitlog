@@ -87,7 +87,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
         </div>
       </div>
 
-      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="card p-4">
         <h3 className="mb-2 font-medium text-white">Display</h3>
         <p className="mb-1.5 text-xs text-slate-500">Theme</p>
         <div className="mb-3 grid grid-cols-3 gap-1.5">
@@ -150,7 +150,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
         </p>
       </div>
 
-      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="card p-4">
         <div className="mb-1 flex items-baseline justify-between">
           <h3 className="font-medium text-white">Bottom bar</h3>
           <span className="text-xs text-slate-500">
@@ -188,7 +188,7 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
 
       <PushNotificationsCard />
 
-      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="card p-4">
         <p className="mb-1 text-xs text-slate-500">Signed in as</p>
         <p className="mb-2 truncate text-sm text-white">{user?.email}</p>
 
@@ -199,14 +199,14 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
               placeholder="New password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="w-full field px-3 py-2"
             />
             <input
               type="password"
               placeholder="Confirm new password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="w-full field px-3 py-2"
             />
             {passwordMessage && (
               <p role="status" className={`text-xs ${passwordMessage === 'Password updated.' ? 'text-success' : 'text-red-400'}`}>
@@ -216,13 +216,13 @@ export function SettingsTab({ onBack }: { onBack: () => void }) {
             <div className="flex gap-2">
               <button
                 onClick={() => setChangingPassword(false)}
-                className="flex-1 rounded-xl bg-slate-800 py-2 text-sm text-slate-300 hover:bg-slate-700"
+                className="btn btn-secondary flex-1 text-sm"
               >
                 Cancel
               </button>
               <button
                 onClick={handleChangePassword}
-                className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90"
+                className="btn btn-primary flex-1 py-2 text-sm"
               >
                 Update
               </button>

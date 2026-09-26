@@ -6,7 +6,7 @@ export function SkeletonLine({ className = 'h-4 w-full' }: { className?: string 
  * don't jump the layout once real content (in the same shape) arrives. */
 export function SkeletonCard({ lines = 3 }: { lines?: number }) {
   return (
-    <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="card p-4">
       <SkeletonLine className="mb-3 h-4 w-1/3" />
       <div className="space-y-2">
         {Array.from({ length: lines }, (_, i) => (

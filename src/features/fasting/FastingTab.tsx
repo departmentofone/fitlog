@@ -81,7 +81,7 @@ export function FastingTab({ quickAction }: { quickAction?: number }) {
           const remaining = targetMs - elapsedMs
 
           return (
-            <div id="fasting-primary" className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+            <div id="fasting-primary" className="card card-glow p-4">
               <h3 className="mb-3 font-medium text-white">Current fast</h3>
               <div className="flex items-center gap-4">
                 <CircularProgress percent={pct} tone={pct >= 100 ? 'good' : 'neutral'} size={84} />
@@ -105,7 +105,7 @@ export function FastingTab({ quickAction }: { quickAction?: number }) {
           )
         })()
       ) : (
-        <div id="fasting-primary" className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+        <div id="fasting-primary" className="card card-glow p-4">
           <h3 className="mb-3 font-medium text-white">Start a fast</h3>
           <p className="mb-2 text-sm text-slate-400">Pick a fasting window and start the timer.</p>
           <div className="mb-2 grid grid-cols-2 gap-1.5">
@@ -131,11 +131,11 @@ export function FastingTab({ quickAction }: { quickAction?: number }) {
               max={MAX_FAST_HOURS}
               aria-label="Custom fast length in hours"
               onChange={(e) => setCustomHours(e.target.value)}
-              className="w-20 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:outline-none"
+              className="w-20 field px-3 py-2 text-sm"
             />
             <button
               onClick={() => startFast.mutate(clampFastHours(customHours))}
-              className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90"
+              className="btn btn-primary flex-1 py-2 text-sm"
             >
               Start custom fast
             </button>
@@ -143,7 +143,7 @@ export function FastingTab({ quickAction }: { quickAction?: number }) {
         </div>
       )}
 
-      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="card p-4">
         <p className="mb-2 text-sm font-medium text-white">Recent fasts</p>
         {history.length === 0 ? (
           <EmptyState variant="calendar" message="No fasts logged yet - finish one above and it'll show up here." />

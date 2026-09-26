@@ -48,12 +48,12 @@ export function MealPresetsView({
       </button>
 
       {savableMeals.length > 0 && (
-        <div className="rounded-2xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+        <div className="card p-4">
           <h3 className="mb-3 font-medium text-white">Save a meal as preset</h3>
           <div className="space-y-2">
             {savableMeals.map((meal) =>
               savingMealId === meal.id ? (
-                <div key={meal.id} className="rounded-xl bg-slate-800/60 p-3">
+                <div key={meal.id} className="inset p-3">
                   <input
                     autoFocus
                     value={name}
@@ -70,7 +70,7 @@ export function MealPresetsView({
                         createFromMeal.mutate({ name: name.trim(), meal })
                         setSavingMealId(null)
                       }}
-                      className="flex-1 rounded-xl bg-emerald-600 py-1.5 text-xs font-medium text-on-accent hover:brightness-90"
+                      className="btn btn-primary flex-1 py-1.5 text-xs"
                     >
                       Save
                     </button>
@@ -94,7 +94,7 @@ export function MealPresetsView({
         </div>
       )}
 
-      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+      <div className="card card-glow p-4">
         <h3 className="mb-3 font-medium text-white">Your meal presets</h3>
         {isLoading && (
           <div className="space-y-2">
@@ -107,14 +107,14 @@ export function MealPresetsView({
         )}
         <div className="space-y-2">
           {presets.map((preset) => (
-            <div key={preset.id} className="rounded-xl bg-slate-800/60 p-3">
+            <div key={preset.id} className="inset p-3">
               <div className="mb-1 flex items-center justify-between">
                 <h4 className="text-sm font-medium text-white">{preset.name}</h4>
                 {preset.user_id === user?.id && (
                   <button
                     onClick={() =>
                       undoable(
-                        `Deleted "${preset.name}"`,
+`Deleted "${preset.name}"`,
                         () => deletePreset.mutate(preset.id),
                         () => restorePreset.mutate(preset),
                       )
@@ -145,7 +145,7 @@ export function MealPresetsView({
                   onLoaded()
                 }}
                 disabled={loadPreset.isPending}
-                className="w-full rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90 disabled:opacity-50"
+                className="btn btn-primary w-full py-2 text-sm"
               >
                 Load
               </button>

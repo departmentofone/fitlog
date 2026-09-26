@@ -57,14 +57,14 @@ export function FoodAmountForm({
   const preview = macrosForGrams(food, resolvedGrams)
 
   const chipClass = (active: boolean) =>
-    `min-h-9 rounded-xl px-3 text-sm font-medium transition ${
+`min-h-9 rounded-xl px-3 text-sm font-medium transition ${
       active ? 'bg-emerald-600 text-on-accent' : 'bg-slate-800 text-slate-300 active:bg-slate-700'
     }`
   const stepClass =
     'flex h-11 w-11 items-center justify-center rounded-xl bg-slate-800 text-lg font-semibold text-slate-200 active:bg-slate-700 disabled:opacity-40'
 
   return (
-    <div className="rounded-2xl border-t border-white/10 bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="card p-4">
       <div className="mb-3 flex items-start justify-between gap-3">
         <h3 className="min-w-0 font-medium leading-snug text-white">{food.name}</h3>
         <button onClick={onBack} className="-my-2 -mr-2 min-h-11 shrink-0 px-2 text-sm text-slate-400">
@@ -137,7 +137,7 @@ export function FoodAmountForm({
           onAdd({ foodId: food.id, grams: resolvedGrams, servingLabel })
         }}
         disabled={resolvedGrams <= 0}
-        className="min-h-12 w-full rounded-xl bg-emerald-600 font-semibold text-on-accent hover:brightness-90 disabled:opacity-50"
+        className="btn btn-primary min-h-12 w-full"
       >
         {submitLabel}
       </button>

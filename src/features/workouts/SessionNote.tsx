@@ -26,7 +26,7 @@ export function SessionNote({ session }: { session: WorkoutSession }) {
 
   if (editing) {
     return (
-      <div className="rounded-2xl border-t border-white/10 bg-slate-900 p-3 ring-1 ring-white/5">
+      <div className="tile p-3">
         <label htmlFor="session-note" className="mb-1.5 block text-xs font-medium text-slate-400">
           Workout note
         </label>
@@ -38,13 +38,13 @@ export function SessionNote({ session }: { session: WorkoutSession }) {
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="How did it go? Anything to remember next time?"
-          className="w-full resize-none rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+          className="w-full resize-none field px-3 py-2 text-sm"
         />
         <div className="mt-2 flex gap-2">
-          <button onClick={() => setEditing(false)} className="min-h-11 flex-1 rounded-xl bg-slate-800 text-sm text-slate-300">
+          <button onClick={() => setEditing(false)} className="btn btn-secondary flex-1 text-sm">
             Cancel
           </button>
-          <button onClick={save} className="min-h-11 flex-1 rounded-xl bg-emerald-600 text-sm font-semibold text-on-accent">
+          <button onClick={save} className="btn btn-primary flex-1 text-sm">
             Save note
           </button>
         </div>
@@ -64,7 +64,7 @@ export function SessionNote({ session }: { session: WorkoutSession }) {
     <button
       onClick={startEditing}
       aria-label="Edit workout note"
-      className="w-full rounded-2xl border-t border-white/10 bg-slate-900 px-3 py-2.5 text-left ring-1 ring-white/5"
+      className="w-full tile px-3 py-2.5 text-left"
     >
       <span className="mb-0.5 block text-xs font-medium text-slate-400">Workout note</span>
       <span className="block whitespace-pre-wrap text-sm text-slate-200">{session.notes}</span>

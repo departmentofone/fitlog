@@ -20,7 +20,7 @@ import { WeeklyDigestCard } from './WeeklyDigestCard'
 
 function StatTile({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="rounded-2xl border-t border-white/10 bg-slate-900 px-3 py-2.5 text-center ring-1 ring-white/5">
+    <div className="tile px-3 py-2.5 text-center">
       <p className="text-xs text-slate-400">{label}</p>
       <p className="text-lg font-semibold text-white">{value}</p>
       {sub && <p className="text-[11px] text-slate-500">{sub}</p>}
@@ -164,7 +164,7 @@ export function HistoryView() {
         <StatTile label="Workouts" value={String(streaks?.totalSessions ?? 0)} sub="logged" />
       </div>
 
-      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="card p-4">
         <h3 className="mb-3 font-medium text-white">Workout history</h3>
         <MonthCalendar
           month={month}

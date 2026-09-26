@@ -40,7 +40,7 @@ export function MicroDashboard({ micros }: { micros: MicroTotals }) {
   const visible = expanded ? DAILY_VALUES : DAILY_VALUES.slice(0, 4)
 
   return (
-    <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="card p-4">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-sm font-medium text-slate-300">Micronutrients today</h3>
         <button

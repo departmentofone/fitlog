@@ -228,7 +228,7 @@ export function WorkoutsTab({
       return
     }
     undoable(
-      `Removed set ${target.set_number}`,
+`Removed set ${target.set_number}`,
       () => deleteSet.mutate(id),
       () =>
         addSet.mutate({
@@ -290,7 +290,7 @@ export function WorkoutsTab({
         <>
           {/* One session card: what you've moved, the session clock and the streak together, instead of
               three separate rows pushing the workout itself down the screen. */}
-          <div className="rounded-3xl bg-gradient-to-br from-emerald-600/20 to-slate-900 px-4 pb-2 pt-3 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+          <div className="card-hero px-4 pb-2 pt-3">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-xs text-slate-400">{isToday ? "Today's" : 'Total'} moved</p>
@@ -426,7 +426,7 @@ export function WorkoutsTab({
 
             if (picking) {
               return (
-                <div className="rounded-2xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+                <div className="card p-4">
                   <div className="mb-3 flex items-center justify-between">
                     <h3 className="font-medium text-white">
                       {pickerMode === 'superset' ? 'Build a superset' : 'Pick an exercise'}

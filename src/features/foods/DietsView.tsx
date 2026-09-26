@@ -18,7 +18,7 @@ import { UNAVAILABLE_FOOD_NAME, type DietWithFoods } from '../../types'
 import { FoodSearchPanel } from '../meals/FoodSearchPanel'
 import { NewFoodForm } from '../meals/NewFoodForm'
 
-const INPUT = 'w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none'
+const INPUT = 'w-full field px-3 py-2.5 '
 
 function DietCard({ diet, samples, following, open, onToggle }: { diet: DietWithFoods; samples: number; following: boolean; open: boolean; onToggle: () => void }) {
   const { show, undoable } = useToast()
@@ -91,7 +91,7 @@ function DietCard({ diet, samples, following, open, onToggle }: { diet: DietWith
                   key={f.food_id}
                   onClick={() =>
                     undoable(
-                      `Removed ${f.food?.name ?? UNAVAILABLE_FOOD_NAME}`,
+`Removed ${f.food?.name ?? UNAVAILABLE_FOOD_NAME}`,
                       () => removeFood.mutate({ dietId: diet.id, foodId: f.food_id }),
                       () => addFood.mutate({ dietId: diet.id, foodId: f.food_id }),
                     )
@@ -201,7 +201,7 @@ export function DietsView() {
       )}
 
       {creating ? (
-        <div className="space-y-2 rounded-2xl border-t border-white/10 bg-slate-900 p-3 ring-1 ring-white/5">
+        <div className="space-y-2 tile p-3">
           <input autoFocus value={name} onChange={(e) => setName(e.target.value)} placeholder='Diet name, e.g. "Cutting staples"' maxLength={100} className={INPUT} />
           <textarea
             value={description}
@@ -212,7 +212,7 @@ export function DietsView() {
             className={`${INPUT} resize-none`}
           />
           <div className="flex gap-2">
-            <button onClick={() => setCreating(false)} className="min-h-11 flex-1 rounded-xl bg-slate-800 text-sm text-slate-300">
+            <button onClick={() => setCreating(false)} className="btn btn-secondary flex-1 text-sm">
               Cancel
             </button>
             <button
@@ -230,7 +230,7 @@ export function DietsView() {
                   },
                 )
               }
-              className="min-h-11 flex-1 rounded-xl bg-emerald-600 text-sm font-semibold text-on-accent disabled:opacity-50"
+              className="btn btn-primary flex-1 text-sm"
             >
               Create diet
             </button>

@@ -104,14 +104,14 @@ export function RecipeBuilderView({
         ← Back
       </button>
 
-      <div className="rounded-2xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="card p-4">
         <h3 className="mb-3 font-medium text-white">New recipe</h3>
         <div className="mb-3 space-y-2.5">
           <input
             placeholder="Recipe name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="w-full field px-3 py-2.5"
           />
           <div className="flex items-center gap-2">
             <span className="text-sm text-slate-400">Servings</span>
@@ -121,7 +121,7 @@ export function RecipeBuilderView({
               min={1}
               value={servings}
               onChange={(e) => setServings(Math.max(1, parseInt(e.target.value, 10) || 1))}
-              className="w-20 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none"
+              className="w-20 field px-3 py-2"
             />
           </div>
         </div>
@@ -130,7 +130,7 @@ export function RecipeBuilderView({
           placeholder="Search foods…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="mb-3 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+          className="mb-3 w-full field px-3 py-2.5"
         />
         {!search.trim() && frequent.length > 0 && (
           <div className="mb-3">
@@ -193,13 +193,13 @@ export function RecipeBuilderView({
         <button
           onClick={handleSave}
           disabled={!name.trim() || draft.length === 0 || createRecipe.isPending}
-          className="w-full rounded-xl bg-emerald-600 py-2.5 font-medium text-on-accent hover:brightness-90 disabled:opacity-50"
+          className="btn btn-primary w-full py-2.5"
         >
           Save recipe
         </button>
       </div>
 
-      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+      <div className="card card-glow p-4">
         <h3 className="mb-3 font-medium text-white">Your recipes</h3>
         {isLoading && (
           <div className="space-y-2">
@@ -224,7 +224,7 @@ export function RecipeBuilderView({
                   servingLabel: i.serving_label,
                 }))
                 undoable(
-                  `Deleted "${recipe.name}"`,
+`Deleted "${recipe.name}"`,
                   () => deleteRecipe.mutate(recipe.id),
                   () => createRecipe.mutate({ name: recipe.name, servings: recipe.servings, ingredients }),
                 )
@@ -277,7 +277,7 @@ function RecipeCard({
   }
 
   return (
-    <div className="rounded-xl bg-slate-800/60 p-3">
+    <div className="inset p-3">
       <div className="mb-1 flex items-center justify-between">
         <h4 className="text-sm font-medium text-white">{recipe.name}</h4>
         {isOwner && (

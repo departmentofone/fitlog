@@ -54,7 +54,7 @@ export function GuidelinesSheet({ onAgree, onClose, agreeing }: { onAgree?: () =
             <button
               onClick={onAgree}
               disabled={agreeing}
-              className="min-h-12 flex-1 rounded-xl bg-emerald-600 text-sm font-semibold text-on-accent disabled:opacity-50"
+              className="btn btn-primary min-h-12 flex-1 text-sm"
             >
               I agree - share it
             </button>

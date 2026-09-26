@@ -37,7 +37,7 @@ export function WaterWidget() {
 
   if (editingGoal) {
     return (
-      <div className="rounded-2xl border-t border-white/10 bg-slate-900 p-3 ring-1 ring-white/5">
+      <div className="tile p-3">
         <label className="mb-2 block text-sm font-medium text-slate-300" htmlFor="water-goal">
           Daily water goal ({imperial ? 'fl oz' : 'litres'})
         </label>
@@ -49,7 +49,7 @@ export function WaterWidget() {
             autoFocus
             value={goalDraft}
             onChange={(e) => setGoalDraft(e.target.value)}
-            className="h-11 min-w-0 flex-1 rounded-xl border border-slate-700 bg-slate-800 px-3 text-white focus:border-emerald-500 focus:outline-none"
+            className="h-11 min-w-0 flex-1 field px-3"
           />
           <button onClick={() => setEditingGoal(false)} className="h-11 rounded-xl px-3 text-sm text-slate-400">
             Cancel
@@ -62,7 +62,7 @@ export function WaterWidget() {
               }
               setEditingGoal(false)
             }}
-            className="h-11 rounded-xl bg-emerald-600 px-4 text-sm font-semibold text-on-accent"
+            className="btn btn-primary h-11 px-4 text-sm"
           >
             Save
           </button>
@@ -72,7 +72,7 @@ export function WaterWidget() {
   }
 
   return (
-    <div className="flex items-center gap-3 rounded-2xl border-t border-white/10 bg-slate-900 py-2.5 pl-3 pr-2.5 ring-1 ring-white/5">
+    <div className="flex items-center gap-3 tile py-2.5 pl-3 pr-2.5">
       <button
         type="button"
         onClick={() => {

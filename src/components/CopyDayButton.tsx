@@ -30,7 +30,7 @@ export function CopyDayButton({
         type="date"
         value={targetDate}
         onChange={(e) => setTargetDate(e.target.value)}
-        className="min-w-0 flex-1 rounded-xl border border-slate-700 bg-slate-800 px-2 py-1.5 text-xs text-white focus:border-emerald-500 focus:outline-none"
+        className="min-w-0 flex-1 field px-2 py-1.5 text-xs"
       />
       <button
         onClick={() => {
@@ -39,7 +39,7 @@ export function CopyDayButton({
           setOpen(false)
           setTargetDate('')
         }}
-        className="shrink-0 rounded-xl bg-emerald-600 px-2.5 py-1.5 text-xs font-medium text-on-accent hover:brightness-90"
+        className="btn btn-primary shrink-0 px-2.5 py-1.5 text-xs"
       >
         Copy
       </button>

@@ -79,7 +79,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
   }
 
   return (
-    <div className="rounded-2xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="card p-4">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-medium text-white">{food ? 'Edit food' : 'New food'}</h3>
         <button onClick={onCancel} className="text-sm text-slate-400 hover:text-slate-200">
@@ -91,7 +91,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
           placeholder="Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+          className="w-full field px-3 py-2.5"
         />
         <p className="text-xs text-slate-500">Per 100g:</p>
         <div className="grid grid-cols-2 gap-2.5">
@@ -101,7 +101,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
             inputMode="decimal"
             value={calories}
             onChange={(e) => setCalories(e.target.value)}
-            className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="field px-3 py-2"
           />
           <input
             placeholder="Protein (g)"
@@ -109,7 +109,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
             inputMode="decimal"
             value={protein}
             onChange={(e) => setProtein(e.target.value)}
-            className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="field px-3 py-2"
           />
           <input
             placeholder="Carbs (g)"
@@ -117,7 +117,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
             inputMode="decimal"
             value={carbs}
             onChange={(e) => setCarbs(e.target.value)}
-            className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="field px-3 py-2"
           />
           <input
             placeholder="Fat (g)"
@@ -125,7 +125,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
             inputMode="decimal"
             value={fat}
             onChange={(e) => setFat(e.target.value)}
-            className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="field px-3 py-2"
           />
         </div>
         <p className="text-xs text-slate-500">Optional common serving (e.g. "1 small egg" = {unit === 'imperial' ? '1.3 oz' : '38g'}):</p>
@@ -134,7 +134,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
             placeholder="Label"
             value={servingLabel}
             onChange={(e) => setServingLabel(e.target.value)}
-            className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="field px-3 py-2"
           />
           <input
             placeholder={unit === 'imperial' ? 'Ounces' : 'Grams'}
@@ -142,7 +142,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
             inputMode="decimal"
             value={servingAmount}
             onChange={(e) => setServingAmount(e.target.value)}
-            className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="field px-3 py-2"
           />
         </div>
 
@@ -161,7 +161,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
               inputMode="decimal"
               value={fiber}
               onChange={(e) => setFiber(e.target.value)}
-              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="field px-3 py-2"
             />
             <input
               placeholder="Sugar (g)"
@@ -169,7 +169,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
               inputMode="decimal"
               value={sugar}
               onChange={(e) => setSugar(e.target.value)}
-              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="field px-3 py-2"
             />
             <input
               placeholder="Sodium (mg)"
@@ -177,7 +177,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
               inputMode="decimal"
               value={sodium}
               onChange={(e) => setSodium(e.target.value)}
-              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="field px-3 py-2"
             />
             <input
               placeholder="Cholesterol (mg)"
@@ -185,7 +185,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
               inputMode="decimal"
               value={cholesterol}
               onChange={(e) => setCholesterol(e.target.value)}
-              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="field px-3 py-2"
             />
             <input
               placeholder="Potassium (mg)"
@@ -193,7 +193,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
               inputMode="decimal"
               value={potassium}
               onChange={(e) => setPotassium(e.target.value)}
-              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="field px-3 py-2"
             />
             <input
               placeholder="Calcium (mg)"
@@ -201,7 +201,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
               inputMode="decimal"
               value={calcium}
               onChange={(e) => setCalcium(e.target.value)}
-              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="field px-3 py-2"
             />
             <input
               placeholder="Iron (mg)"
@@ -209,7 +209,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
               inputMode="decimal"
               value={iron}
               onChange={(e) => setIron(e.target.value)}
-              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="field px-3 py-2"
             />
             <input
               placeholder="Vitamin C (mg)"
@@ -217,7 +217,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
               inputMode="decimal"
               value={vitaminC}
               onChange={(e) => setVitaminC(e.target.value)}
-              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="field px-3 py-2"
             />
             <input
               placeholder="Vitamin A (mcg)"
@@ -225,7 +225,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
               inputMode="decimal"
               value={vitaminA}
               onChange={(e) => setVitaminA(e.target.value)}
-              className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="field px-3 py-2"
             />
           </div>
         )}
@@ -233,7 +233,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
         <button
           onClick={handleSave}
           disabled={!name.trim() || !calories || saving.isPending}
-          className="w-full rounded-xl bg-emerald-600 py-2.5 font-medium text-on-accent hover:brightness-90 disabled:opacity-50"
+          className="btn btn-primary w-full py-2.5"
         >
           {saving.isPending ? 'Saving…' : food ? 'Save changes' : 'Create food'}
         </button>

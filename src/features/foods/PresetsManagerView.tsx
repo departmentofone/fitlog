@@ -49,13 +49,13 @@ export function PresetsManagerView() {
   return (
     <div className="space-y-3">
       {creating ? (
-        <div className="flex gap-2 rounded-2xl bg-slate-900 border-t border-white/10 p-3 ring-1 ring-white/5">
+        <div className="flex gap-2 tile p-3">
           <input
             autoFocus
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder='Preset name (e.g. "Usual breakfast")'
-            className="min-w-0 flex-1 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="min-w-0 flex-1 field px-3 py-2.5"
           />
           <button
             disabled={!newName.trim() || createPreset.isPending}
@@ -65,11 +65,11 @@ export function PresetsManagerView() {
               setCreating(false)
               setOpenId(created.id)
             }}
-            className="shrink-0 rounded-xl bg-emerald-600 px-4 text-sm font-medium text-on-accent disabled:opacity-50"
+            className="btn btn-primary shrink-0 px-4 text-sm"
           >
             Create
           </button>
-          <button onClick={() => setCreating(false)} className="shrink-0 rounded-xl bg-slate-800 px-3 text-sm text-slate-300">
+          <button onClick={() => setCreating(false)} className="btn btn-secondary shrink-0 px-3 text-sm">
             Cancel
           </button>
         </div>
@@ -95,7 +95,7 @@ export function PresetsManagerView() {
           const isOwn = preset.user_id === user?.id
           const isOpen = openId === preset.id
           return (
-            <div key={preset.id} className="rounded-2xl bg-slate-900 border-t border-white/10 p-3 ring-1 ring-white/5">
+            <div key={preset.id} className="tile p-3">
               <button onClick={() => setOpenId(isOpen ? null : preset.id)} className="flex w-full items-center justify-between gap-2 text-left">
                 {renamingId === preset.id ? (
                   <input
@@ -130,7 +130,7 @@ export function PresetsManagerView() {
                           <button
                             onClick={() =>
                               undoable(
-                                `Removed ${item.food?.name ?? UNAVAILABLE_FOOD_NAME}`,
+`Removed ${item.food?.name ?? UNAVAILABLE_FOOD_NAME}`,
                                 () => removeItem.mutate(item.id),
                                 () =>
                                   item.food_id &&
@@ -190,7 +190,7 @@ export function PresetsManagerView() {
                           <button
                             onClick={() =>
                               undoable(
-                                `Deleted "${preset.name}"`,
+`Deleted "${preset.name}"`,
                                 () => deletePreset.mutate(preset.id),
                                 () => restorePreset.mutate(preset),
                               )

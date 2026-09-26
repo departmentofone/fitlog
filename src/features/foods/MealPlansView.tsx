@@ -25,7 +25,7 @@ import { averageDay, DEFAULT_PLAN_MEALS, groupPlan, nextMealOrder } from '../../
 import { UNAVAILABLE_FOOD_NAME, type MealPlanWithItems } from '../../types'
 import { FoodPicker } from '../meals/FoodPicker'
 
-const INPUT = 'min-w-0 flex-1 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none'
+const INPUT = 'min-w-0 flex-1 field px-3 py-2.5 '
 
 /** Where an "add food" goes: which plan, day and meal slot, and where in that meal. */
 interface AddTarget {
@@ -72,7 +72,7 @@ function PlanCard({ plan, dietName, open, onToggle }: { plan: MealPlanWithItems;
   }
 
   return (
-    <div className="rounded-2xl border-t border-white/10 bg-slate-900 p-3 ring-1 ring-white/5">
+    <div className="tile p-3">
       <button onClick={onToggle} aria-expanded={open} className="flex w-full items-start justify-between gap-3 text-left">
         <span className="min-w-0">
           {renaming !== null ? (
@@ -144,7 +144,7 @@ function PlanCard({ plan, dietName, open, onToggle }: { plan: MealPlanWithItems;
                       <button
                         onClick={() =>
                           undoable(
-                            `Removed ${i.food?.name ?? UNAVAILABLE_FOOD_NAME}`,
+`Removed ${i.food?.name ?? UNAVAILABLE_FOOD_NAME}`,
                             () => removeItem.mutate(i.id),
                             () =>
                               addItem.mutate({
@@ -187,10 +187,10 @@ function PlanCard({ plan, dietName, open, onToggle }: { plan: MealPlanWithItems;
             (newMeal !== null ? (
               <div className="flex gap-2">
                 <input autoFocus value={newMeal} onChange={(e) => setNewMeal(e.target.value)} placeholder="Meal name, e.g. Pre-workout" className={INPUT} maxLength={60} />
-                <button onClick={() => startMeal(newMeal)} disabled={!newMeal.trim()} className="shrink-0 rounded-xl bg-emerald-600 px-4 text-sm font-medium text-on-accent disabled:opacity-50">
+                <button onClick={() => startMeal(newMeal)} disabled={!newMeal.trim()} className="btn btn-primary shrink-0 px-4 text-sm">
                   Add
                 </button>
-                <button onClick={() => setNewMeal(null)} className="shrink-0 rounded-xl bg-slate-800 px-3 text-sm text-slate-300">
+                <button onClick={() => setNewMeal(null)} className="btn btn-secondary shrink-0 px-3 text-sm">
                   Cancel
                 </button>
               </div>
@@ -230,7 +230,7 @@ function PlanCard({ plan, dietName, open, onToggle }: { plan: MealPlanWithItems;
                 },
               )
             }
-            className="min-h-11 w-full rounded-xl bg-emerald-600 text-sm font-semibold text-on-accent disabled:opacity-50"
+            className="btn btn-primary w-full text-sm"
           >
             {logDay.isPending ? 'Adding…' : plan.days > 1 ? `Log day ${current.index + 1} to today` : 'Log this day to today'}
           </button>
@@ -286,7 +286,7 @@ export function MealPlansView() {
   return (
     <div className="space-y-3">
       {combining ? (
-        <div className="space-y-3 rounded-2xl border-t border-white/10 bg-slate-900 p-3 ring-1 ring-white/5">
+        <div className="space-y-3 tile p-3">
           <div>
             <h3 className="text-sm font-semibold text-white">Combine into a week</h3>
             <p className="text-xs text-slate-400">Tap day plans in the order you want them (up to 7). The originals stay as they are.</p>
@@ -311,7 +311,7 @@ export function MealPlansView() {
             })}
           </div>
           <div className="flex gap-2">
-            <button onClick={() => setCombining(false)} className="min-h-11 flex-1 rounded-xl bg-slate-800 text-sm text-slate-300">
+            <button onClick={() => setCombining(false)} className="btn btn-secondary flex-1 text-sm">
               Cancel
             </button>
             <button
@@ -331,14 +331,14 @@ export function MealPlansView() {
                   },
                 )
               }
-              className="min-h-11 flex-1 rounded-xl bg-emerald-600 text-sm font-semibold text-on-accent disabled:opacity-50"
+              className="btn btn-primary flex-1 text-sm"
             >
               {picked.length < 2 ? 'Pick at least 2' : `Create ${picked.length}-day plan`}
             </button>
           </div>
         </div>
       ) : creating !== null ? (
-        <div className="flex gap-2 rounded-2xl border-t border-white/10 bg-slate-900 p-3 ring-1 ring-white/5">
+        <div className="flex gap-2 tile p-3">
           <input autoFocus value={creating} onChange={(e) => setCreating(e.target.value)} placeholder='Plan name, e.g. "Training day"' maxLength={100} className={INPUT} />
           <button
             disabled={!creating.trim() || create.isPending}
@@ -353,11 +353,11 @@ export function MealPlansView() {
                 },
               )
             }
-            className="shrink-0 rounded-xl bg-emerald-600 px-4 text-sm font-medium text-on-accent disabled:opacity-50"
+            className="btn btn-primary shrink-0 px-4 text-sm"
           >
             Create
           </button>
-          <button onClick={() => setCreating(null)} className="shrink-0 rounded-xl bg-slate-800 px-3 text-sm text-slate-300">
+          <button onClick={() => setCreating(null)} className="btn btn-secondary shrink-0 px-3 text-sm">
             Cancel
           </button>
         </div>

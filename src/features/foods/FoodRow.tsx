@@ -27,7 +27,7 @@ export function FoodRow({ food, labels }: { food: Food; labels: string[] }) {
   }
 
   return (
-    <div className="rounded-xl bg-slate-800/60 p-3">
+    <div className="inset p-3">
       <button onClick={() => setExpanded((e) => !e)} className="flex w-full items-center justify-between gap-2 text-left">
         <div className="min-w-0">
           <p className="truncate text-sm font-medium text-white">{food.name}</p>
@@ -102,7 +102,7 @@ export function FoodRow({ food, labels }: { food: Food; labels: string[] }) {
                         show("Can't delete - it's used in a logged meal, recipe, or preset.", { tone: 'error' }),
                       onSuccess: () =>
                         undoable(
-                          `Deleted "${snapshot.name}"`,
+`Deleted "${snapshot.name}"`,
                           () => {},
                           () =>
                             createFood.mutate({

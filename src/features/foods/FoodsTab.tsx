@@ -73,7 +73,7 @@ export function FoodsTab() {
             const on = enabledPacks.includes(pack)
             const count = (library.data ?? []).filter((f) => f.pack === pack).length
             return (
-              <div key={pack} className="flex items-center justify-between gap-3 rounded-2xl bg-slate-900 border-t border-white/10 p-3 ring-1 ring-white/5">
+              <div key={pack} className="flex items-center justify-between gap-3 tile p-3">
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-white">{packLabel(pack)} pack</p>
                   <p className="text-xs text-slate-500">{count} branded/regional foods, off by default</p>
@@ -100,7 +100,7 @@ export function FoodsTab() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search foods…"
-        className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+        className="w-full field px-3 py-2.5"
       />
 
       {allLabels.length > 0 && (

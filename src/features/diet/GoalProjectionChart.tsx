@@ -7,7 +7,7 @@ import { displayWeightValue, weightUnitLabel } from '../../lib/units'
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="card p-4">
       <h3 className="mb-2 text-sm font-medium text-slate-300">Goal projection</h3>
       {children}
     </div>

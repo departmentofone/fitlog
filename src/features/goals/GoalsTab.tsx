@@ -98,7 +98,7 @@ function BodyMeasurementsCard() {
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none"
+            className="w-full field px-3 py-2"
           />
           <div className="grid grid-cols-2 gap-2.5">
             {MEASUREMENT_FIELDS.map((f) => (
@@ -109,15 +109,15 @@ function BodyMeasurementsCard() {
                 inputMode="decimal"
                 value={values[f.key]}
                 onChange={(e) => setValues((prev) => ({ ...prev, [f.key]: e.target.value }))}
-                className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="field px-3 py-2"
               />
             ))}
           </div>
           <div className="flex gap-2">
-            <button onClick={() => setEditing(false)} className="flex-1 rounded-xl bg-slate-800 py-2 text-sm text-slate-300 hover:bg-slate-700">
+            <button onClick={() => setEditing(false)} className="btn btn-secondary flex-1 text-sm">
               Cancel
             </button>
-            <button onClick={save} className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90">
+            <button onClick={save} className="btn btn-primary flex-1 py-2 text-sm">
               Save
             </button>
           </div>
@@ -280,7 +280,7 @@ function GoalList() {
   }
 
   return (
-    <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="card p-4">
       <h3 className="mb-3 font-medium text-white">Goals</h3>
       <div className="mb-3 space-y-1.5">
         {filtered.map((g) =>
@@ -332,7 +332,7 @@ function GoalList() {
               <select
                 value={exerciseId}
                 onChange={(e) => setExerciseId(e.target.value)}
-                className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:outline-none"
+                className="w-full field px-3 py-2 text-sm"
               >
                 <option value="">Pick an exercise…</option>
                 {exercises.map((ex) => (
@@ -348,7 +348,7 @@ function GoalList() {
                   placeholder={`Target weight (${weightUnitLabel(unit)})`}
                   value={targetWeight}
                   onChange={(e) => setTargetWeight(e.target.value)}
-                  className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                  className="field px-3 py-2 text-sm"
                 />
                 <input
                   type="text"
@@ -356,7 +356,7 @@ function GoalList() {
                   placeholder="Reps (optional)"
                   value={targetReps}
                   onChange={(e) => setTargetReps(e.target.value)}
-                  className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                  className="field px-3 py-2 text-sm"
                 />
               </div>
             </>
@@ -367,14 +367,14 @@ function GoalList() {
               onChange={(e) => setTitleInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
               placeholder="Goal…"
-              className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="w-full field px-3 py-2"
             />
           )}
           <div className="flex gap-2">
-            <button onClick={reset} className="flex-1 rounded-xl bg-slate-800 py-2 text-sm text-slate-300 hover:bg-slate-700">
+            <button onClick={reset} className="btn btn-secondary flex-1 text-sm">
               Cancel
             </button>
-            <button onClick={handleAdd} className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90">
+            <button onClick={handleAdd} className="btn btn-primary flex-1 py-2 text-sm">
               Add
             </button>
           </div>
@@ -455,7 +455,7 @@ export function GoalsTab() {
                 inputMode="decimal"
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
-                className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="field px-3 py-2"
               />
               <input
                 placeholder={`Goal weight (${weightUnit})`}
@@ -463,7 +463,7 @@ export function GoalsTab() {
                 inputMode="decimal"
                 value={weightGoal}
                 onChange={(e) => setWeightGoal(e.target.value)}
-                className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="field px-3 py-2"
               />
               <input
                 placeholder={`Height (${heightUnit})`}
@@ -471,7 +471,7 @@ export function GoalsTab() {
                 inputMode="decimal"
                 value={height}
                 onChange={(e) => setHeight(e.target.value)}
-                className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="field px-3 py-2"
               />
               <input
                 placeholder="Age"
@@ -479,13 +479,13 @@ export function GoalsTab() {
                 inputMode="decimal"
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
-                className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="field px-3 py-2"
               />
             </div>
             <select
               value={sex}
               onChange={(e) => setSex(e.target.value as Sex | '')}
-              className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none"
+              className="w-full field px-3 py-2"
             >
               <option value="">Sex (optional)</option>
               <option value="male">Male</option>
@@ -495,7 +495,7 @@ export function GoalsTab() {
             <select
               value={activity}
               onChange={(e) => setActivity(e.target.value as ActivityLevel | '')}
-              className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none"
+              className="w-full field px-3 py-2"
             >
               <option value="">Activity level (optional)</option>
               {ACTIVITY_OPTIONS.map((a) => (
@@ -505,10 +505,10 @@ export function GoalsTab() {
               ))}
             </select>
             <div className="flex gap-2">
-              <button onClick={() => setEditingStats(false)} className="flex-1 rounded-xl bg-slate-800 py-2 text-sm text-slate-300 hover:bg-slate-700">
+              <button onClick={() => setEditingStats(false)} className="btn btn-secondary flex-1 text-sm">
                 Cancel
               </button>
-              <button onClick={saveStats} className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90">
+              <button onClick={saveStats} className="btn btn-primary flex-1 py-2 text-sm">
                 Save
               </button>
             </div>

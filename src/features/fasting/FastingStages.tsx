@@ -23,7 +23,7 @@ const STAGES: FastingStage[] = [
     title: '4-12h · Using stored glycogen',
     summary: 'Once digestion finishes, insulin drops and the body starts drawing on stored liver glycogen to keep blood sugar steady.',
     detail:
-      "Once the meal is fully absorbed, blood insulin levels fall and the liver begins releasing stored glycogen - a stored form of glucose - to maintain blood sugar. This is the ordinary overnight state most people are already in by the time they wake up, even without deliberately fasting.",
+"Once the meal is fully absorbed, blood insulin levels fall and the liver begins releasing stored glycogen - a stored form of glucose - to maintain blood sugar. This is the ordinary overnight state most people are already in by the time they wake up, even without deliberately fasting.",
   },
   {
     id: 'switch',
@@ -31,7 +31,7 @@ const STAGES: FastingStage[] = [
     title: '12-18h · Metabolic switch begins',
     summary: 'Liver glycogen starts running low, so the body increasingly turns to breaking down fat for energy, and ketone production starts to rise.',
     detail:
-      "As glycogen reserves become depleted, the body gradually shifts toward burning more fatty acids and starts producing more ketone bodies in the liver. This transition is often called the metabolic switch, but it's a gradual process rather than a hard cutover, and the exact timing varies quite a bit from person to person.",
+"As glycogen reserves become depleted, the body gradually shifts toward burning more fatty acids and starts producing more ketone bodies in the liver. This transition is often called the metabolic switch, but it's a gradual process rather than a hard cutover, and the exact timing varies quite a bit from person to person.",
   },
   {
     id: 'ketosis',
@@ -77,7 +77,7 @@ export function FastingStages({ elapsedHours }: { elapsedHours?: number | null }
   const visible = showAll ? STAGES : STAGES.filter((s) => s.id === activeId)
 
   return (
-    <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="card p-4">
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm font-medium text-white">What's happening during a fast</p>
         <button

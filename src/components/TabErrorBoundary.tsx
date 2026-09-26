@@ -13,7 +13,7 @@ interface State {
 /** A failed dynamic import after a deploy replaced the old chunks - recoverable by reloading. */
 function isStaleChunkError(error: Error): boolean {
   return /dynamically imported module|Importing a module script failed|error loading dynamically/i.test(
-    `${error.message} ${error.name}`,
+`${error.message} ${error.name}`,
   )
 }
 
@@ -46,7 +46,7 @@ export class TabErrorBoundary extends Component<Props, State> {
     const stale = isStaleChunkError(error)
     return (
       <div className="p-4">
-        <div className="rounded-3xl border-t border-white/10 bg-slate-900 p-5 text-center shadow-lg shadow-black/20 ring-1 ring-white/5">
+        <div className="card p-5 text-center">
           <h2 className="text-lg font-semibold text-white">
             {stale ? 'A new version is ready' : 'This screen hit a problem'}
           </h2>
@@ -58,7 +58,7 @@ export class TabErrorBoundary extends Component<Props, State> {
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="mt-4 min-h-12 w-full rounded-xl bg-emerald-600 font-semibold text-on-accent transition hover:brightness-90"
+            className="btn btn-primary mt-4 min-h-12 w-full"
           >
             Reload FitLog
           </button>

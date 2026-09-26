@@ -3,7 +3,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { FEEDBACK_EMAIL_RE, FEEDBACK_LIMITS, sendFeedback } from '../../lib/feedback'
 
 const fieldClass =
-  'w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none aria-[invalid=true]:border-red-400'
+  'w-full field px-3 py-2.5 text-sm  aria-[invalid=true]:border-red-400'
 
 // Quick starts for the subject - tapping one fills it in, and it can still be edited.
 const TOPICS = ['Bug report', 'Feature idea', 'Question']
@@ -150,7 +150,7 @@ export function FeedbackForm() {
       <button
         type="submit"
         disabled={sending}
-        className="min-h-11 w-full rounded-xl bg-emerald-600 text-sm font-semibold text-on-accent transition hover:brightness-90 disabled:opacity-60"
+        className="btn btn-primary w-full text-sm disabled:opacity-60"
       >
         {sending ? 'Sending…' : 'Send'}
       </button>

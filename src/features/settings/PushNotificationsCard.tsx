@@ -36,7 +36,7 @@ export function PushNotificationsCard() {
   }
 
   return (
-    <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="card p-4">
       <h3 className="mb-1 font-medium text-white">Notifications</h3>
       <p className="mb-3 text-xs text-slate-500">
         A summary of your week every Sunday, and an evening heads-up when your workout streak is about to end.

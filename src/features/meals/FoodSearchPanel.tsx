@@ -52,7 +52,7 @@ export function FoodSearchPanel({ search, onSearchChange, onSelectFood, onCreate
   }
 
   return (
-    <div className="rounded-2xl border-t border-white/10 bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="card p-4">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-medium text-white">Add food</h3>
         <button onClick={onCancel} className="-my-2 -mr-2 min-h-11 px-2 text-sm text-slate-400">
@@ -67,7 +67,7 @@ export function FoodSearchPanel({ search, onSearchChange, onSelectFood, onCreate
         placeholder={library.length > 0 ? `Search ${library.length} foods…` : 'Search foods…'}
         value={search}
         onChange={(e) => onSearchChange(e.target.value)}
-        className="mb-3 h-12 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+        className="mb-3 h-12 w-full field px-3"
       />
 
       {diet && (

@@ -95,14 +95,14 @@ function EntryEditor({
         placeholder={`Weight (${unit})`}
         value={weight}
         onChange={(e) => setWeight(e.target.value)}
-        className="mb-2 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+        className="mb-2 w-full field px-3 py-2"
       />
       <textarea
         placeholder="Notes (optional)"
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
         rows={2}
-        className="mb-3 w-full resize-none rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+        className="mb-3 w-full resize-none field px-3 py-2"
       />
 
       <div className="flex gap-2">
@@ -117,7 +117,7 @@ function EntryEditor({
             Delete
           </button>
         )}
-        <button onClick={save} className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90">
+        <button onClick={save} className="btn btn-primary flex-1 py-2 text-sm">
           Save
         </button>
       </div>
@@ -140,7 +140,7 @@ export function ProgressCalendar() {
   }
 
   return (
-    <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="card p-4">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-medium text-white">Progress log</h3>
         {photoEntries.length >= 2 && (

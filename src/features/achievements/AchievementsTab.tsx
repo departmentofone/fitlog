@@ -40,7 +40,7 @@ const CATEGORY_ORDER: AwardCategory[] = ['consistency', 'strength', 'nutrition',
 const RECENT_DAYS = 14
 const RECORDS_SHOWN = 5
 
-const card = 'rounded-3xl border-t border-white/10 bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5'
+const card = 'card p-4 '
 
 function formatProgress(a: Award): string {
   const current = a.unit === '× bodyweight' ? a.current.toFixed(2) : Math.min(a.current, a.target)
@@ -153,7 +153,7 @@ export function AchievementsTab() {
   return (
     <div className="space-y-4 p-4">
       {/* This month: the short-term goal. */}
-      <div className="rounded-3xl bg-gradient-to-br from-emerald-600/20 to-slate-900 p-4 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+      <div className="card-hero p-4">
         <p className="text-xs font-medium text-slate-400">{challenge.monthLabel} challenge</p>
         <div className="mt-1 flex items-end justify-between gap-3">
           <p className="text-lg font-semibold text-white">

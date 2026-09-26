@@ -196,7 +196,7 @@ export function ScannerTab() {
 
   return (
     <div className="space-y-4 p-4">
-      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+      <div className="card card-glow p-4">
         <h3 className="mb-1 font-medium text-white">Barcode scanner</h3>
         <p className="mb-3 text-sm text-slate-400">
           Look up a packaged food by its barcode against the Open Food Facts database, review the nutrition
@@ -212,12 +212,12 @@ export function ScannerTab() {
             onKeyDown={(e) => {
               if (e.key === 'Enter') void handleLookup(barcode)
             }}
-            className="flex-1 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+            className="flex-1 field px-3 py-2.5"
           />
           <button
             onClick={() => void handleLookup(barcode)}
             disabled={!barcode.trim() || lookup.isPending}
-            className="shrink-0 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-on-accent hover:brightness-90 disabled:opacity-50"
+            className="btn btn-primary shrink-0 px-4 py-2.5 text-sm"
           >
             {lookup.isPending ? 'Looking up…' : 'Look up'}
           </button>
@@ -267,7 +267,7 @@ export function ScannerTab() {
       </div>
 
       {reviewing && (
-        <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+        <div className="card p-4">
           <div className="mb-3 flex items-center justify-between">
             <h3 className="font-medium text-white">Review</h3>
             <button onClick={reset} className="text-sm text-slate-400 hover:text-slate-200">
@@ -286,7 +286,7 @@ export function ScannerTab() {
               placeholder="Name"
               value={form.name}
               onChange={(e) => updateField('name', e.target.value)}
-              className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="w-full field px-3 py-2.5"
             />
             <p className="text-xs text-slate-500">Per 100g:</p>
             <div className="grid grid-cols-2 gap-2.5">
@@ -296,7 +296,7 @@ export function ScannerTab() {
                 inputMode="decimal"
                 value={form.calories}
                 onChange={(e) => updateField('calories', e.target.value)}
-                className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="field px-3 py-2"
               />
               <input
                 placeholder="Protein (g)"
@@ -304,7 +304,7 @@ export function ScannerTab() {
                 inputMode="decimal"
                 value={form.protein}
                 onChange={(e) => updateField('protein', e.target.value)}
-                className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="field px-3 py-2"
               />
               <input
                 placeholder="Carbs (g)"
@@ -312,7 +312,7 @@ export function ScannerTab() {
                 inputMode="decimal"
                 value={form.carbs}
                 onChange={(e) => updateField('carbs', e.target.value)}
-                className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="field px-3 py-2"
               />
               <input
                 placeholder="Fat (g)"
@@ -320,14 +320,14 @@ export function ScannerTab() {
                 inputMode="decimal"
                 value={form.fat}
                 onChange={(e) => updateField('fat', e.target.value)}
-                className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="field px-3 py-2"
               />
             </div>
 
             <button
               onClick={() => void handleSave()}
               disabled={!form.name.trim() || !form.calories || createFood.isPending}
-              className="w-full rounded-xl bg-emerald-600 py-2.5 font-medium text-on-accent hover:brightness-90 disabled:opacity-50"
+              className="btn btn-primary w-full py-2.5"
             >
               {createFood.isPending ? 'Saving…' : 'Save to food library'}
             </button>

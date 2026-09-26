@@ -123,7 +123,7 @@ export function PhotoCompare({ entries, onBack }: { entries: ProgressEntry[]; on
         <select
           value={leftId}
           onChange={(e) => setLeftId(e.target.value)}
-          className="rounded-xl border border-slate-700 bg-slate-800 px-2 py-2 text-xs text-white focus:border-emerald-500 focus:outline-none"
+          className="field px-2 py-2 text-xs"
         >
           {sorted.map((e) => (
             <option key={e.id} value={e.id}>
@@ -134,7 +134,7 @@ export function PhotoCompare({ entries, onBack }: { entries: ProgressEntry[]; on
         <select
           value={rightId}
           onChange={(e) => setRightId(e.target.value)}
-          className="rounded-xl border border-slate-700 bg-slate-800 px-2 py-2 text-xs text-white focus:border-emerald-500 focus:outline-none"
+          className="field px-2 py-2 text-xs"
         >
           {sorted.map((e) => (
             <option key={e.id} value={e.id}>

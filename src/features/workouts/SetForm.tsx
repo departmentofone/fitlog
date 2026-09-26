@@ -152,7 +152,7 @@ function EditableSetRow({
             // doesn't nudge the weight through a rounded lb -> kg round trip.
             onSave({ weight: weight === initialWeight ? set.weight : fromDisplayWeight(w, unit), reps: r, difficulty })
           }}
-          className="min-h-11 flex-1 rounded-xl bg-emerald-600 text-sm font-medium text-on-accent hover:brightness-90"
+          className="btn btn-primary flex-1 text-sm"
         >
           Save
         </button>
@@ -204,7 +204,7 @@ export function SetForm({
   }
 
   return (
-    <div className="rounded-2xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <div className="card p-4">
       <div className="mb-1 flex items-center justify-between">
         <div className="flex min-w-0 items-center gap-2">
           <h3 className="truncate font-medium text-white">{exercise.name}</h3>
@@ -293,7 +293,7 @@ export function SetForm({
       <button
         onClick={handleAdd}
         disabled={!weight || !reps || adding}
-        className="min-h-12 w-full rounded-xl bg-emerald-600 font-semibold text-on-accent hover:brightness-90 disabled:opacity-50"
+        className="btn btn-primary min-h-12 w-full"
       >
         Add set {nextSetNumber}
       </button>

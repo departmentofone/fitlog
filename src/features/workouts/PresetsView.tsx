@@ -67,26 +67,26 @@ export function PresetsView({
 
       {currentSets.length > 0 &&
         (showSaveForm ? (
-          <div className="rounded-2xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+          <div className="card p-4">
             <h3 className="mb-3 font-medium text-white">Save as preset</h3>
             <input
               autoFocus
               placeholder="Preset name (e.g. Leg Day)"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mb-3 w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="mb-3 w-full field px-3 py-2"
             />
             <div className="flex gap-2">
               <button
                 onClick={() => setShowSaveForm(false)}
-                className="flex-1 rounded-xl bg-slate-800 py-2 text-sm text-slate-300 hover:bg-slate-700"
+                className="btn btn-secondary flex-1 text-sm"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
                 disabled={!name.trim() || createFromSets.isPending}
-                className="flex-1 rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90 disabled:opacity-50"
+                className="btn btn-primary flex-1 py-2 text-sm"
               >
                 Save
               </button>
@@ -101,7 +101,7 @@ export function PresetsView({
           </button>
         ))}
 
-      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+      <div className="card card-glow p-4">
         <h3 className="mb-3 font-medium text-white">Your presets</h3>
         {isLoading && (
           <div className="space-y-2">
@@ -117,14 +117,14 @@ export function PresetsView({
         )}
         <div className="space-y-2">
           {presets.map((preset) => (
-            <div key={preset.id} className="rounded-xl bg-slate-800/60 p-3">
+            <div key={preset.id} className="inset p-3">
               <div className="mb-1 flex items-center justify-between">
                 <h4 className="text-sm font-medium text-white">{preset.name}</h4>
                 {preset.user_id === user?.id && (
                   <button
                     onClick={() =>
                       undoable(
-                        `Deleted "${preset.name}"`,
+`Deleted "${preset.name}"`,
                         () => deletePreset.mutate(preset.id),
                         () => restorePreset.mutate(preset),
                       )
@@ -156,7 +156,7 @@ export function PresetsView({
                   onLoaded()
                 }}
                 disabled={!sessionId || loadPreset.isPending}
-                className="w-full rounded-xl bg-emerald-600 py-2 text-sm font-medium text-on-accent hover:brightness-90 disabled:opacity-50"
+                className="btn btn-primary w-full py-2 text-sm"
               >
                 Load
               </button>

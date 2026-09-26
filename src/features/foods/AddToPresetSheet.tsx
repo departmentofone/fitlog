@@ -73,7 +73,7 @@ export function AddToPresetSheet({ food, onClose }: { food: Food; onClose: () =>
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               placeholder="Preset name"
-              className="min-w-0 flex-1 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="min-w-0 flex-1 field px-3 py-2.5"
             />
             <button
               disabled={!newName.trim() || createPreset.isPending}
@@ -83,7 +83,7 @@ export function AddToPresetSheet({ food, onClose }: { food: Food; onClose: () =>
                 setCreatingNew(false)
                 setPresetId(created.id)
               }}
-              className="shrink-0 rounded-xl bg-emerald-600 px-4 text-sm font-medium text-on-accent disabled:opacity-50"
+              className="btn btn-primary shrink-0 px-4 text-sm"
             >
               Create
             </button>

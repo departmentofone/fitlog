@@ -77,7 +77,7 @@ export function MaintenanceCalculator() {
 
   return (
     <>
-      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-[var(--glow-shadow)] ring-1 ring-white/5">
+      <div className="card card-glow p-4">
         <h3 className="mb-1 font-medium text-white">Maintenance calculator</h3>
         <p className="mb-3 text-sm text-slate-400">
           Your estimated daily maintenance calories, pre-filled from your profile. Change anything to try a scenario.
@@ -132,7 +132,7 @@ export function MaintenanceCalculator() {
         </button>
       </div>
 
-      <div className="rounded-3xl bg-slate-900 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+      <div className="card p-4">
         <h3 className="mb-3 font-medium text-white">Result</h3>
         {maintenance == null ? (
           <p className="text-sm text-slate-500">Fill in weight, height, age, sex, and activity level above to see your estimate.</p>
@@ -162,7 +162,7 @@ export function MaintenanceCalculator() {
             </div>
             <button
               onClick={() => applyGoal('maintenance')}
-              className="w-full rounded-xl bg-emerald-600 py-2.5 text-sm font-medium text-on-accent transition hover:brightness-90"
+              className="btn btn-primary w-full py-2.5 text-sm"
             >
               Set as my calorie goal
             </button>

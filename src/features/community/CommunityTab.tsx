@@ -348,7 +348,7 @@ function CommunityCard({
   }
 
   return (
-    <article className="rounded-2xl border-t border-white/10 bg-slate-900 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5">
+    <article className="card p-4">
       <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
         <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[11px] font-medium text-slate-400">{KIND_LABEL[item.kind]}</span>
         {item.isOfficial && (
@@ -570,7 +570,7 @@ export function CommunityTab() {
   function hidePerson(ownerId: string) {
     const previous = hidden
     undoable(
-      "Hidden - you won't see items from this person",
+"Hidden - you won't see items from this person",
       () => updateSettings.mutate({ hidden_community_users: [...new Set([...previous, ownerId])] }),
       () => updateSettings.mutate({ hidden_community_users: previous }),
     )
@@ -640,7 +640,7 @@ export function CommunityTab() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search by name or ingredient…"
-        className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+        className="w-full field px-3 py-2.5"
       />
 
       {isLoading ? (

@@ -122,7 +122,7 @@ export function ExerciseDetailModal({ exercise, onClose }: { exercise: Exercise;
                 onChange={(e) => setNoteDraft(e.target.value)}
                 placeholder="Seat height, grip width, cues…"
                 rows={3}
-                className="mb-2 w-full resize-none rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="mb-2 w-full resize-none field px-3 py-2 text-sm"
               />
               <div className="flex gap-2">
                 <button onClick={() => setEditingNote(false)} className="flex-1 rounded-xl bg-slate-800 py-1.5 text-sm text-slate-300 hover:bg-slate-700">
@@ -133,7 +133,7 @@ export function ExerciseDetailModal({ exercise, onClose }: { exercise: Exercise;
                     setNote.mutate({ exerciseId: exercise.id, notes: noteDraft.trim() })
                     setEditingNote(false)
                   }}
-                  className="flex-1 rounded-xl bg-emerald-600 py-1.5 text-sm font-medium text-on-accent hover:brightness-90"
+                  className="btn btn-primary flex-1 py-1.5 text-sm"
                 >
                   Save
                 </button>

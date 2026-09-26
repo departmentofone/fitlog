@@ -604,8 +604,7 @@ export function CommunityTab() {
   return (
     <div className="space-y-4 p-4">
       <div>
-        <h2 className="text-xl font-semibold text-white">Community</h2>
-        <p className="mt-1 text-sm text-slate-400">
+        <p className="text-sm text-slate-400">
           Diets, meal plans, recipes and workouts people have shared. Saving makes your own copy - change it however you like.{' '}
           <button onClick={() => setShowGuidelines(true)} className="font-medium text-emerald-400 underline decoration-dotted underline-offset-2">
             Guidelines

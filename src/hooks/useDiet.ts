@@ -104,9 +104,8 @@ export function remainingCaloriesInfo(consumed: number, goal: number, type: Diet
   // maintenance
   const band = goal * 0.1
   if (Math.abs(remaining) <= band) return { remaining, text: `On target (±${Math.round(band)} kcal)`, tone: 'good' }
-  return {
-    remaining,
-    text: remaining > 0 ? `${Math.round(remaining)} kcal under target` : `${Math.round(-remaining)} kcal over target`,
-    tone: 'warn',
-  }
+  // Under target is where every day starts, so it's informational; only going over is a warning.
+  return remaining > 0
+    ? { remaining, text: `${Math.round(remaining)} kcal under target`, tone: 'neutral' }
+    : { remaining, text: `${Math.round(-remaining)} kcal over target`, tone: 'warn' }
 }

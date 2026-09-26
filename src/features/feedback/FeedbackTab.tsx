@@ -39,11 +39,21 @@ export function FeedbackTab() {
       </div>
 
       <div className={cardClass}>
-        <h3 className="mb-2 text-sm font-medium text-white">Support FitLog</h3>
-        <p className="text-sm leading-relaxed text-slate-400">
-          FitLog is free and always will be - no premium plans, nothing locked. If it's been useful to you, a coffee
-          helps cover the costs of keeping it running. Completely optional, always appreciated.
-        </p>
+        <h3 className="mb-2 text-sm font-medium text-white">Why it's free</h3>
+        <div className="space-y-3 text-sm leading-relaxed text-slate-400">
+          <p>
+            FitLog started as a small project I built for my own use. Along the way I realized there was no reason not
+            to polish it a little further and publish it properly, so other people could benefit from it too.
+          </p>
+          <p>
+            With that in mind, I didn't want to monetize anything. There are no premium plans and there never will be -
+            I don't want to lock anyone out of any feature, and not everyone can pay for this kind of thing.
+          </p>
+          <p>
+            If it's been useful to you, a coffee helps cover the costs of keeping it running. Completely optional,
+            always appreciated.
+          </p>
+        </div>
         {showDonate &&
           (DONATE_URL ? (
             <a

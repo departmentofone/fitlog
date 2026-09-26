@@ -33,13 +33,14 @@ const TABS: { key: Tab; label: string; group: TabGroup | null }[] = [
   { key: 'calculator', label: 'Calculator', group: 'tools' },
   { key: 'whatsnew', label: "What's new", group: null },
   { key: 'about', label: 'About', group: null },
+  { key: 'feedback', label: 'Feedback', group: null },
 ]
 
 const SHORT_LABELS: Partial<Record<Tab, string>> = { achievements: 'Awards' }
 const PINNED_TABS: Tab[] = ['workouts', 'meals']
 // About and What's new live permanently at the bottom of the More sheet - neither is a candidate
 // for the bottom nav bar, or part of the regular grouped destination grid.
-const FOOTER_TABS: Tab[] = ['whatsnew', 'about']
+const FOOTER_TABS: Tab[] = ['whatsnew', 'feedback', 'about']
 const MENU_TABS = TABS.filter((t) => !FOOTER_TABS.includes(t.key))
 // Achievements and History are look-back/celebration screens, not something worth a one-tap
 // slot - excluded from bottom-bar customization (still reachable from More as usual).

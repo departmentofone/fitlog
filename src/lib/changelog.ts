@@ -11,7 +11,8 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-09-26',
     title: 'Send feedback from the app',
     changes: [
-      'About → Send feedback: write to the developer without leaving FitLog - bug reports, ideas or questions, with a reply to your email',
+      'New Feedback tab (More menu): write to the developer without leaving FitLog - bug reports, ideas or questions, with a reply to your email',
+      'Buy me a coffee moved there too, under Support FitLog',
     ],
   },
   {

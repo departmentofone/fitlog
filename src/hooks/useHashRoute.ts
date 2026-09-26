@@ -26,6 +26,7 @@ const ROUTE_KEYS: Record<Route, true> = {
   calculator: true,
   whatsnew: true,
   about: true,
+  feedback: true,
   settings: true,
 }
 const ROUTES = Object.keys(ROUTE_KEYS) as Route[]

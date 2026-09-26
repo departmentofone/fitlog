@@ -28,6 +28,7 @@ const MaintenanceCalculatorTab = lazy(() =>
   import('./features/calculator/MaintenanceCalculatorTab').then((m) => ({ default: m.MaintenanceCalculatorTab })),
 )
 const AboutTab = lazy(() => import('./features/about/AboutTab').then((m) => ({ default: m.AboutTab })))
+const FeedbackTab = lazy(() => import('./features/feedback/FeedbackTab').then((m) => ({ default: m.FeedbackTab })))
 const WhatsNewTab = lazy(() => import('./features/about/WhatsNewTab').then((m) => ({ default: m.WhatsNewTab })))
 const HistoryView = lazy(() => import('./features/history/HistoryView').then((m) => ({ default: m.HistoryView })))
 const SettingsTab = lazy(() => import('./features/settings/SettingsTab').then((m) => ({ default: m.SettingsTab })))
@@ -191,6 +192,7 @@ function App() {
           {tab === 'calculator' && <MaintenanceCalculatorTab />}
           {tab === 'whatsnew' && <WhatsNewTab />}
             {tab === 'about' && <AboutTab />}
+          {tab === 'feedback' && <FeedbackTab />}
           </Suspense>
         </TabErrorBoundary>
       </Layout>

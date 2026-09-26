@@ -157,6 +157,7 @@ export type Tab =
   | 'calculator'
   | 'whatsnew'
   | 'about'
+  | 'feedback'
 
 export interface UserSettings {
   user_id: string

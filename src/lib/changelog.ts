@@ -19,6 +19,9 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Meals shows today's calories against your goal, with what's left, right at the top",
       'The + button steps aside while you log a set or search for a food, instead of covering the buttons',
       'One clear Add exercise button, with Superset next to it',
+      'Calmer background glow that follows your accent colour, so cards look the same wherever they sit',
+      'Fat is purple now instead of red, so it no longer looks like a warning',
+      'Clearer headings on every card',
     ],
   },
   {

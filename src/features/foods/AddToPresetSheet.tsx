@@ -64,7 +64,7 @@ export function AddToPresetSheet({ food, onClose }: { food: Food; onClose: () =>
         className="sheet-up relative max-h-[85%] overflow-y-auto rounded-t-3xl border-t border-white/10 bg-slate-950 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-2xl"
       >
         <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-slate-700" />
-        <h3 className="mb-3 font-medium text-white">Add "{food.name}" to…</h3>
+        <h3 className="mb-3 card-title">Add "{food.name}" to…</h3>
 
         {creatingNew ? (
           <div className="mb-2 flex gap-2">

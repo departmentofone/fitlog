@@ -127,13 +127,10 @@ export function Layout({
 
   return (
     <div className="relative flex h-[var(--app-height)] flex-col overflow-hidden overscroll-none bg-slate-950">
-      {/* Ambient glow blobs - fixed behind the whole app. They're already heavily blurred, so the
-          translucent cards over them read as frosted glass without paying for a backdrop-filter on
-          every card (reserved for the header, nav, and floating layers). */}
-      <div className="aurora-a pointer-events-none fixed -left-16 -top-16 z-0 h-64 w-64 rounded-full bg-emerald-400/40 blur-[90px]" />
-      <div className="aurora-b pointer-events-none fixed -bottom-24 -right-16 z-0 h-64 w-64 rounded-full bg-amber-400/25 blur-[90px]" />
-      {/* Third glow for light mode's aurora only (hidden in dark - see index.css). */}
-      <div className="aurora-c pointer-events-none fixed z-0 hidden rounded-full" />
+      {/* Ambient glow blobs behind the top of the app - sized, coloured and blurred in index.css
+          ("aurora"), per theme. */}
+      <div className="aurora-a pointer-events-none fixed z-0 rounded-full" />
+      <div className="aurora-b pointer-events-none fixed z-0 rounded-full" />
 
       <header className="relative z-10 border-b border-white/10 bg-slate-950/40 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
         <div className={`flex min-h-14 items-center justify-between gap-2 pr-2 ${detail ? 'pl-1' : 'pl-4'}`}>

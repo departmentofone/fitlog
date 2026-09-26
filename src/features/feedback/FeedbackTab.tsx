@@ -39,7 +39,7 @@ export function FeedbackTab() {
       </div>
 
       <div className={cardClass}>
-        <h3 className="mb-2 text-sm font-medium text-white">Why it's free</h3>
+        <h3 className="mb-2 card-title">Why it's free</h3>
         <div className="space-y-3 text-sm leading-relaxed text-slate-400">
           <p>
             FitLog started as a small project I built for my own use. Along the way I realized there was no reason not

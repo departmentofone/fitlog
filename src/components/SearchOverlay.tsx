@@ -49,7 +49,7 @@ export function SearchOverlay({ onClose }: { onClose: () => void }) {
 
         {matchedExercises.length > 0 && (
           <div className="mb-4">
-            <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">Exercises</p>
+            <p className="mb-1.5 eyebrow">Exercises</p>
             <div className="space-y-1.5">
               {matchedExercises.map((ex) => (
                 <button
@@ -67,7 +67,7 @@ export function SearchOverlay({ onClose }: { onClose: () => void }) {
 
         {matchedFoods.length > 0 && (
           <div>
-            <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">Foods</p>
+            <p className="mb-1.5 eyebrow">Foods</p>
             <div className="space-y-1.5">
               {matchedFoods.map((food) => (
                 <div key={food.id} className="rounded-xl bg-slate-800/60 px-3 py-2.5">

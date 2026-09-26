@@ -290,11 +290,11 @@ export function WorkoutsTab({
         <>
           {/* One session card: what you've moved, the session clock and the streak together, instead of
               three separate rows pushing the workout itself down the screen. */}
-          <div className="card-hero px-4 pb-2 pt-3">
+          <div className="card-hero px-4 pb-2 pt-4">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs text-slate-400">{isToday ? "Today's" : 'Total'} moved</p>
-                <p className="text-2xl font-bold text-white">
+                <p className="text-sm font-medium text-slate-300">{isToday ? 'Volume today' : 'Volume'}</p>
+                <p className="mt-1 text-3xl font-bold tracking-tight text-white">
                   {toDisplayTotal(
                     sets.reduce((sum, s) => (s.is_warmup ? sum : sum + s.weight * s.reps), 0),
                     settings?.unit_system,
@@ -428,7 +428,7 @@ export function WorkoutsTab({
               return (
                 <div className="card p-4">
                   <div className="mb-3 flex items-center justify-between">
-                    <h3 className="font-medium text-white">
+                    <h3 className="card-title">
                       {pickerMode === 'superset' ? 'Build a superset' : 'Pick an exercise'}
                     </h3>
                     <button onClick={() => setPicking(false)} className="text-sm text-slate-400 hover:text-slate-200">

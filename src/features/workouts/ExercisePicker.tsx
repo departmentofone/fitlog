@@ -73,7 +73,7 @@ export function ExercisePicker({
   if (creating) {
     return (
       <div className="card p-4">
-        <h3 className="mb-3 font-medium text-white">New exercise</h3>
+        <h3 className="mb-3 card-title">New exercise</h3>
         <input
           autoFocus
           placeholder="Exercise name (e.g. Incline DB Press)"

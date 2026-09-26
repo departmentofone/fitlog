@@ -37,7 +37,7 @@ export function PushNotificationsCard() {
 
   return (
     <div className="card p-4">
-      <h3 className="mb-1 font-medium text-white">Notifications</h3>
+      <h3 className="mb-1 card-title">Notifications</h3>
       <p className="mb-3 text-xs text-slate-500">
         A summary of your week every Sunday, and an evening heads-up when your workout streak is about to end.
       </p>

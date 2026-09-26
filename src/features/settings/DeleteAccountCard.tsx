@@ -46,7 +46,7 @@ export function DeleteAccountCard({ onExport, exporting }: { onExport: () => voi
 
   return (
     <div className="rounded-3xl border border-red-500/25 bg-red-500/5 p-4">
-      <h3 className="font-medium text-white">Delete account</h3>
+      <h3 className="card-title">Delete account</h3>
         <div className="mt-2 space-y-3 text-sm text-slate-300">
           <p>
             This permanently deletes your account and <b>all</b> of your workouts, meals, goals, fasting and body logs,

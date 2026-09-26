@@ -88,7 +88,7 @@ function BodyMeasurementsCard() {
       }`}
     >
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="font-medium text-white">Body measurements</h3>
+        <h3 className="card-title">Body measurements</h3>
         {!editing && <span className="text-xs text-slate-500">Tap to edit</span>}
       </div>
 
@@ -281,7 +281,7 @@ function GoalList() {
 
   return (
     <div className="card p-4">
-      <h3 className="mb-3 font-medium text-white">Goals</h3>
+      <h3 className="mb-3 card-title">Goals</h3>
       <div className="mb-3 space-y-1.5">
         {filtered.map((g) =>
           g.target_exercise_id ? (
@@ -442,7 +442,7 @@ export function GoalsTab() {
         }`}
       >
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="font-medium text-white">Personal info & weight goal</h3>
+          <h3 className="card-title">Personal info & weight goal</h3>
           {!editingStats && <span className="text-xs text-slate-500">Tap to edit</span>}
         </div>
 

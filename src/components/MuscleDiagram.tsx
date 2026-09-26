@@ -167,7 +167,7 @@ function Figure({
           </>,
         )}
       </svg>
-      <figcaption className="text-[11px] font-medium uppercase tracking-wide text-slate-500">
+      <figcaption className="eyebrow">
         {view === 'front' ? 'Front' : 'Back'}
       </figcaption>
     </figure>

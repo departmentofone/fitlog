@@ -44,7 +44,7 @@ export function WeightChart() {
   return (
     <div className="card p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="font-medium text-white">Weight over time</h3>
+        <h3 className="card-title">Weight over time</h3>
         {totalWeighIns >= 2 && (
         <div className="flex gap-1.5">
           {RANGE_OPTIONS.map((r) => (

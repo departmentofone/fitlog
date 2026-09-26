@@ -9,6 +9,11 @@
 @theme {
   --color-success: #4ade80;
   --color-on-accent: #ffffff;
+  /* Macros have their own fixed colours - fat used to be red, which read as an error next to
+     warnings and the Stop button. */
+  --color-protein: #60a5fa;
+  --color-carbs: #fbbf24;
+  --color-fat: #c084fc;
 }
 
 :root {
@@ -235,6 +240,16 @@ html[data-palette="amber"] {
     @apply rounded-xl border border-slate-700 bg-slate-800 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none;
   }
 
+  /* Type roles: the header carries the page title; inside, cards get a card-title and small
+     labels get an eyebrow (sentence case - the uppercase, letter-spaced labels read as shouting
+     at this size). Big numbers set their own size where they're the point of the card. */
+  .card-title {
+    @apply text-base font-semibold tracking-tight text-white;
+  }
+  .eyebrow {
+    @apply text-xs font-semibold text-slate-400;
+  }
+
   .chip {
     @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
   }
@@ -297,30 +312,25 @@ html[data-palette="amber"] {
  * only - dark mode is untouched.
  */
 
-/* A real aurora behind everything: three large, soft, saturated glows instead of one faint one. */
+/* The aurora sits at the top only - an accent glow top-left and a cool one top-right - so the
+   header and the hero card get the colour, and everything further down sits on an even canvas.
+   (A third glow mid-right and a warm one at the bottom tinted cards differently depending on
+   where they happened to sit, and muddied the bottom bar.) The accent glow follows the palette. */
 html[data-theme="light"] .aurora-a {
-  width: 22rem;
-  height: 22rem;
-  top: -6rem;
-  left: -7rem;
-  background: rgba(52, 211, 153, 0.55);
+  width: 24rem;
+  height: 20rem;
+  top: -8rem;
+  left: -8rem;
+  background: color-mix(in srgb, var(--color-emerald-400) 40%, transparent);
   filter: blur(80px);
 }
 html[data-theme="light"] .aurora-b {
-  width: 22rem;
-  height: 22rem;
-  bottom: -7rem;
-  right: -7rem;
-  background: rgba(251, 191, 36, 0.4);
-  filter: blur(90px);
-}
-html[data-theme="light"] .aurora-c {
-  display: block;
-  width: 18rem;
+  width: 20rem;
   height: 18rem;
-  top: 38%;
+  top: -8rem;
+  bottom: auto;
   right: -8rem;
-  background: rgba(129, 140, 248, 0.38);
+  background: rgba(129, 140, 248, 0.3);
   filter: blur(90px);
 }
 
@@ -358,6 +368,9 @@ html[data-theme="light"] .card-hero {
 /* Readable colour on a light surface: the dark-mode 400 shades are ~1.5-2.5:1 on white. These are
    4.3-4.8:1. Fills (rings, bars, the body map) darken with them, which also suits a light canvas. */
 html[data-theme="light"] {
+  --color-protein: #2563eb;
+  --color-carbs: #b45309;
+  --color-fat: #9333ea;
   --color-emerald-300: #0f9e6e;
   --color-emerald-400: #0b7f58;
   --color-blue-400: #2563eb;
@@ -388,32 +401,23 @@ html[data-theme="light"][data-palette="amber"] {
  * html:not([data-theme="light"])).
  */
 
-/* More colour to see through the glass: wide, soft corner glows (spread out rather than intense
-   hot spots) plus a third, indigo one. */
+/* Same top-only aurora as light mode, softer. */
 html:not([data-theme="light"]) .aurora-a {
-  width: 30rem;
-  height: 30rem;
+  width: 28rem;
+  height: 22rem;
   top: -10rem;
   left: -10rem;
-  background: rgba(52, 211, 153, 0.26);
-  filter: blur(120px);
+  background: color-mix(in srgb, var(--color-emerald-400) 22%, transparent);
+  filter: blur(110px);
 }
 html:not([data-theme="light"]) .aurora-b {
-  width: 30rem;
-  height: 30rem;
-  bottom: -10rem;
-  right: -10rem;
-  background: rgba(251, 191, 36, 0.16);
-  filter: blur(130px);
-}
-html:not([data-theme="light"]) .aurora-c {
-  display: block;
-  width: 17rem;
-  height: 17rem;
-  top: 40%;
-  right: -7rem;
-  background: rgba(99, 102, 241, 0.3);
-  filter: blur(90px);
+  width: 22rem;
+  height: 18rem;
+  top: -9rem;
+  bottom: auto;
+  right: -9rem;
+  background: rgba(99, 102, 241, 0.16);
+  filter: blur(110px);
 }
 
 /* Frosted cards with a faint sheen: lighter at the top-left, as if catching light, fading clearer. */

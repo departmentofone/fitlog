@@ -86,7 +86,7 @@ export function AlcoholSection() {
           previously a full date bar plus a big "0 kcal / 0 drinks" box every day. */}
       <div className="mb-3 flex items-center justify-between gap-2">
         <div>
-          <h3 className="font-medium text-white">Alcohol</h3>
+          <h3 className="card-title">Alcohol</h3>
           {logs.length > 0 && (
             <p className="text-xs text-slate-400">
               {logs.length} drink{logs.length === 1 ? '' : 's'} · {Math.round(totalCalories)} kcal

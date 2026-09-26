@@ -66,7 +66,7 @@ export function FoodAmountForm({
   return (
     <div className="card p-4">
       <div className="mb-3 flex items-start justify-between gap-3">
-        <h3 className="min-w-0 font-medium leading-snug text-white">{food.name}</h3>
+        <h3 className="min-w-0 card-title leading-snug">{food.name}</h3>
         <button onClick={onBack} className="-my-2 -mr-2 min-h-11 shrink-0 px-2 text-sm text-slate-400">
           {backLabel}
         </button>

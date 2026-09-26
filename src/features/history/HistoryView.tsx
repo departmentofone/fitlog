@@ -165,7 +165,7 @@ export function HistoryView() {
       </div>
 
       <div className="card p-4">
-        <h3 className="mb-3 font-medium text-white">Workout history</h3>
+        <h3 className="mb-3 card-title">Workout history</h3>
         <MonthCalendar
           month={month}
           onMonthChange={setMonth}

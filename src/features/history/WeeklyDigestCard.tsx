@@ -16,7 +16,7 @@ export function WeeklyDigestCard() {
   return (
     <div className="card-hero p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="font-medium text-white">Your week</h2>
+        <h2 className="card-title">Your week</h2>
         <span className="text-xs text-slate-500">Last 7 days</span>
       </div>
 

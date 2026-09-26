@@ -22,7 +22,7 @@ export function ExplainerCard({ explainer }: { explainer: Explainer }) {
         <span className="text-emerald-400">
           <InfoIcon />
         </span>
-        <h3 className="flex-1 text-sm font-semibold text-white">{title}</h3>
+        <h3 className="flex-1 card-title">{title}</h3>
       </div>
       <p className="mt-1 text-[13px] leading-snug text-slate-300">{body}</p>
 

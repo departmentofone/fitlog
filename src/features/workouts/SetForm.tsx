@@ -209,7 +209,7 @@ export function SetForm({
     <div className="card p-4">
       <div className="mb-1 flex items-center justify-between">
         <div className="flex min-w-0 items-center gap-2">
-          <h3 className="truncate font-medium text-white">{exercise.name}</h3>
+          <h3 className="truncate card-title">{exercise.name}</h3>
           {supersetLabel && (
             <span className="shrink-0 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-emerald-400">
               Superset {supersetLabel}

@@ -68,7 +68,7 @@ export function PresetsView({
       {currentSets.length > 0 &&
         (showSaveForm ? (
           <div className="card p-4">
-            <h3 className="mb-3 font-medium text-white">Save as preset</h3>
+            <h3 className="mb-3 card-title">Save as preset</h3>
             <input
               autoFocus
               placeholder="Preset name (e.g. Leg Day)"
@@ -102,7 +102,7 @@ export function PresetsView({
         ))}
 
       <div className="card card-glow p-4">
-        <h3 className="mb-3 font-medium text-white">Your presets</h3>
+        <h3 className="mb-3 card-title">Your presets</h3>
         {isLoading && (
           <div className="space-y-2">
             <SkeletonRow />

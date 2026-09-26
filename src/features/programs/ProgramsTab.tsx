@@ -33,7 +33,7 @@ function CheckList<T extends { id: string; name: string }>({
   if (items.length === 0) return null
   return (
     <div className="mb-3">
-      <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-slate-500">{title}</p>
+      <p className="mb-1.5 eyebrow">{title}</p>
       <div className="space-y-1">
         {items.map((item) => (
           <label key={item.id} className="flex items-center gap-2 rounded-xl bg-slate-800/60 px-3 py-2 text-sm text-slate-200">
@@ -91,7 +91,7 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
 
   return (
     <div className="card p-4">
-      <h3 className="mb-3 font-medium text-white">New program</h3>
+      <h3 className="mb-3 card-title">New program</h3>
       <div className="mb-3 space-y-2.5">
         <input
           placeholder="Program name"
@@ -252,7 +252,7 @@ export function ProgramsTab() {
       {/* One card: what programs are, your programs (only once you have some), and the action. It was
           two cards - an explainer and a separate empty "Programs" list. */}
       <div className="card p-4">
-        <h3 className="mb-1 font-medium text-white">Programs</h3>
+        <h3 className="mb-1 card-title">Programs</h3>
         <p className="mb-3 text-sm text-slate-400">
           Bundle workout presets, recipes, meal presets and diet goals into one package. Share it to Community and
           anyone can import it in one go.

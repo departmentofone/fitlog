@@ -78,7 +78,7 @@ export function MaintenanceCalculator() {
   return (
     <>
       <div className="card card-glow p-4">
-        <h3 className="mb-1 font-medium text-white">Maintenance calculator</h3>
+        <h3 className="mb-1 card-title">Maintenance calculator</h3>
         <p className="mb-3 text-sm text-slate-400">
           Your estimated daily maintenance calories, pre-filled from your profile. Change anything to try a scenario.
         </p>
@@ -133,7 +133,7 @@ export function MaintenanceCalculator() {
       </div>
 
       <div className="card p-4">
-        <h3 className="mb-3 font-medium text-white">Result</h3>
+        <h3 className="mb-3 card-title">Result</h3>
         {maintenance == null ? (
           <p className="text-sm text-slate-500">Fill in weight, height, age, sex, and activity level above to see your estimate.</p>
         ) : (

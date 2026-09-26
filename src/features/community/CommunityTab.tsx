@@ -239,7 +239,7 @@ function Preview({ item, unit }: { item: CommunityItem; unit: UnitSystem | undef
   const section = (title: string, names: string[]) =>
     names.length > 0 && (
       <div>
-        <p className="mb-1 text-xs font-medium uppercase tracking-wide text-slate-500">{title}</p>
+        <p className="mb-1 eyebrow">{title}</p>
         <ul className="space-y-0.5">
           {names.map((n, idx) => (
             <li key={`${n}-${idx}`} className="text-sm text-slate-200">
@@ -362,7 +362,7 @@ function CommunityCard({
         {item.isMine && !item.isOfficial && <span className="rounded-full bg-sky-500/15 px-2 py-0.5 text-[11px] font-semibold text-sky-400">Yours</span>}
       </div>
 
-      <h3 className="text-base font-semibold text-white">{item.name}</h3>
+      <h3 className="card-title">{item.name}</h3>
       {item.description && <p className="mt-0.5 text-sm text-slate-400">{item.description}</p>}
       <div className="mt-2">
         <Summary item={item} />
@@ -516,7 +516,7 @@ function ReportsPanel() {
   if (reports.length === 0) return null
   return (
     <section className="rounded-2xl bg-red-500/5 p-3 ring-1 ring-red-500/30">
-      <h3 className="mb-2 text-sm font-semibold text-white">
+      <h3 className="mb-2 card-title">
         Reports <span className="ml-1 rounded-full bg-red-500/20 px-2 py-0.5 text-xs text-red-300">{reports.length}</span>
       </h3>
       <ul className="space-y-2">

@@ -13,7 +13,7 @@ export function WhatsNewTab() {
           <p className="mb-1 text-xs text-slate-500">
             {new Date(entry.date + 'T00:00:00').toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
           </p>
-          <h3 className="mb-2 font-medium text-white">{entry.title}</h3>
+          <h3 className="mb-2 card-title">{entry.title}</h3>
           <ul className="space-y-1.5">
             {entry.changes.map((change) => (
               <li key={change} className="flex gap-2 text-sm text-slate-400">

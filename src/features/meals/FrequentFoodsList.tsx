@@ -6,7 +6,7 @@ export function FrequentFoodsList({ foods, onSelect }: { foods: Food[]; onSelect
 
   return (
     <div className="mb-3">
-      <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-slate-500">Frequently used</p>
+      <p className="mb-1.5 eyebrow">Frequently used</p>
       <div className="flex flex-wrap gap-1.5">
         {foods.map((food) => (
           <button

@@ -8,7 +8,7 @@ type Metric = 'calories' | 'protein' | 'carbs' | 'fat'
 
 // Calories tracks the user's accent color (it's the headline metric); protein/carbs/fat stay
 // fixed, distinguishable series colors regardless of accent, same as any multi-series chart.
-const FIXED_COLORS: Partial<Record<Metric, string>> = { protein: '#60a5fa', carbs: '#fbbf24', fat: '#f87171' }
+const FIXED_COLORS: Partial<Record<Metric, string>> = { protein: '#60a5fa', carbs: '#fbbf24', fat: '#c084fc' }
 const METRIC_LABELS: { key: Metric; label: string; unit: string }[] = [
   { key: 'calories', label: 'Calories', unit: 'kcal' },
   { key: 'protein', label: 'Protein', unit: 'g' },
@@ -37,7 +37,7 @@ export function TrendsChart() {
   return (
     <div className="card p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="font-medium text-white">Trends</h3>
+        <h3 className="card-title">Trends</h3>
         <div className="flex gap-1.5">
           {[7, 30].map((r) => (
             <button

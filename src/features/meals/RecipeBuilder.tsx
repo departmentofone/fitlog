@@ -105,7 +105,7 @@ export function RecipeBuilderView({
       </button>
 
       <div className="card p-4">
-        <h3 className="mb-3 font-medium text-white">New recipe</h3>
+        <h3 className="mb-3 card-title">New recipe</h3>
         <div className="mb-3 space-y-2.5">
           <input
             placeholder="Recipe name"
@@ -134,7 +134,7 @@ export function RecipeBuilderView({
         />
         {!search.trim() && frequent.length > 0 && (
           <div className="mb-3">
-            <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-slate-500">Frequently used</p>
+            <p className="mb-1.5 eyebrow">Frequently used</p>
             <div className="flex flex-wrap gap-1.5">
               {frequent.map((food) => (
                 <button
@@ -200,7 +200,7 @@ export function RecipeBuilderView({
       </div>
 
       <div className="card card-glow p-4">
-        <h3 className="mb-3 font-medium text-white">Your recipes</h3>
+        <h3 className="mb-3 card-title">Your recipes</h3>
         {isLoading && (
           <div className="space-y-2">
             <SkeletonRow />

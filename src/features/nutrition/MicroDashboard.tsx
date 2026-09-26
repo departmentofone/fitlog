@@ -58,7 +58,7 @@ export function MicroDashboard({ micros }: { micros: MicroTotals }) {
           const tone = toneFor(d.key, value, pct)
           return (
             <div key={d.key} className="rounded-xl bg-slate-800/60 p-2.5">
-              <p className="text-[11px] font-medium uppercase tracking-wide text-slate-500">{d.label}</p>
+              <p className="eyebrow">{d.label}</p>
               <p className={`text-sm font-semibold ${TONE_TEXT[tone]}`}>{formatAmount(value, d.unit)}</p>
               <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-slate-700/60">
                 <div className={`h-full rounded-full ${TONE_BAR[tone]}`} style={{ width: `${clamped}%` }} />

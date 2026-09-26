@@ -82,7 +82,7 @@ export function FastingTab({ quickAction }: { quickAction?: number }) {
 
           return (
             <div id="fasting-primary" className="card card-glow p-4">
-              <h3 className="mb-3 font-medium text-white">Current fast</h3>
+              <h3 className="mb-3 card-title">Current fast</h3>
               <div className="flex items-center gap-4">
                 <CircularProgress percent={pct} tone={pct >= 100 ? 'good' : 'neutral'} size={84} />
                 <div className="flex-1">
@@ -106,7 +106,7 @@ export function FastingTab({ quickAction }: { quickAction?: number }) {
         })()
       ) : (
         <div id="fasting-primary" className="card card-glow p-4">
-          <h3 className="mb-3 font-medium text-white">Start a fast</h3>
+          <h3 className="mb-3 card-title">Start a fast</h3>
           <p className="mb-2 text-sm text-slate-400">Pick a fasting window and start the timer.</p>
           <div className="mb-2 grid grid-cols-2 gap-1.5">
             {PRESETS.map((p) => (

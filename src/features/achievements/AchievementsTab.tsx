@@ -78,7 +78,7 @@ function LadderSheet({ ladder, onClose }: { ladder: AwardLadder; onClose: () => 
         className="sheet-up relative rounded-t-3xl border-t border-white/10 bg-slate-950 px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
       >
         <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-slate-700" />
-        <p className="text-center text-xs font-semibold uppercase tracking-wide text-slate-500">{CATEGORY_LABEL[ladder.category]}</p>
+        <p className="text-center eyebrow">{CATEGORY_LABEL[ladder.category]}</p>
         <h2 className="mt-1 text-center text-xl font-semibold text-white">{ladder.name}</h2>
         <p className="mt-1 text-center text-sm text-slate-400">
           {earned ? `${TIER_NAME[earned.tier]} earned` : 'Not earned yet'}
@@ -176,7 +176,7 @@ export function AchievementsTab() {
       {/* Next up: the closest locked awards, with progress. */}
       {upcoming.length > 0 && (
         <div className={card}>
-          <h3 className="mb-3 font-medium text-white">Almost there</h3>
+          <h3 className="mb-3 card-title">Almost there</h3>
           <div className="space-y-3">
             {upcoming.map((a) => (
               <button
@@ -203,7 +203,7 @@ export function AchievementsTab() {
       {/* Personal records: the thing lifters actually care about. */}
       <div className={card}>
         <div className="mb-2 flex items-center justify-between">
-          <h3 className="font-medium text-white">Personal records</h3>
+          <h3 className="card-title">Personal records</h3>
           {records.length > RECORDS_SHOWN && (
             <button onClick={() => setAllRecords((v) => !v)} className="-my-2 -mr-2 min-h-11 px-2 text-xs font-medium text-emerald-400">
               {allRecords ? 'Show fewer' : `All ${records.length}`}
@@ -252,7 +252,7 @@ export function AchievementsTab() {
       {/* The long-term collection: one medal per achievement, at the tier you've reached. */}
       <div className={card}>
         <div className="mb-3 flex items-baseline justify-between">
-          <h3 className="font-medium text-white">Medals</h3>
+          <h3 className="card-title">Medals</h3>
           <span className="text-xs text-slate-400">
             {earned} earned
           </span>

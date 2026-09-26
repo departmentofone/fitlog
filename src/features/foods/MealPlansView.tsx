@@ -288,7 +288,7 @@ export function MealPlansView() {
       {combining ? (
         <div className="space-y-3 tile p-3">
           <div>
-            <h3 className="text-sm font-semibold text-white">Combine into a week</h3>
+            <h3 className="card-title">Combine into a week</h3>
             <p className="text-xs text-slate-400">Tap day plans in the order you want them (up to 7). The originals stay as they are.</p>
           </div>
           <input value={weekName} onChange={(e) => setWeekName(e.target.value)} placeholder="Week name" maxLength={100} className={`${INPUT} w-full`} />

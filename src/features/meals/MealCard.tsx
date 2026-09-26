@@ -102,7 +102,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
       <div className="relative w-full rounded-2xl bg-slate-900/70 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5 transition hover:ring-emerald-500/30">
         <button onClick={() => setExpanded(true)} aria-label={`Open ${meal.name}`} className="block w-full text-left">
           <div className="mb-1 flex items-center justify-between gap-2">
-            <h3 className="font-medium text-white">{meal.name}</h3>
+            <h3 className="card-title">{meal.name}</h3>
             <span className="rounded-full bg-emerald-600/20 px-2 py-0.5 text-xs text-emerald-400">Done</span>
           </div>
           <p className="mb-1 text-sm text-slate-400">
@@ -122,7 +122,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
   return (
     <div className="card p-4">
       <div className="mb-2 flex items-center justify-between gap-2">
-        <h3 className="font-medium text-white">{meal.name}</h3>
+        <h3 className="card-title">{meal.name}</h3>
         <div className="flex items-center gap-2">
           {meal.meal_items.length > 0 && (
             <>

@@ -41,7 +41,7 @@ export function NutritionBreakdownModal({ meals, onClose }: { meals: MealWithIte
   const pieData = [
     { name: 'Protein', value: Math.round(totals.protein * 4), grams: Math.round(totals.protein), color: '#60a5fa' },
     { name: 'Carbs', value: Math.round(totals.carbs * 4), grams: Math.round(totals.carbs), color: '#fbbf24' },
-    { name: 'Fat', value: Math.round(totals.fat * 9), grams: Math.round(totals.fat), color: '#f87171' },
+    { name: 'Fat', value: Math.round(totals.fat * 9), grams: Math.round(totals.fat), color: '#c084fc' },
   ].filter((d) => d.value > 0)
 
   const flags = buildFlags(micros, foodNames)
@@ -53,7 +53,7 @@ export function NutritionBreakdownModal({ meals, onClose }: { meals: MealWithIte
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="font-medium text-white">Nutrition Breakdown</h3>
+          <h3 className="card-title">Nutrition Breakdown</h3>
           <button
             onClick={onClose}
             aria-label="Close"
@@ -114,7 +114,7 @@ export function NutritionBreakdownModal({ meals, onClose }: { meals: MealWithIte
             )}
 
             <div className="border-t border-white/5 pt-3">
-              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-500">Micronutrients</p>
+              <p className="mb-2 eyebrow">Micronutrients</p>
               <div className="space-y-2">
                 {DAILY_VALUES.map((d) => {
                   const value = micros[d.key]

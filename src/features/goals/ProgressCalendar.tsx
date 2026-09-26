@@ -142,7 +142,7 @@ export function ProgressCalendar() {
   return (
     <div className="card p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="font-medium text-white">Progress log</h3>
+        <h3 className="card-title">Progress log</h3>
         {photoEntries.length >= 2 && (
           <button onClick={() => setComparing(true)} className="text-xs font-medium text-emerald-400 hover:text-emerald-300">
             Compare photos

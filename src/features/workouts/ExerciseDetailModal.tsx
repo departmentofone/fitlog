@@ -48,7 +48,7 @@ export function ExerciseDetailModal({ exercise, onClose }: { exercise: Exercise;
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="font-medium text-white">{exercise.name}</h3>
+          <h3 className="card-title">{exercise.name}</h3>
           <button
             onClick={onClose}
             aria-label="Close"
@@ -101,7 +101,7 @@ export function ExerciseDetailModal({ exercise, onClose }: { exercise: Exercise;
 
         <div className="border-t border-white/5 pt-3">
           <div className="mb-2 flex items-center justify-between">
-            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Notes</p>
+            <p className="eyebrow">Notes</p>
             {!editingNote && (
               <button
                 onClick={() => {

@@ -37,7 +37,7 @@ export function PlateCalculator() {
   return (
     <>
       <div className="card card-glow p-4">
-        <h3 className="mb-1 font-medium text-white">Plate calculator</h3>
+        <h3 className="mb-1 card-title">Plate calculator</h3>
         <p className="mb-3 text-sm text-slate-400">
           Work out which plates to load on each side of the bar to hit a target total weight.
         </p>
@@ -73,7 +73,7 @@ export function PlateCalculator() {
       </div>
 
       <div className="card p-4">
-        <h3 className="mb-3 font-medium text-white">Result</h3>
+        <h3 className="mb-3 card-title">Result</h3>
         {result == null ? (
           <p className="text-sm text-slate-500">Enter a target weight and bar weight above to see the loading.</p>
         ) : (

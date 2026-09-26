@@ -49,7 +49,7 @@ export function MealPresetsView({
 
       {savableMeals.length > 0 && (
         <div className="card p-4">
-          <h3 className="mb-3 font-medium text-white">Save a meal as preset</h3>
+          <h3 className="mb-3 card-title">Save a meal as preset</h3>
           <div className="space-y-2">
             {savableMeals.map((meal) =>
               savingMealId === meal.id ? (
@@ -95,7 +95,7 @@ export function MealPresetsView({
       )}
 
       <div className="card card-glow p-4">
-        <h3 className="mb-3 font-medium text-white">Your meal presets</h3>
+        <h3 className="mb-3 card-title">Your meal presets</h3>
         {isLoading && (
           <div className="space-y-2">
             <SkeletonRow />

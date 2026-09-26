@@ -113,7 +113,7 @@ export function PhotoCompare({ entries, onBack }: { entries: ProgressEntry[]; on
   return (
     <div>
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="font-medium text-white">Compare photos</h3>
+        <h3 className="card-title">Compare photos</h3>
         <button onClick={onBack} className="text-xs text-slate-400 hover:text-slate-200">
           Back
         </button>

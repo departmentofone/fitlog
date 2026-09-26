@@ -56,7 +56,7 @@ export function FoodSearchPanel({ search, onSearchChange, onSelectFood, onCreate
   return (
     <div className="card p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="font-medium text-white">Add food</h3>
+        <h3 className="card-title">Add food</h3>
         <button onClick={onCancel} className="-my-2 -mr-2 min-h-11 px-2 text-sm text-slate-400">
           Cancel
         </button>

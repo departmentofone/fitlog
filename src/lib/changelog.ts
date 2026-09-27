@@ -8,6 +8,11 @@ export interface ChangelogEntry {
 // "What's new" reads from, and it's the only place that content lives (no other data source).
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: '2026-09-27',
+    title: 'Fixes',
+    changes: ['Tapping the day at the top of Train or Eat opens a calendar again, so you can jump to any date'],
+  },
+  {
     date: '2026-09-26',
     title: 'A simpler layout',
     changes: [

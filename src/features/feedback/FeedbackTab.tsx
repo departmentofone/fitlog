@@ -2,8 +2,8 @@ import { isAndroidApp } from '../../lib/platform'
 import { FeedbackForm } from './FeedbackForm'
 
 const FEEDBACK_EMAIL = 'departmentofone.app@gmail.com'
-/** Set to the real Buy Me a Coffee page once it exists - until then the button is a disabled placeholder. */
-const DONATE_URL: string | null = null
+/** Set to null to fall back to the disabled "Coming soon" placeholder. */
+const DONATE_URL: string | null = 'https://buymeacoffee.com/department.of.one'
 
 const cardClass = 'card p-4'
 
@@ -18,8 +18,9 @@ function CoffeeIcon() {
 
 /** Everything that goes back to the developer: feedback first, then the optional coffee. */
 export function FeedbackTab() {
-  // Google Play's Payments policy doesn't allow linking out to an external payment page from
-  // inside the app, so the Play (TWA) build shows the note without the button.
+  // Google Play's Payments policy doesn't allow leading users to an external payment page from
+  // inside the app - a link or wording that encourages it - so the Play (TWA) build keeps only
+  // the why-it's-free note, with no coffee paragraph or button.
   const showDonate = !isAndroidApp()
 
   return (
@@ -49,10 +50,12 @@ export function FeedbackTab() {
             With that in mind, I didn't want to monetize anything. There are no premium plans and there never will be -
             I don't want to lock anyone out of any feature, and not everyone can pay for this kind of thing.
           </p>
-          <p>
-            If it's been useful to you, a coffee helps cover the costs of keeping it running. It's
-            optional, and I appreciate it.
-          </p>
+          {showDonate && (
+            <p>
+              If it's been useful to you, a coffee helps cover the costs of keeping it running. It's
+              optional, and I appreciate it.
+            </p>
+          )}
         </div>
         {showDonate &&
           (DONATE_URL ? (

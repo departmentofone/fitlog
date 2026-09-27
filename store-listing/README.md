@@ -17,7 +17,7 @@ FitLog: Workout & Meal Tracker
 Free workout, meal & macro tracker. No ads, no paywalls, no premium tier.
 ```
 
-**Full description** (4,000 max, ~2,941 used)
+**Full description** (4,000 max, ~3,114 used)
 
 ```
 FitLog is a workout log, meal and macro tracker, and fasting timer in one app. It's completely free: no ads, no paywalls, and no premium tier. Every feature is available to everyone.
@@ -64,6 +64,8 @@ Your logs are visible only to you, unless you choose to share a preset, recipe, 
 
 WHY IT'S FREE
 FitLog started as a personal project and grew into something worth sharing. There are no premium plans and there never will be, because nobody should be locked out of a feature.
+
+If FitLog has been useful to you, you can help cover the cost of running it with a coffee at buymeacoffee.com/department.of.one. It's optional and doesn't unlock anything.
 
 FitLog is a tracking tool, not medical advice. Talk to a professional before starting a new diet, fasting routine, or exercise program.
 ```

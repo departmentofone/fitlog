@@ -1,7 +1,9 @@
 # Donations ("Buy Me a Coffee") — Plan
 
-Status: **placeholder shipped** (disabled "Coming soon" button in About). No payment processing
-exists anywhere in the app or backend.
+Status: **live on the web** (2026-09-27). Page: https://buymeacoffee.com/department.of.one.
+Hidden inside the Play (TWA) build. Linked from the Play Store listing description and the
+Department of One site instead, which is outside the app. No payment processing exists anywhere in
+the app or backend.
 
 ## Policy check (verified 2026-09-17)
 
@@ -13,17 +15,23 @@ exists anywhere in the app or backend.
 
 ## What the code does today
 
-- `src/features/about/AboutTab.tsx` — `DONATE_URL` is `null`, so a disabled placeholder renders.
-- `src/lib/platform.ts` — `isAndroidApp()` detects the Play (TWA) build from the
+- `src/features/feedback/FeedbackTab.tsx` - `DONATE_URL` holds the page URL, so the web build shows a
+  real external link (new tab, `noopener`). Setting it to `null` brings back the disabled
+  "Coming soon" placeholder.
+- `src/lib/platform.ts` - `isAndroidApp()` detects the Play (TWA) build from the
   `android-app://` referrer (remembered in sessionStorage, recorded at startup in `main.tsx`).
-  The About tab hides the donate button entirely in that build; the "Why it's free" text stays.
+  In that build the Feedback tab hides both the button and the "a coffee helps" paragraph; the
+  rest of the "Why it's free" text stays. The policy also bans *wording* that encourages paying
+  outside the app, not just links, so keep any new coffee copy behind `showDonate` too (and out of
+  `src/lib/changelog.ts`, which the Play build shows under What's new).
 
-## Going live (web)
+## Outside the app (allowed)
 
-1. Create the Buy Me a Coffee page (buymeacoffee.com — the name used in the copy).
-2. Set `DONATE_URL` in `AboutTab.tsx` to the page URL. The button switches to a real external link
-   (new tab, `noopener`). No backend, env vars, or Supabase changes needed.
-3. Deploy: `npx vercel --prod --scope fit-log`.
+- Play Store listing: the "WHY IT'S FREE" paragraph in `store-listing/README.md` names the page.
+- Department of One site (`departmentofone/department-of-one`): About section and footer.
+- Don't add an in-app link to the Department of One site from the Play build: it now leads to the
+  coffee page, and the policy covers links to pages that *eventually* lead to another payment
+  method (StreetComplete was flagged for this in 2022).
 
 ## Android (Play) options, in order of preference
 

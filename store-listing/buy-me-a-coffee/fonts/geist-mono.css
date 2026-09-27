@@ -1,0 +1,7 @@
+/* Geist Mono (SIL Open Font License), variable weight - the "Still Typing" wordmark font. Latin subset. */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 100 900;
+  src: url("./geist-mono-latin.woff2") format("woff2");
+}

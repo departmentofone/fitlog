@@ -1,0 +1,51 @@
+<!doctype html>
+<!-- Buy Me a Coffee cover banner. Render at 1600x400 CSS px (see README.md). -->
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @import url("../../design-system/fonts/sora.css");
+  html, body { margin: 0; }
+  body {
+    width: 1600px; height: 400px; overflow: hidden; position: relative;
+    background:
+      radial-gradient(ellipse 60% 120% at 0% 0%, rgba(13,130,89,.38), transparent 60%),
+      radial-gradient(ellipse 45% 110% at 100% 100%, rgba(34,185,133,.16), transparent 65%),
+      #0b0f1e;
+    font-family: "Sora", sans-serif;
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+  }
+  /* faint dot grid, fading toward the middle so the type stays clean */
+  body::before {
+    content: ""; position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,.10) 1.4px, transparent 1.6px);
+    background-size: 28px 28px;
+    -webkit-mask-image: radial-gradient(ellipse 55% 75% at 50% 48%, transparent 45%, #000 100%);
+    mask-image: radial-gradient(ellipse 55% 75% at 50% 48%, transparent 45%, #000 100%);
+  }
+  .lockup { position: relative; text-align: center; margin-top: -24px; }
+  h1 {
+    margin: 0; font-weight: 800; font-size: 104px; line-height: 1;
+    letter-spacing: -0.035em; white-space: nowrap;
+  }
+  .dot {
+    display: inline-block; width: .2em; height: .2em; margin-left: .06em;
+    border-radius: 50%; background: #34d399;
+    box-shadow: 0 0 28px rgba(52,211,153,.55);
+    vertical-align: baseline;
+  }
+  p {
+    margin: 26px 0 0; font-weight: 500; font-size: 38px; letter-spacing: -0.01em;
+    color: #a8b0c4;
+  }
+  p .ell { color: #34d399; letter-spacing: .08em; }
+</style>
+</head>
+<body>
+  <div class="lockup">
+    <h1>Department of One<span class="dot"></span></h1>
+    <p>(<span class="ell">…</span> for now)</p>
+  </div>
+</body>
+</html>

@@ -34,3 +34,11 @@ ds-bundle/
 .design-sync/.cache/
 .design-sync/learnings/
 .design-sync/node_modules
+
+# Android release builds and signing keys (PWABuilder output). Never commit these.
+first_release/
+*.keystore
+*.jks
+signing-key-info.txt
+*.aab
+*.apk

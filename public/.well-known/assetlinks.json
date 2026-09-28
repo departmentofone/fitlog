@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.departmentofone.fitlog",
+      "sha256_cert_fingerprints": [
+        "A5:76:18:07:F2:DA:39:87:E1:0B:AE:F3:F7:90:1F:51:26:FD:9F:3A:D4:7D:1C:02:D7:DB:4A:25:34:64:D0:E5",
+        "92:29:13:43:74:DA:B5:85:0E:04:0D:96:61:89:AF:B5:FC:9E:9D:3B:69:7E:B4:76:1A:91:C0:A9:87:A6:FC:A3"
+      ]
+    }
+  }
+]

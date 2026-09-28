@@ -12,7 +12,7 @@ import { queryClient } from './lib/queryClient'
 import './lib/viewportHeight'
 
 initErrorLogger()
-// Record the Play (TWA) launch while the android-app:// referrer is still present.
+// Record the Play (TWA) launch while the android-app:// referrer or ?source=play is still present.
 isAndroidApp()
 
 createRoot(document.getElementById('root')!).render(

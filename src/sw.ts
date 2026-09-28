@@ -19,7 +19,9 @@ cleanupOutdatedCaches()
 // could ever replace it. Network-first means every normal launch/reload picks up the latest
 // deploy when a connection is available, falling back to the last cached shell only when
 // offline - exactly the tradeoff a workout logger should make.
-registerRoute(new NavigationRoute(new NetworkFirst({ cacheName: 'pages' })))
+// ignoreSearch: the shell is the same page whatever the query says, so the Play build's
+// `/?source=play` launch can use a shell cached from `/` when offline, and the reverse.
+registerRoute(new NavigationRoute(new NetworkFirst({ cacheName: 'pages', matchOptions: { ignoreSearch: true } })))
 
 precacheAndRoute(self.__WB_MANIFEST)
 

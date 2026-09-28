@@ -1,12 +1,14 @@
 import { useState } from 'react'
+import { hasSignedInBefore } from '../lib/deviceHistory'
 import { supabase } from '../lib/supabase'
 
 type Mode = 'sign-in' | 'sign-up' | 'reset'
 
-const SUBTITLES: Record<Mode, string> = {
-  'sign-in': 'Sign in to your log',
-  'sign-up': 'Create your account',
-  reset: "Enter your email and we'll send you a link to set a new password.",
+// Each mode gets its own heading and intro, so it's clear at a glance which form this is.
+const HEADINGS: Record<Mode, { title: string; intro: string }> = {
+  'sign-up': { title: 'Create your account', intro: 'Free, with no ads. All you need is an email and a password.' },
+  'sign-in': { title: 'Welcome back', intro: 'Sign in to pick up where you left off.' },
+  reset: { title: 'Reset your password', intro: "Enter your email and we'll send you a link to set a new password." },
 }
 
 const SUBMIT_LABELS: Record<Mode, string> = {
@@ -18,8 +20,25 @@ const SUBMIT_LABELS: Record<Mode, string> = {
 const inputClass =
   'h-12 field px-3 '
 
+function ModeTab({ active, onClick, children }: { active: boolean; onClick: () => void; children: string }) {
+  return (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={active}
+      onClick={onClick}
+      className={`min-h-10 flex-1 rounded-full text-sm font-semibold transition ${
+        active ? 'bg-emerald-500/15 text-emerald-400' : 'text-slate-400'
+      }`}
+    >
+      {children}
+    </button>
+  )
+}
+
 export function AuthScreen() {
-  const [mode, setMode] = useState<Mode>('sign-in')
+  // A device that has never had a FitLog session starts on Create account; everyone else on Sign in.
+  const [mode, setMode] = useState<Mode>(() => (hasSignedInBefore() ? 'sign-in' : 'sign-up'))
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -44,9 +63,12 @@ export function AuthScreen() {
       } else if (mode === 'sign-up') {
         const { data, error } = await supabase.auth.signUp({ email, password })
         if (error) throw error
-        // If email confirmation is on, signUp won't return a session — fall back to asking them to check email.
+        // If email confirmation is on, signUp won't return a session: switch to Sign in, ready for
+        // after they've confirmed.
         if (!data.session) {
-          setInfo('Account created. Check your email to confirm it, then sign in.')
+          setMode('sign-in')
+          setPassword('')
+          setInfo('Account created. Check your email to confirm it, then sign in here.')
         }
         // Otherwise the auth state listener picks up the new session and logs them in automatically.
       } else {
@@ -63,11 +85,26 @@ export function AuthScreen() {
     }
   }
 
+  const heading = HEADINGS[mode]
+
+  // Top-anchored rather than centered: the modes differ in height, and a centered card would jump
+  // when switching between them.
   return (
-    <div className="flex h-[var(--app-height)] items-center justify-center overflow-y-auto overscroll-none bg-slate-950 px-4">
+    <div className="flex h-[var(--app-height)] items-start justify-center overflow-y-auto overscroll-none bg-slate-950 px-4 pb-8 pt-[max(env(safe-area-inset-top),10vh)]">
       <div className="w-full max-w-sm rounded-3xl border-t border-white/10 bg-slate-900 p-6 shadow-xl shadow-[var(--glow-shadow)]">
-        <h1 className="mb-1 text-2xl font-semibold text-white">FitLog</h1>
-        <p className="mb-6 text-sm text-slate-400">{SUBTITLES[mode]}</p>
+        <p className="mb-4 text-sm font-semibold tracking-tight text-emerald-400">FitLog</p>
+        {mode !== 'reset' && (
+          <div className="mb-6 flex rounded-full bg-slate-950 p-1 ring-1 ring-white/5" role="tablist" aria-label="Account">
+            <ModeTab active={mode === 'sign-up'} onClick={() => switchMode('sign-up')}>
+              Create account
+            </ModeTab>
+            <ModeTab active={mode === 'sign-in'} onClick={() => switchMode('sign-in')}>
+              Sign in
+            </ModeTab>
+          </div>
+        )}
+        <h1 className="mb-1 text-2xl font-semibold text-white">{heading.title}</h1>
+        <p className="mb-6 text-sm text-slate-400">{heading.intro}</p>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-300">
             Email
@@ -88,7 +125,7 @@ export function AuthScreen() {
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
                 <label htmlFor="auth-password" className="text-sm font-medium text-slate-300">
-                  Password
+                  {mode === 'sign-up' ? 'Choose a password' : 'Password'}
                 </label>
                 {mode === 'sign-in' && (
                   <button
@@ -137,21 +174,14 @@ export function AuthScreen() {
             {loading ? 'Please wait…' : SUBMIT_LABELS[mode]}
           </button>
         </form>
-        <button
-          onClick={() => switchMode(mode === 'sign-in' ? 'sign-up' : 'sign-in')}
-          className="mt-3 min-h-11 w-full text-center text-sm text-slate-400"
-        >
-          {mode === 'sign-in' ? (
-            <>
-              Don't have an account? <span className="font-semibold text-emerald-400">Sign up</span>
-            </>
-          ) : (
-            <>
-              {mode === 'reset' ? 'Remembered it?' : 'Already have an account?'}{' '}
-              <span className="font-semibold text-emerald-400">Sign in</span>
-            </>
-          )}
-        </button>
+        {mode === 'reset' && (
+          <button
+            onClick={() => switchMode('sign-in')}
+            className="mt-3 min-h-11 w-full text-center text-sm text-slate-400"
+          >
+            Remembered it? <span className="font-semibold text-emerald-400">Sign in</span>
+          </button>
+        )}
       </div>
     </div>
   )

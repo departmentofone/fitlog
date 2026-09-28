@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
+import { rememberSignedIn } from '../lib/deviceHistory'
 import { supabase } from '../lib/supabase'
 
 interface AuthContextValue {
@@ -23,6 +24,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
   const [recoveringPassword, setRecoveringPassword] = useState(false)
+
+  // Remembered so the auth screen opens on Sign in, not Create account, after signing out.
+  useEffect(() => {
+    if (session) rememberSignedIn()
+  }, [session])
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {

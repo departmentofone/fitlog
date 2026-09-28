@@ -17,7 +17,7 @@ FitLog: Workout & Meal Tracker
 Free workout, meal & macro tracker. No ads, no paywalls, no premium tier.
 ```
 
-**Full description** (4,000 max, ~3,114 used)
+**Full description** (4,000 max, ~2,884 used)
 
 ```
 FitLog is a workout log, meal and macro tracker, and fasting timer in one app. It's completely free: no ads, no paywalls, and no premium tier. Every feature is available to everyone.
@@ -54,7 +54,6 @@ REACH YOUR GOALS
 
 MADE TO BE QUICK
 • A + button to log a set, add a meal, or start a fast from anywhere
-• Customizable bottom bar with the sections you use most
 • Works offline and syncs when you're back online
 • Light and dark themes, five accent colors, and metric or imperial units
 • Export all of your data at any time
@@ -64,8 +63,6 @@ Your logs are visible only to you, unless you choose to share a preset, recipe, 
 
 WHY IT'S FREE
 FitLog started as a personal project and grew into something worth sharing. There are no premium plans and there never will be, because nobody should be locked out of a feature.
-
-If FitLog has been useful to you, you can help cover the cost of running it with a coffee at buymeacoffee.com/department.of.one. It's optional and doesn't unlock anything.
 
 FitLog is a tracking tool, not medical advice. Talk to a professional before starting a new diet, fasting routine, or exercise program.
 ```
@@ -98,26 +95,43 @@ After the first upload, write the app-link file with it:
 node scripts/set-assetlinks.mjs com.departmentofone.fitlog <upload-key SHA-256> <Play app-signing SHA-256>
 ```
 
+### Other PWABuilder settings
+
+- **Start URL:** `/?source=play`. The app hides the Buy Me a Coffee link when it sees this marker
+  or Chrome's `android-app://` referrer (`src/lib/platform.ts`). The marker covers phones where the
+  app opens in something other than Chrome. Play's Payments policy doesn't allow a link to an
+  outside payment page inside the app.
+- **Target SDK:** API 36 (Android 16) or higher. Play has required it for new apps since
+  31 Aug 2026.
+- **Permissions:** the generated Android manifest must not contain
+  `com.google.android.gms.permission.AD_ID` (see the Advertising ID answer in
+  `PLAY_CONSOLE_ANSWERS.md`).
+
 ## Graphics
 
 | Play asset | File | Spec check |
 |---|---|---|
 | App icon | `icon-512.png` | 512×512, 32-bit PNG, full square (Play rounds the corners) |
 | Feature graphic | `feature-graphic-1024x500.png` | 1024×500, 24-bit PNG, no alpha |
-| Phone screenshots (6) | `phone-screenshots/1-workouts.png` … `6-more.png` | 1080×1920 (9:16), 24-bit PNG, ≤ 8 MB each |
+| Phone screenshots (6) | `phone-screenshots/1-workouts.png` … `6-progress.png` | 1080×1920 (9:16), 24-bit PNG, ≤ 8 MB each |
 
 Upload the screenshots in file-name order (1 Workouts, 2 Set logging, 3 Meals, 4 Community,
-5 Diets, 6 More menu). Workouts, Set logging, Meals and More are also copied to
-`public/screenshots/` for the PWA manifest's install sheet (same file names as before).
+5 Diets, 6 Progress). Workouts, Set logging, Meals and Progress are also copied to
+`public/screenshots/` for the PWA manifest's install sheet. Progress replaced the old More menu
+shot, since the More menu no longer exists.
 
 ### How they were made
-Captured on 24 Sep 2026 from the real app running locally with a demo account: realistic workout
-and meal data, real foods and exercises from the database, and the official Community diets.
-Nothing personal is shown, and writes were blocked so no real data changed. 360×640 viewport at 3×
-scale (the More menu at 405×720 at 2.67× so the whole menu fits), Sora embedded, alpha flattened
-with sharp. The feature graphic (logo, tagline and two straight phone screens, no tilt) was
-rendered the same way from screenshots 1 and 4. The previous feature graphic was a broken capture:
-tilted, cropped, and with a stray scrollbar.
+Captured on 28 Sep 2026 from the current build (the Train / Eat / Progress / Community layout)
+running locally in headless Chrome at 360×640 and 3× scale, then saved as 24-bit PNGs with no alpha.
+The app was signed in to a made-up demo account whose data was served from memory: six weeks of
+Push/Pull/Legs training with a workout in progress, meals and water for today, a weight trend,
+and the Mediterranean diet followed. Exercises, foods and the official Community diets, meal plans
+and meals come from the seed SQL in `supabase/`, so the numbers match the real library (206 foods
+on Mediterranean, 20 official Community items). No request reached Supabase and nothing personal
+is shown.
+
+The feature graphic has the same logo, tagline, chips and phone frames as before, with the new
+screenshots 1 and 4 in the two phones.
 
 ### Nice to have (not required)
 - 7-inch and 10-inch tablet screenshots (only if you want the listing to look good on tablets).

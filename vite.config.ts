@@ -7,12 +7,12 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // Captured from the real app at 1080x1920 (see store-listing/README.md) and shown in the richer
 // Android install sheet. Order = display order.
-const STORE_SCREENSHOTS = ['workouts', 'set-logging', 'meals', 'more'] as const
+const STORE_SCREENSHOTS = ['workouts', 'set-logging', 'meals', 'progress'] as const
 const SCREENSHOT_LABELS: Record<(typeof STORE_SCREENSHOTS)[number], string> = {
   workouts: "Today's workout at a glance",
   'set-logging': 'Log sets fast with steppers and a rest timer',
   meals: 'Meals, macros, and water in one place',
-  more: 'Every section one tap away',
+  progress: 'Body weight over time, next to your goal',
 }
 
 // https://vite.dev/config/

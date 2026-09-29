@@ -1,5 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
-import type { VercelRequest, VercelResponse } from '@vercel/node'
+import type { VercelRequest, VercelResponse } from '../_vercel.js'
 
 /**
  * Permanently deletes the calling user's account and all of its data. Used by both the in-app

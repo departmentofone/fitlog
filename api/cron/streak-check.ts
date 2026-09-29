@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import type { VercelRequest, VercelResponse } from '@vercel/node'
+import type { VercelRequest, VercelResponse } from '../_vercel.js'
 import webpush from 'web-push'
 import { computeDayStreaks, todayDayNumber, toDayNumber } from '../../src/lib/streaks.js'
 
@@ -9,7 +9,9 @@ import { computeDayStreaks, todayDayNumber, toDayNumber } from '../../src/lib/st
  * "your streak ends at midnight" push. Same env-var requirements as weekly-digest.ts.
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.headers.authorization !== `Bearer ${process.env.CRON_SECRET}`) {
+  // Without a secret configured, refuse everything: otherwise "Bearer undefined" would pass.
+  const secret = process.env.CRON_SECRET
+  if (!secret || req.headers.authorization !== `Bearer ${secret}`) {
     return res.status(401).json({ error: 'Unauthorized' })
   }
 

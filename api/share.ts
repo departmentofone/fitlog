@@ -1,5 +1,6 @@
+import { randomBytes } from 'node:crypto'
 import { createClient } from '@supabase/supabase-js'
-import type { VercelRequest, VercelResponse } from '@vercel/node'
+import type { VercelRequest, VercelResponse } from './_vercel.js'
 
 /**
  * Share links: `/s/<kind>/<id>` (rewritten here by vercel.json). Answers with a small page whose
@@ -50,6 +51,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     ? (item.description?.trim() || `A ${label} shared on FitLog. Open it to see what's inside and save your own copy.`).slice(0, 200)
     : 'Workout log, meal and macro tracker, with a Community where people share their routines, recipes and diets.'
   const heading = item ? `Opening ${item.name} in FitLog…` : 'Opening FitLog…'
+  // This page's only script is the forward below; the policy allows exactly that script.
+  const nonce = randomBytes(16).toString('base64')
 
   const html = `<!doctype html>
 <html lang="en">
@@ -78,7 +81,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 <p>${escapeHtml(heading)}</p>
 <p><a id="open" href="${escapeHtml(target)}">Continue to FitLog</a></p>
 </main>
-<script>
+<script nonce="${nonce}">
 // The Play app marks its own launches (src/lib/platform.ts); pass that on, since this page is the
 // one that received the android-app:// referrer.
 var target = ${JSON.stringify(target)};
@@ -90,6 +93,10 @@ location.replace(target);
 </html>`
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8')
+  res.setHeader(
+    'Content-Security-Policy',
+    `default-src 'none'; script-src 'nonce-${nonce}'; style-src 'unsafe-inline'; img-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`,
+  )
   // Short: stopping sharing should stop describing the item soon after.
   res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=300')
   res.status(200).send(html)

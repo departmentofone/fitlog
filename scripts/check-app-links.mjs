@@ -30,7 +30,8 @@ else if (!String(res.headers.get('content-type')).includes('application/json')) 
 else {
   const live = await res.json()
   const same = JSON.stringify(live) === JSON.stringify(local)
-  same ? pass('live assetlinks.json matches the repo') : fail('live assetlinks.json differs from the repo: deploy first')
+  if (same) pass('live assetlinks.json matches the repo')
+  else fail('live assetlinks.json differs from the repo: deploy first')
 }
 
 // 2. Google verifies each key. Google caches the file for up to an hour after a change.
@@ -42,7 +43,8 @@ for (const fp of fingerprints) {
     'target.android_app.certificate.sha256_fingerprint': fp,
   })
   const r = await (await fetch(`https://digitalassetlinks.googleapis.com/v1/assetlinks:check?${q}`)).json()
-  r.linked ? pass(`Google verifies ${fp.slice(0, 11)}...`) : fail(`Google does not verify ${fp.slice(0, 11)}... yet (cached up to ${r.maxAge ?? '?'}; retry later)`)
+  if (r.linked) pass(`Google verifies ${fp.slice(0, 11)}...`)
+  else fail(`Google does not verify ${fp.slice(0, 11)}... yet (cached up to ${r.maxAge ?? '?'}; retry later)`)
 }
 
 // 3. The APK's own signing key is listed (APK Signature Scheme v2/v3 block).
@@ -84,7 +86,10 @@ const apk = process.argv[2]
 if (apk) {
   const keys = apkSigningKeys(readFileSync(apk))
   if (keys.length === 0) fail(`${apk}: no v2/v3 signature found`)
-  for (const k of keys) fingerprints.includes(k) ? pass(`${apk} is signed with ${k.slice(0, 11)}..., which is listed`) : fail(`${apk} is signed with ${k}, which is NOT in assetlinks.json`)
+  for (const k of keys) {
+    if (fingerprints.includes(k)) pass(`${apk} is signed with ${k.slice(0, 11)}..., which is listed`)
+    else fail(`${apk} is signed with ${k}, which is NOT in assetlinks.json`)
+  }
 }
 
 console.log(failed ? '\nApp links are NOT ready: the Play app will open with an address bar.' : '\nApp links check passed.')

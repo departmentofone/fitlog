@@ -1,7 +1,7 @@
 import type { Session } from '@supabase/supabase-js'
 import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { Turnstile } from '../components/Turnstile'
+import { TICK_THE_BOX, useTurnstile } from '../components/Turnstile'
 import { deleteAccount } from '../lib/deleteAccount'
 import { supabase } from '../lib/supabase'
 
@@ -20,15 +20,21 @@ function SignIn() {
   const [error, setError] = useState<string | null>(null)
   const [sent, setSent] = useState(false)
   // Cloudflare Turnstile token for Supabase's CAPTCHA check; a fresh one after each attempt.
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
-  const [captchaReset, setCaptchaReset] = useState(0)
-  const captcha = captchaToken ?? undefined
-  const explain = (message: string) => (/captcha/i.test(message) ? "The bot check didn't go through. Wait a moment and try again." : message)
+  const turnstile = useTurnstile('delete_account')
+  const explain = (message: string) => (/captcha/i.test(message) ? TICK_THE_BOX : message)
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     setBusy(true)
     setError(null)
+    // A password manager can submit before the bot check has finished: wait for it.
+    const token = await turnstile.getToken()
+    if (!token && turnstile.needsTick()) {
+      setError(TICK_THE_BOX)
+      setBusy(false)
+      return
+    }
+    const captcha = token ?? undefined
     if (method === 'password') {
       const { error } = await supabase.auth.signInWithPassword({ email, password, options: { captchaToken: captcha } })
       if (error) setError(explain(error.message))
@@ -42,7 +48,7 @@ function SignIn() {
       else setSent(true)
     }
     setBusy(false)
-    setCaptchaReset((n) => n + 1)
+    if (token) turnstile.used()
   }
 
   if (sent) {
@@ -87,7 +93,7 @@ function SignIn() {
           {error}
         </p>
       )}
-      <Turnstile onToken={setCaptchaToken} resetKey={captchaReset} action="delete_account" />
+      {turnstile.widget}
       <button type="submit" disabled={busy}>
         {busy ? 'Please wait…' : method === 'password' ? 'Continue' : 'Email me a sign-in link'}
       </button>

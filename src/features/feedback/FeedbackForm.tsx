@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Turnstile } from '../../components/Turnstile'
+import { TICK_THE_BOX, useTurnstile } from '../../components/Turnstile'
 import { useAuth } from '../../hooks/useAuth'
 import { FEEDBACK_EMAIL_RE, FEEDBACK_LIMITS, sendFeedback } from '../../lib/feedback'
 
@@ -24,8 +24,7 @@ export function FeedbackForm() {
   const [sending, setSending] = useState(false)
   const [sentTo, setSentTo] = useState<string | null>(null)
   // Cloudflare Turnstile token, checked by the contact endpoint; a fresh one after each attempt.
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
-  const [captchaReset, setCaptchaReset] = useState(0)
+  const turnstile = useTurnstile('feedback')
 
   function fail(field: 'subject' | 'email' | 'message', text: string) {
     setInvalid(field)
@@ -40,8 +39,11 @@ export function FeedbackForm() {
     setInvalid(null)
     setStatus(null)
     setSending(true)
+    let turnstileToken: string | null = null
     try {
-      await sendFeedback({ subject, email, message, accountEmail: user?.email, turnstileToken: captchaToken })
+      turnstileToken = await turnstile.getToken()
+      if (!turnstileToken && turnstile.needsTick()) throw new Error(TICK_THE_BOX)
+      await sendFeedback({ subject, email, message, accountEmail: user?.email, turnstileToken })
       setSentTo(email.trim())
     } catch (err) {
       setStatus({
@@ -50,7 +52,7 @@ export function FeedbackForm() {
       })
     } finally {
       setSending(false)
-      setCaptchaReset((n) => n + 1)
+      if (turnstileToken) turnstile.used()
     }
   }
 
@@ -152,7 +154,7 @@ export function FeedbackForm() {
           {status.text}
         </p>
       )}
-      <Turnstile onToken={setCaptchaToken} resetKey={captchaReset} action="feedback" />
+      {turnstile.widget}
       <button
         type="submit"
         disabled={sending}

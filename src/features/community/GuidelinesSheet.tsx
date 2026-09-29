@@ -28,7 +28,7 @@ export function GuidelinesSheet({ onAgree, onClose, agreeing }: { onAgree?: () =
         <h2 id="guidelines-title" className="text-lg font-semibold text-white">
           Community guidelines
         </h2>
-        <p className="mt-1 text-sm text-slate-400">Everything you share is visible to everyone on FitLog. Keep it:</p>
+        <p className="mt-1 text-sm text-slate-400">Everything you share is visible to everyone on FitLog, and its name and description show in the preview of any link to it. Keep it:</p>
         <ul className="mt-4 space-y-3">
           {RULES.map((r) => (
             <li key={r.title} className="flex gap-3">

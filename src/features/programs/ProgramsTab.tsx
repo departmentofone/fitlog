@@ -18,6 +18,7 @@ import { useRecipes } from '../../hooks/useRecipes'
 import { useUserSettings } from '../../hooks/useUserSettings'
 import { fromDisplayVolume, volumeUnitLabel } from '../../lib/units'
 import type { DietGoal, Program } from '../../types'
+import { ShareLinkButton } from '../community/ShareLinkButton'
 
 function CheckList<T extends { id: string; name: string }>({
   title,
@@ -215,10 +216,13 @@ function ProgramCard({ program, isOwner }: { program: Program; isOwner: boolean 
       </p>
 
       {isOwner ? (
-        <label className="mb-2 flex items-center gap-1.5 text-xs text-slate-400">
-          <input type="checkbox" checked={program.is_shared} onChange={(e) => gate.request(e.target.checked, (on) => setShared.mutate({ programId: program.id, isShared: on }))} className="h-3.5 w-3.5 accent-emerald-500" />
-          Share to Community
-        </label>
+        <div className="mb-2 flex items-center justify-between gap-3">
+          <label className="flex items-center gap-1.5 text-xs text-slate-400">
+            <input type="checkbox" checked={program.is_shared} onChange={(e) => gate.request(e.target.checked, (on) => setShared.mutate({ programId: program.id, isShared: on }))} className="h-3.5 w-3.5 accent-emerald-500" />
+            Share to Community
+          </label>
+          {program.is_shared && <ShareLinkButton kind="program" id={program.id} name={program.name} />}
+        </div>
       ) : (
         <p className="mb-2 text-xs text-emerald-400">From Community</p>
       )}

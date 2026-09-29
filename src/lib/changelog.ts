@@ -8,6 +8,17 @@ export interface ChangelogEntry {
 // "What's new" reads from, and it's the only place that content lives (no other data source).
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: '2026-09-29',
+    title: 'Share links and a smarter rest timer',
+    changes: [
+      'Share a link to any workout, program, recipe, meal, meal plan or diet you have shared to Community. Whoever opens it lands right on it and can save a copy',
+      'Every Community card has a share button too, so you can pass on something you found',
+      'The rest timer can show its countdown in your notification bar and alert you when rest is over, even while you are in another app',
+      'Settings has a Rest timer section: turn off the automatic start after each set, or the notifications',
+      'New to FitLog? The app now opens on Create account, and the sign-in and sign-up screens are easier to tell apart',
+    ],
+  },
+  {
     date: '2026-09-27',
     title: 'Fixes',
     changes: ['Tapping the day at the top of Train or Eat opens a calendar again, so you can jump to any date'],
@@ -19,7 +30,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Four places on the bottom bar - Train, Eat, Progress and Community - with their sections as tabs at the top, instead of a menu of 15 screens',
       'Each screen now says where you are in the header',
       'The barcode scanner opens from Foods, the calorie calculator from Diet, and the plate calculator from your workout',
-      "What's new, About, and Feedback & support (with why FitLog is free) are in Settings",
+      "What's new, About, and Feedback & support are in Settings",
       'Foods has a new icon that no longer looks like a bin',
       "Meals shows today's calories against your goal, with what's left, right at the top",
       'The + button steps aside while you log a set or search for a food, instead of covering the buttons',
@@ -39,7 +50,6 @@ export const CHANGELOG: ChangelogEntry[] = [
     title: 'Send feedback from the app',
     changes: [
       'New Feedback tab (More menu): write to the developer without leaving FitLog - bug reports, ideas or questions, with a reply to your email',
-      'The note on why FitLog is free moved there too',
     ],
   },
   {

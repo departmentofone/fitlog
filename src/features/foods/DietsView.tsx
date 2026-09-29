@@ -17,6 +17,7 @@ import { useMealPlans } from '../../hooks/useMealPlans'
 import { UNAVAILABLE_FOOD_NAME, type DietWithFoods } from '../../types'
 import { FoodSearchPanel } from '../meals/FoodSearchPanel'
 import { NewFoodForm } from '../meals/NewFoodForm'
+import { ShareLinkButton } from '../community/ShareLinkButton'
 
 const INPUT = 'w-full field px-3 py-2.5 '
 
@@ -138,10 +139,13 @@ function DietCard({ diet, samples, following, open, onToggle }: { diet: DietWith
           )}
 
           <div className="flex items-center justify-between gap-3 text-xs">
-            <label className="flex items-center gap-1.5 text-slate-400">
-              <input type="checkbox" checked={diet.is_shared} onChange={(e) => gate.request(e.target.checked, (on) => update.mutate({ dietId: diet.id, is_shared: on }))} className="h-4 w-4 accent-emerald-500" />
-              Share to Community
-            </label>
+            <span className="flex items-center gap-3">
+              <label className="flex items-center gap-1.5 text-slate-400">
+                <input type="checkbox" checked={diet.is_shared} onChange={(e) => gate.request(e.target.checked, (on) => update.mutate({ dietId: diet.id, is_shared: on }))} className="h-4 w-4 accent-emerald-500" />
+                Share to Community
+              </label>
+              {diet.is_shared && <ShareLinkButton kind="diet" id={diet.id} name={diet.name} />}
+            </span>
 {gate.sheet}
             <span className="flex gap-3">
               <button onClick={() => setRenaming(diet.name)} className="min-h-9 text-slate-400">

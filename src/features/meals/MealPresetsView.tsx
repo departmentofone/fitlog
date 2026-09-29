@@ -14,6 +14,7 @@ import { EmptyState } from '../../components/EmptyState'
 import { SkeletonRow } from '../../components/Skeleton'
 import { useToast } from '../../components/ToastProvider'
 import type { MealWithItems } from '../../hooks/useMeals'
+import { ShareLinkButton } from '../community/ShareLinkButton'
 
 export function MealPresetsView({
   date,
@@ -127,15 +128,18 @@ export function MealPresetsView({
               </div>
               <p className="mb-2 text-xs text-slate-400">{preset.meal_preset_items.map((i) => i.food?.name ?? UNAVAILABLE_FOOD_NAME).join(', ')}</p>
               {preset.user_id === user?.id ? (
-                <label className="mb-2 flex items-center gap-1.5 text-xs text-slate-400">
-                  <input
-                    type="checkbox"
-                    checked={preset.is_shared}
-                    onChange={(e) => gate.request(e.target.checked, (on) => setShared.mutate({ presetId: preset.id, isShared: on }))}
-                    className="h-3.5 w-3.5 accent-emerald-500"
-                  />
-                  Share to Community
-                </label>
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <label className="flex items-center gap-1.5 text-xs text-slate-400">
+                    <input
+                      type="checkbox"
+                      checked={preset.is_shared}
+                      onChange={(e) => gate.request(e.target.checked, (on) => setShared.mutate({ presetId: preset.id, isShared: on }))}
+                      className="h-3.5 w-3.5 accent-emerald-500"
+                    />
+                    Share to Community
+                  </label>
+                  {preset.is_shared && <ShareLinkButton kind="meal" id={preset.id} name={preset.name} />}
+                </div>
               ) : (
                 <p className="mb-2 text-xs text-emerald-400">From Community</p>
               )}

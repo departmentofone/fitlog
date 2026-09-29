@@ -1,5 +1,8 @@
 {
   "cleanUrls": true,
+  "rewrites": [
+    { "source": "/s/:kind/:id", "destination": "/api/share?kind=:kind&id=:id" }
+  ],
   "headers": [
     {
       "source": "/.well-known/assetlinks.json",

@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { hasSignedInBefore } from '../lib/deviceHistory'
+import { peekPendingShared, SHARE_KIND_PHRASE } from '../lib/shareLink'
 import { supabase } from '../lib/supabase'
 
 type Mode = 'sign-in' | 'sign-up' | 'reset'
 
 // Each mode gets its own heading and intro, so it's clear at a glance which form this is.
 const HEADINGS: Record<Mode, { title: string; intro: string }> = {
-  'sign-up': { title: 'Create your account', intro: 'Free, with no ads. All you need is an email and a password.' },
+  'sign-up': { title: 'Create your account', intro: 'All you need is an email and a password.' },
   'sign-in': { title: 'Welcome back', intro: 'Sign in to pick up where you left off.' },
   reset: { title: 'Reset your password', intro: "Enter your email and we'll send you a link to set a new password." },
 }
@@ -86,6 +87,8 @@ export function AuthScreen() {
   }
 
   const heading = HEADINGS[mode]
+  // Arrived from a share link: say what's waiting on the other side of signing in.
+  const [sharedRef] = useState(() => peekPendingShared())
 
   // Top-anchored rather than centered: the modes differ in height, and a centered card would jump
   // when switching between them.
@@ -93,6 +96,11 @@ export function AuthScreen() {
     <div className="flex h-[var(--app-height)] items-start justify-center overflow-y-auto overscroll-none bg-slate-950 px-4 pb-8 pt-[max(env(safe-area-inset-top),10vh)]">
       <div className="w-full max-w-sm rounded-3xl border-t border-white/10 bg-slate-900 p-6 shadow-xl shadow-[var(--glow-shadow)]">
         <p className="mb-4 text-sm font-semibold tracking-tight text-emerald-400">FitLog</p>
+        {sharedRef && mode !== 'reset' && (
+          <p className="mb-4 rounded-xl bg-emerald-500/10 px-3 py-2.5 text-sm text-emerald-300 ring-1 ring-emerald-500/20">
+            Someone shared {SHARE_KIND_PHRASE[sharedRef.kind]} with you. {mode === 'sign-up' ? 'Create an account' : 'Sign in'} to open it and save a copy.
+          </p>
+        )}
         {mode !== 'reset' && (
           <div className="mb-6 flex rounded-full bg-slate-950 p-1 ring-1 ring-white/5" role="tablist" aria-label="Account">
             <ModeTab active={mode === 'sign-up'} onClick={() => switchMode('sign-up')}>

@@ -25,6 +25,7 @@ import { haptics } from '../../lib/haptics'
 import { foodUnitLabel, fromDisplayFoodAmount, toDisplayFoodAmount } from '../../lib/units'
 import { useUserSettings } from '../../hooks/useUserSettings'
 import type { Food } from '../../types'
+import { ShareLinkButton } from '../community/ShareLinkButton'
 
 interface DraftIngredient {
   food: Food
@@ -335,15 +336,18 @@ function RecipeCard({
       </div>
 
       {isOwner ? (
-        <label className="mb-2 flex items-center gap-1.5 text-xs text-slate-400">
-          <input
-            type="checkbox"
-            checked={recipe.is_shared}
-            onChange={(e) => onSetShared(e.target.checked)}
-            className="h-3.5 w-3.5 accent-emerald-500"
-          />
-          Share to Community
-        </label>
+        <div className="mb-2 flex items-center justify-between gap-3">
+          <label className="flex items-center gap-1.5 text-xs text-slate-400">
+            <input
+              type="checkbox"
+              checked={recipe.is_shared}
+              onChange={(e) => onSetShared(e.target.checked)}
+              className="h-3.5 w-3.5 accent-emerald-500"
+            />
+            Share to Community
+          </label>
+          {recipe.is_shared && <ShareLinkButton kind="recipe" id={recipe.id} name={recipe.name} />}
+        </div>
       ) : (
         <p className="mb-2 text-xs text-emerald-400">From Community</p>
       )}

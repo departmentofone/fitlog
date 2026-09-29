@@ -15,6 +15,7 @@ import { EmptyState } from '../../components/EmptyState'
 import { SkeletonRow } from '../../components/Skeleton'
 import { useToast } from '../../components/ToastProvider'
 import type { SetWithExercise } from '../../hooks/useWorkouts'
+import { ShareLinkButton } from '../community/ShareLinkButton'
 
 function summarize(preset: PresetWithItems) {
   const names = new Map<string, number>()
@@ -137,15 +138,18 @@ export function PresetsView({
               </div>
               <p className="mb-2 text-xs text-slate-400">{summarize(preset)}</p>
               {preset.user_id === user?.id && (
-                <label className="mb-2 flex items-center gap-1.5 text-xs text-slate-400">
-                  <input
-                    type="checkbox"
-                    checked={preset.is_shared}
-                    onChange={(e) => gate.request(e.target.checked, (on) => setShared.mutate({ presetId: preset.id, isShared: on }))}
-                    className="h-3.5 w-3.5 accent-emerald-500"
-                  />
-                  Share to Community
-                </label>
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <label className="flex items-center gap-1.5 text-xs text-slate-400">
+                    <input
+                      type="checkbox"
+                      checked={preset.is_shared}
+                      onChange={(e) => gate.request(e.target.checked, (on) => setShared.mutate({ presetId: preset.id, isShared: on }))}
+                      className="h-3.5 w-3.5 accent-emerald-500"
+                    />
+                    Share to Community
+                  </label>
+                  {preset.is_shared && <ShareLinkButton kind="workout" id={preset.id} name={preset.name} />}
+                </div>
               )}
               {preset.user_id !== user?.id && (
                 <p className="mb-2 text-xs text-emerald-400">From Community</p>

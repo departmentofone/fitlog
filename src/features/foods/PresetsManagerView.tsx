@@ -18,6 +18,7 @@ import { UNAVAILABLE_FOOD_NAME } from '../../types'
 import { useUserSettings } from '../../hooks/useUserSettings'
 import { formatFoodAmount } from '../../lib/units'
 import { FoodPicker } from '../meals/FoodPicker'
+import { ShareLinkButton } from '../community/ShareLinkButton'
 
 /**
  * Full preset management, independent of logging a real meal first: create an empty preset, add
@@ -176,6 +177,7 @@ export function PresetsManagerView() {
                           />
                           Share to Community
                         </label>
+                        {preset.is_shared && <ShareLinkButton kind="meal" id={preset.id} name={preset.name} />}
 {gate.sheet}
                         <div className="flex gap-3 text-xs">
                           <button

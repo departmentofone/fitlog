@@ -13,6 +13,7 @@ import { useCelebrateUnlocks } from './hooks/useCelebrateUnlocks'
 import { parseRoute, useHashRoute } from './hooks/useHashRoute'
 import { useSyncTimezone, useUserSettings } from './hooks/useUserSettings'
 import { OPEN_ROUTE_MESSAGE } from './lib/openRoute'
+import { parseOpenParam, peekPendingShared, storePendingShared } from './lib/shareLink'
 import { storeSharedText } from './lib/shareTarget'
 import type { Tab } from './types'
 
@@ -86,6 +87,8 @@ function TabFallback() {
 function App() {
   const { user, loading, recoveringPassword, finishPasswordRecovery } = useAuth()
   const { route, navigate, goBack } = useHashRoute()
+  // Someone arriving from a share link came for that item: the first-run tour waits for their next visit.
+  const [openedFromShareLink] = useState(() => !!parseOpenParam(window.location.search) || !!peekPendingShared())
   const { data: settings, isLoading: settingsLoading } = useUserSettings()
   const { show: showToast } = useToast()
   // A quick-add request for the tab it navigates to: the tab performs the action (open the
@@ -122,6 +125,21 @@ function App() {
     setQuickAction({ tab: 'meals', nonce: Date.now() })
     navigate('meals')
   }, [user, navigate, showToast])
+  // A share link lands here as ?open=<kind>:<id> (see lib/shareLink.ts). Keep it until the person
+  // is signed in (it survives signing up), strip it from the URL, then open Community, which shows
+  // the item on top.
+  useEffect(() => {
+    const ref = parseOpenParam(window.location.search)
+    if (!ref) return
+    storePendingShared(ref)
+    const params = new URLSearchParams(window.location.search)
+    params.delete('open')
+    const search = params.toString()
+    history.replaceState(history.state, '', `${window.location.pathname}${search ? `?${search}` : ''}${window.location.hash}`)
+  }, [])
+  useEffect(() => {
+    if (user && peekPendingShared()) navigate('community')
+  }, [user, navigate])
   // A notification button that opens a screen (the rest timer's Settings) while FitLog is open.
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return
@@ -209,7 +227,7 @@ function App() {
           </TabErrorBoundary>
         </Layout>
       </QuickAddVisibilityProvider>
-      <OnboardingTour onOpenCommunity={() => navigate('community')} />
+      {!openedFromShareLink && <OnboardingTour onOpenCommunity={() => navigate('community')} />}
     </>
   )
 }

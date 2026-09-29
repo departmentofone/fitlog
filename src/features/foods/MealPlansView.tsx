@@ -24,6 +24,7 @@ import { useUserSettings } from '../../hooks/useUserSettings'
 import { averageDay, DEFAULT_PLAN_MEALS, groupPlan, nextMealOrder } from '../../lib/mealPlans'
 import { UNAVAILABLE_FOOD_NAME, type MealPlanWithItems } from '../../types'
 import { FoodPicker } from '../meals/FoodPicker'
+import { ShareLinkButton } from '../community/ShareLinkButton'
 
 const INPUT = 'min-w-0 flex-1 field px-3 py-2.5 '
 
@@ -239,10 +240,13 @@ function PlanCard({ plan, dietName, open, onToggle }: { plan: MealPlanWithItems;
             {dietName ? (
               <span className="text-slate-500">Shared along with the {dietName} diet</span>
             ) : (
-              <label className="flex items-center gap-1.5 text-slate-400">
-                <input type="checkbox" checked={plan.is_shared} onChange={(e) => gate.request(e.target.checked, (on) => update.mutate({ planId: plan.id, is_shared: on }))} className="h-4 w-4 accent-emerald-500" />
-                Share to Community
-              </label>
+              <span className="flex items-center gap-3">
+                <label className="flex items-center gap-1.5 text-slate-400">
+                  <input type="checkbox" checked={plan.is_shared} onChange={(e) => gate.request(e.target.checked, (on) => update.mutate({ planId: plan.id, is_shared: on }))} className="h-4 w-4 accent-emerald-500" />
+                  Share to Community
+                </label>
+                {plan.is_shared && <ShareLinkButton kind="plan" id={plan.id} name={plan.name} />}
+              </span>
             )}
             <span className="flex gap-3">
               <button onClick={() => setRenaming(plan.name)} className="min-h-9 text-slate-400">

@@ -1,5 +1,5 @@
 import { formatWhole } from '../../lib/number'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { EmptyState } from '../../components/EmptyState'
 import { ExplainerCard } from '../../components/ExplainerCard'
 import { COMMUNITY_EXPLAINERS } from '../../lib/explainers'
@@ -10,6 +10,7 @@ import {
   communitySearchText,
   REPORT_TYPE,
   useCommunity,
+  useCommunityItem,
   useCommunityReports,
   useDismissReport,
   useIsSiteOwner,
@@ -20,6 +21,8 @@ import {
   type CommunityKind,
 } from '../../hooks/useCommunity'
 import { GuidelinesSheet } from './GuidelinesSheet'
+import { ShareLinkButton } from './ShareLinkButton'
+import { clearPendingShared, peekPendingShared } from '../../lib/shareLink'
 import { useMealPresets, useSetMealPresetShared } from '../../hooks/useMealPresets'
 import { usePresets, useSetPresetShared } from '../../hooks/usePresets'
 import { useImportProgram, useSetProgramShared } from '../../hooks/usePrograms'
@@ -360,6 +363,9 @@ function CommunityCard({
           </span>
         )}
         {item.isMine && !item.isOfficial && <span className="rounded-full bg-sky-500/15 px-2 py-0.5 text-[11px] font-semibold text-sky-400">Yours</span>}
+        <span className="ml-auto">
+          <ShareLinkButton variant="icon" kind={item.kind} id={item.id} name={item.name} />
+        </span>
       </div>
 
       <h3 className="card-title">{item.name}</h3>
@@ -552,6 +558,11 @@ function ReportsPanel() {
  */
 export function CommunityTab() {
   const { data: items = [], isLoading, error, refetch } = useCommunity()
+  // An item opened from a share link, shown on top until closed. Read once, then forgotten, so
+  // coming back to Community later doesn't show it again.
+  const [sharedRef, setSharedRef] = useState(() => peekPendingShared())
+  useEffect(() => clearPendingShared(), [])
+  const shared = useCommunityItem(sharedRef)
   const { data: settings } = useUserSettings()
   const { data: myMeals = [] } = useMealPresets()
   const { data: myRecipes = [] } = useRecipes()
@@ -603,6 +614,38 @@ export function CommunityTab() {
 
   return (
     <div className="space-y-4 p-4">
+      {sharedRef && (
+        <section aria-labelledby="shared-with-you" className="space-y-2">
+          <div className="flex items-center justify-between">
+            <h2 id="shared-with-you" className="eyebrow">
+              Shared with you
+            </h2>
+            <button onClick={() => setSharedRef(null)} className="-my-2 min-h-9 px-2 text-xs font-medium text-slate-400">
+              Close
+            </button>
+          </div>
+          {shared.isLoading ? (
+            <SkeletonCard lines={3} />
+          ) : shared.data ? (
+            <CommunityCard
+              item={shared.data}
+              saved={savedIds.has(shared.data.id)}
+              following={shared.data.kind === 'diet' && !!activeDiet && activeDiet.source_id === shared.data.id}
+              unit={settings?.unit_system}
+              isOwner={isOwner}
+              onHidePerson={() => {
+                hidePerson(shared.data!.ownerId)
+                setSharedRef(null)
+              }}
+            />
+          ) : (
+            <div className="card p-4 text-sm text-slate-400">
+              {shared.error ? "Couldn't open that link right now. Try again in a moment." : "This isn't shared anymore, or the link is incomplete."}
+            </div>
+          )}
+        </section>
+      )}
+
       <div>
         <p className="text-sm text-slate-400">
           Diets, meal plans, recipes and workouts people have shared. Saving makes your own copy - change it however you like.{' '}

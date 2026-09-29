@@ -66,6 +66,39 @@ export function communitySearchText(item: CommunityItem): string {
   return normalizeFoodText(parts.join(' '))
 }
 
+// What each Community type loads, shared by the feed and by single items opened from a share link.
+const SELECT: Record<CommunityKind, string> = {
+  meal: '*, meal_preset_items(*, food:foods(*))',
+  recipe: '*, recipe_ingredients(*, food:foods(*))',
+  workout: '*, workout_preset_items(*, exercise:exercises(*))',
+  program: '*',
+  plan: '*, meal_plan_items(*, food:foods(*))',
+  diet: '*, diet_foods(diet_id, food_id, food:foods(*)), meal_plans(*, meal_plan_items(*, food:foods(*)))',
+}
+
+const TABLE: Record<CommunityKind, string> = {
+  meal: 'meal_presets',
+  recipe: 'recipes',
+  workout: 'workout_presets',
+  program: 'programs',
+  plan: 'meal_plans',
+  diet: 'diets',
+}
+
+type BaseRow = { id: string; name: string; user_id: string; created_at: string; is_official?: boolean; description?: string | null }
+
+function baseOf(row: BaseRow, userId: string | undefined) {
+  return {
+    id: row.id,
+    name: row.name,
+    description: row.description?.trim() || null,
+    isOfficial: !!row.is_official,
+    isMine: row.user_id === userId,
+    ownerId: row.user_id,
+    createdAt: row.created_at,
+  }
+}
+
 export function useCommunity() {
   const { user } = useAuth()
   return useQuery({
@@ -73,13 +106,13 @@ export function useCommunity() {
     enabled: !!user,
     queryFn: async (): Promise<CommunityItem[]> => {
       const [meals, recipes, workouts, programs, plans, diets] = await Promise.all([
-        supabase.from('meal_presets').select('*, meal_preset_items(*, food:foods(*))').eq('is_shared', true).order('created_at', { ascending: false }).limit(PAGE),
-        supabase.from('recipes').select('*, recipe_ingredients(*, food:foods(*))').eq('is_shared', true).order('created_at', { ascending: false }).limit(PAGE),
-        supabase.from('workout_presets').select('*, workout_preset_items(*, exercise:exercises(*))').eq('is_shared', true).order('created_at', { ascending: false }).limit(PAGE),
-        supabase.from('programs').select('*').eq('is_shared', true).order('created_at', { ascending: false }).limit(PAGE),
+        supabase.from('meal_presets').select(SELECT.meal).eq('is_shared', true).order('created_at', { ascending: false }).limit(PAGE),
+        supabase.from('recipes').select(SELECT.recipe).eq('is_shared', true).order('created_at', { ascending: false }).limit(PAGE),
+        supabase.from('workout_presets').select(SELECT.workout).eq('is_shared', true).order('created_at', { ascending: false }).limit(PAGE),
+        supabase.from('programs').select(SELECT.program).eq('is_shared', true).order('created_at', { ascending: false }).limit(PAGE),
         // Standalone plans only - a diet's sample plans come in with the diet below.
-        supabase.from('meal_plans').select('*, meal_plan_items(*, food:foods(*))').eq('is_shared', true).is('diet_id', null).order('created_at', { ascending: false }).limit(PAGE),
-        supabase.from('diets').select('*, diet_foods(diet_id, food_id, food:foods(*)), meal_plans(*, meal_plan_items(*, food:foods(*)))').eq('is_shared', true).order('created_at', { ascending: false }).limit(PAGE),
+        supabase.from('meal_plans').select(SELECT.plan).eq('is_shared', true).is('diet_id', null).order('created_at', { ascending: false }).limit(PAGE),
+        supabase.from('diets').select(SELECT.diet).eq('is_shared', true).order('created_at', { ascending: false }).limit(PAGE),
       ])
       // One type failing (e.g. a table a pending migration hasn't created yet) shouldn't blank
       // the whole tab - skip that type. Only fail if nothing loaded at all.
@@ -89,15 +122,7 @@ export function useCommunity() {
       for (const r of failed) console.warn('Community: skipped a type that failed to load', r.error)
       const rows = <T,>(r: { data: unknown; error: unknown }) => (r.error ? [] : ((r.data ?? []) as T[]))
 
-      const base = (row: { id: string; name: string; user_id: string; created_at: string; is_official?: boolean; description?: string | null }) => ({
-        id: row.id,
-        name: row.name,
-        description: row.description?.trim() || null,
-        isOfficial: !!row.is_official,
-        isMine: row.user_id === user?.id,
-        ownerId: row.user_id,
-        createdAt: row.created_at,
-      })
+      const base = (row: BaseRow) => baseOf(row, user?.id)
 
       return sortCommunity([
         ...rows<MealPreset>(meals).filter((m) => m.meal_preset_items.length > 0).map((meal) => ({ kind: 'meal' as const, ...base(meal), meal })),
@@ -120,6 +145,48 @@ export function useCommunity() {
             ]
           }),
       ])
+    },
+  })
+}
+
+/**
+ * One shared item, for a share link (`/s/<kind>/<id>`). Fetched on its own because the feed only
+ * loads the newest items of each type. Null when it isn't shared (any more) or doesn't exist.
+ */
+export function useCommunityItem(ref: { kind: CommunityKind; id: string } | null) {
+  const { user } = useAuth()
+  return useQuery({
+    queryKey: ['community-item', ref?.kind, ref?.id, user?.id],
+    enabled: !!user && !!ref,
+    queryFn: async (): Promise<CommunityItem | null> => {
+      const { kind, id } = ref!
+      // A diet's sample day also needs the diet's name, and is official or someone's with it.
+      const select = kind === 'plan' ? `${SELECT.plan}, diet:diets(name, is_official, user_id)` : SELECT[kind]
+      const { data, error } = await supabase.from(TABLE[kind]).select(select).eq('id', id).eq('is_shared', true).maybeSingle()
+      if (error) throw error
+      if (!data) return null
+      const row = data as unknown as BaseRow
+      const base = baseOf(row, user?.id)
+      switch (kind) {
+        case 'meal':
+          return { kind, ...base, meal: data as unknown as MealPreset }
+        case 'recipe':
+          return { kind, ...base, recipe: data as unknown as RecipeWithIngredients }
+        case 'workout':
+          return { kind, ...base, workout: data as unknown as PresetWithItems }
+        case 'program':
+          return { kind, ...base, program: data as unknown as Program }
+        case 'plan': {
+          const plan = data as unknown as MealPlanWithItems & { diet: { name: string; is_official?: boolean; user_id: string } | null }
+          const fromDiet = plan.diet ? baseOf({ ...plan, is_official: plan.diet.is_official, user_id: plan.diet.user_id }, user?.id) : base
+          return { kind, ...fromDiet, plan, dietName: plan.diet?.name ?? null }
+        }
+        case 'diet': {
+          const diet = data as unknown as DietWithFoods & { meal_plans: MealPlanWithItems[] }
+          const plans = [...diet.meal_plans].sort((a, b) => a.created_at.localeCompare(b.created_at))
+          return { kind, ...base, diet, plans }
+        }
+      }
     },
   })
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Turnstile } from '../../components/Turnstile'
 import { useAuth } from '../../hooks/useAuth'
 import { FEEDBACK_EMAIL_RE, FEEDBACK_LIMITS, sendFeedback } from '../../lib/feedback'
 
@@ -22,6 +23,9 @@ export function FeedbackForm() {
   const [status, setStatus] = useState<{ tone: 'error'; text: string } | null>(null)
   const [sending, setSending] = useState(false)
   const [sentTo, setSentTo] = useState<string | null>(null)
+  // Cloudflare Turnstile token, checked by the contact endpoint; a fresh one after each attempt.
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  const [captchaReset, setCaptchaReset] = useState(0)
 
   function fail(field: 'subject' | 'email' | 'message', text: string) {
     setInvalid(field)
@@ -37,7 +41,7 @@ export function FeedbackForm() {
     setStatus(null)
     setSending(true)
     try {
-      await sendFeedback({ subject, email, message, accountEmail: user?.email })
+      await sendFeedback({ subject, email, message, accountEmail: user?.email, turnstileToken: captchaToken })
       setSentTo(email.trim())
     } catch (err) {
       setStatus({
@@ -46,6 +50,7 @@ export function FeedbackForm() {
       })
     } finally {
       setSending(false)
+      setCaptchaReset((n) => n + 1)
     }
   }
 
@@ -147,6 +152,7 @@ export function FeedbackForm() {
           {status.text}
         </p>
       )}
+      <Turnstile onToken={setCaptchaToken} resetKey={captchaReset} action="feedback" />
       <button
         type="submit"
         disabled={sending}

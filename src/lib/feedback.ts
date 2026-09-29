@@ -17,7 +17,7 @@ export function feedbackContext(accountEmail: string | null | undefined): string
   return [`Build ${formatBuildTime()}`, where, accountEmail ? `account ${accountEmail}` : null].filter(Boolean).join(' · ')
 }
 
-export async function sendFeedback(input: { subject: string; email: string; message: string; accountEmail?: string | null }) {
+export async function sendFeedback(input: { subject: string; email: string; message: string; accountEmail?: string | null; turnstileToken?: string | null }) {
   const res = await fetch(FEEDBACK_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -27,6 +27,7 @@ export async function sendFeedback(input: { subject: string; email: string; mess
       email: input.email.trim(),
       message: input.message,
       context: feedbackContext(input.accountEmail),
+      turnstileToken: input.turnstileToken ?? undefined,
     }),
   })
   if (!res.ok) {

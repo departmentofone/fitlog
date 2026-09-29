@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { hasSignedInBefore } from '../lib/deviceHistory'
 import { peekPendingShared, SHARE_KIND_PHRASE } from '../lib/shareLink'
 import { supabase } from '../lib/supabase'
+import { Turnstile } from './Turnstile'
 
 type Mode = 'sign-in' | 'sign-up' | 'reset'
 
@@ -16,6 +17,11 @@ const SUBMIT_LABELS: Record<Mode, string> = {
   'sign-in': 'Sign in',
   'sign-up': 'Create account',
   reset: 'Send reset link',
+}
+
+/** Supabase's CAPTCHA rejection reads like an internal error; say what to do instead. */
+function friendlyAuthError(message: string): string {
+  return /captcha/i.test(message) ? "The bot check didn't go through. Wait a moment and try again." : message
 }
 
 const inputClass =
@@ -45,6 +51,9 @@ export function AuthScreen() {
   const [error, setError] = useState<string | null>(null)
   const [info, setInfo] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  // Cloudflare Turnstile: one token per attempt, a fresh check after each (see Turnstile.tsx).
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  const [captchaReset, setCaptchaReset] = useState(0)
 
   function switchMode(next: Mode) {
     setMode(next)
@@ -59,10 +68,10 @@ export function AuthScreen() {
     setLoading(true)
     try {
       if (mode === 'sign-in') {
-        const { error } = await supabase.auth.signInWithPassword({ email, password })
+        const { error } = await supabase.auth.signInWithPassword({ email, password, options: { captchaToken: captchaToken ?? undefined } })
         if (error) throw error
       } else if (mode === 'sign-up') {
-        const { data, error } = await supabase.auth.signUp({ email, password })
+        const { data, error } = await supabase.auth.signUp({ email, password, options: { captchaToken: captchaToken ?? undefined } })
         if (error) throw error
         // If email confirmation is on, signUp won't return a session: switch to Sign in, ready for
         // after they've confirmed.
@@ -75,14 +84,15 @@ export function AuthScreen() {
       } else {
         // The link lands back on the app, where useAuth sees the PASSWORD_RECOVERY event and shows
         // the set-new-password screen.
-        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin })
+        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin, captchaToken: captchaToken ?? undefined })
         if (error) throw error
         setInfo(`If an account exists for ${email}, a reset link is on its way.`)
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong')
+      setError(err instanceof Error ? friendlyAuthError(err.message) : 'Something went wrong')
     } finally {
       setLoading(false)
+      setCaptchaReset((n) => n + 1)
     }
   }
 
@@ -174,6 +184,7 @@ export function AuthScreen() {
               {info}
             </p>
           )}
+          <Turnstile onToken={setCaptchaToken} resetKey={captchaReset} action="auth" />
           <button
             type="submit"
             disabled={loading}

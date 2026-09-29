@@ -98,8 +98,25 @@ fallbacks are `app.departmentofone.fitlog`, then `com.deptofone.fitlog`.
 After the first upload, write the app-link file with it:
 
 ```
-node scripts/set-assetlinks.mjs com.departmentofone.fitlog <upload-key SHA-256> <Play app-signing SHA-256>
+node scripts/set-assetlinks.mjs com.departmentofone.fitlog <Play app-signing SHA-256> <upload-key SHA-256>
 ```
+
+Take the Play app signing key from the **Digital Asset Links JSON** that Play Console generates
+(Protected with Play → Play Store protection → Play App Signing). Copy it, don't retype it. On
+29 Sep 2026 a wrong key in this file made every install open with a browser address bar, even
+though Google's check of the file passed. The current keys: Play app signing `55:B6:9D:49:…`,
+upload `92:29:13:43:…`.
+
+After deploying a change to the file, and after every Android rebuild, run:
+
+```
+npm run check:app-links -- <path to the "Signed, universal APK" from App bundle explorer → Downloads>
+```
+
+It confirms the live file matches the repo, that Google verifies each key (Google caches the file
+for up to an hour), and that the APK Play installs is signed with a listed key. Don't invite
+testers until it passes. `src/lib/assetlinks.test.ts` also fails the build if the Play key is ever
+removed.
 
 ### Other PWABuilder settings
 

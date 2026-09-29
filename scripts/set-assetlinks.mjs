@@ -5,10 +5,14 @@
 //   node scripts/set-assetlinks.mjs <package.name> <SHA256 fingerprint> [<more fingerprints>...]
 //
 // Include BOTH fingerprints once they exist:
-//   1. the upload key (PWABuilder/Bubblewrap shows it when it creates the keystore), and
-//   2. the app signing key from Play Console -> Test and release -> App integrity -> App signing.
-// Only #2 matters for installs from Google Play; skipping it is the classic "URL bar in
-// production" TWA bug. Redeploy after running this.
+//   1. the Play app signing key. Take it from the "Digital Asset Links JSON" that Play Console
+//      generates (Protected with Play -> Play Store protection -> Play App Signing): copy it,
+//      never retype it. This is the only key that matters for installs from Google Play.
+//   2. the upload key, from the assetlinks.json in the PWABuilder download.
+// A wrong key #1 is the classic "URL bar in production" TWA bug, and it happened here: Google's
+// check of the file passed while every install opened in a browser tab. After running this, update
+// PLAY_APP_SIGNING_KEY in src/lib/assetlinks.test.ts, deploy, then run `npm run check:app-links`,
+// ideally with the "Signed, universal APK" from App bundle explorer (see that script).
 import { writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 

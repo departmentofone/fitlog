@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "build:ds": "vite build --config design-system/vite.config.ts && tsc -p design-system/tsconfig.json"
+    "build:ds": "vite build --config design-system/vite.config.ts && tsc -p design-system/tsconfig.json",
+    "check:app-links": "node scripts/check-app-links.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",

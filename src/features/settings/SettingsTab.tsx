@@ -10,6 +10,7 @@ import { replayOnboarding } from '../../lib/onboarding'
 import { supabase } from '../../lib/supabase'
 import { DeleteAccountCard } from './DeleteAccountCard'
 import { PushNotificationsCard } from './PushNotificationsCard'
+import { RestTimerSettings } from './RestTimerSettings'
 
 // About, What's new and Feedback (with Buy me a coffee) live here rather than on a main screen.
 const FITLOG_LINKS = [
@@ -88,6 +89,8 @@ export function SettingsTab({ onOpen }: { onOpen: (route: Route) => void }) {
           />
         </div>
       </div>
+
+      <RestTimerSettings />
 
       <div className="card p-4">
         <h3 className="mb-2 card-title">Display</h3>

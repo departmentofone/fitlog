@@ -3,6 +3,8 @@ import { clientsClaim } from 'workbox-core'
 import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching'
 import { NavigationRoute, registerRoute } from 'workbox-routing'
 import { NetworkFirst } from 'workbox-strategies'
+import { OPEN_ROUTE_MESSAGE } from './lib/openRoute'
+import { REST_ACTIONS, REST_NOTIFICATION_TAG, REST_OFF_HINT, REST_TIMER_MESSAGE, type RichNotificationOptions } from './lib/restNotification'
 
 declare let self: ServiceWorkerGlobalScope
 
@@ -51,14 +53,54 @@ self.addEventListener('push', (event) => {
   )
 })
 
+// Rest timer: the page posts { type, endsAt } when rest starts or changes, and endsAt: null to
+// cancel. Only the latest message counts. At endsAt, the countdown notification is replaced by a
+// "Rest over" alert (sound/vibration and a heads-up popup) unless FitLog is on screen, where the
+// page shows its own "Rest over". waitUntil keeps the worker alive through the wait; Chrome
+// allows up to 5 minutes per event, and the page re-posts while it counts.
+let restGeneration = 0
+
+self.addEventListener('message', (event) => {
+  const msg = event.data as { type?: string; endsAt?: number | null } | null
+  if (msg?.type !== REST_TIMER_MESSAGE) return
+  const generation = ++restGeneration
+  if (msg.endsAt == null) return
+  const endsAt = msg.endsAt
+  event.waitUntil(
+    new Promise((resolve) => setTimeout(resolve, Math.max(0, endsAt - Date.now()))).then(async () => {
+      if (generation !== restGeneration) return
+      const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+      if (windows.some((w) => w.visibilityState === 'visible')) return
+      const options: RichNotificationOptions = {
+        tag: REST_NOTIFICATION_TAG,
+        body: `Time for your next set.\n${REST_OFF_HINT}`,
+        icon: '/icon-192.png',
+        badge: '/icon-192.png',
+        renotify: true,
+        silent: false,
+        vibrate: [200, 100, 200, 100, 300],
+        actions: REST_ACTIONS,
+        data: { url: '/#/workouts' },
+      }
+      await self.registration.showNotification('Rest over', options)
+    }),
+  )
+})
+
 self.addEventListener('notificationclick', (event) => {
   event.notification.close()
-  const url = (event.notification.data as { url?: string } | undefined)?.url ?? '/'
+  // The rest timer's "Settings" button opens Settings; everything else opens its own URL.
+  const route = event.action === 'settings' ? 'settings' : null
+  const url = route ? `/#/${route}` : ((event.notification.data as { url?: string } | undefined)?.url ?? '/')
 
   event.waitUntil(
-    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(async (clients) => {
       for (const client of clients) {
-        if ('focus' in client) return client.focus()
+        if ('focus' in client) {
+          const focused = await client.focus()
+          if (route) focused.postMessage({ type: OPEN_ROUTE_MESSAGE, route })
+          return focused
+        }
       }
       return self.clients.openWindow(url)
     }),

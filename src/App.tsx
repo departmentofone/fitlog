@@ -10,8 +10,9 @@ import { useToast } from './components/ToastProvider'
 import { useApplyTheme } from './hooks/useApplyTheme'
 import { useAuth } from './hooks/useAuth'
 import { useCelebrateUnlocks } from './hooks/useCelebrateUnlocks'
-import { useHashRoute } from './hooks/useHashRoute'
+import { parseRoute, useHashRoute } from './hooks/useHashRoute'
 import { useSyncTimezone, useUserSettings } from './hooks/useUserSettings'
+import { OPEN_ROUTE_MESSAGE } from './lib/openRoute'
 import { storeSharedText } from './lib/shareTarget'
 import type { Tab } from './types'
 
@@ -121,6 +122,16 @@ function App() {
     setQuickAction({ tab: 'meals', nonce: Date.now() })
     navigate('meals')
   }, [user, navigate, showToast])
+  // A notification button that opens a screen (the rest timer's Settings) while FitLog is open.
+  useEffect(() => {
+    if (!('serviceWorker' in navigator)) return
+    const onMessage = (event: MessageEvent) => {
+      const msg = event.data as { type?: string; route?: string } | null
+      if (msg?.type === OPEN_ROUTE_MESSAGE && msg.route) navigate(parseRoute('#/' + msg.route))
+    }
+    navigator.serviceWorker.addEventListener('message', onMessage)
+    return () => navigator.serviceWorker.removeEventListener('message', onMessage)
+  }, [navigate])
   // Drop the request once the user leaves that tab, so coming back later doesn't replay it.
   useEffect(() => {
     if (quickAction && route !== quickAction.tab) setQuickAction(null)

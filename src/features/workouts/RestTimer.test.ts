@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it } from 'vitest'
-import { formatRestTime, getDefaultRestSeconds, setDefaultRestSeconds } from '../../components/RestTimer'
+import { getDefaultRestSeconds, setDefaultRestSeconds } from '../../components/RestTimer'
+import { formatRestTime } from '../../lib/restTime'
 
 describe('formatRestTime', () => {
   it('formats seconds as mm:ss', () => {

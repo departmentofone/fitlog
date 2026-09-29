@@ -16,6 +16,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       'The rest timer can show its countdown in your notification bar and alert you when rest is over, even while you are in another app',
       'Settings has a Rest timer section: turn off the automatic start after each set, or the notifications',
       'New to FitLog? The app now opens on Create account, and the sign-in and sign-up screens are easier to tell apart',
+      'Adding a food that is already in a meal adds to it: 2 eggs, then 2 more, is one entry of 4 eggs',
     ],
   },
   {

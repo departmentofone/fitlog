@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { mergeAmounts } from '../lib/mergeServing'
 import { supabase } from '../lib/supabase'
 import { macrosForGrams, microsForGrams, sumMacros, sumMicros, type Food, type Meal, type MealItem } from '../types'
 import { useAuth } from './useAuth'
@@ -65,6 +66,31 @@ export function useAddMealItem() {
       /** Undoing a delete: the item's original logged time, so it isn't re-stamped as now. */
       createdAt?: string
     }) => {
+      // Adding a food that's already in this meal adds to that entry (2 eggs, then 2 more = 4 eggs)
+      // instead of listing it twice. An undo restores the deleted row as it was, so it never merges.
+      if (!createdAt) {
+        const { data: existing, error: findError } = await supabase
+          .from('meal_items')
+          .select('id, grams, serving_label')
+          .eq('meal_id', mealId)
+          .eq('food_id', foodId)
+          .order('created_at', { ascending: true })
+          .limit(1)
+          .maybeSingle()
+        if (findError) throw findError
+        if (existing) {
+          const merged = mergeAmounts(
+            { grams: existing.grams, servingLabel: existing.serving_label },
+            { grams, servingLabel: servingLabel ?? null },
+          )
+          const { error } = await supabase
+            .from('meal_items')
+            .update({ grams: merged.grams, serving_label: merged.servingLabel })
+            .eq('id', existing.id)
+          if (error) throw error
+          return
+        }
+      }
       const { error } = await supabase
         .from('meal_items')
         .insert({ meal_id: mealId, food_id: foodId, grams, serving_label: servingLabel ?? null, ...(createdAt ? { created_at: createdAt } : {}) })

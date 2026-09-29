@@ -1,8 +1,8 @@
 # Donations ("Buy Me a Coffee") — Plan
 
 Status: **live on the web** (2026-09-27). Page: https://buymeacoffee.com/department.of.one.
-Hidden inside the Play (TWA) build. Linked from the Play Store listing description and the
-Department of One site instead, which is outside the app. No payment processing exists anywhere in
+Hidden inside the Play (TWA) build. Linked from the Department of One site only. It must not appear
+in the Play Store listing either (see below). No payment processing exists anywhere in
 the app or backend.
 
 ## Policy check (verified 2026-09-17)
@@ -25,9 +25,11 @@ the app or backend.
   outside the app, not just links, so keep any new coffee copy behind `showDonate` too (and out of
   `src/lib/changelog.ts`, which the Play build shows under What's new).
 
-## Outside the app (allowed)
+## Outside the app
 
-- Play Store listing: the "WHY IT'S FREE" paragraph in `store-listing/README.md` names the page.
+- Play Store listing: **not allowed.** Google's Payments policy lists "an app's listing in Google
+  Play" among the places that may not lead users to another payment method (rechecked 2026-09-29).
+  The listing's old "WHY IT'S FREE" paragraph that named the page was removed on 2026-09-28.
 - Department of One site (`departmentofone/department-of-one`): About section and footer.
 - Don't add an in-app link to the Department of One site from the Play build: it now leads to the
   coffee page, and the policy covers links to pages that *eventually* lead to another payment
@@ -35,9 +37,9 @@ the app or backend.
 
 ## Android (Play) options, in order of preference
 
-1. **Keep it hidden in the app** (current behavior) and link the Buy Me a Coffee page from the Play
-   Store listing description / developer website instead — outside the app, which the policy allows.
-2. **Play Billing tip jar** — consumable in-app products ("Small / Medium / Large coffee") via the
+1. **Keep it hidden in the app** (current behavior) and link the Buy Me a Coffee page from the
+   developer website only. The Play listing is off limits too (see above).
+2. **Play Billing tip jar** (planned, see `TIP_JAR_PLAN.md`): consumable in-app products ("Small / Medium / Large coffee") via the
    Digital Goods API + Payment Request API, which work inside a TWA. Google takes its service fee
    (15% for the first $1M/yr). Needs a Play merchant account and a small verification endpoint.
 3. External link under the EEA / US external-offers programs — enrollment + reporting + fees; not

@@ -64,7 +64,7 @@ export default defineConfig({
         name: 'FitLog - Workout & Meal Tracker',
         short_name: 'FitLog',
         description:
-          'Free workout, meal, macro, and fasting tracker. Log sets and meals, track goals and progress. No ads, no paywalls.',
+          'Workout, meal, macro, and fasting tracker. Log sets and meals, track goals and progress.',
         lang: 'en',
         dir: 'ltr',
         categories: ['health', 'fitness', 'lifestyle'],

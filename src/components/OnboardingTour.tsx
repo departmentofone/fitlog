@@ -94,7 +94,7 @@ export function OnboardingTour({ onOpenCommunity }: { onOpenCommunity: () => voi
               Welcome to FitLog
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-slate-300">
-              Log your workouts, meals and fasts in one place. Everything is free - no ads, no paywalls.
+              Log your workouts, meals and fasts in one place.
             </p>
           </div>
         )}

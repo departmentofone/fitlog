@@ -1,4 +1,4 @@
-# Play Console — policy form answers
+# Play Console: policy form answers
 
 Prepared 2026-09-17 from the actual code and database (not assumptions). Each answer matches the
 privacy policy at `/privacy` (`public/privacy.html`). **If you change one, change the other**: a
@@ -18,7 +18,7 @@ match the developer name on the Play Console account exactly.
 **All or some functionality is restricted** → add instructions:
 
 > FitLog requires an account. Sign in with the reviewer account below. All features are available
-> immediately after sign-in; no payment or verification code is required.
+> immediately after sign-in; no verification code is required.
 > Email: `<reviewer account email>` · Password: `<reviewer account password>`
 
 ⚠️ **You need to create this reviewer account yourself** (a separate account, not your personal
@@ -41,7 +41,7 @@ password you use elsewhere.
   can see and save a copy. There is no chat, messaging, or free-form public posting, and names and
   emails are never shown.
 - Shares the user's current physical location with other users: **No**.
-- Digital purchases: **No**.
+- Digital purchases: **No** for now. Change to **Yes** when the Tip Jar ships (section 11).
 - Unrestricted web browsing: **No** (the app only shows its own site).
 
 Expected outcome: a low rating (roughly PEGI 3–12 / Everyone–Teen, varying by region, driven by the
@@ -109,7 +109,7 @@ and never uploaded.
 |---|---|
 | News app | No |
 | Government app | No |
-| Financial features | None |
+| Financial features | None (confirm again when the Tip Jar ships; section 11) |
 | COVID-19 contact tracing / status | No |
 | Advertising ID | Not used. The TWA manifest must not declare `com.google.android.gms.permission.AD_ID`; check the generated Android manifest. |
 | Account deletion | Yes. In-app, plus `https://fitlog-two-gamma.vercel.app/delete-account` |
@@ -132,3 +132,72 @@ Play's User Data policy wants health data collection disclosed in the app, not o
 After sign-in, FitLog shows a one-time **"Your health and fitness data"** screen that explains what's
 stored and why, links the privacy policy, and requires **Agree** before any data can be entered.
 Declining signs the user out. The consent time is stored in `user_settings.health_data_consent_at`.
+
+---
+
+## 11. Revisit when the Tip Jar ships
+
+The answers above are correct for the app as it is today: no in-app purchases, no payments. The
+Tip Jar will sell optional tips through Google Play Billing, which is a digital purchase, so several
+answers and assets change. Work through this list before the build with the Tip Jar goes to any
+track, and keep the privacy policy in step with the Data safety form.
+
+### Before the first upload with Billing
+- [ ] **Payments profile / merchant account.** Play Console → **Settings → Payments profile** (in
+  newer consoles: **Setup → Payments profile**). Create or link a payments profile, add bank
+  details and the tax information Play asks for. Confirm the developer name matches the account.
+  Check what your own country requires for income from sales; Play does not advise on that.
+- [ ] **In-app products.** Play Console → **Monetize with Play → Products → In-app products**. Create
+  each tip product, set prices and activate it. Play may not let you create products until an
+  upload with the Billing permission exists, so the first Billing build may need to go to a
+  test track first.
+- [ ] **Billing permission in the manifest.** The generated Android manifest will gain
+  `com.android.vending.BILLING`. Check that this is the only new permission and that
+  `com.google.android.gms.permission.AD_ID` is still absent (section 8, Advertising ID).
+- [ ] **License testers.** Play Console → **Settings → License testing**. Add the tester Google
+  accounts so test tips do not charge real cards, and add them to the test track.
+- [ ] **App access instructions** (section 2). Reviewers will meet the purchase screen. Say where the
+  Tip Jar is and that they can use a license tester account to try it. Do not ask them to pay.
+
+### Policy forms (Policy and programs → App content)
+- [ ] **Content rating.** Re-run the questionnaire: **Digital purchases → Yes** (section 4). Submit
+  it again, since the old certificate does not update itself.
+- [ ] **Data safety** (section 6). Re-open the form and answer from what the code actually does:
+  - **Financial info → Purchase history**: declare it if the app or your server stores or reads
+    purchase records or purchase tokens. Purpose: App functionality. If tokens are checked on a
+    server, confirm that **User IDs** also covers the link between a purchase and an account.
+  - If nothing about a purchase reaches your own servers and Google handles everything, write that
+    decision down here so the form and the policy say the same thing.
+  - Encrypted in transit stays **Yes**. Deletion options stay as they are, but decide what happens
+    to purchase records when an account is deleted.
+- [ ] **Financial features** (section 8). A Tip Jar is not a banking, loan, or investment feature,
+  so **None** should still be right. Re-read the options before submitting.
+- [ ] **Target audience** (section 5). The selected age groups start at 16. Check Play's rules on
+  purchases by minors for your regions and confirm offering purchases to 16 and 17 year olds is
+  what you want.
+- [ ] **Ads** (section 3) stays **No**. A tip jar is not advertising.
+- [ ] **Payments policy.** Tips must go through Play Billing. The Buy Me a Coffee link stays hidden
+  in the Play build (`src/lib/platform.ts`, `?source=play`); keep it that way, and do not point to
+  any outside payment method inside the app or in the listing.
+
+### Store listing and app details
+- [ ] **Price and badge.** The app stays **Free** to install. Once products are active, Play adds
+  "Contains in-app purchases" and a price range to the store page by itself. Check the page after
+  release. Play Console → **Grow users → Store presence → Main store listing**.
+- [ ] **Full description** in `README.md`. It says nothing about pricing today. If you decide to
+  mention tips, keep it plain and factual (for example, that tips are optional), then update the
+  character count.
+- [ ] **Screenshots and feature graphic.** Retake any screenshot that now shows a Tip Jar entry
+  point, and confirm the feature graphic chips make no pricing promises (see `README.md`, Graphics).
+- [ ] **What's new** text for the release that adds tips. State what was added and make no promise
+  about future pricing.
+
+### Outside Play Console
+- [ ] **Privacy policy** (`public/privacy.html`, section 1 above). Add how purchases are handled
+  (Google processes the payment; say what, if anything, FitLog stores) and update the "Last
+  updated" date. If the opening line still calls FitLog "a free ... tracker", reword it. The Data
+  safety form and the policy must agree.
+- [ ] **Website and other pages** that describe pricing (landing page, Buy Me a Coffee page) so
+  they do not contradict the store listing.
+- [ ] **Developer page** (Play Console → **Grow users → Store presence → Store settings →
+  Developer page**) for any wording about pricing or a "free" promise.

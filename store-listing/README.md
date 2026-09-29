@@ -11,16 +11,23 @@ blocks as-is; the character counts are checked against Play's limits.
 FitLog: Workout & Meal Tracker
 ```
 
-**Short description** (80 max, 73 used)
+**Short description** (80 max, 80 used)
 
 ```
-Free workout, meal & macro tracker. No ads, no paywalls, no premium tier.
+Workout and meal tracker. Share your routines and diets, or save other people's.
 ```
 
-**Full description** (4,000 max, ~2,884 used)
+**Full description** (4,000 max, 3,121 used)
 
 ```
-FitLog is a workout log, meal and macro tracker, and fasting timer in one app. It's completely free: no ads, no paywalls, and no premium tier. Every feature is available to everyone.
+FitLog is a workout log, meal and macro tracker, and fasting timer in one app, with a Community where people share the routines, recipes and diets that work for them.
+
+COMMUNITY
+• Share your workout presets, programs, recipes, meals, meal plans and diets to Community
+• Browse what other people have shared, search by name or ingredient, and save a copy in one tap
+• Anything you save is your own copy, so you can change it however you like
+• Start from official diets like Mediterranean, DASH, Keto and plant-based, with sample meal plans
+• Shared items never show your name or email
 
 LOG YOUR TRAINING
 • Log sets in seconds with big +/− steppers for weight and reps, with your last weight filled in for you
@@ -30,7 +37,7 @@ LOG YOUR TRAINING
 • Supersets and circuits, with rest after each full round
 • Exercise history, personal records, and estimated 1-rep max charts
 • Weekly training volume and a muscle map of what you worked
-• Reusable workout presets, and programs that bundle presets and goals
+• Reusable workout presets, and programs that bundle presets and goals, ready to share
 • Plate calculator for loading the bar
 
 TRACK WHAT YOU EAT
@@ -40,7 +47,6 @@ TRACK WHAT YOU EAT
 • Custom foods, recipes that scale by servings, and meal presets with a dedicated editor to build and update them
 • Follow a diet like Mediterranean, DASH, Keto or plant-based: its foods come first when you log, and off-diet foods are flagged
 • Meal plans: log a whole day of meals in one tap, or combine days into a week
-• Community: browse diets, meal plans, recipes and workouts others have shared, plus official ones, and save a copy in one tap
 • Copy a whole day of meals in one tap
 • Water and alcohol tracking
 • Daily totals, trends, and a nutrition breakdown
@@ -59,10 +65,10 @@ MADE TO BE QUICK
 • Export all of your data at any time
 
 PRIVATE BY DEFAULT
-Your logs are visible only to you, unless you choose to share a preset, recipe, or program. Foods you add are private to your account too. FitLog has no ads, no trackers, and no data selling. You can delete your account, and all of its data, from Settings or on the web.
+Your logs are visible only to you, unless you choose to share a preset, recipe, or program. Foods you add are private to your account too. FitLog does not sell your data or share it for marketing. You can delete your account, and all of its data, from Settings or on the web.
 
-WHY IT'S FREE
-FitLog started as a personal project and grew into something worth sharing. There are no premium plans and there never will be, because nobody should be locked out of a feature.
+ABOUT
+FitLog is made and maintained by one developer. Questions, bug reports and ideas are welcome at departmentofone.app@gmail.com.
 
 FitLog is a tracking tool, not medical advice. Talk to a professional before starting a new diet, fasting routine, or exercise program.
 ```
@@ -130,8 +136,12 @@ and meals come from the seed SQL in `supabase/`, so the numbers match the real l
 on Mediterranean, 20 official Community items). No request reached Supabase and nothing personal
 is shown.
 
-The feature graphic has the same logo, tagline, chips and phone frames as before, with the new
-screenshots 1 and 4 in the two phones.
+The feature graphic keeps its logo, tagline and phone frames, with the new screenshots 1 and 4 in
+the two phones.
+
+The chip row was redrawn on 29 Sep 2026: "Free forever" and "No ads" became "Works offline" and
+"Fasting timer", next to the existing "Diets & meal plans", so the graphic makes no pricing
+promises. Re-upload it in Play Console.
 
 ### Nice to have (not required)
 - 7-inch and 10-inch tablet screenshots (only if you want the listing to look good on tablets).

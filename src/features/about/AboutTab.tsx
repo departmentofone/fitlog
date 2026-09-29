@@ -21,11 +21,9 @@ export function AboutTab() {
 
       <div className={cardClass}>
         <p className="text-sm leading-relaxed text-slate-400">
-          <span className="font-medium text-white">Free, with no ads.</span> Every feature is available to
-          everyone. Nothing is behind a paywall.
+          FitLog is made by one person who enjoys building apps.
         </p>
       </div>
-
 
       <div className={cardClass}>
         <h3 className="mb-2 card-title">Data & privacy</h3>

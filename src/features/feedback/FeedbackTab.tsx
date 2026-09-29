@@ -20,7 +20,7 @@ function CoffeeIcon() {
 export function FeedbackTab() {
   // Google Play's Payments policy doesn't allow leading users to an external payment page from
   // inside the app - a link or wording that encourages it - so the Play (TWA) build keeps only
-  // the why-it's-free note, with no coffee paragraph or button.
+  // the about-the-developer note, with no coffee paragraph or button.
   const showDonate = !isAndroidApp()
 
   return (
@@ -40,16 +40,13 @@ export function FeedbackTab() {
       </div>
 
       <div className={cardClass}>
-        <h3 className="mb-2 card-title">Why it's free</h3>
+        <h3 className="mb-2 card-title">About the developer</h3>
         <div className="space-y-3 text-sm leading-relaxed text-slate-400">
           <p>
-            FitLog started as a small project I built for my own use. Along the way I realized there was no reason not
-            to polish it a little further and publish it properly, so other people could benefit from it too.
+            FitLog started as a small project I built for my own use. I liked working on it, so I polished it and
+            published it for other people to use too.
           </p>
-          <p>
-            With that in mind, I didn't want to monetize anything. There are no premium plans and there never will be -
-            I don't want to lock anyone out of any feature, and not everyone can pay for this kind of thing.
-          </p>
+          <p>I'm one person making apps because I enjoy it.</p>
           {showDonate && (
             <p>
               If it's been useful to you, a coffee helps cover the costs of keeping it running. It's

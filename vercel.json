@@ -1,5 +1,9 @@
 {
   "cleanUrls": true,
+  "fluid": true,
+  "functions": {
+    "api/rest-alert.ts": { "maxDuration": 300 }
+  },
   "rewrites": [
     { "source": "/s/:kind/:id", "destination": "/api/share?kind=:kind&id=:id" }
   ],

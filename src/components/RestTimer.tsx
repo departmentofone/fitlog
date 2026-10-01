@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { haptics } from '../lib/haptics'
-import { clearRestNotification, notificationPermission, scheduleRestAlert, showRestCountdown } from '../lib/restNotification'
+import {
+  cancelRestAlert,
+  clearRestNotification,
+  notificationPermission,
+  refreshWorkerRestAlert,
+  scheduleRestAlert,
+  showRestCountdown,
+} from '../lib/restNotification'
 import { setRestTimerPref, useRestTimerPref } from '../lib/restTimerPrefs'
 import { formatRestTime } from '../lib/restTime'
 
@@ -11,6 +18,8 @@ const MIN_SECONDS = 15
 const MAX_SECONDS = 300
 const STEP_SECONDS = 15
 const DONE_DISPLAY_MS = 3000
+/** With FitLog on screen, the server's alert is called off this close to the end (see below). */
+const ON_SCREEN_CANCEL_SECONDS = 3
 const RING_RADIUS = 18
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS
 
@@ -59,8 +68,9 @@ function secondsLeft(endsAt: number, now: number): number {
  * incremented on every successful add-set) to (re)start it, unless "Start after each set" is off
  * in Settings, when it waits for Start. A new run always replaces the old one. It counts toward
  * an end time rather than ticking down, so it's right again the moment the app comes back from
- * the background. With rest timer notifications on (Settings), the countdown also shows in the
- * notification bar and the service worker alerts when rest is over (see restNotification.ts).
+ * the background. With rest timer notifications on (Settings), a "Resting" notification shows the
+ * time rest ends (Android), and a "Rest over" alert arrives when it does, even with the phone
+ * locked (see restNotification.ts).
  */
 export function RestTimer({ restartKey }: { restartKey: number }) {
   const autoStart = useRestTimerPref('autoStart')
@@ -109,21 +119,47 @@ export function RestTimer({ restartKey }: { restartKey: number }) {
     }
   }, [phase])
 
-  // Tell the service worker when rest ends: on every start and change, and again every 30 seconds
-  // so a long rest never outlives the 5 minutes Chrome gives a single wait.
+  // Arrange the "Rest over" alert and show "Resting" on every start and +15s. Never once a second:
+  // iOS turns each update into a new banner (see restNotification.ts).
+  const cancelledOnScreen = useRef(false)
+  useEffect(() => {
+    if (phase !== 'running' || !notify) return
+    cancelledOnScreen.current = false
+    void scheduleRestAlert(endsAt)
+    void showRestCountdown(endsAt)
+  }, [phase, notify, endsAt])
+
+  // The service worker's stand-in timer (used only without push) needs a re-post every 30 s.
   const alertSlot = Math.floor(remaining / 30)
   useEffect(() => {
-    if (phase === 'running' && notify) void scheduleRestAlert(endsAt)
+    if (phase === 'running' && notify) void refreshWorkerRestAlert(endsAt)
   }, [phase, notify, endsAt, alertSlot])
 
+  // On screen, this card says "Rest over", so the server's alert is called off just before rest
+  // ends; a push can't be held back once it's sent, and iOS would show it on top of the app. If
+  // FitLog leaves the screen in those last seconds, the alert is arranged again.
   useEffect(() => {
-    if (phase === 'running' && notify && remaining > 0) void showRestCountdown(endsAt)
-  }, [phase, notify, endsAt, remaining])
+    if (phase !== 'running' || !notify) return
+    if (remaining <= ON_SCREEN_CANCEL_SECONDS && remaining > 0 && !cancelledOnScreen.current && document.visibilityState === 'visible') {
+      cancelledOnScreen.current = true
+      void cancelRestAlert()
+    }
+  }, [phase, notify, remaining])
+  useEffect(() => {
+    if (phase !== 'running' || !notify) return
+    const onHidden = () => {
+      if (document.visibilityState !== 'hidden' || !cancelledOnScreen.current) return
+      cancelledOnScreen.current = false
+      void scheduleRestAlert(endsAt)
+    }
+    document.addEventListener('visibilitychange', onHidden)
+    return () => document.removeEventListener('visibilitychange', onHidden)
+  }, [phase, notify, endsAt])
 
   useEffect(() => {
     if (phase === 'running' && remaining === 0) {
       haptics.success()
-      // On screen, this card says "Rest over"; off screen, the service worker's alert does.
+      // On screen, this card says "Rest over"; off screen, the alert does.
       if (document.visibilityState === 'visible') void clearRestNotification()
       setPhase('done')
     }
@@ -254,7 +290,7 @@ export function RestTimer({ restartKey }: { restartKey: number }) {
       </div>
       {askForPermission && (
         <div className="mt-2.5 border-t border-white/5 pt-2.5 text-xs text-slate-400">
-          <p>Show the countdown in your notifications, with an alert when rest is over?</p>
+          <p>Get an alert when rest is over, even with your phone locked?</p>
           <div className="mt-1.5 flex justify-end gap-2">
             <button
               type="button"

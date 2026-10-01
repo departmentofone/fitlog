@@ -4,7 +4,7 @@ import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching'
 import { NavigationRoute, registerRoute } from 'workbox-routing'
 import { NetworkFirst } from 'workbox-strategies'
 import { OPEN_ROUTE_MESSAGE } from './lib/openRoute'
-import { REST_ACTIONS, REST_NOTIFICATION_TAG, REST_OFF_HINT, REST_TIMER_MESSAGE, type RichNotificationOptions } from './lib/restNotification'
+import { REST_ACTIONS, REST_NOTIFICATION_TAG, REST_OFF_HINT, REST_TIMER_MESSAGE, type RichNotificationOptions } from './lib/restNotificationShared'
 
 declare let self: ServiceWorkerGlobalScope
 
@@ -31,33 +31,71 @@ interface PushPayload {
   title: string
   body: string
   url?: string
+  /** 'rest': the rest timer's "Rest over", sent by api/rest-alert.ts at the end of rest. */
+  kind?: string
+  /** For 'rest': when rest ended (ms since epoch). */
+  endsAt?: number
 }
 
-self.addEventListener('push', (event) => {
-  if (!event.data) return
+/** Later than this, "Rest over" no longer alerts: the phone was asleep and the moment has passed. */
+const REST_LATE_MS = 60 * 1000
 
+/** The "Rest over" alert: replaces the "Resting" notification, with sound, vibration and a popup. */
+function restOverOptions(body: string): RichNotificationOptions {
+  return {
+    tag: REST_NOTIFICATION_TAG,
+    body: `${body}\n${REST_OFF_HINT}`,
+    icon: '/icon-192.png',
+    badge: '/icon-192.png',
+    renotify: true,
+    silent: false,
+    vibrate: [200, 100, 200, 100, 300],
+    actions: REST_ACTIONS,
+    data: { url: '/#/workouts' },
+  }
+}
+
+// Every push must end in a shown notification, even with FitLog on screen: Safari counts a push
+// that shows nothing as "silent" and, after three (ever), drops every push subscription FitLog has
+// on that device. So no early returns, and a failure falls back to a plain notification.
+self.addEventListener('push', (event) => {
   let payload: PushPayload
   try {
-    payload = event.data.json()
+    payload = event.data?.json() ?? { title: 'FitLog', body: '' }
   } catch {
-    payload = { title: 'FitLog', body: event.data.text() }
+    payload = { title: 'FitLog', body: event.data?.text() ?? '' }
   }
 
-  event.waitUntil(
-    self.registration.showNotification(payload.title, {
+  let shown: Promise<void>
+  if (payload.kind === 'rest') {
+    // The server alert arrived, so the stand-in timer below must not alert as well. When FitLog is
+    // on screen, the page cancels the server alert just before rest ends instead.
+    restGeneration++
+    const late = typeof payload.endsAt === 'number' && Date.now() - payload.endsAt > REST_LATE_MS
+    if (late) {
+      const at = new Date(payload.endsAt!).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+      const quiet: RichNotificationOptions = { ...restOverOptions(payload.body), renotify: false, silent: true, vibrate: undefined }
+      shown = self.registration.showNotification(`Rest ended at ${at}`, quiet)
+    } else {
+      shown = self.registration.showNotification(payload.title || 'Rest over', restOverOptions(payload.body))
+    }
+  } else {
+    shown = self.registration.showNotification(payload.title || 'FitLog', {
       body: payload.body,
       icon: '/icon-192.png',
       badge: '/icon-192.png',
       data: { url: payload.url ?? '/' },
-    }),
-  )
+    })
+  }
+  event.waitUntil(shown.catch(() => self.registration.showNotification('FitLog', { icon: '/icon-192.png' }).catch(() => undefined)))
 })
 
-// Rest timer: the page posts { type, endsAt } when rest starts or changes, and endsAt: null to
-// cancel. Only the latest message counts. At endsAt, the countdown notification is replaced by a
-// "Rest over" alert (sound/vibration and a heads-up popup) unless FitLog is on screen, where the
-// page shows its own "Rest over". waitUntil keeps the worker alive through the wait; Chrome
-// allows up to 5 minutes per event, and the page re-posts while it counts.
+// Rest timer stand-in, for devices that can't receive the server's push (see restNotification.ts):
+// the page posts { type, endsAt } when rest starts or changes, and endsAt: null to cancel. Only the
+// latest message counts. At endsAt, the "Rest over" alert replaces the countdown unless FitLog is
+// on screen, where the page shows its own "Rest over". waitUntil keeps the worker alive through
+// the wait while the browser lets it; Chrome allows up to 5 minutes per event, and the page
+// re-posts while it counts.
 let restGeneration = 0
 
 self.addEventListener('message', (event) => {
@@ -71,18 +109,7 @@ self.addEventListener('message', (event) => {
       if (generation !== restGeneration) return
       const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
       if (windows.some((w) => w.visibilityState === 'visible')) return
-      const options: RichNotificationOptions = {
-        tag: REST_NOTIFICATION_TAG,
-        body: `Time for your next set.\n${REST_OFF_HINT}`,
-        icon: '/icon-192.png',
-        badge: '/icon-192.png',
-        renotify: true,
-        silent: false,
-        vibrate: [200, 100, 200, 100, 300],
-        actions: REST_ACTIONS,
-        data: { url: '/#/workouts' },
-      }
-      await self.registration.showNotification('Rest over', options)
+      await self.registration.showNotification('Rest over', restOverOptions('Time for your next set.'))
     }),
   )
 })

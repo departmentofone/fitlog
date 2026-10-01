@@ -40,7 +40,7 @@ export function RestTimerSettings() {
         <div className="flex items-center justify-between gap-4">
           <div>
             <h3 className="card-title">Rest timer notifications</h3>
-            <p className="text-xs text-slate-500">The countdown in your notification bar, and an alert when rest is over</p>
+            <p className="text-xs text-slate-500">An alert when rest is over, even with your phone locked</p>
           </div>
           <Toggle label="Rest timer notifications" checked={notifications} onChange={(next) => void setNotifications(next)} />
         </div>

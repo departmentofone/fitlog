@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { urlBase64ToUint8Array } from '../lib/pushSubscription'
 import { supabase } from '../lib/supabase'
 import { useAuth } from './useAuth'
 
@@ -20,15 +21,6 @@ export function usePushPermission() {
   }, [])
 
   return permission
-}
-
-function urlBase64ToUint8Array(base64: string): Uint8Array<ArrayBuffer> {
-  const padding = '='.repeat((4 - (base64.length % 4)) % 4)
-  const base64Safe = (base64 + padding).replace(/-/g, '+').replace(/_/g, '/')
-  const raw = atob(base64Safe)
-  const output = new Uint8Array(raw.length)
-  for (let i = 0; i < raw.length; i++) output[i] = raw.charCodeAt(i)
-  return output
 }
 
 /**
@@ -69,14 +61,18 @@ export async function subscribeToPush(userId: string): Promise<void> {
   if (error) throw error
 }
 
+/**
+ * Stops the weekly summary and streak pushes for this device by removing its push_subscriptions
+ * row. The browser subscription itself stays: the rest timer's "Rest over" alert uses it too.
+ */
 export async function unsubscribeFromPush(): Promise<void> {
   if (!isPushSupported()) return
   const registration = await navigator.serviceWorker.ready
   const subscription = await registration.pushManager.getSubscription()
   if (!subscription) return
 
-  await supabase.from('push_subscriptions').delete().eq('endpoint', subscription.endpoint)
-  await subscription.unsubscribe()
+  const { error } = await supabase.from('push_subscriptions').delete().eq('endpoint', subscription.endpoint)
+  if (error) throw error
 }
 
 export function useIsPushSubscribed() {
@@ -95,8 +91,20 @@ export function useIsPushSubscribed() {
     let cancelled = false
     Promise.race([navigator.serviceWorker.ready, new Promise<null>((resolve) => setTimeout(() => resolve(null), 3000))])
       .then((reg) => (reg ? reg.pushManager.getSubscription() : null))
-      .then((sub) => {
-        if (!cancelled) setIsSubscribed(!!sub)
+      // The rest timer subscribes the browser too, so "on" means this endpoint has a row.
+      .then(async (sub) => {
+        if (!sub) return false
+        const { count } = await supabase
+          .from('push_subscriptions')
+          .select('id', { count: 'exact', head: true })
+          .eq('endpoint', sub.endpoint)
+        return (count ?? 0) > 0
+      })
+      .then((subscribed) => {
+        if (!cancelled) setIsSubscribed(subscribed)
+      })
+      .catch(() => {
+        if (!cancelled) setIsSubscribed(false)
       })
       .finally(() => {
         if (!cancelled) setChecked(true)

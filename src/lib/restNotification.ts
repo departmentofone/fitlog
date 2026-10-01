@@ -1,25 +1,20 @@
-import { formatRestTime } from './restTime'
+import { armServerRestAlert, cancelServerRestAlert } from './restAlert'
+import { REST_ACTIONS, REST_NOTIFICATION_TAG, REST_OFF_HINT, REST_TIMER_MESSAGE, type RichNotificationOptions } from './restNotificationShared'
 
 /**
- * The rest timer in the notification bar. The page keeps a silent "Resting" notification up to
- * date while it counts, and tells the service worker when rest ends; the service worker shows
- * the "Rest over" alert (sound/vibration, heads-up popup) even if the app is in the background
- * or another app is open. One tag, so the alert replaces the countdown in place.
+ * The rest timer in the notification bar. While rest counts, Android (and other Chromium
+ * browsers) shows a silent "Resting" notification with the time rest ends. When rest ends, a
+ * "Rest over" alert (sound/vibration, heads-up popup) replaces it, even if the phone is locked or
+ * another app is open. One tag, so the alert takes the countdown's place.
+ *
+ * The alert comes from the server as a Web Push (restAlert.ts), because a backgrounded web app
+ * can't run a timer: iOS suspends it within seconds and Android freezes it. Only when push isn't
+ * available does the service worker's own timer stand in, which works while FitLog stays open.
+ *
+ * The "Resting" notification is never updated once a second. iOS turns every update into a new
+ * banner, and Android stops updates as soon as FitLog is in the background, so a ticking
+ * countdown either spams or freezes. Showing the end time instead stays right without updates.
  */
-export const REST_NOTIFICATION_TAG = 'fitlog-rest-timer'
-export const REST_TIMER_MESSAGE = 'fitlog-rest-timer'
-
-/** Notification options the DOM lib types leave out but Chrome on Android supports. */
-export type RichNotificationOptions = NotificationOptions & {
-  actions?: { action: string; title: string }[]
-  renotify?: boolean
-  timestamp?: number
-  vibrate?: number[]
-}
-
-export const REST_OFF_HINT = 'You can turn these notifications off in Settings.'
-export const REST_ACTIONS = [{ action: 'settings', title: 'Settings' }]
-
 export function notificationsSupported(): boolean {
   return typeof Notification !== 'undefined' && typeof navigator !== 'undefined' && 'serviceWorker' in navigator
 }
@@ -39,17 +34,26 @@ async function registration(): Promise<ServiceWorkerRegistration | null> {
 }
 
 function clockTime(ms: number): string {
-  return new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  return new Date(ms).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
 }
 
-/** Shows or updates the silent countdown. The end time keeps it useful if updates pause. */
+/**
+ * Whether this browser can replace a notification silently. Chromium can (and is the one with
+ * `Notification.maxActions`); Safari on iOS alerts again for every replacement, so it gets no
+ * "Resting" notification at all, only the alert at the end.
+ */
+export function canUpdateQuietly(): boolean {
+  return typeof Notification !== 'undefined' && 'maxActions' in Notification
+}
+
+/** Shows the silent "Resting" notification, with the time rest ends. Call on start and on +15s. */
 export async function showRestCountdown(endsAt: number) {
+  if (!canUpdateQuietly()) return
   const reg = await registration()
   if (!reg) return
-  const left = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000))
   const options: RichNotificationOptions = {
     tag: REST_NOTIFICATION_TAG,
-    body: `${formatRestTime(left)} left, until ${clockTime(endsAt)}\n${REST_OFF_HINT}`,
+    body: `Rest ends at ${clockTime(endsAt)}.\n${REST_OFF_HINT}`,
     icon: '/icon-192.png',
     badge: '/icon-192.png',
     silent: true,
@@ -65,14 +69,48 @@ export async function showRestCountdown(endsAt: number) {
   }
 }
 
-/** Asks the service worker to alert at `endsAt`, or cancels the pending alert with null. */
-export async function scheduleRestAlert(endsAt: number | null) {
+/** Whether this page fell back to the service worker's timer for the current rest. */
+let usingWorkerTimer = false
+/** Bumped by every schedule and cancel, so a schedule that finishes late can't undo a newer call. */
+let alertGeneration = 0
+
+async function postToWorker(endsAt: number | null) {
   const reg = await registration()
   reg?.active?.postMessage({ type: REST_TIMER_MESSAGE, endsAt })
 }
 
+/**
+ * Arranges the "Rest over" alert for `endsAt`: a server push when this device can receive one,
+ * the service worker's timer otherwise. Call on start and whenever `endsAt` changes.
+ */
+export async function scheduleRestAlert(endsAt: number) {
+  if (notificationPermission() !== 'granted') return
+  const generation = ++alertGeneration
+  const pushed = await armServerRestAlert(endsAt)
+  // Skipped or rescheduled while the server answered: that call has set things up already.
+  if (generation !== alertGeneration) return
+  usingWorkerTimer = !pushed
+  // Never both: two alerts for one rest would buzz twice.
+  await postToWorker(pushed ? null : endsAt)
+}
+
+/**
+ * Keeps the service worker's stand-in timer alive. Chrome gives one wait 5 minutes at most, so the
+ * page re-posts while it counts. Does nothing when the server push is armed.
+ */
+export async function refreshWorkerRestAlert(endsAt: number) {
+  if (usingWorkerTimer) await postToWorker(endsAt)
+}
+
+/** Cancels the pending alert, wherever it was arranged. Keeps the notification on screen. */
+export async function cancelRestAlert() {
+  alertGeneration++
+  usingWorkerTimer = false
+  await Promise.all([cancelServerRestAlert(), postToWorker(null)])
+}
+
 export async function clearRestNotification() {
-  await scheduleRestAlert(null)
+  await cancelRestAlert()
   const reg = await registration()
   if (!reg) return
   try {

@@ -9,33 +9,27 @@
  */
 
 /**
- * The tips, as plates loaded onto the bar: each one a heavier plate, shown in the person's own
- * unit. Product IDs are as created in Play Console (Monetize > Products > One-time products,
- * consumable). IDs can never be changed or reused, so they don't name a price or a plate. Prices
- * are round (US$1, 3, 5, 10) and always come from the store, never from here.
+ * The tips, as food for the developer: a calorie tracker's way of saying thanks. Product IDs are
+ * as created in Play Console (Monetize > Products > One-time products, consumable). IDs can never
+ * be changed or reused, so they don't name a price or a food. Prices are round (US$2, 5, 10, 20)
+ * and always come from the store, never from here.
  */
 export const TIP_PRODUCTS = [
-  { id: 'tip_tier_1', plate: { kg: 1.25, lb: 2.5 }, line: 'Microloading counts.' },
-  { id: 'tip_tier_2', plate: { kg: 5, lb: 10 }, line: 'A proper warm-up set.' },
-  { id: 'tip_tier_3', plate: { kg: 10, lb: 25 }, line: "Now it's a working set." },
-  { id: 'tip_tier_4', plate: { kg: 20, lb: 45 }, line: 'A full plate. Seriously, thank you.' },
+  { id: 'tip_tier_1', name: 'Banana', kcal: 105, line: 'Pre-workout classic.' },
+  { id: 'tip_tier_2', name: 'Protein shake', kcal: 220, line: 'Hits the macros.' },
+  { id: 'tip_tier_3', name: 'Chicken and rice', kcal: 650, line: 'Meal prep, sorted.' },
+  { id: 'tip_tier_4', name: 'Pizza night', kcal: 1800, line: 'Cheat meal. No judgment.' },
 ] as const
 
 export type TipProductId = (typeof TIP_PRODUCTS)[number]['id']
-type PlateUnit = 'kg' | 'lb'
 
-/** "1.25 kg plate", "45 lb plate". */
-export function plateName(id: TipProductId, unit: PlateUnit): string {
-  return `${plateWeight(id, unit)} ${unit} plate`
-}
-
-export function plateWeight(id: TipProductId, unit: PlateUnit): number {
-  return TIP_PRODUCTS.find((p) => p.id === id)!.plate[unit]
+export function tipProduct(id: TipProductId) {
+  return TIP_PRODUCTS.find((p) => p.id === id)!
 }
 
 export interface TipPrice {
   id: TipProductId
-  /** The store's localized price, e.g. "$3.00" or "RSD 300". Never hard-coded. */
+  /** The store's localized price, e.g. "$5.00" or "RSD 500". Never hard-coded. */
   price: string
 }
 
@@ -93,10 +87,10 @@ export function recordTip(id: TipProductId) {
   }
 }
 
-/** Everything this device has tipped, as weight on the bar: 26.25 kg, or 57.5 lb. */
-export function loadedOnBar(unit: PlateUnit): number {
+/** Everything this device has tipped, in calories fed to the developer. */
+export function kcalFed(): number {
   const counts = tipCounts()
-  return TIP_PRODUCTS.reduce((sum, p) => sum + p.plate[unit] * (counts[p.id] ?? 0), 0)
+  return TIP_PRODUCTS.reduce((sum, p) => sum + p.kcal * (counts[p.id] ?? 0), 0)
 }
 
 /**
@@ -113,7 +107,7 @@ function previewStore(): TipStore | null {
     return null
   }
   if (!mode) return null
-  const prices: Record<TipProductId, string> = { tip_tier_1: '$1.00', tip_tier_2: '$3.00', tip_tier_3: '$5.00', tip_tier_4: '$10.00' }
+  const prices: Record<TipProductId, string> = { tip_tier_1: '$2.00', tip_tier_2: '$5.00', tip_tier_3: '$10.00', tip_tier_4: '$20.00' }
   return {
     storeName: 'Google Play',
     prices: async () => TIP_PRODUCTS.map((p) => ({ id: p.id, price: prices[p.id] })),

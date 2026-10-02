@@ -79,11 +79,14 @@ export function useHashRoute() {
 /**
  * Lets the system back gesture close a transient layer (drawer, search sheet) instead of leaving
  * the screen under it. Pushes a same-URL history entry while `open`; closing by any other means
- * pops that entry again so history never accumulates dead steps.
+ * pops that entry again so history never accumulates dead steps. Escape closes it too, for a
+ * keyboard on the web. With layers stacked, only the top one closes per back press or Escape.
  */
 export function useBackToClose(open: boolean, onClose: () => void) {
   const onCloseRef = useRef(onClose)
-  onCloseRef.current = onClose
+  useEffect(() => {
+    onCloseRef.current = onClose
+  })
 
   useEffect(() => {
     if (!open) return
@@ -91,12 +94,21 @@ export function useBackToClose(open: boolean, onClose: () => void) {
     history.pushState({ fitlogLayer: layerId }, '', window.location.href)
     let poppedByUser = false
     const onPop = () => {
+      // Back closed a layer opened on top of this one: this one is on top again and stays open.
+      if (history.state?.fitlogLayer === layerId) return
       poppedByUser = true
       onCloseRef.current()
     }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || history.state?.fitlogLayer !== layerId) return
+      e.preventDefault()
+      history.back()
+    }
     window.addEventListener('popstate', onPop)
+    window.addEventListener('keydown', onKey)
     return () => {
       window.removeEventListener('popstate', onPop)
+      window.removeEventListener('keydown', onKey)
       if (poppedByUser) return
       // Deferred, and only if our own entry is still on top: a synchronous back() here would land
       // after an immediate re-open (React StrictMode re-runs effects) pushed a new entry, and close it.

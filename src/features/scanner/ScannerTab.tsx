@@ -268,7 +268,7 @@ export function ScannerTab() {
       {reviewing && (
         <div className="card p-4">
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="card-title">Review</h3>
+            <h2 className="card-title">Review</h2>
             <button onClick={reset} className="text-sm text-slate-400 hover:text-slate-200">
               Cancel
             </button>

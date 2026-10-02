@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { EmptyState } from '../../components/EmptyState'
 import { useProgressEntries } from '../../hooks/useProgressEntries'
 import { useUserSettings } from '../../hooks/useUserSettings'
 import { displayWeightValue, weightUnitLabel } from '../../lib/units'
+import { niceAxis } from '../../lib/chartAxis'
 import { CHART_FONT, useThemeChartColors } from '../../lib/useChartColors'
 
 type Range = 30 | 90 | 'all'
@@ -41,10 +42,16 @@ export function WeightChart() {
     }))
   }, [entries, range, settings?.unit_system])
 
+  // The goal shows as a dashed line when it's near enough to the trend not to flatten it.
+  const goal = settings?.weight_goal != null ? displayWeightValue(settings.weight_goal, settings?.unit_system) : null
+  const weights = points.map((p) => p.weight)
+  const showGoal = goal != null && weights.length > 0 && goal >= Math.min(...weights) - 6 && goal <= Math.max(...weights) + 6
+  const axis = weights.length > 0 ? niceAxis(showGoal ? [...weights, goal!] : weights) : null
+
   return (
     <div className="card p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="card-title">Weight over time</h3>
+        <h2 className="card-title">Weight over time</h2>
         {totalWeighIns >= 2 && (
         <div className="flex gap-1.5">
           {RANGE_OPTIONS.map((r) => (
@@ -67,7 +74,7 @@ export function WeightChart() {
           variant="list"
           message={
             points.length === 0
-              ? 'Log your weight in the progress calendar to see a trend here.'
+              ? "Log today's weight above and your trend starts here."
               : 'Log at least one more weigh-in to see a trend line.'
           }
         />
@@ -88,15 +95,22 @@ export function WeightChart() {
                 axisLine={false}
                 tickLine={false}
                 width={44}
-                domain={[(min: number) => Math.floor(min - 1), (max: number) => Math.ceil(max + 1)]}
-                allowDecimals={false}
-                tickCount={6}
+                domain={axis?.domain}
+                ticks={axis?.ticks}
               />
               <Tooltip
                 contentStyle={{ background: colors.tooltipBg, border: `1px solid ${colors.tooltipBorder}`, borderRadius: 8, fontFamily: CHART_FONT }}
                 labelStyle={{ color: colors.tooltipText }}
                 formatter={(value) => [`${value} ${unit}`, 'Weight']}
               />
+              {showGoal && (
+                <ReferenceLine
+                  y={goal!}
+                  stroke={colors.tick}
+                  strokeDasharray="4 4"
+                  label={{ value: 'Goal', position: 'insideBottomRight', fill: colors.tick, fontSize: 11, fontFamily: CHART_FONT }}
+                />
+              )}
               <Line type="monotone" dataKey="weight" stroke={colors.accent} strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>

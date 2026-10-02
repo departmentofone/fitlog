@@ -81,7 +81,7 @@ function WebPushCard() {
 function PushCardView({ on, pending, error, blocked, onToggle }: { on: boolean; pending: boolean; error: string | null; blocked: boolean; onToggle: () => void }) {
   return (
     <div className="card p-4">
-      <h3 className="mb-1 card-title">Notifications</h3>
+      <h2 className="mb-1 card-title">Notifications</h2>
       <p className="mb-3 text-xs text-slate-500">
         A summary of your week every Sunday, and an evening heads-up when your workout streak is about to end.
       </p>

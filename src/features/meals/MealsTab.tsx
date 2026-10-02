@@ -2,6 +2,7 @@ import { formatWhole } from '../../lib/number'
 import { useEffect, useState } from 'react'
 import { CopyDayButton } from '../../components/CopyDayButton'
 import { DateNav } from '../../components/DateNav'
+import { dayPhrase, onDayPhrase } from '../../lib/dayLabel'
 import { CircularProgress } from '../../components/CircularProgress'
 import { MacroLine } from '../../components/MacroLine'
 import { SkeletonCard } from '../../components/Skeleton'
@@ -129,11 +130,23 @@ export function MealsTab({ quickAction, onOpenDiet }: { quickAction?: number; on
           Recipes
         </button>
         <CopyDayButton
-          disabled={meals.length === 0}
-          onCopy={(targetDate) => {
-            copyDay.mutate({ fromDate: date, toDate: targetDate })
-            show(`Copying to ${targetDate}…`)
-          }}
+          date={date}
+          hasEntries={meals.some((m) => m.meal_items.length > 0)}
+          noun="meals"
+          onCopy={(fromDate, toDate) =>
+            copyDay.mutate(
+              { fromDate, toDate },
+              {
+                onSuccess: (count) =>
+                  show(
+                    count === 0
+                      ? `Nothing logged ${onDayPhrase(fromDate)} to copy.`
+                      : `Copied ${count} ${count === 1 ? 'food' : 'foods'} to ${dayPhrase(toDate)}.`,
+                  ),
+                onError: () => show("Couldn't copy the day. Try again."),
+              },
+            )
+          }
         />
         <button
           onClick={() => setShowTrends((v) => !v)}

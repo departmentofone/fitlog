@@ -69,9 +69,9 @@ function EntryEditor({
   return (
     <div className="rounded-2xl bg-slate-800/60 p-3">
       <div className="mb-3 flex items-center justify-between">
-        <h4 className="text-sm font-medium text-white">
+        <h3 className="text-sm font-medium text-white">
           {new Date(date + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
-        </h4>
+        </h3>
         <button onClick={onClose} className="text-xs text-slate-400 hover:text-slate-200">
           Close
         </button>
@@ -142,7 +142,7 @@ export function ProgressCalendar() {
   return (
     <div className="card p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="card-title">Progress log</h3>
+        <h2 className="card-title">Progress log</h2>
         {photoEntries.length >= 2 && (
           <button onClick={() => setComparing(true)} className="text-xs font-medium text-emerald-400 hover:text-emerald-300">
             Compare photos

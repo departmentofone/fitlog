@@ -12,14 +12,18 @@ import { cmToIn, formatWeight, fromDisplayWeight, inToCm, kgToLb, lbToKg, weight
 import { CHART_FONT, useThemeChartColors } from '../../lib/useChartColors'
 import type { ActivityLevel, Goal, GoalCategory, Sex } from '../../types'
 import { ProgressCalendar } from './ProgressCalendar'
+import { QuickWeighIn } from './QuickWeighIn'
 import { WeightChart } from './WeightChart'
+import { niceAxis } from '../../lib/chartAxis'
+import { localISO } from '../../lib/localDate'
+import { estimate1RM } from '../../lib/oneRepMax'
 
 type MeasurementField = 'waist' | 'chest' | 'arms' | 'hips'
-const MEASUREMENT_FIELDS: { key: MeasurementField; column: `${MeasurementField}_cm`; label: string; color: string }[] = [
-  { key: 'waist', column: 'waist_cm', label: 'Waist', color: '#34d399' },
-  { key: 'chest', column: 'chest_cm', label: 'Chest', color: '#60a5fa' },
-  { key: 'arms', column: 'arms_cm', label: 'Arms', color: '#fbbf24' },
-  { key: 'hips', column: 'hips_cm', label: 'Hips', color: '#f87171' },
+const MEASUREMENT_FIELDS: { key: MeasurementField; column: `${MeasurementField}_cm`; label: string }[] = [
+  { key: 'waist', column: 'waist_cm', label: 'Waist' },
+  { key: 'chest', column: 'chest_cm', label: 'Chest' },
+  { key: 'arms', column: 'arms_cm', label: 'Arms' },
+  { key: 'hips', column: 'hips_cm', label: 'Hips' },
 ]
 
 function BodyMeasurementsCard() {
@@ -45,7 +49,7 @@ function BodyMeasurementsCard() {
   const [values, setValues] = useState<Record<MeasurementField, string>>({ waist: '', chest: '', arms: '', hips: '' })
 
   function startEditing() {
-    const todayStr = new Date().toISOString().slice(0, 10)
+    const todayStr = localISO()
     const base = latest?.date === todayStr ? latest : undefined
     setDate(todayStr)
     setValues({
@@ -88,8 +92,18 @@ function BodyMeasurementsCard() {
       }`}
     >
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="card-title">Body measurements</h3>
-        {!editing && <span className="text-xs text-slate-500">Tap to edit</span>}
+        <h2 className="card-title">Body measurements</h2>
+        {!editing && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              startEditing()
+            }}
+            className="-my-2 -mr-2 min-h-11 px-2 text-xs font-medium text-emerald-400"
+          >
+            {measurements.length > 0 ? 'Edit' : 'Add'}
+          </button>
+        )}
       </div>
 
       {editing ? (
@@ -131,9 +145,9 @@ function BodyMeasurementsCard() {
               const delta = value != null && prevValue != null ? displayLength(value) - displayLength(prevValue) : null
               return (
                 <p key={f.key}>
-                  {f.label}: {value != null ? `${displayLength(value)} ${lengthUnit}` : '—'}
+                  {f.label}: {value != null ? `${displayLength(value)} ${lengthUnit}` : 'Not set'}
                   {delta != null && Math.abs(delta) >= 0.1 && (
-                    <span className={delta > 0 ? 'text-amber-400' : 'text-emerald-400'}> ({delta > 0 ? '+' : ''}{Math.round(delta * 10) / 10})</span>
+                    <span className="text-slate-500"> ({delta > 0 ? '+' : ''}{Math.round(delta * 10) / 10})</span>
                   )}
                 </p>
               )
@@ -171,16 +185,14 @@ function BodyMeasurementsCard() {
                       axisLine={false}
                       tickLine={false}
                       width={40}
-                      domain={[(min: number) => Math.floor(min - 1), (max: number) => Math.ceil(max + 1)]}
-                      allowDecimals={false}
-                      tickCount={6}
+                      {...(chartData.length > 0 ? niceAxis(chartData.map((d) => d.value)) : {})}
                     />
                     <Tooltip
                       contentStyle={{ background: colors.tooltipBg, border: `1px solid ${colors.tooltipBorder}`, borderRadius: 8, fontFamily: CHART_FONT }}
                       labelStyle={{ color: colors.tooltipText }}
                       formatter={(value) => [`${value} ${lengthUnit}`, activeField.label]}
                     />
-                    <Line type="monotone" dataKey="value" stroke={activeField.color} strokeWidth={2} dot={false} />
+                    <Line type="monotone" dataKey="value" stroke={colors.accent} strokeWidth={2} dot={false} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -216,12 +228,36 @@ function AutoTrackedGoalRow({ goal, exerciseName, onDelete }: { goal: Goal; exer
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [achieved, goal.completed, goal.id])
 
+  // Progress toward the target as estimated 1RMs, so 77.5 × 8 counts toward 80 × 5. The goal itself
+  // is still only "hit" by lifting the target weight for the target reps.
+  const targetOneRm = estimate1RM(goal.target_weight ?? 0, goal.target_reps ?? 1)
+  const best = history
+    .filter((h) => !h.is_warmup && h.weight > 0)
+    .reduce<{ weight: number; reps: number; oneRm: number } | null>((top, h) => {
+      const oneRm = estimate1RM(h.weight, h.reps)
+      return !top || oneRm > top.oneRm ? { weight: h.weight, reps: h.reps, oneRm } : top
+    }, null)
+  const progress = best && targetOneRm > 0 ? Math.min(1, best.oneRm / targetOneRm) : 0
+
   return (
-    <div className="flex min-h-11 items-center gap-3 rounded-xl bg-slate-800/60 pl-3 pr-2">
-      <span className={`flex-1 text-sm ${goal.completed ? 'text-slate-500 line-through' : 'text-white'}`}>
-        {exerciseName} · {formatWeight(goal.target_weight ?? 0, settings?.unit_system, '')}{goal.target_reps ? ` × ${goal.target_reps}` : ''}
+    <div className="flex min-h-11 items-center gap-3 rounded-xl bg-slate-800/60 py-2 pl-3 pr-2">
+      <span className="min-w-0 flex-1">
+        <span className={`block text-sm ${goal.completed ? 'text-slate-500 line-through' : 'text-white'}`}>
+          {exerciseName} · {formatWeight(goal.target_weight ?? 0, settings?.unit_system, '')}{goal.target_reps ? ` × ${goal.target_reps}` : ''}
+        </span>
+        {!goal.completed && best && (
+          <>
+            <span className="mt-1.5 block h-1.5 overflow-hidden rounded-full bg-slate-700">
+              <span className="block h-full rounded-full bg-emerald-400" style={{ width: `${progress * 100}%` }} />
+            </span>
+            <span className="mt-1 block text-xs text-slate-400">
+              Best so far {formatWeight(best.weight, settings?.unit_system)} × {best.reps}
+              {progress >= 1 ? ', which puts the goal in reach' : ` · ${Math.round(progress * 100)}% of the way`}
+            </span>
+          </>
+        )}
       </span>
-      {goal.completed && <span className="shrink-0 text-xs text-success">✓ Hit!</span>}
+      {goal.completed && <span className="shrink-0 text-xs font-medium text-success">Hit</span>}
       <button onClick={onDelete} aria-label={`Delete goal ${exerciseName}`} className="-mr-2 flex h-11 w-10 shrink-0 items-center justify-center text-slate-500 active:text-red-400">
                 <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
                   <path d="M6 6l12 12M18 6L6 18" />
@@ -281,7 +317,7 @@ function GoalList() {
 
   return (
     <div className="card p-4">
-      <h3 className="mb-3 card-title">Goals</h3>
+      <h2 className="mb-3 card-title">Goals</h2>
       <div className="mb-3 space-y-1.5">
         {filtered.map((g) =>
           g.target_exercise_id ? (
@@ -295,15 +331,18 @@ function GoalList() {
             />
           ) : (
             <div key={g.id} className="flex min-h-11 items-center gap-3 rounded-xl bg-slate-800/60 pl-3 pr-2">
-              <input
-                type="checkbox"
-                checked={g.completed}
-                onChange={(e) => toggleGoal.mutate({ id: g.id, completed: e.target.checked })}
-                className="h-5 w-5 shrink-0 accent-emerald-500"
-              />
-              <span className={`flex-1 text-sm ${g.completed ? 'text-slate-500 line-through' : 'text-white'}`}>
-                {g.title}
-              </span>
+              {/* The whole title is the tap target for ticking a goal off, not just the box. */}
+              <label className="flex min-h-11 flex-1 items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={g.completed}
+                  onChange={(e) => toggleGoal.mutate({ id: g.id, completed: e.target.checked })}
+                  className="h-5 w-5 shrink-0 accent-emerald-500"
+                />
+                <span className={`flex-1 text-sm ${g.completed ? 'text-slate-500 line-through' : 'text-white'}`}>
+                  {g.title}
+                </span>
+              </label>
               <button
                 onClick={() => undoable(`Deleted "${g.title}"`, () => deleteGoal.mutate(g.id), () => restoreGoal.mutate(g))}
                 aria-label={`Delete goal ${g.title}`}
@@ -435,15 +474,26 @@ export function GoalsTab() {
 
   return (
     <div className="space-y-4 p-4">
+      <QuickWeighIn />
+
+      {/* The whole card opens the editor on a tap; the Edit button is the keyboard-reachable way in. */}
       <div
         onClick={!editingStats ? startEditing : undefined}
-        className={`card card-glow p-4 transition ${
-          !editingStats ? 'cursor-pointer hover:ring-emerald-500/30' : ''
-        }`}
+        className={`card p-4 transition ${!editingStats ? 'cursor-pointer hover:ring-emerald-500/30' : ''}`}
       >
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="card-title">Personal info & weight goal</h3>
-          {!editingStats && <span className="text-xs text-slate-500">Tap to edit</span>}
+          <h2 className="card-title">Personal info & weight goal</h2>
+          {!editingStats && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                startEditing()
+              }}
+              className="-my-2 -mr-2 min-h-11 px-2 text-xs font-medium text-emerald-400"
+            >
+              Edit
+            </button>
+          )}
         </div>
 
         {editingStats ? (
@@ -451,6 +501,7 @@ export function GoalsTab() {
             <div className="grid grid-cols-2 gap-2.5">
               <input
                 placeholder={`Current weight (${weightUnit})`}
+                aria-label={`Current weight (${weightUnit})`}
                 type="text"
                 inputMode="decimal"
                 value={weight}
@@ -459,6 +510,7 @@ export function GoalsTab() {
               />
               <input
                 placeholder={`Goal weight (${weightUnit})`}
+                aria-label={`Goal weight (${weightUnit})`}
                 type="text"
                 inputMode="decimal"
                 value={weightGoal}
@@ -467,6 +519,7 @@ export function GoalsTab() {
               />
               <input
                 placeholder={`Height (${heightUnit})`}
+                aria-label={`Height (${heightUnit})`}
                 type="text"
                 inputMode="decimal"
                 value={height}
@@ -475,6 +528,7 @@ export function GoalsTab() {
               />
               <input
                 placeholder="Age"
+                aria-label="Age"
                 type="text"
                 inputMode="decimal"
                 value={age}
@@ -515,10 +569,10 @@ export function GoalsTab() {
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-2 text-sm text-slate-300">
-            <p>Weight: {settings?.current_weight != null ? `${displayWeight(settings.current_weight)} ${weightUnit}` : '—'}</p>
-            <p>Goal: {settings?.weight_goal != null ? `${displayWeight(settings.weight_goal)} ${weightUnit}` : '—'}</p>
-            <p>Height: {settings?.height_cm != null ? `${displayHeight(settings.height_cm)} ${heightUnit}` : '—'}</p>
-            <p>Age: {settings?.age ?? '—'}</p>
+            <p>Weight: {settings?.current_weight != null ? `${displayWeight(settings.current_weight)} ${weightUnit}` : 'Not set'}</p>
+            <p>Goal: {settings?.weight_goal != null ? `${displayWeight(settings.weight_goal)} ${weightUnit}` : 'Not set'}</p>
+            <p>Height: {settings?.height_cm != null ? `${displayHeight(settings.height_cm)} ${heightUnit}` : 'Not set'}</p>
+            <p>Age: {settings?.age ?? 'Not set'}</p>
           </div>
         )}
       </div>

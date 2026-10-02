@@ -24,7 +24,7 @@ export function RestTimerSettings() {
     <div className="divide-y divide-white/5 card px-4">
       <div className="flex items-center justify-between gap-4 py-3">
         <div>
-          <h3 className="card-title">Start rest timer after each set</h3>
+          <h2 className="card-title">Start rest timer after each set</h2>
           <p className="text-xs text-slate-500">When off, tap Start on the timer instead</p>
         </div>
         <Toggle label="Start rest timer after each set" checked={autoStart} onChange={(next) => setRestTimerPref('autoStart', next)} />
@@ -32,7 +32,7 @@ export function RestTimerSettings() {
       <div className="py-3">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <h3 className="card-title">Rest timer notifications</h3>
+            <h2 className="card-title">Rest timer notifications</h2>
             <p className="text-xs text-slate-500">An alert when rest is over, even with your phone locked</p>
           </div>
           <Toggle label="Rest timer notifications" checked={notifications} onChange={(next) => void setNotifications(next)} />

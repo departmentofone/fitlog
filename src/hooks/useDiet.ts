@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase'
 import type { DietGoal, Food } from '../types'
 import { useAuth } from './useAuth'
 import { computeDayStreaks } from '../lib/streaks'
+import { localISO } from '../lib/localDate'
 
 function meetsGoal(consumed: number, goal: number, type: DietGoal): boolean {
   if (type === 'deficit') return consumed <= goal
@@ -57,8 +58,8 @@ export function useWeeklyAdherence(calorieGoal: number | null, dietGoal: DietGoa
       const today = new Date()
       const start = new Date(today)
       start.setDate(today.getDate() - 6)
-      const startISO = start.toISOString().slice(0, 10)
-      const endISO = today.toISOString().slice(0, 10)
+      const startISO = localISO(start)
+      const endISO = localISO(today)
 
       const { data, error } = await supabase
         .from('meals')

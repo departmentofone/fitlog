@@ -21,7 +21,7 @@ const fieldClass =
 export function MaintenanceCalculator() {
   const { data: settings } = useUserSettings()
   const updateSettings = useUpdateSettings()
-  const { show } = useToast()
+  const { show, undoable } = useToast()
   const imperial = settings?.unit_system === 'imperial'
   const weightUnit = imperial ? 'lb' : 'kg'
   const heightUnit = imperial ? 'in' : 'cm'
@@ -64,7 +64,13 @@ export function MaintenanceCalculator() {
   function applyGoal(goal: DietGoal) {
     if (maintenance == null) return
     const calorie_goal = goal === 'deficit' ? cuttingGoal! : goal === 'surplus' ? bulkingGoal! : maintenance
-    updateSettings.mutate({ calorie_goal, diet_goal: goal }, { onSuccess: () => show(`Calorie goal set to ${formatWhole(calorie_goal)} kcal`) })
+    // One tap replaces the goal you had, so it comes with Undo.
+    const previous = { calorie_goal: settings?.calorie_goal ?? null, diet_goal: settings?.diet_goal ?? 'deficit' }
+    undoable(
+      `Calorie goal set to ${formatWhole(calorie_goal)} kcal`,
+      () => updateSettings.mutate({ calorie_goal, diet_goal: goal }),
+      () => updateSettings.mutate(previous),
+    )
   }
 
   function saveStatsToProfile() {
@@ -132,7 +138,7 @@ export function MaintenanceCalculator() {
       </div>
 
       <div className="card p-4">
-        <h3 className="mb-3 card-title">Result</h3>
+        <h2 className="mb-3 card-title">Result</h2>
         {maintenance == null ? (
           <p className="text-sm text-slate-500">Fill in weight, height, age, sex, and activity level above to see your estimate.</p>
         ) : (

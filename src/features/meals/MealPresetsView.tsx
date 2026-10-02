@@ -50,7 +50,7 @@ export function MealPresetsView({
 
       {savableMeals.length > 0 && (
         <div className="card p-4">
-          <h3 className="mb-3 card-title">Save a meal as preset</h3>
+          <h2 className="mb-3 card-title">Save a meal as preset</h2>
           <div className="space-y-2">
             {savableMeals.map((meal) =>
               savingMealId === meal.id ? (
@@ -96,7 +96,7 @@ export function MealPresetsView({
       )}
 
       <div className="card card-glow p-4">
-        <h3 className="mb-3 card-title">Your meal presets</h3>
+        <h2 className="mb-3 card-title">Your meal presets</h2>
         {isLoading && (
           <div className="space-y-2">
             <SkeletonRow />
@@ -110,7 +110,7 @@ export function MealPresetsView({
           {presets.map((preset) => (
             <div key={preset.id} className="inset p-3">
               <div className="mb-1 flex items-center justify-between">
-                <h4 className="text-sm font-medium text-white">{preset.name}</h4>
+                <h3 className="text-sm font-medium text-white">{preset.name}</h3>
                 {preset.user_id === user?.id && (
                   <button
                     onClick={() =>

@@ -69,7 +69,7 @@ export function PresetsView({
       {currentSets.length > 0 &&
         (showSaveForm ? (
           <div className="card p-4">
-            <h3 className="mb-3 card-title">Save as preset</h3>
+            <h2 className="mb-3 card-title">Save as preset</h2>
             <input
               autoFocus
               placeholder="Preset name (e.g. Leg Day)"
@@ -103,7 +103,7 @@ export function PresetsView({
         ))}
 
       <div className="card card-glow p-4">
-        <h3 className="mb-3 card-title">Your presets</h3>
+        <h2 className="mb-3 card-title">Your presets</h2>
         {isLoading && (
           <div className="space-y-2">
             <SkeletonRow />
@@ -120,7 +120,7 @@ export function PresetsView({
           {presets.map((preset) => (
             <div key={preset.id} className="inset p-3">
               <div className="mb-1 flex items-center justify-between">
-                <h4 className="text-sm font-medium text-white">{preset.name}</h4>
+                <h3 className="text-sm font-medium text-white">{preset.name}</h3>
                 {preset.user_id === user?.id && (
                   <button
                     onClick={() =>

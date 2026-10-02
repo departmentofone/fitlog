@@ -315,6 +315,28 @@ html[data-palette="amber"] {
 }
 
 /*
+ * The parts of the page the browser draws, in the app's colours: the keyboard focus ring (fields
+ * keep their own accent border instead), selected text, the text caret, and native checkboxes and
+ * sliders.
+ */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-emerald-400);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--color-emerald-400) 32%, transparent);
+  }
+  input,
+  textarea {
+    caret-color: var(--color-emerald-400);
+  }
+}
+:root {
+  accent-color: var(--color-emerald-500);
+}
+
+/*
  * "Aurora Glass" - light. Dark mode already reads as glass because translucent cards sit over
  * glowing colour on a deep canvas; light mode had near-opaque white cards on a flat pale canvas
  * with grey drop shadows, so it looked like plain paper. Everything below is scoped to light mode

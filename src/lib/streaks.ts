@@ -4,9 +4,14 @@ export function toDayNumber(dateStr: string): number {
   return Math.floor(Date.UTC(y, m - 1, d) / 86_400_000)
 }
 
-/** Matches toDayNumber(todayISO()) from useWorkouts — both are UTC-calendar-day based. */
+/**
+ * Today's day number in the phone's own calendar, matching toDayNumber(todayISO()). It used to be
+ * the UTC day, which east of UTC is still yesterday for the first hours after midnight: a streak
+ * started today read 0, and west of UTC one that was still alive read as broken all evening.
+ */
 export function todayDayNumber(): number {
-  return Math.floor(Date.now() / 86_400_000)
+  const now = new Date()
+  return Math.floor(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 86_400_000)
 }
 
 /**

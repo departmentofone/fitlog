@@ -19,6 +19,7 @@ import { useUserSettings } from '../../hooks/useUserSettings'
 import { fromDisplayVolume, volumeUnitLabel } from '../../lib/units'
 import type { DietGoal, Program } from '../../types'
 import { ShareLinkButton } from '../community/ShareLinkButton'
+import { OfficialPrograms } from './OfficialPrograms'
 
 function CheckList<T extends { id: string; name: string }>({
   title,
@@ -90,9 +91,10 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
     onDone()
   }
 
+  // Sits inside the "Your programs" card, so an inset panel rather than a card of its own.
   return (
-    <div className="card p-4">
-      <h3 className="mb-3 card-title">New program</h3>
+    <div className="inset p-4">
+      <h3 className="mb-3 text-sm font-semibold text-white">New program</h3>
       <div className="mb-3 space-y-2.5">
         <input
           placeholder="Program name"
@@ -196,15 +198,18 @@ function ProgramCard({ program, isOwner }: { program: Program; isOwner: boolean 
   return (
     <div className="inset p-3">
       <div className="mb-1 flex items-center justify-between">
-        <h4 className="text-sm font-medium text-white">{program.name}</h4>
+        <h3 className="text-sm font-medium text-white">{program.name}</h3>
         {isOwner && (
           <button
             onClick={() =>
               undoable(`Deleted "${program.name}"`, () => deleteProgram.mutate(program.id), () => restoreProgram.mutate(program))
             }
-            className="text-red-400 hover:text-red-300"
+            aria-label={`Delete program ${program.name}`}
+            className="-my-2 -mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-slate-500 active:text-red-400"
           >
-            ×
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
           </button>
         )}
       </div>
@@ -251,40 +256,53 @@ export function ProgramsTab() {
   const { data: programs = [], isLoading } = usePrograms()
   const [showNew, setShowNew] = useState(false)
 
+  const yours = (
+    <div className="card p-4">
+      <h2 className="mb-1 card-title">{programs.length > 0 ? 'Your programs' : 'Make your own'}</h2>
+      <p className="mb-3 text-sm text-slate-400">
+        Bundle workout presets, recipes, meal presets and diet goals into one package. Share it to Community and
+        anyone can import it in one go.
+      </p>
+      {isLoading && (
+        <div className="mb-3 space-y-2">
+          <SkeletonRow />
+          <SkeletonRow />
+        </div>
+      )}
+      {programs.length > 0 && (
+        <div className="mb-3 space-y-2">
+          {programs.map((program) => (
+            <ProgramCard key={program.id} program={program} isOwner={program.user_id === user?.id} />
+          ))}
+        </div>
+      )}
+      {showNew ? (
+        <NewProgramForm onDone={() => setShowNew(false)} />
+      ) : (
+        <button
+          onClick={() => setShowNew(true)}
+          className="min-h-11 w-full rounded-xl border border-dashed border-slate-700 text-sm font-medium text-slate-300 transition active:border-emerald-500 active:text-emerald-400"
+        >
+          + New program
+        </button>
+      )}
+    </div>
+  )
+
+  // Your own programs lead once you have some; before that, the ready-made ones do.
   return (
     <div className="space-y-4 p-4">
-      {/* One card: what programs are, your programs (only once you have some), and the action. It was
-          two cards - an explainer and a separate empty "Programs" list. */}
-      <div className="card p-4">
-        <h3 className="mb-1 card-title">Programs</h3>
-        <p className="mb-3 text-sm text-slate-400">
-          Bundle workout presets, recipes, meal presets and diet goals into one package. Share it to Community and
-          anyone can import it in one go.
-        </p>
-        {isLoading && (
-          <div className="mb-3 space-y-2">
-            <SkeletonRow />
-            <SkeletonRow />
-          </div>
-        )}
-        {programs.length > 0 && (
-          <div className="mb-3 space-y-2">
-            {programs.map((program) => (
-              <ProgramCard key={program.id} program={program} isOwner={program.user_id === user?.id} />
-            ))}
-          </div>
-        )}
-        {showNew ? (
-          <NewProgramForm onDone={() => setShowNew(false)} />
-        ) : (
-          <button
-            onClick={() => setShowNew(true)}
-            className="min-h-11 w-full rounded-xl border border-dashed border-slate-700 text-sm font-medium text-slate-300 transition active:border-emerald-500 active:text-emerald-400"
-          >
-            + New program
-          </button>
-        )}
-      </div>
+      {programs.length > 0 ? (
+        <>
+          {yours}
+          <OfficialPrograms />
+        </>
+      ) : (
+        <>
+          <OfficialPrograms />
+          {yours}
+        </>
+      )}
     </div>
   )
 }

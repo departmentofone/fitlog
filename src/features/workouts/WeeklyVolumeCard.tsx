@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { MuscleDiagram, type MuscleIntensity } from '../../components/MuscleDiagram'
-import { MUSCLE_GROUPS } from '../../types'
+import { muscleLabel, MUSCLE_GROUPS } from '../../types'
 import { useUserSettings } from '../../hooks/useUserSettings'
 import { useSessionDates, useWeeklyVolumeByMuscleGroup } from '../../hooks/useWorkouts'
 import { toDisplayTotal, weightUnitLabel } from '../../lib/units'
+import { localISO } from '../../lib/localDate'
 
-const LABELS = Object.fromEntries(MUSCLE_GROUPS.map((g) => [g.value, g.label]))
+const LABELS = Object.fromEntries(MUSCLE_GROUPS.map((g) => [g.value, muscleLabel(g.value)]))
 
 // The deload callout compares this week's total volume to the average of the preceding 3 weeks
 // (i.e. days 8-28 back). Below this many distinct weeks of logged history, that "average" isn't
@@ -20,7 +21,7 @@ function weekStartKey(dateISO: string): string {
   const d = new Date(`${dateISO}T00:00:00`)
   const dayIndex = (d.getDay() + 6) % 7 // Monday = 0 ... Sunday = 6
   d.setDate(d.getDate() - dayIndex)
-  return d.toISOString().slice(0, 10)
+  return localISO(d)
 }
 
 /**
@@ -75,9 +76,9 @@ export function WeeklyVolumeCard({ todaySetsPerMuscle }: { todaySetsPerMuscle: M
   return (
     <div className="card p-4">
       <div className="mb-3 flex items-center justify-between gap-2">
-        <h3 className="text-sm font-medium text-slate-300">
+        <h2 className="text-sm font-medium text-slate-300">
           {showing === 'today' ? 'Muscles worked today' : 'Last 7 days · volume'}
-        </h3>
+        </h2>
         <div className="flex rounded-xl bg-slate-800/60 p-0.5" role="tablist" aria-label="Range">
           {(['today', 'week'] as const).map((r) => (
             <button

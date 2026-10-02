@@ -24,6 +24,26 @@ export function usePrograms() {
   })
 }
 
+/** FitLog's own ready-made programs (migration_v35), oldest first, the order they were written in. */
+export function useOfficialPrograms() {
+  const { user } = useAuth()
+  return useQuery({
+    queryKey: ['official-programs', user?.id],
+    enabled: !!user,
+    staleTime: 60 * 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('programs')
+        .select('*')
+        .eq('is_official', true)
+        .eq('is_shared', true)
+        .order('created_at', { ascending: true })
+      if (error) throw error
+      return data as unknown as Program[]
+    },
+  })
+}
+
 export interface CreateProgramInput {
   name: string
   description: string

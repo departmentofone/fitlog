@@ -99,6 +99,8 @@ export function FoodsTab({ onOpenScanner }: { onOpenScanner: () => void }) {
 
       <div className="flex gap-2">
         <input
+          type="search"
+          aria-label="Search foods"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search foods…"

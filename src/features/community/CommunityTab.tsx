@@ -2,6 +2,7 @@ import { formatWhole } from '../../lib/number'
 import { useEffect, useMemo, useState } from 'react'
 import { EmptyState } from '../../components/EmptyState'
 import { ExplainerCard } from '../../components/ExplainerCard'
+import { clearCommunityLanding, peekCommunityLanding } from '../../lib/communityLanding'
 import { COMMUNITY_EXPLAINERS } from '../../lib/explainers'
 import { MacroLine } from '../../components/MacroLine'
 import { SkeletonCard } from '../../components/Skeleton'
@@ -368,7 +369,7 @@ function CommunityCard({
         </span>
       </div>
 
-      <h3 className="card-title">{item.name}</h3>
+      <h2 className="card-title">{item.name}</h2>
       {item.description && <p className="mt-0.5 text-sm text-slate-400">{item.description}</p>}
       <div className="mt-2">
         <Summary item={item} />
@@ -522,9 +523,9 @@ function ReportsPanel() {
   if (reports.length === 0) return null
   return (
     <section className="rounded-2xl bg-red-500/5 p-3 ring-1 ring-red-500/30">
-      <h3 className="mb-2 card-title">
+      <h2 className="mb-2 card-title">
         Reports <span className="ml-1 rounded-full bg-red-500/20 px-2 py-0.5 text-xs text-red-300">{reports.length}</span>
-      </h3>
+      </h2>
       <ul className="space-y-2">
         {reports.map((r) => (
           <li key={r.id} className="rounded-xl bg-slate-900/70 p-2.5">
@@ -570,7 +571,9 @@ export function CommunityTab() {
   const { data: myDiets = [] } = useDiets()
   const { data: myPlans = [] } = useMealPlans()
   const { diet: activeDiet } = useActiveDiet()
-  const [filter, setFilter] = useState<CommunityKind | 'all'>('all')
+  // Another screen can open Community on one kind (Train's "Browse workouts"); read once, then cleared.
+  const [filter, setFilter] = useState<CommunityKind | 'all'>(() => peekCommunityLanding() ?? 'all')
+  useEffect(() => clearCommunityLanding(), [])
   const [search, setSearch] = useState('')
   const [showGuidelines, setShowGuidelines] = useState(false)
   const { data: isOwner = false } = useIsSiteOwner()
@@ -679,6 +682,7 @@ export function CommunityTab() {
 
       <input
         type="search"
+        aria-label="Search Community"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search by name or ingredient…"

@@ -41,11 +41,19 @@ export const MUSCLE_GROUPS: { value: MuscleGroup; label: string }[] = [
   { value: 'quads', label: 'Quads' },
   { value: 'hamstrings', label: 'Hamstrings' },
   { value: 'glutes', label: 'Glutes' },
-  { value: 'adductors', label: 'Adductors (Inner Thigh)' },
-  { value: 'abductors', label: 'Abductors (Outer Thigh)' },
+  { value: 'adductors', label: 'Adductors (inner thigh)' },
+  { value: 'abductors', label: 'Abductors (outer thigh)' },
   { value: 'calves', label: 'Calves' },
-  { value: 'cardio', label: 'Cardio / Full Body' },
+  { value: 'cardio', label: 'Cardio / full body' },
 ]
+
+/**
+ * A muscle group's name for lists and summaries: "Back" rather than "Back (general)", which only
+ * matters in the picker, where it sits next to Lats, Traps and Lower back.
+ */
+export function muscleLabel(group: MuscleGroup): string {
+  return (MUSCLE_GROUPS.find((m) => m.value === group)?.label ?? group).replace(' (general)', '')
+}
 
 export interface Exercise {
   id: string

@@ -6,16 +6,19 @@ import { useToast } from '../../components/ToastProvider'
 import { useDietStreak } from '../../hooks/useDiet'
 import { useUserSettings } from '../../hooks/useUserSettings'
 import {
+  useAddSet,
   useDeleteSession,
   useDeleteSet,
   useRestoreSession,
   useSessionDates,
+  useSessionHistory,
   useSessionDetailForDate,
   todayISO,
 } from '../../hooks/useWorkouts'
 import { useWorkoutStreaks } from '../../hooks/useWorkoutStreaks'
-import { formatDuration } from '../../lib/duration'
-import { toDisplayWeight } from '../../lib/units'
+import { formatDuration, formatDurationLabel } from '../../lib/duration'
+import { formatWeight, toDisplayTotal, weightUnitLabel } from '../../lib/units'
+import { formatDayLabel } from '../../components/DateNav'
 import { WeeklyDigestCard } from './WeeklyDigestCard'
 
 function StatTile({ label, value, sub }: { label: string; value: string; sub?: string }) {
@@ -33,6 +36,7 @@ function DayDetail({ date }: { date: string }) {
   const { data: settings } = useUserSettings()
   const unit = settings?.unit_system
   const deleteSet = useDeleteSet(session?.id)
+  const addSet = useAddSet(session?.id)
   const deleteSession = useDeleteSession()
   const restoreSession = useRestoreSession()
   const { undoable } = useToast()
@@ -51,6 +55,26 @@ function DayDetail({ date }: { date: string }) {
     return <p className="text-sm text-slate-500">No sets logged this day.</p>
   }
 
+  // Same as deleting from the Log: gone at once, back with Undo, in its old place and time.
+  function deleteWithUndo(s: NonNullable<typeof session>['workout_sets'][number]) {
+    undoable(
+      `Removed ${formatWeight(s.weight, unit)} × ${s.reps}`,
+      () => deleteSet.mutate(s.id),
+      () =>
+        addSet.mutate({
+          exerciseId: s.exercise_id,
+          setNumber: s.set_number,
+          weight: s.weight,
+          reps: s.reps,
+          difficulty: s.difficulty,
+          isWarmup: s.is_warmup,
+          supersetGroup: s.superset_group,
+          restore: true,
+          createdAt: s.created_at,
+        }),
+    )
+  }
+
   const grouped = new Map<string, typeof session.workout_sets>()
   for (const s of session.workout_sets) {
     const key = s.exercise?.name ?? 'Unknown'
@@ -60,9 +84,9 @@ function DayDetail({ date }: { date: string }) {
   return (
     <div className="rounded-2xl bg-slate-800/50 p-3">
       <div className="mb-1.5 flex items-center justify-between">
-        <h4 className="text-sm font-medium text-white">
+        <h3 className="text-sm font-medium text-white">
           {new Date(date + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
-        </h4>
+        </h3>
         <div className="flex items-center gap-1.5">
           {session.duration_seconds != null && (
             <span className="flex items-center gap-1 rounded-full bg-slate-700/60 px-2 py-0.5 text-xs text-slate-300">
@@ -120,21 +144,93 @@ function DayDetail({ date }: { date: string }) {
             <p className="mb-1 font-medium text-slate-200">{name}</p>
             <div className="flex flex-wrap gap-1">
               {sets.map((s) => (
-                <SwipeToDelete key={s.id} onDelete={() => deleteSet.mutate(s.id)} className="rounded-md">
-                  <span className="flex items-center gap-1 rounded-md bg-slate-900/60 py-0.5 pl-2 pr-1 text-slate-400">
-                    {toDisplayWeight(s.weight, unit)}×{s.reps}
+                <SwipeToDelete key={s.id} onDelete={() => deleteWithUndo(s)} className="rounded-md">
+                  <span className="flex items-center gap-1 rounded-md bg-slate-900/60 py-0.5 pl-2 pr-0.5 tabular-nums text-slate-400">
+                    {s.weight > 0 ? `${formatWeight(s.weight, unit)} × ${s.reps}` : `${s.reps} reps`}
                     <button
-                      onClick={() => deleteSet.mutate(s.id)}
-                      aria-label={`Delete set ${toDisplayWeight(s.weight, unit)}×${s.reps}`}
-                      className="rounded px-1 text-slate-600 hover:bg-red-600/20 hover:text-red-400"
+                      onClick={() => deleteWithUndo(s)}
+                      aria-label={`Delete set ${formatWeight(s.weight, unit)} × ${s.reps}`}
+                      className="flex h-5 w-5 items-center justify-center rounded text-slate-600 hover:bg-red-600/20 hover:text-red-400"
                     >
-                      ×
+                      <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
+                        <path d="M6 6l12 12M18 6L6 18" />
+                      </svg>
                     </button>
                   </span>
                 </SwipeToDelete>
               ))}
             </div>
           </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+const RECENT_SHOWN = 6
+
+/**
+ * The last few workouts as rows under the calendar, newest first, so the past weeks are a scroll
+ * away instead of a month-flip and a tap on each day.
+ */
+function RecentWorkouts({ onOpen }: { onOpen: (date: string) => void }) {
+  const { data: sessions = [], isLoading } = useSessionHistory()
+  const { data: settings } = useUserSettings()
+  const [all, setAll] = useState(false)
+  const unit = settings?.unit_system
+
+  const rows = sessions
+    .filter((s) => s.workout_sets.length > 0)
+    .map((s) => {
+      const working = s.workout_sets.filter((w) => !w.is_warmup)
+      const names: string[] = []
+      for (const w of s.workout_sets) {
+        const n = w.exercise?.name
+        if (n && !names.includes(n)) names.push(n)
+      }
+      return {
+        id: s.id,
+        date: s.date,
+        duration: s.duration_seconds,
+        volume: working.reduce((sum, w) => sum + w.weight * w.reps, 0),
+        sets: working.length,
+        names,
+      }
+    })
+
+  if (isLoading || rows.length === 0) return null
+  const shown = all ? rows : rows.slice(0, RECENT_SHOWN)
+
+  return (
+    <div className="card p-4">
+      <div className="mb-2 flex items-center justify-between">
+        <h2 className="card-title">Recent workouts</h2>
+        {rows.length > RECENT_SHOWN && (
+          <button onClick={() => setAll((v) => !v)} className="-my-2 -mr-2 min-h-11 px-2 text-xs font-medium text-emerald-400">
+            {all ? 'Show fewer' : `All ${rows.length}`}
+          </button>
+        )}
+      </div>
+      <div className="divide-y divide-white/5">
+        {shown.map((r) => (
+          <button key={r.id} onClick={() => onOpen(r.date)} className="flex w-full items-start justify-between gap-3 py-2.5 text-left transition active:bg-white/5">
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-semibold text-white">{formatDayLabel(r.date)}</span>
+              <span className="mt-0.5 block truncate text-xs text-slate-400">
+                {r.names.slice(0, 3).join(', ')}
+                {r.names.length > 3 && ` +${r.names.length - 3} more`}
+              </span>
+            </span>
+            <span className="shrink-0 text-right text-xs tabular-nums text-slate-400">
+              <span className="block font-medium text-slate-200">
+                {Math.round(toDisplayTotal(r.volume, unit)).toLocaleString()} {weightUnitLabel(unit)}
+              </span>
+              <span className="block">
+                {r.sets} {r.sets === 1 ? 'set' : 'sets'}
+                {r.duration ? ` · ${formatDurationLabel(r.duration)}` : ''}
+              </span>
+            </span>
+          </button>
         ))}
       </div>
     </div>
@@ -157,15 +253,17 @@ export function HistoryView() {
       <WeeklyDigestCard />
 
       {/* Streaks as one row of three - it was two cards' worth of tiles repeating the streak pills
-          already shown on Workouts and Diet. */}
-      <div className="grid grid-cols-3 gap-2">
-        <StatTile label="Training" value={`${streaks?.currentStreak ?? 0}d`} sub={`streak · best ${streaks?.bestStreak ?? 0}`} />
-        <StatTile label="Diet" value={`${dietStreak.data?.current ?? 0}d`} sub={`streak · best ${dietStreak.data?.best ?? 0}`} />
-        <StatTile label="Workouts" value={String(streaks?.totalSessions ?? 0)} sub="logged" />
-      </div>
+          already shown on Workouts and Diet. Left out until there's something to count. */}
+      {((streaks?.totalSessions ?? 0) > 0 || (dietStreak.data?.best ?? 0) > 0) && (
+        <div className="grid grid-cols-3 gap-2">
+          <StatTile label="Training" value={`${streaks?.currentStreak ?? 0}d`} sub={`streak · best ${streaks?.bestStreak ?? 0}`} />
+          <StatTile label="Diet" value={`${dietStreak.data?.current ?? 0}d`} sub={`streak · best ${dietStreak.data?.best ?? 0}`} />
+          <StatTile label="Workouts" value={String(streaks?.totalSessions ?? 0)} sub="logged" />
+        </div>
+      )}
 
       <div className="card p-4">
-        <h3 className="mb-3 card-title">Workout history</h3>
+        <h2 className="mb-3 card-title">Workout history</h2>
         <MonthCalendar
           month={month}
           onMonthChange={setMonth}
@@ -175,11 +273,20 @@ export function HistoryView() {
           maxDate={todayISO()}
         />
         {selectedDate && (
-          <div className="mt-3">
+          <div id="history-day-detail" className="mt-3 scroll-mt-4">
             <DayDetail date={selectedDate} />
           </div>
         )}
       </div>
+
+      <RecentWorkouts
+        onOpen={(date) => {
+          const d = new Date(date + 'T00:00:00')
+          setMonth(new Date(d.getFullYear(), d.getMonth(), 1))
+          setSelectedDate(date)
+          setTimeout(() => document.getElementById('history-day-detail')?.scrollIntoView({ block: 'start' }), 60)
+        }}
+      />
     </div>
   )
 }

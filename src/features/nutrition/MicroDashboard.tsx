@@ -42,7 +42,7 @@ export function MicroDashboard({ micros }: { micros: MicroTotals }) {
   return (
     <div className="card p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-medium text-slate-300">Micronutrients today</h3>
+        <h2 className="text-sm font-medium text-slate-300">Micronutrients today</h2>
         <button
           onClick={() => setExpanded((e) => !e)}
           className="text-xs font-medium text-emerald-400 hover:text-emerald-300"

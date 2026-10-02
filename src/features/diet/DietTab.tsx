@@ -68,12 +68,21 @@ export function DietTab({ onOpenCalculator }: { onOpenCalculator: () => void }) 
       >
         <div className="mb-2 flex items-center justify-between">
           <h2 className="text-sm font-medium text-slate-300">Diet goal</h2>
-          {!editing &&
-            ((streak.data?.current ?? 0) > 0 ? (
+          {!editing && (
+            <div className="flex items-center gap-1">
               <FireStreak count={streak.data?.current ?? 0} label="day on-target streak" />
-            ) : (
-              <span className="text-xs text-slate-500">Tap to edit</span>
-            ))}
+              {/* The card opens the editor on a tap; this is the keyboard-reachable way in. */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  startEditing()
+                }}
+                className="-my-2 -mr-2 min-h-11 px-2 text-xs font-medium text-emerald-400"
+              >
+                {calorieGoal == null ? 'Set' : 'Edit'}
+              </button>
+            </div>
+          )}
         </div>
 
         {editing ? (
@@ -95,6 +104,7 @@ export function DietTab({ onOpenCalculator }: { onOpenCalculator: () => void }) 
               type="text"
               inputMode="numeric"
               placeholder="Daily calorie target"
+              aria-label="Daily calorie target in kcal"
               value={calorieDraft}
               onChange={(e) => setCalorieDraft(e.target.value)}
               className="w-full field px-3 py-2"
@@ -115,7 +125,7 @@ export function DietTab({ onOpenCalculator }: { onOpenCalculator: () => void }) 
             </div>
           </div>
         ) : calorieGoal == null ? (
-          <p className="text-sm text-slate-400">No calorie goal set yet. Tap here to set one.</p>
+          <p className="text-sm text-slate-400">No calorie goal set yet. Tap here to set one, or work it out with the calculator below.</p>
         ) : (
           <div className="flex items-center gap-4">
             <div className="flex-1">

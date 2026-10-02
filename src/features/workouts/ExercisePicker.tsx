@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useHideQuickAdd } from '../../components/QuickAddVisibility'
 import { MuscleDiagram } from '../../components/MuscleDiagram'
 import { useCreateExercise, useExercises } from '../../hooks/useExercises'
-import { MUSCLE_GROUPS, type Exercise, type MuscleGroup } from '../../types'
+import { muscleLabel, MUSCLE_GROUPS, type Exercise, type MuscleGroup } from '../../types'
 
 interface ExercisePickerProps {
   onPick: (exercise: Exercise) => void
@@ -73,7 +73,7 @@ export function ExercisePicker({
   if (creating) {
     return (
       <div className="card p-4">
-        <h3 className="mb-3 card-title">New exercise</h3>
+        <h2 className="mb-3 card-title">New exercise</h2>
         <input
           autoFocus
           placeholder="Exercise name (e.g. Incline DB Press)"
@@ -137,6 +137,7 @@ export function ExercisePicker({
             <button
               key={ex.id}
               onClick={() => handleRowClick(ex)}
+              aria-pressed={multiSelect ? isSelected : undefined}
               className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-white transition ${
                 isSelected ? 'bg-emerald-600/30 ring-1 ring-emerald-500' : 'bg-slate-800 hover:bg-slate-700'
               }`}
@@ -144,17 +145,20 @@ export function ExercisePicker({
               <span className="flex items-center gap-2">
                 {multiSelect && (
                   <span
-                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[11px] ${
-                      isSelected ? 'bg-emerald-500 text-slate-950' : 'bg-slate-700 text-transparent'
+                    aria-hidden="true"
+                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${
+                      isSelected ? 'bg-emerald-600 text-on-accent' : 'bg-slate-700 text-transparent'
                     }`}
                   >
-                    ✓
+                    <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12.5l4.5 4.5L19 7.5" />
+                    </svg>
                   </span>
                 )}
                 {ex.name}
               </span>
               <span className="text-xs text-slate-400">
-                {MUSCLE_GROUPS.find((g) => g.value === ex.muscle_group)?.label}
+                {muscleLabel(ex.muscle_group)}
               </span>
             </button>
           )

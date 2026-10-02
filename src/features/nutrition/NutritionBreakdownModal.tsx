@@ -1,3 +1,4 @@
+import { useBackToClose } from '../../hooks/useHashRoute'
 import { CHART_FONT, useThemeChartColors } from '../../lib/useChartColors'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import { DAILY_VALUES, formatAmount, percentDV } from '../../lib/nutrition'
@@ -32,6 +33,7 @@ const FLAG_CLASSES: Record<string, string> = {
 }
 
 export function NutritionBreakdownModal({ meals, onClose }: { meals: MealWithItems[]; onClose: () => void }) {
+  useBackToClose(true, onClose)
   const colors = useThemeChartColors()
   const items = meals.flatMap((m) => m.meal_items)
   const totals: MacroTotals = sumMacros(items.map((i) => macrosForGrams(i.food, i.grams)))
@@ -39,21 +41,24 @@ export function NutritionBreakdownModal({ meals, onClose }: { meals: MealWithIte
   const foodNames = items.flatMap((i) => (i.food ? [i.food.name.toLowerCase()] : []))
 
   const pieData = [
-    { name: 'Protein', value: Math.round(totals.protein * 4), grams: Math.round(totals.protein), color: '#60a5fa' },
-    { name: 'Carbs', value: Math.round(totals.carbs * 4), grams: Math.round(totals.carbs), color: '#fbbf24' },
-    { name: 'Fat', value: Math.round(totals.fat * 9), grams: Math.round(totals.fat), color: '#c084fc' },
+    { name: 'Protein', value: Math.round(totals.protein * 4), grams: Math.round(totals.protein), color: colors.protein },
+    { name: 'Carbs', value: Math.round(totals.carbs * 4), grams: Math.round(totals.carbs), color: colors.carbs },
+    { name: 'Fat', value: Math.round(totals.fat * 9), grams: Math.round(totals.fat), color: colors.fat },
   ].filter((d) => d.value > 0)
 
   const flags = buildFlags(micros, foodNames)
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 px-4 pt-[max(1rem,var(--safe-area-inset-top,env(safe-area-inset-top)))] pb-[max(1rem,var(--safe-area-inset-bottom,env(safe-area-inset-bottom)))] sm:items-center" onClick={onClose}>
+    <div className="fade-in fixed inset-0 z-50 flex items-end justify-center bg-black/60 px-4 pt-[max(1rem,var(--safe-area-inset-top,env(safe-area-inset-top)))] pb-[max(1rem,var(--safe-area-inset-bottom,env(safe-area-inset-bottom)))] sm:items-center" onClick={onClose}>
       <div
-        className="max-h-[calc(var(--app-height)-2rem-var(--safe-area-inset-top,env(safe-area-inset-top))-var(--safe-area-inset-bottom,env(safe-area-inset-bottom)))] w-full max-w-sm overflow-y-auto overscroll-contain rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-xl ring-1 ring-white/10"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="nutrition-breakdown-title"
+        className="sheet-up max-h-[calc(var(--app-height)-2rem-var(--safe-area-inset-top,env(safe-area-inset-top))-var(--safe-area-inset-bottom,env(safe-area-inset-bottom)))] w-full max-w-sm overflow-y-auto overscroll-contain rounded-3xl bg-slate-950 border-t border-white/10 p-4 shadow-xl ring-1 ring-white/10"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="card-title">Nutrition Breakdown</h3>
+          <h2 id="nutrition-breakdown-title" className="card-title">Nutrition breakdown</h2>
           <button
             onClick={onClose}
             aria-label="Close"

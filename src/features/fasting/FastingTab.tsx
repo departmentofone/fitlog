@@ -9,7 +9,8 @@ import { useActiveFast, useDeleteFast, useEndFast, useFastHistory, useRestoreFas
 import { haptics } from '../../lib/haptics'
 import { formatDurationLabel } from '../../lib/duration'
 import { computeDayStreaks } from '../../lib/streaks'
-import { FastingStages } from './FastingStages'
+import { CurrentStage, FastingStages } from './FastingStages'
+import { localISO } from '../../lib/localDate'
 
 const DEFAULT_FAST_HOURS = 16
 const MAX_FAST_HOURS = 168
@@ -35,6 +36,57 @@ function formatElapsed(ms: number): string {
   return `${h}h ${m}m`
 }
 
+type FastRow = { id: string; start_time: string; end_time: string | null; target_hours: number }
+
+const CHART_FASTS = 14
+const LIST_FASTS = 5
+
+/** The last two weeks of fasts as bars (a filled bar reached its target), with average and longest. */
+function FastHistoryChart({ history }: { history: FastRow[] }) {
+  const fasts = history
+    .slice(0, CHART_FASTS)
+    .map((f) => ({ id: f.id, hours: (new Date(f.end_time!).getTime() - new Date(f.start_time).getTime()) / 3_600_000, target: f.target_hours, start: f.start_time }))
+    .reverse()
+  if (fasts.length < 2) return null
+  const top = Math.max(...fasts.map((f) => Math.max(f.hours, f.target)))
+  const average = fasts.reduce((sum, f) => sum + f.hours, 0) / fasts.length
+  const longest = Math.max(...fasts.map((f) => f.hours))
+  const reached = fasts.filter((f) => f.hours >= f.target).length
+  const label = (h: number) => `${Math.floor(h)}h ${Math.round((h % 1) * 60)}m`
+
+  return (
+    <div className="mb-3">
+      <div className="mb-3 grid grid-cols-3 gap-2 text-center">
+        <div className="rounded-xl bg-slate-800/60 px-2 py-2">
+          <p className="text-sm font-semibold text-white">{label(average)}</p>
+          <p className="text-[11px] text-slate-500">average</p>
+        </div>
+        <div className="rounded-xl bg-slate-800/60 px-2 py-2">
+          <p className="text-sm font-semibold text-white">{label(longest)}</p>
+          <p className="text-[11px] text-slate-500">longest</p>
+        </div>
+        <div className="rounded-xl bg-slate-800/60 px-2 py-2">
+          <p className="text-sm font-semibold text-white">
+            {reached}/{fasts.length}
+          </p>
+          <p className="text-[11px] text-slate-500">hit target</p>
+        </div>
+      </div>
+      <div className="flex h-20 items-end gap-1" role="img" aria-label={`Last ${fasts.length} fasts, ${reached} reached their target`}>
+        {fasts.map((f) => (
+          <div key={f.id} className="flex h-full flex-1 items-end">
+            <div
+              title={`${new Date(f.start).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}: ${label(f.hours)}`}
+              className={`w-full rounded-t-md ${f.hours >= f.target ? 'bg-emerald-400' : 'bg-slate-600'}`}
+              style={{ height: `${Math.max(6, (f.hours / top) * 100)}%` }}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export function FastingTab({ quickAction }: { quickAction?: number }) {
   const { data: active } = useActiveFast()
   const { data: history = [] } = useFastHistory()
@@ -45,17 +97,19 @@ export function FastingTab({ quickAction }: { quickAction?: number }) {
   const { undoable } = useToast()
   const [customHours, setCustomHours] = useState('16')
   const [now, setNow] = useState(Date.now())
+  const [confirmingEnd, setConfirmingEnd] = useState(false)
+  const [allFasts, setAllFasts] = useState(false)
 
   useEffect(() => {
     if (!active) return
-    const interval = setInterval(() => setNow(Date.now()), 30_000)
+    const interval = setInterval(() => setNow(Date.now()), 15_000)
     return () => clearInterval(interval)
   }, [active])
 
   // A fasting streak credits the calendar day a fast was started on - matches how someone would
   // think of "I fasted N days in a row" for a daily intermittent-fasting habit.
   const streak = useMemo(
-    () => computeDayStreaks(history.map((f) => new Date(f.start_time).toISOString().slice(0, 10))),
+    () => computeDayStreaks(history.map((f) => localISO(new Date(f.start_time)))),
     [history],
   )
 
@@ -67,12 +121,13 @@ export function FastingTab({ quickAction }: { quickAction?: number }) {
     )
   }, [quickAction])
 
-  const elapsedMs = active ? now - new Date(active.start_time).getTime() : null
+  // Clamped: `now` can predate a fast started a moment ago (it was set when the tab opened), which
+  // read "-1h -1m" until the next tick.
+  const elapsedMs = active ? Math.max(0, now - new Date(active.start_time).getTime()) : null
   const elapsedHours = elapsedMs != null ? elapsedMs / 3_600_000 : null
 
   return (
     <div className="space-y-4 p-4">
-      <FireStreak count={streak.current} label="day streak" />
 
       {active && elapsedMs != null ? (
         (() => {
@@ -82,31 +137,57 @@ export function FastingTab({ quickAction }: { quickAction?: number }) {
 
           return (
             <div id="fasting-primary" className="card card-glow p-4">
-              <h3 className="mb-3 card-title">Current fast</h3>
+              {/* The streak sits in the card's header instead of floating alone above it. */}
+              <div className="mb-3 flex items-center justify-between gap-2">
+                <h2 className="card-title">Current fast</h2>
+                <FireStreak count={streak.current} label="day streak" />
+              </div>
               <div className="flex items-center gap-4">
                 <CircularProgress percent={pct} tone={pct >= 100 ? 'good' : 'neutral'} size={84} />
                 <div className="flex-1">
                   <p className="text-lg font-semibold text-white">{formatElapsed(elapsedMs)}</p>
                   <p className="text-xs text-slate-500">
-                    Target {active.target_hours}h · {remaining > 0 ? `${formatElapsed(remaining)} to go` : 'Goal reached!'}
+                    Target {active.target_hours}h · {remaining > 0 ? `${formatElapsed(remaining)} to go` : 'Goal reached'}
                   </p>
+                  <CurrentStage elapsedHours={elapsedMs / 3_600_000} />
                 </div>
               </div>
-              <button
-                onClick={() => {
-                  if (pct >= 100) haptics.success()
-                  endFast.mutate(active.id)
-                }}
-                className="mt-3 w-full rounded-xl bg-red-600/20 py-2 text-sm font-medium text-red-400 hover:bg-red-600/30"
-              >
-                End fast
-              </button>
+              {/* Reaching the target is the good ending, so it gets the accent; stopping short asks once
+                  more, since an ended fast can't be resumed. */}
+              {pct >= 100 ? (
+                <button
+                  onClick={() => {
+                    haptics.success()
+                    endFast.mutate(active.id)
+                  }}
+                  className="btn btn-primary mt-3 w-full text-sm"
+                >
+                  Finish fast
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    if (!confirmingEnd) return setConfirmingEnd(true)
+                    setConfirmingEnd(false)
+                    endFast.mutate(active.id)
+                  }}
+                  onBlur={() => setConfirmingEnd(false)}
+                  className={`mt-3 min-h-11 w-full rounded-xl text-sm font-medium transition ${
+                    confirmingEnd ? 'bg-red-600 text-on-accent' : 'bg-slate-800 text-slate-300 active:bg-slate-700'
+                  }`}
+                >
+                  {confirmingEnd ? `Tap again to end ${formatElapsed(remaining)} early` : 'End fast'}
+                </button>
+              )}
             </div>
           )
         })()
       ) : (
         <div id="fasting-primary" className="card card-glow p-4">
-          <h3 className="mb-3 card-title">Start a fast</h3>
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <h2 className="card-title">Start a fast</h2>
+            <FireStreak count={streak.current} label="day streak" />
+          </div>
           <p className="mb-2 text-sm text-slate-400">Pick a fasting window and start the timer.</p>
           <div className="mb-2 grid grid-cols-2 gap-1.5">
             {PRESETS.map((p) => (
@@ -144,12 +225,20 @@ export function FastingTab({ quickAction }: { quickAction?: number }) {
       )}
 
       <div className="card p-4">
-        <p className="mb-2 text-sm font-medium text-white">Recent fasts</p>
+        <div className="mb-2 flex items-center justify-between">
+          <h2 className="card-title">Recent fasts</h2>
+          {history.length > LIST_FASTS && (
+            <button onClick={() => setAllFasts((v) => !v)} className="-my-2 -mr-2 min-h-11 px-2 text-xs font-medium text-emerald-400">
+              {allFasts ? 'Show fewer' : `All ${history.length}`}
+            </button>
+          )}
+        </div>
+        <FastHistoryChart history={history} />
         {history.length === 0 ? (
-          <EmptyState variant="calendar" message="No fasts logged yet - finish one above and it'll show up here." />
+          <EmptyState variant="calendar" message="No fasts logged yet. Finish one above and it shows up here." />
         ) : (
           <div className="space-y-1.5">
-            {history.map((f) => {
+            {(allFasts ? history : history.slice(0, LIST_FASTS)).map((f) => {
               const durationS = (new Date(f.end_time!).getTime() - new Date(f.start_time).getTime()) / 1000
               const reached = durationS >= f.target_hours * 3600
               return (

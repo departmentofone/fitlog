@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
 import type { Food } from '../types'
 import { useAuth } from './useAuth'
+import { localISO } from '../lib/localDate'
 
 /** Your most-logged foods over the last ~60 days, for a quick "frequently used" shortlist. */
 export function useFrequentFoods() {
@@ -12,7 +13,7 @@ export function useFrequentFoods() {
     queryFn: async (): Promise<Food[]> => {
       const since = new Date()
       since.setDate(since.getDate() - 60)
-      const sinceISO = since.toISOString().slice(0, 10)
+      const sinceISO = localISO(since)
 
       const { data, error } = await supabase
         .from('meal_items')

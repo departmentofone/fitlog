@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { macrosForGrams, microsForGrams, sumMacros, sumMicros, type Food, type Meal, type MealItem } from '../types'
 import { useAuth } from './useAuth'
 import { todayISO } from './useWorkouts'
+import { localISO } from '../lib/localDate'
 
 export interface MealItemWithFood extends MealItem {
   /** Null when the food belongs to another user and RLS hides it - see macrosForGrams. */
@@ -123,25 +124,38 @@ export function useCopyMealsDay() {
         .eq('date', fromDate)
       if (error) throw error
 
-      for (const meal of (meals as unknown as (Meal & { meal_items: MealItem[] })[]) ?? []) {
-        const { data: newMeal, error: mealError } = await supabase
-          .from('meals')
-          .insert({ user_id: user.id, date: toDate, name: meal.name })
-          .select()
-          .single()
-        if (mealError) throw mealError
+      // Into a day that already has a Breakfast, the copied breakfast joins it rather than showing up
+      // as a second Breakfast card.
+      const { data: existing, error: existingError } = await supabase.from('meals').select('id, name').eq('date', toDate)
+      if (existingError) throw existingError
+      const byName = new Map(((existing ?? []) as { id: string; name: string }[]).map((m) => [m.name, m.id]))
 
-        if (meal.meal_items.length > 0) {
-          const items = meal.meal_items.map((i) => ({
-            meal_id: newMeal.id,
-            food_id: i.food_id,
-            grams: i.grams,
-            serving_label: i.serving_label,
-          }))
-          const { error: itemsError } = await supabase.from('meal_items').insert(items)
-          if (itemsError) throw itemsError
+      let copied = 0
+      for (const meal of (meals as unknown as (Meal & { meal_items: MealItem[] })[]) ?? []) {
+        if (meal.meal_items.length === 0) continue
+        let mealId = byName.get(meal.name)
+        if (!mealId) {
+          const { data: newMeal, error: mealError } = await supabase
+            .from('meals')
+            .insert({ user_id: user.id, date: toDate, name: meal.name })
+            .select()
+            .single()
+          if (mealError) throw mealError
+          mealId = newMeal.id as string
+          byName.set(meal.name, mealId)
         }
+
+        const items = meal.meal_items.map((i) => ({
+          meal_id: mealId,
+          food_id: i.food_id,
+          grams: i.grams,
+          serving_label: i.serving_label,
+        }))
+        const { error: itemsError } = await supabase.from('meal_items').insert(items)
+        if (itemsError) throw itemsError
+        copied += items.length
       }
+      return copied
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['meals'] }),
   })
@@ -255,7 +269,7 @@ export function useMacroTrend(days: number) {
       const end = new Date()
       const start = new Date()
       start.setDate(end.getDate() - (days - 1))
-      const startISO = start.toISOString().slice(0, 10)
+      const startISO = localISO(start)
 
       const { data, error } = await supabase
         .from('meals')
@@ -268,7 +282,7 @@ export function useMacroTrend(days: number) {
       for (let i = 0; i < days; i++) {
         const d = new Date(start)
         d.setDate(start.getDate() + i)
-        const key = d.toISOString().slice(0, 10)
+        const key = localISO(d)
         byDate.set(key, { date: key, calories: 0, protein: 0, carbs: 0, fat: 0 })
       }
 

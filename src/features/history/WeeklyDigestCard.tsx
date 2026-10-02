@@ -13,6 +13,21 @@ export function WeeklyDigestCard() {
 
   const workoutTrend = data.workoutsThisWeek - data.workoutsLastWeek
 
+  // A quiet week (or a brand-new account) gets a sentence instead of four zeros.
+  if (data.workoutsThisWeek === 0 && data.totalVolume === 0 && data.avgCalories === 0 && data.avgProtein === 0) {
+    return (
+      <div className="card p-4">
+        <div className="mb-1 flex items-center justify-between">
+          <h2 className="card-title">Your week</h2>
+          <span className="text-xs text-slate-500">Last 7 days</span>
+        </div>
+        <p className="text-sm text-slate-400">
+          Nothing logged in the last 7 days. Log a workout or a meal and your week's totals show up here.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className="card-hero p-4">
       <div className="mb-3 flex items-center justify-between">

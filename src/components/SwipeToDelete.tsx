@@ -133,14 +133,18 @@ export function SwipeToDelete({ onDelete, children, className = '' }: SwipeToDel
     }
   }
 
+  // Inline styles sit outside index.css's reduced-motion rules: with less motion asked for, the row
+  // fades instead of collapsing and snaps back instead of sliding (the drag itself follows the finger).
+  const reduceMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+
   return (
     <div
       ref={rootRef}
       className={`relative overflow-hidden ${className}`}
       style={{
-        maxHeight: collapsed ? 0 : (collapseHeight ?? undefined),
+        maxHeight: collapsed && !reduceMotion ? 0 : (collapseHeight ?? undefined),
         opacity: collapsed ? 0 : 1,
-        transition: deleting ? 'max-height 180ms ease-in, opacity 150ms ease-in' : undefined,
+        transition: deleting ? (reduceMotion ? 'opacity 150ms ease-in' : 'max-height 180ms ease-in, opacity 150ms ease-in') : undefined,
       }}
     >
       {/* Only exists while a swipe is under way: rows use translucent "glass" backgrounds, so a
@@ -164,7 +168,7 @@ export function SwipeToDelete({ onDelete, children, className = '' }: SwipeToDel
         className="relative touch-pan-y select-none"
         style={{
           transform: `translateX(${dragX}px)`,
-          transition: dragging ? 'none' : 'transform 200ms ease-out',
+          transition: dragging || reduceMotion ? 'none' : 'transform 200ms ease-out',
         }}
       >
         {children}

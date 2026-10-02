@@ -1,5 +1,6 @@
 import { saveFile } from './saveFile'
 import { supabase } from './supabase'
+import { localISO } from './localDate'
 
 /**
  * Every user-owned table, so "Export my data" really means all of it - the Settings and
@@ -73,6 +74,6 @@ export async function exportUserData(userId: string) {
   if (failed.length > 0) payload.incomplete = failed
 
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
-  await saveFile(blob, `fitlog-export-${new Date().toISOString().slice(0, 10)}.json`, 'FitLog data export')
+  await saveFile(blob, `fitlog-export-${localISO()}.json`, 'FitLog data export')
   return { incomplete: failed }
 }

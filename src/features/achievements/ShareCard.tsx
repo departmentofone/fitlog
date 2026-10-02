@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useBackToClose } from '../../hooks/useHashRoute'
 import { isNativeApp } from '../../lib/platform'
 import { saveFile } from '../../lib/saveFile'
 
@@ -259,6 +260,7 @@ export function ShareCardButton({ data, className }: { data: ShareCardData; clas
     setPreviewUrl(null)
     setBlob(null)
   }
+  useBackToClose(previewUrl != null, close)
 
   return (
     <>
@@ -278,7 +280,7 @@ export function ShareCardButton({ data, className }: { data: ShareCardData; clas
 
       {previewUrl && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+          className="fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
           onClick={close}
           role="dialog"
           aria-modal="true"
@@ -286,7 +288,7 @@ export function ShareCardButton({ data, className }: { data: ShareCardData; clas
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-xs rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5"
+            className="pop-in w-full max-w-xs rounded-3xl bg-slate-950 border-t border-white/10 p-4 shadow-lg shadow-black/20 ring-1 ring-white/5"
           >
             <img src={previewUrl} alt={`${data.title} share card`} className="w-full rounded-2xl" style={{ aspectRatio: `${CARD_WIDTH} / ${CARD_HEIGHT}` }} />
             <div className="mt-4 flex gap-2">

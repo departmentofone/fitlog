@@ -20,6 +20,11 @@ export function ExerciseSummaryBox({
   const topSet = sets.reduce((max, s) => (s.weight > max.weight ? s : max), sets[0])
 
   const working = sets.filter((s) => !s.is_warmup).length
+  // Bodyweight work (and a template not filled in yet) has no weight: the best set is the most reps.
+  const best =
+    topSet.weight > 0
+      ? `${formatWeight(topSet.weight, settings?.unit_system)} × ${topSet.reps}`
+      : `${Math.max(...sets.map((s) => s.reps))} reps`
 
   // A row in the day's exercise list (the list is one card; rows are divided, not separate cards).
   return (
@@ -28,7 +33,7 @@ export function ExerciseSummaryBox({
         {supersetLabel && <p className="eyebrow mb-0.5 text-emerald-400">Superset {supersetLabel}</p>}
         <p className="break-words text-[15px] font-semibold leading-snug text-white">{name}</p>
         <p className="mt-0.5 text-sm text-slate-400">
-          {working || sets.length} {(working || sets.length) === 1 ? 'set' : 'sets'} · best {formatWeight(topSet.weight, settings?.unit_system)} × {topSet.reps}
+          {working || sets.length} {(working || sets.length) === 1 ? 'set' : 'sets'} · best {best}
         </p>
       </button>
       {onOpenDetail && (

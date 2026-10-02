@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useQuickAddHidden } from './QuickAddVisibility'
-import type { Route } from '../hooks/useHashRoute'
+import { useBackToClose, type Route } from '../hooks/useHashRoute'
 import { AREAS, areaOf, isDetailPage, titleOf, type Area } from '../lib/navigation'
 import type { Tab } from '../types'
 import { OfflineBanner } from './OfflineBanner'
@@ -64,11 +64,22 @@ function PlusIcon() {
 
 function QuickAddFab({ actions }: { actions: QuickAddAction[] }) {
   const [open, setOpen] = useState(false)
+  // Back, Escape or a tap anywhere else closes the menu instead of acting on the screen under it.
+  useBackToClose(open, () => setOpen(false))
 
   return (
     <div className="pointer-events-none absolute bottom-4 right-4 z-20 flex flex-col items-end gap-2">
       {open && (
-        <div className="pointer-events-auto flex flex-col items-end gap-2">
+        <button
+          type="button"
+          tabIndex={-1}
+          aria-hidden="true"
+          onClick={() => setOpen(false)}
+          className="fade-in pointer-events-auto fixed inset-0 cursor-default bg-black/40"
+        />
+      )}
+      {open && (
+        <div className="pop-in pointer-events-auto relative flex flex-col items-end gap-2">
           {actions.map((action) => (
             <button
               key={action.key}
@@ -88,7 +99,7 @@ function QuickAddFab({ actions }: { actions: QuickAddAction[] }) {
         onClick={() => setOpen((o) => !o)}
         aria-label={open ? 'Close quick actions' : 'Quick add'}
         aria-expanded={open}
-        className={`pointer-events-auto flex h-14 w-14 items-center justify-center rounded-full shadow-lg shadow-black/40 transition ${
+        className={`pointer-events-auto relative flex h-14 w-14 items-center justify-center rounded-full shadow-lg shadow-black/40 transition ${
           open ? 'rotate-45 bg-slate-700 text-white' : 'bg-emerald-600 text-on-accent'
         }`}
       >

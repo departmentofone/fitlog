@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
 import type { Food } from '../types'
 import { useAuth } from './useAuth'
+import { localISO } from '../lib/localDate'
 
 export interface WeeklyDigest {
   workoutsThisWeek: number
@@ -12,9 +13,7 @@ export interface WeeklyDigest {
   weightChange: number | null
 }
 
-function iso(d: Date) {
-  return d.toISOString().slice(0, 10)
-}
+const iso = localISO
 
 export function useWeeklyDigest() {
   const { user } = useAuth()

@@ -112,7 +112,7 @@ export function PresetsManagerView() {
                     className="flex-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-sm text-white focus:border-emerald-500 focus:outline-none"
                   />
                 ) : (
-                  <h4 className="text-sm font-medium text-white">{preset.name}</h4>
+                  <h3 className="text-sm font-medium text-white">{preset.name}</h3>
                 )}
                 <span className="shrink-0 text-xs text-slate-500">{preset.meal_preset_items.length} items</span>
               </button>

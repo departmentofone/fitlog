@@ -4,6 +4,7 @@ import { HealthConsentScreen } from './components/HealthConsentScreen'
 import { TabErrorBoundary } from './components/TabErrorBoundary'
 import { Layout, type QuickAddAction } from './components/Layout'
 import { OnboardingTour } from './components/OnboardingTour'
+import { landCommunityOn } from './lib/communityLanding'
 import { QuickAddVisibilityProvider } from './components/QuickAddVisibility'
 import { SkeletonCard } from './components/Skeleton'
 import { useToast } from './components/ToastProvider'
@@ -208,7 +209,16 @@ function App() {
           <TabErrorBoundary route={route}>
             <Suspense fallback={<TabFallback />}>
               {onSettings && <SettingsTab onOpen={navigate} />}
-              {tab === 'workouts' && <WorkoutsTab onOpenPlates={() => navigate('plates')} quickAction={nonceFor('workouts')} />}
+              {tab === 'workouts' && (
+                <WorkoutsTab
+                  onOpenPlates={() => navigate('plates')}
+                  onBrowseWorkouts={() => {
+                    landCommunityOn('workout')
+                    navigate('community')
+                  }}
+                  quickAction={nonceFor('workouts')}
+                />
+              )}
               {tab === 'meals' && <MealsTab quickAction={nonceFor('meals')} onOpenDiet={() => navigate('diet')} />}
               {tab === 'scanner' && <ScannerTab />}
               {tab === 'diet' && <DietTab onOpenCalculator={() => navigate('calculator')} />}

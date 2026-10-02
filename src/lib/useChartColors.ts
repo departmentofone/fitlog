@@ -16,6 +16,10 @@ export interface ChartColors {
   tooltipBg: string
   tooltipBorder: string
   tooltipText: string
+  /** Fixed macro colours (index.css), darker in the light theme so they read on white. */
+  protein: string
+  carbs: string
+  fat: string
 }
 
 /**
@@ -34,6 +38,9 @@ export function useThemeChartColors(): ChartColors {
     tooltipBg: '#111318',
     tooltipBorder: 'rgba(255,255,255,.14)',
     tooltipText: '#f4f6fb',
+    protein: '#60a5fa',
+    carbs: '#fbbf24',
+    fat: '#c084fc',
   })
 
   useEffect(() => {
@@ -45,6 +52,9 @@ export function useThemeChartColors(): ChartColors {
       tooltipBg: cssVar('--color-slate-950', '#0b0f1e'),
       tooltipBorder: cssVar('--color-slate-700', 'rgba(255,255,255,.14)'),
       tooltipText: cssVar('--color-white', '#f4f6fb'),
+      protein: cssVar('--color-protein', '#60a5fa'),
+      carbs: cssVar('--color-carbs', '#fbbf24'),
+      fat: cssVar('--color-fat', '#c084fc'),
     })
   }, [settings?.theme, settings?.color_palette])
 

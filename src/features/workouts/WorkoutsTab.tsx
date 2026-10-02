@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { CopyDayButton } from '../../components/CopyDayButton'
 import { DateNav } from '../../components/DateNav'
+import { dayPhrase, onDayPhrase } from '../../lib/dayLabel'
 import { FireStreak } from '../../components/FireStreak'
 import { useToast } from '../../components/ToastProvider'
 import { SkeletonCard } from '../../components/Skeleton'
@@ -22,6 +23,7 @@ import {
   useSessionSets,
   useSetPreworkout,
   useStartSession,
+  useStartWorkoutTimer,
   useUpdateSet,
 } from '../../hooks/useWorkouts'
 import { estimate1RM } from '../../lib/oneRepMax'
@@ -36,6 +38,8 @@ import { RestDayCard } from './RestDayCard'
 import { SessionTimer } from './SessionTimer'
 import { SessionNote } from './SessionNote'
 import { SetForm } from './SetForm'
+import { StartWorkoutCard } from './StartWorkoutCard'
+import { WorkoutSummarySheet } from './WorkoutSummarySheet'
 import { WeeklyVolumeCard } from './WeeklyVolumeCard'
 
 /** An active superset in progress: the group id its sets are (or will be) tagged with, and the
@@ -66,9 +70,12 @@ function isFinalMemberOfRound(
 
 export function WorkoutsTab({
   onOpenPlates,
+  onBrowseWorkouts,
   quickAction,
 }: {
   onOpenPlates: () => void
+  /** Opens Community on its ready-made workouts. */
+  onBrowseWorkouts: () => void
   /** Changes when the quick-add "Log a set" action fires - opens today's exercise picker. */
   quickAction?: number
 }) {
@@ -106,6 +113,8 @@ export function WorkoutsTab({
   const [restTrigger, setRestTrigger] = useState(0)
   const { data: activeExerciseHistory = [] } = useExerciseHistory(activeExercise?.id)
   const [pendingPick, setPendingPick] = useState(false)
+  const [summarySeconds, setSummarySeconds] = useState<number | null>(null)
+  const resumeTimer = useStartWorkoutTimer(session?.id)
 
   useEffect(() => {
     if (quickAction == null) return
@@ -313,7 +322,7 @@ export function WorkoutsTab({
               </button>
             </div>
             <div className="mt-2 flex items-center justify-between border-t border-white/5 pt-1.5">
-              <SessionTimer session={session} />
+              <SessionTimer session={session} onFinish={(seconds) => sets.length > 0 && setSummarySeconds(seconds)} />
               <FireStreak count={streaks?.currentStreak ?? 0} label="day streak" />
             </div>
           </div>
@@ -428,9 +437,9 @@ export function WorkoutsTab({
               return (
                 <div className="card p-4">
                   <div className="mb-3 flex items-center justify-between">
-                    <h3 className="card-title">
+                    <h2 className="card-title">
                       {pickerMode === 'superset' ? 'Build a superset' : 'Pick an exercise'}
-                    </h3>
+                    </h2>
                     <button onClick={() => setPicking(false)} className="text-sm text-slate-400 hover:text-slate-200">
                       Cancel
                     </button>
@@ -490,13 +499,29 @@ export function WorkoutsTab({
               Plates
             </button>
             <CopyDayButton
-              disabled={sets.length === 0}
-              onCopy={(targetDate) => {
-                copyDay.mutate({ fromDate: date, toDate: targetDate })
-                show(`Copying to ${targetDate}…`)
-              }}
+              date={date}
+              hasEntries={sets.length > 0}
+              noun="workout"
+              onCopy={(fromDate, toDate) =>
+                copyDay.mutate(
+                  { fromDate, toDate },
+                  {
+                    onSuccess: (count) =>
+                      show(
+                        count === 0
+                          ? `No workout logged ${onDayPhrase(fromDate)} to copy.`
+                          : `Copied ${count} ${count === 1 ? 'set' : 'sets'} to ${dayPhrase(toDate)}.`,
+                      ),
+                    onError: () => show("Couldn't copy the workout. Try again."),
+                  },
+                )
+              }
             />
           </div>
+
+          {isToday && sets.length === 0 && !activeExercise && !activeSuperset && (
+            <StartWorkoutCard sessionId={session.id} onShowPresets={() => setShowPresets(true)} onBrowseWorkouts={onBrowseWorkouts} />
+          )}
 
           {(() => {
             const hiddenIds = new Set<string>()
@@ -565,6 +590,21 @@ export function WorkoutsTab({
       )}
 
       {detailExercise && <ExerciseDetailModal exercise={detailExercise} onClose={() => setDetailExercise(null)} />}
+      {session && summarySeconds != null && (
+        <WorkoutSummarySheet
+          sessionId={session.id}
+          sessionDate={session.date}
+          durationSeconds={summarySeconds}
+          sets={sets}
+          streak={streaks?.currentStreak ?? 0}
+          unit={settings?.unit_system}
+          onResume={() => {
+            resumeTimer.mutate(summarySeconds)
+            setSummarySeconds(null)
+          }}
+          onClose={() => setSummarySeconds(null)}
+        />
+      )}
     </div>
   )
 }

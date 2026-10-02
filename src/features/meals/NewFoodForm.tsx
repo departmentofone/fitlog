@@ -81,7 +81,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
   return (
     <div className="card p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="card-title">{food ? 'Edit food' : 'New food'}</h3>
+        <h2 className="card-title">{food ? 'Edit food' : 'New food'}</h2>
         <button onClick={onCancel} className="text-sm text-slate-400 hover:text-slate-200">
           Cancel
         </button>

@@ -106,7 +106,7 @@ export function RecipeBuilderView({
       </button>
 
       <div className="card p-4">
-        <h3 className="mb-3 card-title">New recipe</h3>
+        <h2 className="mb-3 card-title">New recipe</h2>
         <div className="mb-3 space-y-2.5">
           <input
             placeholder="Recipe name"
@@ -201,7 +201,7 @@ export function RecipeBuilderView({
       </div>
 
       <div className="card card-glow p-4">
-        <h3 className="mb-3 card-title">Your recipes</h3>
+        <h2 className="mb-3 card-title">Your recipes</h2>
         {isLoading && (
           <div className="space-y-2">
             <SkeletonRow />
@@ -280,7 +280,7 @@ function RecipeCard({
   return (
     <div className="inset p-3">
       <div className="mb-1 flex items-center justify-between">
-        <h4 className="text-sm font-medium text-white">{recipe.name}</h4>
+        <h3 className="text-sm font-medium text-white">{recipe.name}</h3>
         {isOwner && (
           <button onClick={onDelete} className="text-red-400 hover:text-red-300">
             ×

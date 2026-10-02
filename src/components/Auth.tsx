@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, type InputHTMLAttributes, type ReactNode } from 'react'
 import { siteOrigin } from '../lib/platform'
 import { hasSignedInBefore } from '../lib/deviceHistory'
 import { peekPendingShared, SHARE_KIND_PHRASE } from '../lib/shareLink'
 import { supabase } from '../lib/supabase'
+import { TabIcon } from './TabIcon'
 import { TICK_THE_BOX, useTurnstile } from './Turnstile'
 
 type Mode = 'sign-in' | 'sign-up' | 'reset'
@@ -41,6 +42,68 @@ function ModeTab({ active, onClick, children }: { active: boolean; onClick: () =
     >
       {children}
     </button>
+  )
+}
+
+/**
+ * The signed-out screens' frame: the same aurora glow and accent mark the app's header uses, the
+ * name and one line on what FitLog is (this is the first screen a new install shows), then the
+ * form card, then the privacy policy.
+ */
+function AuthShell({ children }: { children: ReactNode }) {
+  return (
+    // Top-anchored rather than centered: the modes differ in height, and a centered card would jump
+    // when switching between them.
+    <div className="relative flex h-[var(--app-height)] justify-center overflow-y-auto overscroll-none bg-slate-950 px-4 pb-[max(1.5rem,var(--safe-area-inset-bottom,env(safe-area-inset-bottom)))] pt-[max(calc(var(--safe-area-inset-top,env(safe-area-inset-top))+1.5rem),8vh)]">
+      <div className="aurora-a pointer-events-none fixed z-0 rounded-full" />
+      <div className="aurora-b pointer-events-none fixed z-0 rounded-full" />
+      <div className="relative z-10 w-full max-w-sm">
+        <div className="mb-6 flex items-center gap-3.5 px-1">
+          <span className="area-mark flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-emerald-400">
+            <TabIcon tab="workouts" className="h-6 w-6" />
+          </span>
+          <div className="min-w-0">
+            <p className="text-xl font-bold leading-tight tracking-tight text-white">FitLog</p>
+            <p className="text-sm text-slate-400">Workouts, meals and fasts in one log.</p>
+          </div>
+        </div>
+        {children}
+        <p className="mt-5 text-center">
+          <a href="/privacy" target="_blank" rel="noopener" className="inline-flex min-h-11 items-center px-2 text-xs font-medium text-slate-500 underline underline-offset-2">
+            Privacy policy
+          </a>
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function EyeIcon({ open }: { open: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
+      <circle cx="12" cy="12" r="3" />
+      {!open && <path d="M4 4l16 16" />}
+    </svg>
+  )
+}
+
+/** A password field with a show/hide button, since typos are easy on a phone keyboard. */
+function PasswordInput(props: Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'className'>) {
+  const [visible, setVisible] = useState(false)
+  return (
+    <div className="relative">
+      <input {...props} type={visible ? 'text' : 'password'} className={`${inputClass} w-full pr-12`} />
+      <button
+        type="button"
+        onClick={() => setVisible((v) => !v)}
+        aria-label={visible ? 'Hide password' : 'Show password'}
+        aria-pressed={visible}
+        className="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-xl text-slate-400 active:text-emerald-400"
+      >
+        <EyeIcon open={visible} />
+      </button>
+    </div>
   )
 }
 
@@ -107,12 +170,9 @@ export function AuthScreen() {
   // Arrived from a share link: say what's waiting on the other side of signing in.
   const [sharedRef] = useState(() => peekPendingShared())
 
-  // Top-anchored rather than centered: the modes differ in height, and a centered card would jump
-  // when switching between them.
   return (
-    <div className="flex h-[var(--app-height)] items-start justify-center overflow-y-auto overscroll-none bg-slate-950 px-4 pb-8 pt-[max(var(--safe-area-inset-top,env(safe-area-inset-top)),10vh)]">
-      <div className="w-full max-w-sm rounded-3xl border-t border-white/10 bg-slate-900 p-6 shadow-xl shadow-[var(--glow-shadow)]">
-        <p className="mb-4 text-sm font-semibold tracking-tight text-emerald-400">FitLog</p>
+    <AuthShell>
+      <div className="card p-6">
         {sharedRef && mode !== 'reset' && (
           <p className="mb-4 rounded-xl bg-emerald-500/10 px-3 py-2.5 text-sm text-emerald-300 ring-1 ring-emerald-500/20">
             Someone shared {SHARE_KIND_PHRASE[sharedRef.kind]} with you. {mode === 'sign-up' ? 'Create an account' : 'Sign in'} to open it and save a copy.
@@ -162,9 +222,8 @@ export function AuthScreen() {
                   </button>
                 )}
               </div>
-              <input
+              <PasswordInput
                 id="auth-password"
-                type="password"
                 name="password"
                 required
                 minLength={6}
@@ -172,7 +231,6 @@ export function AuthScreen() {
                 aria-describedby={mode === 'sign-up' ? 'password-hint' : undefined}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={inputClass}
               />
               {mode === 'sign-up' && (
                 <span id="password-hint" className="text-xs text-slate-500">
@@ -209,7 +267,7 @@ export function AuthScreen() {
           </button>
         )}
       </div>
-    </div>
+    </AuthShell>
   )
 }
 
@@ -235,35 +293,28 @@ export function SetNewPasswordScreen({ onDone }: { onDone: () => void }) {
   }
 
   return (
-    <div className="flex h-[var(--app-height)] items-center justify-center overflow-y-auto overscroll-none bg-slate-950 px-4">
-      <form
-        onSubmit={handleSubmit}
-        className="flex w-full max-w-sm flex-col gap-3 rounded-3xl border-t border-white/10 bg-slate-900 p-6 shadow-xl shadow-[var(--glow-shadow)]"
-      >
+    <AuthShell>
+      <form onSubmit={handleSubmit} className="card flex flex-col gap-3 p-6">
         <h1 className="text-2xl font-semibold text-white">Set a new password</h1>
         <p className="mb-3 text-sm text-slate-400">Choose a new password for your FitLog account.</p>
         <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-300">
           New password
-          <input
-            type="password"
+          <PasswordInput
             required
             minLength={6}
             autoComplete="new-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className={inputClass}
           />
         </label>
         <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-300">
           Confirm new password
-          <input
-            type="password"
+          <PasswordInput
             required
             minLength={6}
             autoComplete="new-password"
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
-            className={inputClass}
           />
         </label>
         {error && (
@@ -279,6 +330,6 @@ export function SetNewPasswordScreen({ onDone }: { onDone: () => void }) {
           {loading ? 'Saving…' : 'Save password'}
         </button>
       </form>
-    </div>
+    </AuthShell>
   )
 }

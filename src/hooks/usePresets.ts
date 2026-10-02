@@ -136,6 +136,23 @@ export function useLoadPreset(sessionId: string | undefined) {
         countByExercise.set(row.exercise_id, (countByExercise.get(row.exercise_id) ?? 0) + 1)
       }
 
+      // Templates (the official workouts, a program someone shared) leave weights at 0, since they
+      // can't know what you lift. Those sets start from the weight you last logged for the exercise.
+      const lastWeight = new Map<string, number>()
+      const blankIds = [...new Set(preset.workout_preset_items.filter((i) => !i.weight).map((i) => i.exercise_id))]
+      if (blankIds.length > 0) {
+        const { data: recent, error: recentError } = await supabase
+          .from('workout_sets')
+          .select('exercise_id, weight')
+          .in('exercise_id', blankIds)
+          .eq('is_warmup', false)
+          .gt('weight', 0)
+          .order('created_at', { ascending: false })
+          .limit(300)
+        if (recentError) throw recentError
+        for (const r of recent ?? []) if (!lastWeight.has(r.exercise_id)) lastWeight.set(r.exercise_id, r.weight)
+      }
+
       const rows = preset.workout_preset_items.map((item) => {
         const offset = countByExercise.get(item.exercise_id) ?? 0
         countByExercise.set(item.exercise_id, offset + 1)
@@ -143,7 +160,7 @@ export function useLoadPreset(sessionId: string | undefined) {
           session_id: sessionId,
           exercise_id: item.exercise_id,
           set_number: offset + 1,
-          weight: item.weight,
+          weight: item.weight || (item.is_warmup ? 0 : (lastWeight.get(item.exercise_id) ?? 0)),
           reps: item.reps,
           is_warmup: item.is_warmup ?? false,
           difficulty: 6,

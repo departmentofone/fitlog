@@ -68,6 +68,14 @@ function activeStageId(elapsedHours: number | null | undefined): string | null {
   return current?.id ?? null
 }
 
+/** The stage a fast is in, by name only ("Using stored glycogen"), for the running fast's card. */
+export function CurrentStage({ elapsedHours }: { elapsedHours: number }) {
+  const id = activeStageId(elapsedHours)
+  const title = STAGES.find((s) => s.id === id)?.title
+  if (!title) return null
+  return <p className="mt-1 text-xs font-medium text-emerald-400">{title.slice(title.indexOf('·') + 1).trim()}</p>
+}
+
 /** Reference card explaining what's happening physiologically at different points in a fast. */
 export function FastingStages({ elapsedHours }: { elapsedHours?: number | null }) {
   const [expandedId, setExpandedId] = useState<string | null>(null)

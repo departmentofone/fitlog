@@ -31,8 +31,28 @@ export function useUpsertProgressEntry() {
           { onConflict: 'user_id,date' },
         )
       if (error) throw error
+
+      // The newest weigh-in is your current weight: calorie targets, the goal projection and the
+      // bodyweight medals read it from settings, which otherwise only changed when edited by hand.
+      if (input.weight != null) {
+        const { data: newer, error: newerError } = await supabase
+          .from('progress_entries')
+          .select('date')
+          .eq('user_id', user.id)
+          .not('weight', 'is', null)
+          .gt('date', input.date)
+          .limit(1)
+        if (newerError) throw newerError
+        if (!newer?.length) {
+          const { error: settingsError } = await supabase.from('user_settings').update({ current_weight: input.weight }).eq('user_id', user.id)
+          if (settingsError) throw settingsError
+        }
+      }
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['progress-entries', user?.id] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['progress-entries', user?.id] })
+      qc.invalidateQueries({ queryKey: ['user-settings', user?.id] })
+    },
   })
 }
 

@@ -42,13 +42,16 @@ export function ExerciseDetailModal({ exercise, onClose }: { exercise: Exercise;
   const bestOneRm = working.reduce((max, h) => Math.max(max, estimate1RM(h.weight, h.reps)), 0)
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 px-4 pt-[max(1rem,var(--safe-area-inset-top,env(safe-area-inset-top)))] pb-[max(1rem,var(--safe-area-inset-bottom,env(safe-area-inset-bottom)))] sm:items-center" onClick={onClose}>
+    <div className="fade-in fixed inset-0 z-50 flex items-end justify-center bg-black/60 px-4 pt-[max(1rem,var(--safe-area-inset-top,env(safe-area-inset-top)))] pb-[max(1rem,var(--safe-area-inset-bottom,env(safe-area-inset-bottom)))] sm:items-center" onClick={onClose}>
       <div
-        className="max-h-[calc(var(--app-height)-2rem-var(--safe-area-inset-top,env(safe-area-inset-top))-var(--safe-area-inset-bottom,env(safe-area-inset-bottom)))] w-full max-w-sm overflow-y-auto overscroll-contain rounded-3xl bg-slate-900 backdrop-blur-xl border-t border-white/10 p-4 shadow-xl shadow-[var(--glow-shadow)] ring-1 ring-white/10"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="exercise-detail-title"
+        className="sheet-up max-h-[calc(var(--app-height)-2rem-var(--safe-area-inset-top,env(safe-area-inset-top))-var(--safe-area-inset-bottom,env(safe-area-inset-bottom)))] w-full max-w-sm overflow-y-auto overscroll-contain rounded-3xl bg-slate-950 border-t border-white/10 p-4 shadow-xl shadow-[var(--glow-shadow)] ring-1 ring-white/10"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="card-title">{exercise.name}</h3>
+          <h2 id="exercise-detail-title" className="card-title">{exercise.name}</h2>
           <button
             onClick={onClose}
             aria-label="Close"

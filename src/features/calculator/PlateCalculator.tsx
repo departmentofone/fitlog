@@ -72,7 +72,7 @@ export function PlateCalculator() {
       </div>
 
       <div className="card p-4">
-        <h3 className="mb-3 card-title">Result</h3>
+        <h2 className="mb-3 card-title">Result</h2>
         {result == null ? (
           <p className="text-sm text-slate-500">Enter a target weight and bar weight above to see the loading.</p>
         ) : (

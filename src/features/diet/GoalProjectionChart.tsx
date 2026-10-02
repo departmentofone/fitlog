@@ -8,7 +8,7 @@ import { displayWeightValue, weightUnitLabel } from '../../lib/units'
 function Card({ children }: { children: React.ReactNode }) {
   return (
     <div className="card p-4">
-      <h3 className="mb-2 text-sm font-medium text-slate-300">Goal projection</h3>
+      <h2 className="mb-2 text-sm font-medium text-slate-300">Goal projection</h2>
       {children}
     </div>
   )

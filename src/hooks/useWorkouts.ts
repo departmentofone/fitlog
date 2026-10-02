@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { formatWeight } from '../lib/units'
 import type { Exercise, UnitSystem, WorkoutSession, WorkoutSet } from '../types'
 import { useAuth } from './useAuth'
+import { localISO } from '../lib/localDate'
 
 /**
  * Today's date in the user's own timezone, as YYYY-MM-DD. Deliberately not toISOString(), which
@@ -122,14 +123,19 @@ export function useAutoStartSession(date: string, shouldAutoStart: boolean) {
   return { session, isLoading: isLoading || (shouldAutoStart && !session) }
 }
 
+/**
+ * Starts the session clock. `resumeFromSeconds` picks up after a Finish: the clock is backdated by
+ * the time already recorded, so resuming adds to it instead of starting over from 0:00.
+ */
 export function useStartWorkoutTimer(sessionId: string | undefined) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (resumeFromSeconds: number | void) => {
       if (!sessionId) throw new Error('No active session')
+      const startedAt = new Date(Date.now() - (resumeFromSeconds ?? 0) * 1000)
       const { error } = await supabase
         .from('workout_sessions')
-        .update({ started_at: new Date().toISOString(), duration_seconds: null })
+        .update({ started_at: startedAt.toISOString(), duration_seconds: null })
         .eq('id', sessionId)
       if (error) throw error
     },
@@ -544,7 +550,7 @@ export function useWeeklyVolumeByMuscleGroup(days = 7) {
     queryFn: async (): Promise<MuscleVolume[]> => {
       const start = new Date()
       start.setDate(start.getDate() - (days - 1))
-      const startISO = start.toISOString().slice(0, 10)
+      const startISO = localISO(start)
 
       const { data, error } = await supabase
         .from('workout_sets')
@@ -578,7 +584,7 @@ export function useCopyWorkoutDay() {
         .limit(1)
         .maybeSingle()
       if (fromError) throw fromError
-      if (!fromSession || fromSession.workout_sets.length === 0) return
+      if (!fromSession || fromSession.workout_sets.length === 0) return 0
 
       const { data: existingTo, error: toError } = await supabase
         .from('workout_sessions')
@@ -633,6 +639,7 @@ export function useCopyWorkoutDay() {
       })
       const { error: insertError } = await supabase.from('workout_sets').insert(rows)
       if (insertError) throw insertError
+      return rows.length
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['sets'] })

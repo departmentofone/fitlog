@@ -1,6 +1,6 @@
 import { parseDecimal } from '../../lib/number'
 import { useHideQuickAdd } from '../../components/QuickAddVisibility'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { RestTimer } from '../../components/RestTimer'
 import { useUserSettings } from '../../hooks/useUserSettings'
 import { summarizeLastSets, useLastSessionSetsForExercise } from '../../hooks/useWorkouts'
@@ -177,8 +177,11 @@ export function SetForm({
 }: SetFormProps) {
   useHideQuickAdd()
   const [weight, setWeight] = useState('')
-  const [reps, setReps] = useState('')
-  const [difficulty, setDifficulty] = useState(6)
+  // null until the reps field is touched: until then it shows the suggested reps.
+  const [repsInput, setReps] = useState<string | null>(null)
+  // Effort carries over from the last set this session; a fresh exercise starts at a middling 6.
+  const [difficulty, setDifficulty] = useState(() => existingSets.at(-1)?.difficulty ?? 6)
+  const addButtonRef = useRef<HTMLButtonElement>(null)
   const [isWarmup, setIsWarmup] = useState(false)
   const [editingSetId, setEditingSetId] = useState<string | null>(null)
   const { data: settings, isPending: settingsPending } = useUserSettings()
@@ -186,14 +189,17 @@ export function SetForm({
   const { data: lastSets = [] } = useLastSessionSetsForExercise(exercise.id, sessionId)
   const lastTimeSummary = useMemo(() => summarizeLastSets(lastSets, unit), [lastSets, unit])
 
-  // Start from the weight you last used - this session's latest set, else last session's - so a
-  // typical set is just "check reps, tap Add". The field holds the user's unit (kg or lb), so wait
-  // for settings before pre-filling, or an lb user could get a kg number under an "lb" label.
+  // Start from the weight and reps you last used - this session's latest set, else last session's -
+  // so a typical set is just "check the numbers, tap Add". The weight field holds the user's unit
+  // (kg or lb), so wait for settings before pre-filling, or an lb user could get a kg number under
+  // an "lb" label.
   const suggestedKg = existingSets.at(-1)?.weight ?? lastSets.at(-1)?.weight
   const suggestedWeight = suggestedKg == null || settingsPending ? undefined : toDisplayWeight(suggestedKg, unit)
+  const suggestedReps = existingSets.at(-1)?.reps ?? lastSets.at(-1)?.reps
   useEffect(() => {
     if (suggestedWeight != null) setWeight((w) => (w === '' ? String(suggestedWeight) : w))
   }, [suggestedWeight])
+  const reps = repsInput ?? (suggestedReps != null ? String(suggestedReps) : '')
 
   function handleAdd() {
     const w = parseDecimal(weight)
@@ -201,15 +207,22 @@ export function SetForm({
     // Reps must be a real rep; weight can be 0 (bodyweight) but never negative.
     if (!Number.isFinite(w) || w < 0 || !Number.isInteger(r) || r < 1) return
     onAdd({ weight: fromDisplayWeight(w, unit), reps: r, difficulty, isWarmup })
-    setReps('')
+    // Weight and reps stay for the next set (most sets repeat the last one); only the warm-up flag
+    // resets. The set table grows above the button, so keep the button on screen.
     setIsWarmup(false)
+    requestAnimationFrame(() =>
+      addButtonRef.current?.scrollIntoView({
+        block: 'nearest',
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      }),
+    )
   }
 
   return (
     <div className="card p-4">
       <div className="mb-1 flex items-center justify-between">
         <div className="flex min-w-0 items-center gap-2">
-          <h3 className="truncate card-title">{exercise.name}</h3>
+          <h2 className="truncate card-title">{exercise.name}</h2>
           {supersetLabel && (
             <span className="chip chip-accent shrink-0">Superset {supersetLabel}</span>
           )}
@@ -219,7 +232,11 @@ export function SetForm({
         </button>
       </div>
 
-      {lastTimeSummary && <p className="mb-3 text-xs text-slate-500">Last time: {lastTimeSummary}</p>}
+      {lastTimeSummary && (
+        <p className="mb-3 text-sm text-slate-400">
+          <span className="text-slate-500">Last time:</span> <span className="font-medium text-slate-200">{lastTimeSummary}</span>
+        </p>
+      )}
 
       <RestTimer restartKey={restTrigger} />
 
@@ -302,9 +319,10 @@ export function SetForm({
         className="mb-4 h-6 w-full accent-emerald-500"
       />
       <button
+        ref={addButtonRef}
         onClick={handleAdd}
         disabled={!weight || !reps || adding}
-        className="btn btn-primary min-h-12 w-full"
+        className="btn btn-primary min-h-12 w-full scroll-mb-4"
       >
         Add set {nextSetNumber}
       </button>

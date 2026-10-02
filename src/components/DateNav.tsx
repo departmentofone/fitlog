@@ -1,7 +1,4 @@
-function localISO(d: Date) {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-}
-
+import { localISO } from '../lib/localDate'
 function shiftISO(date: string, days: number) {
   const d = new Date(date + 'T00:00:00Z')
   d.setUTCDate(d.getUTCDate() + days)

@@ -3,7 +3,11 @@ import { useStartWorkoutTimer, useStopWorkoutTimer } from '../../hooks/useWorkou
 import { formatDuration } from '../../lib/duration'
 import type { WorkoutSession } from '../../types'
 
-export function SessionTimer({ session }: { session: WorkoutSession }) {
+/**
+ * The session clock with its one control. Finish records the time and hands it to `onFinish` (the
+ * summary sheet); Resume continues from the recorded time rather than wiping it.
+ */
+export function SessionTimer({ session, onFinish }: { session: WorkoutSession; onFinish?: (durationSeconds: number) => void }) {
   const start = useStartWorkoutTimer(session.id)
   const stop = useStopWorkoutTimer(session.id)
   const [now, setNow] = useState(Date.now())
@@ -29,17 +33,19 @@ export function SessionTimer({ session }: { session: WorkoutSession }) {
       </span>
       {running ? (
         <button
-          onClick={() => stop.mutate(session.started_at!)}
-          className="min-h-8 rounded-lg bg-red-600/15 px-2.5 text-xs font-medium text-red-400 active:bg-red-600/30"
+          onClick={() => stop.mutate(session.started_at!, { onSuccess: (seconds) => onFinish?.(seconds) })}
+          disabled={stop.isPending}
+          className="min-h-8 rounded-lg bg-emerald-600 px-3 text-xs font-semibold text-on-accent active:brightness-90 disabled:opacity-60"
         >
-          Stop
+          Finish
         </button>
       ) : (
         <button
-          onClick={() => start.mutate()}
-          className="min-h-8 rounded-lg bg-emerald-600/15 px-2.5 text-xs font-medium text-emerald-400 active:bg-emerald-600/30"
+          onClick={() => start.mutate(session.duration_seconds ?? 0)}
+          disabled={start.isPending}
+          className="min-h-8 rounded-lg bg-emerald-600/15 px-2.5 text-xs font-medium text-emerald-400 active:bg-emerald-600/30 disabled:opacity-60"
         >
-          {session.duration_seconds ? 'Restart' : 'Start'}
+          {session.duration_seconds ? 'Resume' : 'Start'}
         </button>
       )}
     </div>

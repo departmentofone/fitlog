@@ -34,7 +34,7 @@ export function FeedbackTab({ onOpenTips }: { onOpenTips: () => void }) {
       </div>
 
       <div className={cardClass}>
-        <h3 className="mb-2 card-title">About the developer</h3>
+        <h2 className="mb-2 card-title">About the developer</h2>
         <div className="space-y-3 text-sm leading-relaxed text-slate-400">
           <p>
             FitLog started as a small project I built for my own use. I liked working on it, so I polished it and

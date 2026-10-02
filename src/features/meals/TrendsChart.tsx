@@ -6,9 +6,6 @@ import { CHART_FONT, useThemeChartColors } from '../../lib/useChartColors'
 
 type Metric = 'calories' | 'protein' | 'carbs' | 'fat'
 
-// Calories tracks the user's accent color (it's the headline metric); protein/carbs/fat stay
-// fixed, distinguishable series colors regardless of accent, same as any multi-series chart.
-const FIXED_COLORS: Partial<Record<Metric, string>> = { protein: '#60a5fa', carbs: '#fbbf24', fat: '#c084fc' }
 const METRIC_LABELS: { key: Metric; label: string; unit: string }[] = [
   { key: 'calories', label: 'Calories', unit: 'kcal' },
   { key: 'protein', label: 'Protein', unit: 'g' },
@@ -21,7 +18,9 @@ export function TrendsChart() {
   const [metric, setMetric] = useState<Metric>('calories')
   const { data: points = [], isLoading } = useMacroTrend(range)
   const colors = useThemeChartColors()
-  const METRICS = METRIC_LABELS.map((m) => ({ ...m, color: FIXED_COLORS[m.key] ?? colors.accent }))
+  // Calories tracks the user's accent color (it's the headline metric); protein/carbs/fat keep their
+  // fixed macro colors regardless of accent, same as any multi-series chart.
+  const METRICS = METRIC_LABELS.map((m) => ({ ...m, color: m.key === 'calories' ? colors.accent : colors[m.key] }))
   const active = METRICS.find((m) => m.key === metric)!
 
   const average = useMemo(() => {
@@ -37,7 +36,7 @@ export function TrendsChart() {
   return (
     <div className="card p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="card-title">Trends</h3>
+        <h2 className="card-title">Trends</h2>
         <div className="flex gap-1.5">
           {[7, 30].map((r) => (
             <button

@@ -72,7 +72,7 @@ export function SettingsTab({ onOpen }: { onOpen: (route: Route) => void }) {
       <div className="divide-y divide-white/5 card px-4">
         <div className="flex items-center justify-between gap-4 py-3">
           <div>
-            <h3 className="card-title">Ask about preworkout</h3>
+            <h2 className="card-title">Ask about preworkout</h2>
             <p className="text-xs text-slate-500">Once a day, when you start a workout</p>
           </div>
           <Toggle
@@ -83,7 +83,7 @@ export function SettingsTab({ onOpen }: { onOpen: (route: Route) => void }) {
         </div>
         <div className="flex items-center justify-between gap-4 py-3">
           <div>
-            <h3 className="card-title">Haptics</h3>
+            <h2 className="card-title">Haptics</h2>
             <p className="text-xs text-slate-500">Small vibrations for sets, PRs and streaks</p>
           </div>
           <Toggle
@@ -97,7 +97,7 @@ export function SettingsTab({ onOpen }: { onOpen: (route: Route) => void }) {
       <RestTimerSettings />
 
       <div className="card p-4">
-        <h3 className="mb-2 card-title">Display</h3>
+        <h2 className="mb-2 card-title">Display</h2>
         <p className="mb-1.5 text-xs text-slate-500">Theme</p>
         <div className="mb-3 grid grid-cols-3 gap-1.5">
           {(['system', 'light', 'dark'] as const).map((t) => (

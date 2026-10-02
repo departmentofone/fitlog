@@ -172,8 +172,10 @@ Depends on: C2. Parallel. TIP_JAR_PLAN.md has the details.
 - `@capgo/native-purchases`, and an adapter (`src/native/tipStore.ts`) that implements `TipStore`
   from `src/lib/tipJar.ts` and registers it at startup. It also consumes purchases left unfinished.
 - The screen and entry points already exist and appear on their own once the store is registered.
-- Done when: a license tester can tip each amount, tip the same amount twice, and see the right
-  messages for a cancelled and a failed purchase.
+- It looks up every product in `ALL_TIP_IDS`: the four fixed tips and the 14-step Grandma's
+  portion ladder.
+- Done when: a license tester can tip each fixed amount and a few Grandma's portion amounts, tip
+  the same amount twice, and see the right messages for a cancelled and a failed purchase.
 
 ### C9. Live updates (M, only with D1 option a)
 

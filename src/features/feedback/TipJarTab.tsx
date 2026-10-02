@@ -2,7 +2,20 @@ import { useQuery } from '@tanstack/react-query'
 import { useState, type ReactNode } from 'react'
 import { haptics } from '../../lib/haptics'
 import { formatWhole } from '../../lib/number'
-import { kcalFed, recordTip, TIP_PRODUCTS, tipProduct, tipStore, type TipProductId } from '../../lib/tipJar'
+import {
+  GRANDMA_DEFAULT,
+  GRANDMA_STEPS,
+  grandmaId,
+  isGrandma,
+  kcalFed,
+  kcalOf,
+  recordTip,
+  TIP_PRODUCTS,
+  tipStore,
+  type FixedTipId,
+  type TipPrice,
+  type TipProductId,
+} from '../../lib/tipJar'
 import { CoffeeIcon, DONATE_URL, canAskForCoffee } from './donate'
 
 type Status =
@@ -13,7 +26,7 @@ type Status =
   | { kind: 'error' }
 
 /** Line drawings of each tip, in the app's icon style (24px grid, 2px round strokes). */
-const FOOD: Record<TipProductId, { color: string; icon: ReactNode }> = {
+const FOOD: Record<FixedTipId | 'grandma', { color: string; icon: ReactNode }> = {
   tip_tier_1: {
     color: 'text-amber-300',
     icon: <path d="M13.5 5.5c4.5 3.5 4 13.5-8 14.5l-1.5-1c8.5-1.5 11-8 8.5-13zM13.5 5.5l1-2.5" />,
@@ -30,9 +43,14 @@ const FOOD: Record<TipProductId, { color: string; icon: ReactNode }> = {
     color: 'text-orange-300',
     icon: <path d="M12 21 3.5 6.5a17 17 0 0 1 17 0zM5 9a14 14 0 0 1 14 0M10 11.5h.01M14 12h.01M12 16h.01" />,
   },
+  // A big pot, still steaming.
+  grandma: {
+    color: 'text-rose-300',
+    icon: <path d="M4.5 10h15v6.5a3.5 3.5 0 0 1-3.5 3.5H8a3.5 3.5 0 0 1-3.5-3.5zM3 10h18M4.5 12.5H2.5M19.5 12.5h2M10 6.5c0-1.2 1-1.2 1-2.5M14 6.5c0-1.2 1-1.2 1-2.5" />,
+  },
 }
 
-function FoodIcon({ id }: { id: TipProductId }) {
+function FoodIcon({ id }: { id: FixedTipId | 'grandma' }) {
   const { color, icon } = FOOD[id]
   return (
     <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-900/60 ${color}`}>
@@ -134,6 +152,7 @@ export function TipJarTab() {
                 </li>
               )
             })}
+            <GrandmaPortion prices={prices.data ?? []} buying={buying} onTip={(id) => void tip(id)} />
           </ul>
         )}
 
@@ -141,7 +160,9 @@ export function TipJarTab() {
           {buying && <p className="text-slate-400">Waiting for {store.storeName}…</p>}
           {status.kind === 'thanked' && (
             <p className="fade-in font-medium text-emerald-400">
-              Logged. That's {formatWhole(tipProduct(status.id).kcal)} kcal for the developer.
+              {isGrandma(status.id)
+                ? `Logged. Grandma would approve: ${formatWhole(kcalOf(status.id))} kcal for the developer.`
+                : `Logged. That's ${formatWhole(kcalOf(status.id))} kcal for the developer.`}
             </p>
           )}
           {status.kind === 'pending' && (
@@ -161,6 +182,59 @@ export function TipJarTab() {
         )}
       </p>
     </div>
+  )
+}
+
+/**
+ * Grandma's portion: the person picks the size with a stepper over the ladder of products, sees
+ * the price and the calories, then serves it. Only the steps the store actually sells are offered.
+ */
+function GrandmaPortion({ prices, buying, onTip }: { prices: TipPrice[]; buying: boolean; onTip: (id: TipProductId) => void }) {
+  const steps = GRANDMA_STEPS.flatMap((usd) => {
+    const price = prices.find((x) => x.id === grandmaId(usd))?.price
+    return price ? [{ usd, id: grandmaId(usd), price }] : []
+  })
+  const [index, setIndex] = useState(() => Math.max(0, steps.findIndex((s) => s.usd === GRANDMA_DEFAULT)))
+  if (steps.length === 0) return null
+  const step = steps[Math.min(index, steps.length - 1)]
+  const stepButton = 'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-700 text-lg font-semibold text-slate-200 active:bg-slate-600 disabled:opacity-40'
+
+  return (
+    <li className="rounded-xl bg-slate-800 px-3 py-2.5">
+      <div className="flex items-center gap-3">
+        <FoodIcon id="grandma" />
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold text-slate-100">Grandma's portion</p>
+          <p className="text-xs text-slate-400">However much you think is enough. Then a bit more.</p>
+        </div>
+      </div>
+      <div className="mt-2.5 flex items-center gap-2">
+        <button type="button" aria-label="Smaller portion" disabled={buying || index === 0} onClick={() => setIndex((i) => i - 1)} className={stepButton}>
+          −
+        </button>
+        <div className="min-w-0 flex-1 text-center" aria-live="polite">
+          <p className="text-base font-semibold text-emerald-400">{step.price}</p>
+          <p className="text-[11px] text-slate-500">{formatWhole(kcalOf(step.id))} kcal</p>
+        </div>
+        <button
+          type="button"
+          aria-label="Bigger portion"
+          disabled={buying || index >= steps.length - 1}
+          onClick={() => setIndex((i) => i + 1)}
+          className={stepButton}
+        >
+          +
+        </button>
+        <button
+          type="button"
+          disabled={buying}
+          onClick={() => onTip(step.id)}
+          className="h-10 shrink-0 rounded-lg bg-emerald-600 px-4 text-sm font-semibold text-on-accent active:brightness-90 disabled:opacity-60"
+        >
+          Serve it
+        </button>
+      </div>
+    </li>
   )
 }
 

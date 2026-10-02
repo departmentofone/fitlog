@@ -38,6 +38,7 @@ Nothing is visible in production until the native app registers a store.
 | Practice | FitLog |
 |----------|--------|
 | A few fixed tiers, small to large, as consumable products | Four round amounts, each a meal for the developer, with its calories |
+| A custom amount for people who want to give more or less | "Grandma's portion", a stepper from US$1 to US$100 |
 | Prices from the store, in the buyer's currency | `priceString` from the plugin, never hard-coded |
 | Say plainly that a tip unlocks nothing | In the screen's first paragraph |
 | Easy to find, never in the way: Settings or About, no pop-ups or nag screens | Settings row and Feedback & support button only |
@@ -61,6 +62,38 @@ Create them in Play Console with these IDs and names. IDs can never be changed o
 don't name a price or a food. Description for each: "A one-time tip for FitLog's developer. It
 doesn't unlock anything or change your account."
 
+### Grandma's portion (custom amount)
+
+The fifth row: "Grandma's portion. However much you think is enough. Then a bit more." The person
+picks the size with − and +, sees the price and the calories (100 kcal a dollar), and taps "Serve
+it". The thank-you reads "Logged. Grandma would approve: 700 kcal for the developer."
+
+Play only sells fixed prices, so this is a ladder of 14 products, one per amount. Unlike the four
+above, these IDs name their US price (a different ladder later means new products). The stepper
+only offers the amounts Play actually returns, so a product that's missing or inactive just drops
+out of the ladder. It starts at US$3.
+
+| Product ID | Name in Play | Price |
+|------------|--------------|-------|
+| `tip_custom_1` | Grandma's portion, $1 | US$1 |
+| `tip_custom_2` | Grandma's portion, $2 | US$2 |
+| `tip_custom_3` | Grandma's portion, $3 | US$3 |
+| `tip_custom_4` | Grandma's portion, $4 | US$4 |
+| `tip_custom_5` | Grandma's portion, $5 | US$5 |
+| `tip_custom_6` | Grandma's portion, $6 | US$6 |
+| `tip_custom_7` | Grandma's portion, $7 | US$7 |
+| `tip_custom_8` | Grandma's portion, $8 | US$8 |
+| `tip_custom_9` | Grandma's portion, $9 | US$9 |
+| `tip_custom_10` | Grandma's portion, $10 | US$10 |
+| `tip_custom_15` | Grandma's portion, $15 | US$15 |
+| `tip_custom_25` | Grandma's portion, $25 | US$25 |
+| `tip_custom_50` | Grandma's portion, $50 | US$50 |
+| `tip_custom_100` | Grandma's portion, $100 | US$100 |
+
+That's 18 products in all. Play Console stopped importing products from CSV files in May 2025,
+so they're created one by one (about 15 to 20 minutes). The only bulk route left is the Play
+Developer Publishing API, which needs a service account; not worth it for 18 products.
+
 Round prices: Play converts the US price into each local currency and may land on odd numbers
 (say RSD 216). Set round local prices yourself for the countries that matter most, for example
 RSD 200 / 500 / 1000 / 2000 for Serbia and EUR 2 / 5 / 10 / 20 for the euro countries. The app
@@ -75,7 +108,8 @@ tier). A US$5 tip leaves about US$4.25 before tax.
   README still says Billing 7, but its build file uses 9.1.0. `cordova-plugin-purchase` 13.15+
   (Billing 8.3, native Capacitor adapter) is the fallback. Play has required Billing Library 8 or
   newer for updates since 2026-08-31.
-- The adapter (`src/native/tipStore.ts`) implements `TipStore`: `getProducts` for prices,
+- The adapter (`src/native/tipStore.ts`) implements `TipStore`: `getProducts` for prices of
+  every ID in `ALL_TIP_IDS` (the four fixed tips and the Grandma's portion ladder),
   `purchaseProduct` with `isConsumable: true` to buy and consume, and at startup `getPurchases` to
   consume anything left unfinished (Google refunds a purchase that isn't consumed or acknowledged
   within 3 days). It calls `registerTipStore()` before the app renders.
@@ -92,8 +126,8 @@ tier). A US$5 tip leaves about US$4.25 before tax.
 2. **When the first Capacitor build exists:** upload it to the **internal testing** track (it
    doesn't affect the closed test). Play only lets you create products after it has seen a build that
    includes the billing library.
-3. Create the four products (Monetize with Play > Products > One-time products), set the prices, and
-   activate them.
+3. Create the 18 products (Monetize with Play > Products > One-time products) from the two tables
+   above, set the prices, and activate them.
 4. Add yourself and any testers under Settings > License testing. License testers can buy without
    being charged.
 5. Test on a phone that installed FitLog from Play (internal or closed testing), signed in with a

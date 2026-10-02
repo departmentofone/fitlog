@@ -20,8 +20,9 @@ they go through Play Billing like any other.
 
 ## What's built (2026-10-02)
 
-- `src/lib/tipJar.ts`: the four products, the `TipStore` interface a store adapter implements,
-  `registerTipStore()`, and a count of tips given on this device. A preview store for development
+- `src/lib/tipJar.ts`: the four products (as plates, below), the `TipStore` interface a store
+  adapter implements, `registerTipStore()`, and a running total of the weight this device has
+  tipped. A preview store for development
   (localStorage `fitlog-tipjar-preview` = `1`, `pending` or `error`, dev server only).
 - `src/features/feedback/TipJarTab.tsx`: the Tip jar screen (`#/tips`), with prices from the store,
   waiting / thanks / pending / error states, and a fallback where there's no store (the coffee link
@@ -36,30 +37,38 @@ Nothing is visible in production until the native app registers a store.
 
 | Practice | FitLog |
 |----------|--------|
-| A few fixed tiers, small to large, as consumable products | Four: Small, Medium, Large, Extra large |
+| A few fixed tiers, small to large, as consumable products | Four round amounts, each a plate for the developer's bar |
 | Prices from the store, in the buyer's currency | `priceString` from the plugin, never hard-coded |
 | Say plainly that a tip unlocks nothing | In the screen's first paragraph |
 | Easy to find, never in the way: Settings or About, no pop-ups or nag screens | Settings row and Feedback & support button only |
-| A clear thank-you after paying | "Thank you for the tip.", a fade (some phones report reduced motion), and a quiet count afterwards |
+| A clear thank-you after paying | "Thank you. That's 20 kg on the bar.", a fade (some phones report reduced motion), and a running total ("So far you've loaded 32.5 kg onto the bar from this phone") |
 | Handle pending payments and purchases left unfinished when the app closed | Pending state on screen; the adapter finishes leftovers at startup |
 | Optional extras some apps add: a "supporter" badge, an alternate icon, a monthly tip subscription | Not now. A perk makes it a purchase rather than a tip, and a subscription needs ongoing value. Worth revisiting later |
 
 ## Products
 
-Create these as one-time products in Play Console. IDs can never be changed or reused.
+Each tip is a plate loaded onto the developer's bar, in the competition colours lifters know. The app
+shows plates in the person's own unit: kg plates for metric, the usual lb plates for imperial.
 
-| Product ID | Name | Suggested price |
-|------------|------|-----------------|
-| `tip_small` | Small tip | US$0.99 |
-| `tip_medium` | Medium tip | US$2.99 |
-| `tip_large` | Large tip | US$4.99 |
-| `tip_xlarge` | Extra large tip | US$9.99 |
+| Product ID | In the app (kg / lb) | Line under it | Price |
+|------------|----------------------|---------------|-------|
+| `tip_tier_1` | 1.25 kg / 2.5 lb plate | Microloading counts. | US$1 |
+| `tip_tier_2` | 5 kg / 10 lb plate | A proper warm-up set. | US$3 |
+| `tip_tier_3` | 10 kg / 25 lb plate | Now it's a working set. | US$5 |
+| `tip_tier_4` | 20 kg / 45 lb plate | A full plate. Seriously, thank you. | US$10 |
 
-Description for each: "A one-time tip for the developer of FitLog. It doesn't unlock anything or
-change your account." Play converts the US prices into local currencies.
+Create them in Play Console with these IDs. IDs can never be changed or reused, so they don't name a
+price or a plate. Play only shows one product name in its own purchase sheet, so name them in kg:
+"1.25 kg plate", "5 kg plate", "10 kg plate", "20 kg plate". Description for each: "A one-time
+tip for FitLog's developer. It doesn't unlock anything or change your account."
+
+Round prices: Play converts the US price into each local currency and may land on odd numbers
+(say RSD 108). Set round local prices yourself for the countries that matter most, for example
+RSD 100 / 300 / 500 / 1000 for Serbia and EUR 1 / 3 / 5 / 10 for the euro countries. The app always
+shows whatever price Play sends.
 
 Google keeps 15% of the first US$1M a year (check that Play Console shows your account on the 15%
-tier). A US$2.99 tip leaves about US$2.54 before tax.
+tier). A US$3 tip leaves about US$2.55 before tax.
 
 ## How it works in the app (chunk C8 of CAPACITOR_PLAN.md)
 

@@ -9,21 +9,33 @@
  */
 
 /**
- * Product IDs as created in Play Console (Monetize > Products > In-app products), consumable.
- * IDs can never be changed or reused, so they name a size, not a price.
+ * The tips, as plates loaded onto the bar: each one a heavier plate, shown in the person's own
+ * unit. Product IDs are as created in Play Console (Monetize > Products > One-time products,
+ * consumable). IDs can never be changed or reused, so they don't name a price or a plate. Prices
+ * are round (US$1, 3, 5, 10) and always come from the store, never from here.
  */
 export const TIP_PRODUCTS = [
-  { id: 'tip_small', label: 'Small tip' },
-  { id: 'tip_medium', label: 'Medium tip' },
-  { id: 'tip_large', label: 'Large tip' },
-  { id: 'tip_xlarge', label: 'Extra large tip' },
+  { id: 'tip_tier_1', plate: { kg: 1.25, lb: 2.5 }, line: 'Microloading counts.' },
+  { id: 'tip_tier_2', plate: { kg: 5, lb: 10 }, line: 'A proper warm-up set.' },
+  { id: 'tip_tier_3', plate: { kg: 10, lb: 25 }, line: "Now it's a working set." },
+  { id: 'tip_tier_4', plate: { kg: 20, lb: 45 }, line: 'A full plate. Seriously, thank you.' },
 ] as const
 
 export type TipProductId = (typeof TIP_PRODUCTS)[number]['id']
+type PlateUnit = 'kg' | 'lb'
+
+/** "1.25 kg plate", "45 lb plate". */
+export function plateName(id: TipProductId, unit: PlateUnit): string {
+  return `${plateWeight(id, unit)} ${unit} plate`
+}
+
+export function plateWeight(id: TipProductId, unit: PlateUnit): number {
+  return TIP_PRODUCTS.find((p) => p.id === id)!.plate[unit]
+}
 
 export interface TipPrice {
   id: TipProductId
-  /** The store's localized price, e.g. "$2.99" or "RSD 320". Never hard-coded. */
+  /** The store's localized price, e.g. "$3.00" or "RSD 300". Never hard-coded. */
   price: string
 }
 
@@ -54,24 +66,37 @@ export function tipStore(): TipStore | null {
   return registered ?? previewStore()
 }
 
-const TIPS_GIVEN_KEY = 'fitlog-tips-given'
+const TIPS_KEY = 'fitlog-tips'
 
-/** How many tips this device has left, for the thank-you line. Kept on the device only. */
-export function tipsGiven(): number {
+/** How many of each tip this device has given, for the running total. Kept on the device only. */
+function tipCounts(): Partial<Record<TipProductId, number>> {
   try {
-    const n = Number(localStorage.getItem(TIPS_GIVEN_KEY))
-    return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0
+    const parsed = JSON.parse(localStorage.getItem(TIPS_KEY) ?? '{}') as Record<string, unknown>
+    const counts: Partial<Record<TipProductId, number>> = {}
+    for (const p of TIP_PRODUCTS) {
+      const n = Number(parsed[p.id])
+      if (Number.isFinite(n) && n > 0) counts[p.id] = Math.floor(n)
+    }
+    return counts
   } catch {
-    return 0
+    return {}
   }
 }
 
-export function recordTip() {
+export function recordTip(id: TipProductId) {
   try {
-    localStorage.setItem(TIPS_GIVEN_KEY, String(tipsGiven() + 1))
+    const counts = tipCounts()
+    counts[id] = (counts[id] ?? 0) + 1
+    localStorage.setItem(TIPS_KEY, JSON.stringify(counts))
   } catch {
-    // The thank-you line just won't count it.
+    // The running total just won't include it.
   }
+}
+
+/** Everything this device has tipped, as weight on the bar: 26.25 kg, or 57.5 lb. */
+export function loadedOnBar(unit: PlateUnit): number {
+  const counts = tipCounts()
+  return TIP_PRODUCTS.reduce((sum, p) => sum + p.plate[unit] * (counts[p.id] ?? 0), 0)
 }
 
 /**
@@ -88,7 +113,7 @@ function previewStore(): TipStore | null {
     return null
   }
   if (!mode) return null
-  const prices: Record<TipProductId, string> = { tip_small: '$0.99', tip_medium: '$2.99', tip_large: '$4.99', tip_xlarge: '$9.99' }
+  const prices: Record<TipProductId, string> = { tip_tier_1: '$1.00', tip_tier_2: '$3.00', tip_tier_3: '$5.00', tip_tier_4: '$10.00' }
   return {
     storeName: 'Google Play',
     prices: async () => TIP_PRODUCTS.map((p) => ({ id: p.id, price: prices[p.id] })),

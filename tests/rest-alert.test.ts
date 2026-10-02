@@ -81,7 +81,7 @@ vi.mock('web-push', () => ({
   get: () => ({ waitUntil: (p: Promise<unknown>) => pending.push(p) }),
 }
 
-const { default: handler } = await import('./rest-alert')
+const { default: handler } = await import('../api/rest-alert')
 
 const SUB = { endpoint: 'https://fcm.googleapis.com/fcm/send/device-a', keys: { p256dh: 'p', auth: 'a' } }
 

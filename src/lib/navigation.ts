@@ -56,6 +56,7 @@ const DETAIL_PAGES: Partial<Record<Route, { title: string; area: Area | null }>>
   settings: { title: 'Settings', area: null },
   whatsnew: { title: "What's new", area: null },
   feedback: { title: 'Feedback & support', area: null },
+  tips: { title: 'Tip jar', area: null },
   about: { title: 'About FitLog', area: null },
 }
 

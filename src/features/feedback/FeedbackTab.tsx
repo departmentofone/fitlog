@@ -1,27 +1,21 @@
-import { isAndroidApp } from '../../lib/platform'
+import { TabIcon } from '../../components/TabIcon'
+import { tipStore } from '../../lib/tipJar'
+import { canAskForCoffee, CoffeeIcon, DONATE_URL } from './donate'
 import { FeedbackForm } from './FeedbackForm'
 
 const FEEDBACK_EMAIL = 'departmentofone.app@gmail.com'
-/** Set to null to fall back to the disabled "Coming soon" placeholder. */
-const DONATE_URL: string | null = 'https://buymeacoffee.com/department.of.one'
 
 const cardClass = 'card p-4'
 
-function CoffeeIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M4 8h13v5a6 6 0 0 1-6 6h-1a6 6 0 0 1-6-6V8z" />
-      <path d="M17 9h1.5a2.5 2.5 0 0 1 0 5H17M8 2.5v2.5M12 2.5v2.5" />
-    </svg>
-  )
-}
-
-/** Everything that goes back to the developer: feedback first, then the optional coffee. */
-export function FeedbackTab() {
-  // Google Play's Payments policy doesn't allow leading users to an external payment page from
-  // inside the app - a link or wording that encourages it - so the Play (TWA) build keeps only
-  // the about-the-developer note, with no coffee paragraph or button.
-  const showDonate = !isAndroidApp()
+/**
+ * Everything that goes back to the developer: feedback first, then an optional tip. The app
+ * versions with a store take tips through it (the tip jar); the web links to Buy Me a Coffee.
+ * Google Play's Payments policy doesn't allow leading people to an outside payment page from the
+ * app, so the Play build never shows the coffee link or asks for one.
+ */
+export function FeedbackTab({ onOpenTips }: { onOpenTips: () => void }) {
+  const canTip = !!tipStore()
+  const showDonate = !canTip && canAskForCoffee()
 
   return (
     <div className="space-y-4 p-4">
@@ -47,6 +41,7 @@ export function FeedbackTab() {
             published it for other people to use too.
           </p>
           <p>I'm one person making apps because I enjoy it.</p>
+          {canTip && <p>If it's been useful to you, you can leave a tip. It's optional, and I appreciate it.</p>}
           {showDonate && (
             <p>
               If it's been useful to you, a coffee helps cover the costs of keeping it running. It's
@@ -54,6 +49,16 @@ export function FeedbackTab() {
             </p>
           )}
         </div>
+        {canTip && (
+          <button
+            type="button"
+            onClick={onOpenTips}
+            className="mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 font-semibold text-on-accent active:brightness-90"
+          >
+            <TabIcon tab="tips" className="h-5 w-5" />
+            Leave a tip
+          </button>
+        )}
         {showDonate &&
           (DONATE_URL ? (
             <a

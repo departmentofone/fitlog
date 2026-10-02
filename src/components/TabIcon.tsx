@@ -85,6 +85,8 @@ const PATHS: Record<Tab | 'progress', ReactNode> = {
   progress: <path d="M3 17l6-6 4 4 8-8M15 7h6v6" />,
   whatsnew: <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z" />,
   feedback: <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v9a1.5 1.5 0 0 1-1.5 1.5H10l-4.5 4v-4h0A1.5 1.5 0 0 1 4 14.5zM8.5 9h7M8.5 12h4.5" />,
+  // A jar with a lid and a coin going in.
+  tips: <path d="M8 3.5h8M7 6.5h10M7.5 6.5 6.6 9A4 4 0 0 0 6 11v7a2.5 2.5 0 0 0 2.5 2.5h7A2.5 2.5 0 0 0 18 18v-7a4 4 0 0 0-.6-2L16.5 6.5M12 11v5M10 13.5h4" />,
   about: (
     <>
       <circle cx="12" cy="12" r="9" />

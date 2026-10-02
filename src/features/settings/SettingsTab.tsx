@@ -7,15 +7,18 @@ import { useUpdateSettings, useUserSettings } from '../../hooks/useUserSettings'
 import { formatBuildTime } from '../../lib/buildInfo'
 import { exportUserData } from '../../lib/exportData'
 import { replayOnboarding } from '../../lib/onboarding'
+import { tipStore } from '../../lib/tipJar'
 import { supabase } from '../../lib/supabase'
 import { DeleteAccountCard } from './DeleteAccountCard'
 import { PushNotificationsCard } from './PushNotificationsCard'
 import { RestTimerSettings } from './RestTimerSettings'
 
-// About, What's new and Feedback (with Buy me a coffee) live here rather than on a main screen.
+// About, What's new and Feedback (with Buy me a coffee) live here rather than on a main screen,
+// and so does the tip jar, in the app versions that can take tips through their store.
 const FITLOG_LINKS = [
   { route: 'whatsnew', label: "What's new" },
   { route: 'feedback', label: 'Feedback & support' },
+  { route: 'tips', label: 'Tip jar' },
   { route: 'about', label: 'About FitLog' },
 ] as const
 
@@ -230,7 +233,7 @@ export function SettingsTab({ onOpen }: { onOpen: (route: Route) => void }) {
       </div>
 
       <div className="card px-4 py-1">
-        {FITLOG_LINKS.map((link, i) => (
+        {FITLOG_LINKS.filter((link) => link.route !== 'tips' || tipStore()).map((link, i) => (
           <button
             key={link.route}
             onClick={() => onOpen(link.route)}

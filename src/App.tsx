@@ -35,6 +35,7 @@ const PlateCalculatorTab = lazy(() =>
 )
 const AboutTab = lazy(() => import('./features/about/AboutTab').then((m) => ({ default: m.AboutTab })))
 const FeedbackTab = lazy(() => import('./features/feedback/FeedbackTab').then((m) => ({ default: m.FeedbackTab })))
+const TipJarTab = lazy(() => import('./features/feedback/TipJarTab').then((m) => ({ default: m.TipJarTab })))
 const WhatsNewTab = lazy(() => import('./features/about/WhatsNewTab').then((m) => ({ default: m.WhatsNewTab })))
 const HistoryView = lazy(() => import('./features/history/HistoryView').then((m) => ({ default: m.HistoryView })))
 const SettingsTab = lazy(() => import('./features/settings/SettingsTab').then((m) => ({ default: m.SettingsTab })))
@@ -222,7 +223,8 @@ function App() {
               {tab === 'plates' && <PlateCalculatorTab />}
               {tab === 'whatsnew' && <WhatsNewTab />}
               {tab === 'about' && <AboutTab />}
-              {tab === 'feedback' && <FeedbackTab />}
+              {tab === 'feedback' && <FeedbackTab onOpenTips={() => navigate('tips')} />}
+              {tab === 'tips' && <TipJarTab />}
             </Suspense>
           </TabErrorBoundary>
         </Layout>

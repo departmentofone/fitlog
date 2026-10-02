@@ -22,7 +22,7 @@ export function GuidelinesSheet({ onAgree, onClose, agreeing }: { onAgree?: () =
         aria-modal="true"
         aria-labelledby="guidelines-title"
         onClick={(e) => e.stopPropagation()}
-        className="sheet-up relative max-h-[85%] overflow-y-auto rounded-t-3xl border-t border-white/10 bg-slate-950 px-5 pt-2 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-2xl"
+        className="sheet-up relative max-h-[85%] overflow-y-auto rounded-t-3xl border-t border-white/10 bg-slate-950 px-5 pt-2 pb-[max(1.25rem,var(--safe-area-inset-bottom,env(safe-area-inset-bottom)))] shadow-2xl"
       >
         <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-slate-700" />
         <h2 id="guidelines-title" className="text-lg font-semibold text-white">

@@ -1,5 +1,5 @@
 import { formatBuildTime } from './buildInfo'
-import { isAndroidApp } from './platform'
+import { isAndroidApp, nativePlatform } from './platform'
 
 // The Department of One site's contact endpoint (api/contact.js in that repo) - the same inbox,
 // Gmail forwarding and keys as the site's own contact form. It allows FitLog's origin via CORS and
@@ -13,7 +13,8 @@ export const FEEDBACK_EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
 
 /** One line that helps with bug reports: which build, where it runs, which account sent it. */
 export function feedbackContext(accountEmail: string | null | undefined): string {
-  const where = isAndroidApp() ? 'Android app' : 'web'
+  const native = nativePlatform()
+  const where = native === 'android' ? 'Android app' : native === 'ios' ? 'iPhone app' : isAndroidApp() ? 'Android app (TWA)' : 'web'
   return [`Build ${formatBuildTime()}`, where, accountEmail ? `account ${accountEmail}` : null].filter(Boolean).join(' · ')
 }
 

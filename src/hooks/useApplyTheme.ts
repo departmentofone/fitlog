@@ -1,5 +1,7 @@
+import { SystemBars, SystemBarsStyle } from '@capacitor/core'
 import { useEffect } from 'react'
 import { setHapticsEnabled } from '../lib/haptics'
+import { isNativeApp } from '../lib/platform'
 import { useUserSettings } from './useUserSettings'
 
 export function useApplyTheme() {
@@ -20,6 +22,8 @@ export function useApplyTheme() {
       const resolved = theme === 'system' ? (media.matches ? 'dark' : 'light') : theme
       if (resolved === 'light') root.setAttribute('data-theme', 'light')
       else root.removeAttribute('data-theme')
+      // The app draws under Android's status and navigation bars: their icons follow the theme.
+      if (isNativeApp()) void SystemBars.setStyle({ style: resolved === 'light' ? SystemBarsStyle.Light : SystemBarsStyle.Dark }).catch(() => undefined)
     }
 
     resolve()

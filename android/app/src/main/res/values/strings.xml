@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">FitLog</string>
+    <string name="title_activity_main">FitLog</string>
+    <string name="package_name">com.departmentofone.fitlog</string>
+    <string name="custom_url_scheme">com.departmentofone.fitlog</string>
+    <string name="shortcut_set_short">Log set</string>
+    <string name="shortcut_set_long">Log a set</string>
+    <string name="shortcut_meal_short">Log meal</string>
+    <string name="shortcut_meal_long">Log a meal</string>
+    <string name="shortcut_fast_short">Fast</string>
+    <string name="shortcut_fast_long">Start a fast</string>
+</resources>

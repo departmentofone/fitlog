@@ -75,7 +75,7 @@ function LadderSheet({ ladder, onClose }: { ladder: AwardLadder; onClose: () => 
         aria-modal="true"
         aria-label={ladder.name}
         onClick={(e) => e.stopPropagation()}
-        className="sheet-up relative rounded-t-3xl border-t border-white/10 bg-slate-950 px-5 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
+        className="sheet-up relative rounded-t-3xl border-t border-white/10 bg-slate-950 px-5 pt-3 pb-[max(1.25rem,var(--safe-area-inset-bottom,env(safe-area-inset-bottom)))]"
       >
         <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-slate-700" />
         <p className="text-center eyebrow">{CATEGORY_LABEL[ladder.category]}</p>

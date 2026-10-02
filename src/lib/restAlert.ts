@@ -1,3 +1,4 @@
+import { apiUrl } from './platform'
 import { devicePushSubscription } from './pushSubscription'
 import { supabase } from './supabase'
 
@@ -23,7 +24,7 @@ async function send(inMs: number | null): Promise<boolean> {
   const token = data.session?.access_token
   if (!token) return false
   try {
-    const response = await fetch('/api/rest-alert', {
+    const response = await fetch(apiUrl('/api/rest-alert'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ inMs, subscription: subscription.toJSON() }),

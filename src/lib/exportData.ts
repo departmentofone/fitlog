@@ -1,3 +1,4 @@
+import { saveFile } from './saveFile'
 import { supabase } from './supabase'
 
 /**
@@ -72,13 +73,6 @@ export async function exportUserData(userId: string) {
   if (failed.length > 0) payload.incomplete = failed
 
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `fitlog-export-${new Date().toISOString().slice(0, 10)}.json`
-  document.body.appendChild(a)
-  a.click()
-  a.remove()
-  URL.revokeObjectURL(url)
+  await saveFile(blob, `fitlog-export-${new Date().toISOString().slice(0, 10)}.json`, 'FitLog data export')
   return { incomplete: failed }
 }

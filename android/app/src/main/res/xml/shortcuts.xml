@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Long-press shortcuts on the app icon, the same three the website's install offers. They open
+     fitlog://quick/<action>, which src/native/links.ts turns into the app's ?quick= start. -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut android:shortcutId="log_set" android:enabled="true" android:icon="@drawable/shortcut_set"
+        android:shortcutShortLabel="@string/shortcut_set_short" android:shortcutLongLabel="@string/shortcut_set_long">
+        <intent android:action="android.intent.action.VIEW" android:data="fitlog://quick/set"
+            android:targetPackage="com.departmentofone.fitlog" android:targetClass="com.departmentofone.fitlog.MainActivity" />
+    </shortcut>
+    <shortcut android:shortcutId="log_meal" android:enabled="true" android:icon="@drawable/shortcut_meal"
+        android:shortcutShortLabel="@string/shortcut_meal_short" android:shortcutLongLabel="@string/shortcut_meal_long">
+        <intent android:action="android.intent.action.VIEW" android:data="fitlog://quick/meal"
+            android:targetPackage="com.departmentofone.fitlog" android:targetClass="com.departmentofone.fitlog.MainActivity" />
+    </shortcut>
+    <shortcut android:shortcutId="start_fast" android:enabled="true" android:icon="@drawable/shortcut_fast"
+        android:shortcutShortLabel="@string/shortcut_fast_short" android:shortcutLongLabel="@string/shortcut_fast_long">
+        <intent android:action="android.intent.action.VIEW" android:data="fitlog://quick/fast"
+            android:targetPackage="com.departmentofone.fitlog" android:targetClass="com.departmentofone.fitlog.MainActivity" />
+    </shortcut>
+</shortcuts>

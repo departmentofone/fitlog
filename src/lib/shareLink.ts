@@ -1,3 +1,5 @@
+import { siteOrigin } from './platform'
+
 /**
  * Share links for Community items: `/s/<kind>/<id>`. The server (api/share.ts, via a vercel.json
  * rewrite) answers with a small page that has a proper link preview (name, description, image) for
@@ -32,7 +34,7 @@ export function isShareKind(value: string): value is ShareKind {
   return (SHARE_KINDS as readonly string[]).includes(value)
 }
 
-export function shareUrl(ref: SharedRef, origin: string = window.location.origin): string {
+export function shareUrl(ref: SharedRef, origin: string = siteOrigin()): string {
   return `${origin}/s/${ref.kind}/${ref.id}`
 }
 

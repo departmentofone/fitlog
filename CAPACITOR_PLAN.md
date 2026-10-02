@@ -8,6 +8,34 @@ comes first; iOS gets its own phase once there's a Mac or a cloud build service.
 The work is split into chunks that agents can do in parallel, each reviewed before it's merged.
 Agent rules come separately.
 
+## Status (2026-10-02)
+
+Built in one pass rather than by separate agents; NATIVE_DEV.md is the working guide now.
+Decisions taken: D1 bundled code with live updates, D2 Android first, D3 builds on the PC (a GitHub
+Actions workflow can come later), D4 a foreground service of type "special use" (no permission
+prompt for people; a declaration in Play Console instead), D5 Firebase, with the code in place and
+waiting for the project.
+
+| Chunk | State |
+|-------|-------|
+| C1 Foundation | Done. Capacitor 8.5, `android/`, native build mode, icons and splash, signing from `keystore.properties`, version from package.json |
+| C2 Platform layer | Done. `isNativeApp`, `siteOrigin`, `apiUrl`, CORS on the app-facing endpoints and the contact form |
+| S1 Sign-in in the app | Waiting for a phone test, after `localhost` is added to the Turnstile widget |
+| S2 Camera in the app | Waiting for a phone test; camera permission is in the manifest |
+| C3 Rest timer | Done. RestTimerService and RestTimerPlugin (Java), synced with the in-app timer both ways |
+| C4 Native push | Done in code; needs the Firebase project, `google-services.json`, the Vercel key and migration v34 |
+| C5 System integration | Done. Back button, system bars, splash, keyboard, refresh on resume, haptics, links out |
+| C6 Links in, sharing | Done. App Links, shortcuts, share sheet out, text shared in |
+| C7 Camera | Nothing beyond the permission unless S2 finds a problem |
+| C8 Tip jar billing | Done. `src/native/tipStore.ts`; needs the products in Play Console |
+| C9 Live updates | Done. Self-hosted on Vercel, switched at launch only |
+| C10 Paperwork | Done. Privacy policy, Play Console answers (section 12), store README |
+| C11 Release builds | Done. `npm run android:release`; GitHub Actions not set up |
+| C12 Phone testing | Yours: the checklist in NATIVE_DEV.md |
+
+There's no emulator on the build PC (Windows' hypervisor isn't on), so the native parts were checked
+by building, unit tests and reading the code, and need the phone checklist before release.
+
 ## What stays the same
 
 - One codebase. The web app keeps deploying to Vercel exactly as now, and web users notice nothing.

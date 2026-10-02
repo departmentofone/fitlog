@@ -1,4 +1,4 @@
-import { isAndroidApp } from '../../lib/platform'
+import { isStoreBuild } from '../../lib/platform'
 
 /** The Buy Me a Coffee page. Set to null to fall back to the disabled "Coming soon" placeholder. */
 export const DONATE_URL: string | null = 'https://buymeacoffee.com/department.of.one'
@@ -9,7 +9,7 @@ export const DONATE_URL: string | null = 'https://buymeacoffee.com/department.of
  * DONATIONS_PLAN.md). The native app takes tips through its store instead (tipJar.ts).
  */
 export function canAskForCoffee(): boolean {
-  return !isAndroidApp()
+  return !isStoreBuild()
 }
 
 export function CoffeeIcon({ className = 'h-5 w-5' }: { className?: string }) {

@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { isNativeApp } from '../../lib/platform'
+import { saveFile } from '../../lib/saveFile'
 
 export type ShareCardType = 'pr' | 'streak' | 'tier' | 'first'
 
@@ -204,6 +206,11 @@ function ShareIcon() {
 
 async function shareOrDownload(blob: Blob, type: ShareCardType, data: ShareCardData) {
   const filename = `fitlog-${type}-${Date.now()}.png`
+  // The app has no web share API; saveFile opens the phone's share sheet with the picture.
+  if (isNativeApp()) {
+    await saveFile(blob, filename, `${data.title}: ${data.value}`)
+    return
+  }
   const nav = navigator as Navigator & { canShare?: (data?: ShareData) => boolean }
   if (typeof nav.share === 'function' && typeof nav.canShare === 'function') {
     const file = new File([blob], filename, { type: 'image/png' })
@@ -217,14 +224,7 @@ async function shareOrDownload(blob: Blob, type: ShareCardType, data: ShareCardD
       }
     }
   }
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  document.body.appendChild(a)
-  a.click()
-  a.remove()
-  URL.revokeObjectURL(url)
+  await saveFile(blob, filename, 'FitLog')
 }
 
 /**

@@ -1,6 +1,6 @@
 import { useState } from 'react'
+import { signOut } from '../lib/signOut'
 import { useUpdateSettings } from '../hooks/useUserSettings'
-import { supabase } from '../lib/supabase'
 
 const ITEMS = [
   'Workouts, sets, weights, and effort ratings',
@@ -66,7 +66,7 @@ export function HealthConsentScreen() {
           disabled={updateSettings.isPending || declining}
           onClick={async () => {
             setDeclining(true)
-            await supabase.auth.signOut()
+            await signOut()
           }}
           className="mt-2 min-h-11 w-full rounded-xl text-sm font-medium text-slate-400 disabled:opacity-50"
         >

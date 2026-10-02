@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { apiUrl } from './platform'
 
 /** localStorage keys the app writes that belong to (or describe) the signed-in account. */
 const LOCAL_KEYS = ['fitlog-query-cache']
@@ -16,7 +17,7 @@ export async function deleteAccount(client: SupabaseClient, onDeleted?: () => vo
 
   let response: Response
   try {
-    response = await fetch('/api/account/delete', { method: 'POST', headers: { Authorization: `Bearer ${token}` } })
+    response = await fetch(apiUrl('/api/account/delete'), { method: 'POST', headers: { Authorization: `Bearer ${token}` } })
   } catch {
     throw new Error("Couldn't reach the server. Check your connection and try again.")
   }

@@ -118,7 +118,16 @@ for up to an hour), and that the APK Play installs is signed with a listed key. 
 testers until it passes. `src/lib/assetlinks.test.ts` also fails the build if the Play key is ever
 removed.
 
-### Other PWABuilder settings
+### Building the app
+
+From versionCode 100 the Play app is a Capacitor build, made in this repo: `npm run android:release`
+gives the signed `.aab` to upload (NATIVE_DEV.md has the setup). It's signed with the same upload
+key and listed in the same `assetlinks.json`, so everything above about app links still applies:
+run `npm run check:app-links` with the universal APK after each release.
+
+The PWABuilder settings below only matter for the TWA builds that came before it.
+
+### Other PWABuilder settings (TWA builds only)
 
 - **Start URL:** `/?source=play`. The app hides the Buy Me a Coffee link when it sees this marker
   or Chrome's `android-app://` referrer (`src/lib/platform.ts`). The marker covers phones where the

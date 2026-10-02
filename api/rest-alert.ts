@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { waitUntil } from '@vercel/functions'
 import webpush from 'web-push'
+import { allowApp } from './_cors.js'
 import type { VercelRequest, VercelResponse } from './_vercel.js'
 
 /**
@@ -179,6 +180,7 @@ async function watch(admin: SupabaseClient, endpoint: string, token: string, han
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Cache-Control', 'no-store')
+  if (allowApp(req, res)) return
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST')
     return res.status(405).json({ error: 'Method not allowed' })

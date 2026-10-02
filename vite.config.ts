@@ -1,8 +1,9 @@
 /// <reference types="vitest/config" />
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import { rmSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // Captured from the real app at 1080x1920 (see store-listing/README.md) and shown in the richer
@@ -15,22 +16,52 @@ const SCREENSHOT_LABELS: Record<(typeof STORE_SCREENSHOTS)[number], string> = {
   progress: 'Body weight over time, next to your goal',
 }
 
+// The app's web code version, for live updates (src/native/updates.ts): 1.<date>.<time>, so it's
+// valid semver and always increases.
+const now = new Date()
+const WEB_VERSION = `1.${now.toISOString().slice(0, 10).replace(/-/g, '')}.${Number(now.toISOString().slice(11, 19).replace(/:/g, ''))}`
+
+/**
+ * Native builds only: writes the version next to the build (scripts/pack-web-update.mjs puts it in
+ * the update manifest) and leaves out files the app never uses: store screenshots, the share
+ * preview image, the website's policy pages and app-link file.
+ */
+function nativeBundle(): Plugin {
+  return {
+    name: 'fitlog-native-bundle',
+    apply: 'build',
+    closeBundle() {
+      const out = fileURLToPath(new URL('./dist-native/', import.meta.url))
+      for (const path of ['screenshots', 'shortcuts', '.well-known', 'og-image.png', 'privacy.html', 'legal.css']) {
+        rmSync(out + path, { recursive: true, force: true })
+      }
+      writeFileSync(out + 'fitlog-version.json', JSON.stringify({ version: WEB_VERSION }) + '\n')
+    },
+  }
+}
+
 // https://vite.dev/config/
-export default defineConfig({
+// `vite build --mode native` builds the app the Capacitor shell bundles (CAPACITOR_PLAN.md): into
+// dist-native, without the service worker (the app's files are already on the phone, and a worker
+// would only get between the app and its updates) and without the web-only deletion page.
+export default defineConfig(({ mode }) => {
+  const native = mode === 'native'
+  const pages: Record<string, string> = { main: fileURLToPath(new URL('./index.html', import.meta.url)) }
+  if (!native) pages.deleteAccount = fileURLToPath(new URL('./delete-account.html', import.meta.url))
+  return {
   // Baked into the bundle at build time and shown in the app's menu - a cheap, permanent way
   // to tell at a glance whether an installed PWA is actually running the latest deploy, instead
   // of guessing from symptoms (this exact ambiguity cost several rounds chasing the iOS
   // bottom-gap bug, where "does force-quit even load new code" turned out to be its own bug).
   define: {
-    __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+    __BUILD_TIME__: JSON.stringify(now.toISOString()),
+    __WEB_VERSION__: JSON.stringify(WEB_VERSION),
   },
   build: {
+    outDir: native ? 'dist-native' : 'dist',
     rollupOptions: {
       // Second page: the public, logged-out account deletion flow (served at /delete-account).
-      input: {
-        main: fileURLToPath(new URL('./index.html', import.meta.url)),
-        deleteAccount: fileURLToPath(new URL('./delete-account.html', import.meta.url)),
-      },
+      input: pages,
     },
   },
   server: {
@@ -48,7 +79,9 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    native && nativeBundle(),
     VitePWA({
+      disable: native,
       registerType: 'autoUpdate',
       // Switched from the default generateSW (fully auto-generated, no room for custom
       // event listeners) to injectManifest so src/sw.ts can handle `push`/`notificationclick`
@@ -143,4 +176,5 @@ export default defineConfig({
       },
     }),
   ],
+  }
 })

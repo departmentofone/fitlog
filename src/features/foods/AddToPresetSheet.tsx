@@ -34,7 +34,7 @@ export function AddToPresetSheet({ food, onClose }: { food: Food; onClose: () =>
         <div className="fade-in absolute inset-0 bg-black/60" />
         <div
           onClick={(e) => e.stopPropagation()}
-          className="sheet-up relative max-h-[85%] overflow-y-auto rounded-t-3xl border-t border-white/10 bg-slate-950 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-2xl"
+          className="sheet-up relative max-h-[85%] overflow-y-auto rounded-t-3xl border-t border-white/10 bg-slate-950 p-4 pb-[max(1rem,var(--safe-area-inset-bottom,env(safe-area-inset-bottom)))] shadow-2xl"
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-slate-700" />
           <FoodAmountForm
@@ -61,7 +61,7 @@ export function AddToPresetSheet({ food, onClose }: { food: Food; onClose: () =>
         aria-modal="true"
         aria-label="Add to preset"
         onClick={(e) => e.stopPropagation()}
-        className="sheet-up relative max-h-[85%] overflow-y-auto rounded-t-3xl border-t border-white/10 bg-slate-950 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-2xl"
+        className="sheet-up relative max-h-[85%] overflow-y-auto rounded-t-3xl border-t border-white/10 bg-slate-950 p-4 pb-[max(1rem,var(--safe-area-inset-bottom,env(safe-area-inset-bottom)))] shadow-2xl"
       >
         <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-slate-700" />
         <h3 className="mb-3 card-title">Add "{food.name}" to…</h3>

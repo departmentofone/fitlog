@@ -66,8 +66,8 @@ alcohol reference and user sharing). Accept whatever IARC assigns.
 | Independent security review | **No** (optional badge) |
 
 ### Data shared with third parties
-**None to declare.** Supabase and Vercel are *service providers* acting on our behalf, which Play
-excludes from "sharing". User-initiated sharing of presets, recipes, and programs is also excluded
+**None to declare.** Supabase, Vercel and Google Firebase Cloud Messaging are *service providers*
+acting on our behalf, which Play excludes from "sharing". User-initiated sharing of presets, recipes, and programs is also excluded
 ("user-initiated action"). The barcode number sent to Open Food Facts isn't a user data type.
 
 ### Data collected
@@ -85,7 +85,7 @@ For every row: **Processed ephemerally? No.** Data is **not shared**. Purposes u
 | App activity → **Other user-generated content** | Yes | Optional | App functionality | Custom foods, recipes, presets, programs, exercise notes, workout notes, food labels, Community reports |
 | App info and performance → **Crash logs** | Yes | Required (automatic) | Analytics | Error messages and stack traces, recorded only while signed in |
 | App info and performance → **Diagnostics** | Yes | Required (automatic) | Analytics | Browser user-agent and page recorded with each error |
-| Device or other IDs → **Device or other IDs** | Yes | Optional | App functionality | Push-notification subscription (only if notifications are turned on) |
+| Device or other IDs → **Device or other IDs** | Yes | Optional | App functionality | The push token: a Web Push subscription on the web, a Firebase Cloud Messaging token in the Android app (only if notifications are turned on) |
 
 **Not collected:** location, financial info, name, phone number, address, messages, contacts,
 calendar, audio, files and docs, web browsing history, app interactions/analytics events,
@@ -111,7 +111,8 @@ and never uploaded.
 | Government app | No |
 | Financial features | None (confirm again when the Tip Jar ships; section 11) |
 | COVID-19 contact tracing / status | No |
-| Advertising ID | Not used. The TWA manifest must not declare `com.google.android.gms.permission.AD_ID`; check the generated Android manifest. |
+| Advertising ID | Not used. The app's manifest must not declare `com.google.android.gms.permission.AD_ID`. The Capacitor build doesn't (checked 2026-10-02 with `aapt dump badging` on the APK); check again after adding any plugin. |
+| Foreground service | Yes, one, type **special use**: the rest timer. See section 12. |
 | Account deletion | Yes. In-app, plus `https://fitlog-two-gamma.vercel.app/delete-account` |
 
 ## 9. User-generated content policy (already implemented)
@@ -201,3 +202,36 @@ track, and keep the privacy policy in step with the Data safety form.
   they do not contradict the store listing.
 - [ ] **Developer page** (Play Console → **Grow users → Store presence → Store settings →
   Developer page**) for any wording about pricing or a "free" promise.
+
+## 12. The Capacitor app (from versionCode 100)
+
+The TWA is replaced by a Capacitor build of the same package (CAPACITOR_PLAN.md, NATIVE_DEV.md).
+Play reviews it as an update. These answers change or are new.
+
+### Permissions in the manifest
+INTERNET, POST_NOTIFICATIONS, FOREGROUND_SERVICE, FOREGROUND_SERVICE_SPECIAL_USE, WAKE_LOCK,
+VIBRATE and CAMERA (camera optional, asked for only when the scanner or a photo opens), plus from
+plugins: com.android.vending.BILLING (tips), com.google.android.c2dm.permission.RECEIVE (push),
+ACCESS_NETWORK_STATE and RECEIVE_BOOT_COMPLETED. No AD_ID, no location, no contacts.
+
+### Foreground service declaration
+Play Console → **Policy and programs → App content → Foreground service permissions**. Choose
+**Special use** and paste:
+
+> FitLog's rest timer. After the user logs a set, the app counts down their rest (usually 1 to 5
+> minutes) in a notification and alerts them when rest is over, so it fires on time while the
+> phone is locked or another app is open. The service runs only while a rest the user started is
+> counting, and stops when it ends or the user skips it. No standard foreground service type
+> covers a workout rest timer.
+
+Play may ask for a short video: record the phone logging a set, locking the screen, the
+notification counting down, and the "Rest over" alert.
+
+### Data safety
+- **Device or other IDs**: now also the Firebase token (row updated above).
+- **Financial info → Purchase history**: not collected. Tips are paid through Google Play and
+  consumed on the phone; nothing about a purchase reaches FitLog's servers (decision recorded in
+  TIP_JAR_PLAN.md, and the privacy policy says the same).
+- **Camera**: frames never leave the phone, so nothing to declare beyond the photos users choose
+  to upload (already declared).
+

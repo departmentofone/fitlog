@@ -42,3 +42,7 @@ first_release/
 signing-key-info.txt
 *.aab
 *.apk
+
+# The app's bundled web build (npm run build:native) and its Android release config.
+dist-native/
+android/keystore.properties

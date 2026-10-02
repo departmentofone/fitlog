@@ -14,7 +14,7 @@
       <header>
         <a class="brand" href="/">FitLog</a>
         <h1>Privacy Policy</h1>
-        <p class="meta">Last updated: 1 October 2026</p>
+        <p class="meta">Last updated: 2 October 2026</p>
       </header>
 
       <p>
@@ -84,9 +84,23 @@
         Turning notifications off deletes them.
       </p>
       <p>
-        If rest timer notifications are on, the same details and the time your rest ends are sent to our server
-        while the rest timer counts, so it can send the "Rest over" alert even when your phone is locked. They're
-        deleted as soon as the alert goes out or the rest is skipped.
+        On the web, if rest timer notifications are on, the same details and the time your rest ends are sent to our
+        server while the rest timer counts, so it can send the "Rest over" alert even when your phone is locked.
+        They're deleted as soon as the alert goes out or the rest is skipped. In the Android app, the rest timer runs
+        on your phone and sends nothing to us.
+      </p>
+      <p>
+        In the Android app, push notifications go through Google's Firebase Cloud Messaging instead. Turning them on
+        stores a token Firebase gives your phone, so we can send the weekly summary and streak reminders. Turning them
+        off deletes it.
+      </p>
+
+      <h3>Tips</h3>
+      <p>
+        The Android app has an optional tip jar. Tips are paid through Google Play, and we never see your payment
+        details: Google only tells the app that a tip went through. How many tips you've left is counted on your
+        phone and never sent to us. Google's
+        <a href="https://policies.google.com/privacy">privacy policy</a> covers the payment itself.
       </p>
 
       <h3>Diagnostics</h3>
@@ -179,6 +193,16 @@
             <td><a href="https://policies.google.com/privacy">Google Fonts</a></td>
             <td>Delivering the app's typeface</td>
             <td>IP address and browser details</td>
+          </tr>
+          <tr>
+            <td><a href="https://firebase.google.com/support/privacy">Google Firebase Cloud Messaging</a></td>
+            <td>Delivering push notifications you turned on in the Android app</td>
+            <td>Notification content and your phone's Firebase token</td>
+          </tr>
+          <tr>
+            <td><a href="https://policies.google.com/privacy">Google Play</a></td>
+            <td>Taking tips in the Android app</td>
+            <td>The tip and your payment, handled by Google; we only learn that a tip went through</td>
           </tr>
           <tr>
             <td>Your browser or device vendor's push service (e.g. Google, Apple, Mozilla)</td>

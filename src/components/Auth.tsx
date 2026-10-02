@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { siteOrigin } from '../lib/platform'
 import { hasSignedInBefore } from '../lib/deviceHistory'
 import { peekPendingShared, SHARE_KIND_PHRASE } from '../lib/shareLink'
 import { supabase } from '../lib/supabase'
@@ -90,7 +91,7 @@ export function AuthScreen() {
       } else {
         // The link lands back on the app, where useAuth sees the PASSWORD_RECOVERY event and shows
         // the set-new-password screen.
-        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin, captchaToken: captchaToken ?? undefined })
+        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: siteOrigin(), captchaToken: captchaToken ?? undefined })
         if (error) throw error
         setInfo(`If an account exists for ${email}, a reset link is on its way.`)
       }
@@ -109,7 +110,7 @@ export function AuthScreen() {
   // Top-anchored rather than centered: the modes differ in height, and a centered card would jump
   // when switching between them.
   return (
-    <div className="flex h-[var(--app-height)] items-start justify-center overflow-y-auto overscroll-none bg-slate-950 px-4 pb-8 pt-[max(env(safe-area-inset-top),10vh)]">
+    <div className="flex h-[var(--app-height)] items-start justify-center overflow-y-auto overscroll-none bg-slate-950 px-4 pb-8 pt-[max(var(--safe-area-inset-top,env(safe-area-inset-top)),10vh)]">
       <div className="w-full max-w-sm rounded-3xl border-t border-white/10 bg-slate-900 p-6 shadow-xl shadow-[var(--glow-shadow)]">
         <p className="mb-4 text-sm font-semibold tracking-tight text-emerald-400">FitLog</p>
         {sharedRef && mode !== 'reset' && (

@@ -1,3 +1,5 @@
+import { RestTimer } from '../native/restTimer'
+import { isNativeApp } from './platform'
 import { armServerRestAlert, cancelServerRestAlert } from './restAlert'
 import { REST_ACTIONS, REST_NOTIFICATION_TAG, REST_OFF_HINT, REST_TIMER_MESSAGE, type RichNotificationOptions } from './restNotificationShared'
 
@@ -14,7 +16,53 @@ import { REST_ACTIONS, REST_NOTIFICATION_TAG, REST_OFF_HINT, REST_TIMER_MESSAGE,
  * The "Resting" notification is never updated once a second. iOS turns every update into a new
  * banner, and Android stops updates as soon as FitLog is in the background, so a ticking
  * countdown either spams or freezes. Showing the end time instead stays right without updates.
+ *
+ * In the app (Capacitor), all of this is the native rest timer instead (src/native/restTimer.ts):
+ * Android counts the notification down itself and alerts on time, with no server involved.
  */
+
+/**
+ * Notification permission, the same shape on the web and in the app. "unknown": the app's answer
+ * hasn't come back from the native side yet, so nothing should ask or warn in the meantime.
+ */
+export type RestPermission = NotificationPermission | 'unsupported' | 'unknown'
+
+/** The web's answer, available at once; the app's comes from restPermission(). */
+export function initialRestPermission(): RestPermission {
+  return isNativeApp() ? 'unknown' : notificationPermission()
+}
+
+export async function restPermission(): Promise<RestPermission> {
+  if (!isNativeApp()) return notificationPermission()
+  try {
+    const { notifications } = await RestTimer.checkPermissions()
+    return notifications === 'prompt' ? 'default' : notifications
+  } catch {
+    return 'unsupported'
+  }
+}
+
+/** Asks for notification permission (in context, from a tap) and returns the answer. */
+export async function requestRestPermission(): Promise<RestPermission> {
+  try {
+    if (isNativeApp()) {
+      const { notifications } = await RestTimer.requestPermissions()
+      return notifications === 'prompt' ? 'default' : notifications
+    }
+    return await Notification.requestPermission()
+  } catch {
+    return restPermission()
+  }
+}
+
+/**
+ * Whether the page should call the alert off just before rest ends while FitLog is on screen. The
+ * web does (a server push can't be held back once sent); the app's own timer checks for itself.
+ */
+export const cancelsAlertOnScreen = (): boolean => !isNativeApp()
+
+/** In the app, the end time the native timer was last given, so the same rest isn't sent twice. */
+let nativeEndsAt: number | null = null
 export function notificationsSupported(): boolean {
   return typeof Notification !== 'undefined' && typeof navigator !== 'undefined' && 'serviceWorker' in navigator
 }
@@ -48,7 +96,8 @@ export function canUpdateQuietly(): boolean {
 
 /** Shows the silent "Resting" notification, with the time rest ends. Call on start and on +15s. */
 export async function showRestCountdown(endsAt: number) {
-  if (!canUpdateQuietly()) return
+  // In the app, the native timer's notification is the countdown.
+  if (isNativeApp() || !canUpdateQuietly()) return
   const reg = await registration()
   if (!reg) return
   const options: RichNotificationOptions = {
@@ -84,6 +133,16 @@ async function postToWorker(endsAt: number | null) {
  * the service worker's timer otherwise. Call on start and whenever `endsAt` changes.
  */
 export async function scheduleRestAlert(endsAt: number) {
+  if (isNativeApp()) {
+    if (nativeEndsAt === endsAt) return
+    nativeEndsAt = endsAt
+    try {
+      await RestTimer.start({ endsAt })
+    } catch {
+      nativeEndsAt = null
+    }
+    return
+  }
   if (notificationPermission() !== 'granted') return
   const generation = ++alertGeneration
   const pushed = await armServerRestAlert(endsAt)
@@ -99,18 +158,32 @@ export async function scheduleRestAlert(endsAt: number) {
  * page re-posts while it counts. Does nothing when the server push is armed.
  */
 export async function refreshWorkerRestAlert(endsAt: number) {
-  if (usingWorkerTimer) await postToWorker(endsAt)
+  if (usingWorkerTimer && !isNativeApp()) await postToWorker(endsAt)
 }
 
 /** Cancels the pending alert, wherever it was arranged. Keeps the notification on screen. */
 export async function cancelRestAlert() {
+  if (isNativeApp()) {
+    nativeEndsAt = null
+    await RestTimer.stop().catch(() => undefined)
+    return
+  }
   alertGeneration++
   usingWorkerTimer = false
   await Promise.all([cancelServerRestAlert(), postToWorker(null)])
 }
 
+/**
+ * The native timer reported a change of its own (the notification's +15s or Skip, or the end), so
+ * the app doesn't send that rest back to it.
+ */
+export function nativeRestChanged(endsAt: number | null) {
+  nativeEndsAt = endsAt
+}
+
 export async function clearRestNotification() {
   await cancelRestAlert()
+  if (isNativeApp()) return
   const reg = await registration()
   if (!reg) return
   try {

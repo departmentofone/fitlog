@@ -68,7 +68,7 @@ export function OnboardingTour({ onOpenCommunity }: { onOpenCommunity: () => voi
         role="dialog"
         aria-modal="true"
         aria-labelledby="onboarding-title"
-        className="pop-in relative w-full max-w-sm rounded-3xl border-t border-white/10 bg-slate-900 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-2xl shadow-black/40 ring-1 ring-white/5 backdrop-blur-xl"
+        className="pop-in relative w-full max-w-sm rounded-3xl border-t border-white/10 bg-slate-900 p-5 pb-[max(1.25rem,var(--safe-area-inset-bottom,env(safe-area-inset-bottom)))] shadow-2xl shadow-black/40 ring-1 ring-white/5 backdrop-blur-xl"
       >
         <div className="mb-5 flex items-center justify-between">
           <div className="flex gap-1.5" aria-label={`Step ${step + 1} of ${STEPS}`}>

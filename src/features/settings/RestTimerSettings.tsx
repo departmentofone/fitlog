@@ -1,30 +1,23 @@
-import { useState } from 'react'
 import { Toggle } from '../../components/Toggle'
-import { notificationPermission } from '../../lib/restNotification'
+import { useRestPermission } from '../../hooks/useRestPermission'
 import { setRestTimerPref, useRestTimerPref } from '../../lib/restTimerPrefs'
 
 /** The rest timer's two switches. Saved on this device, like the rest length itself. */
 export function RestTimerSettings() {
   const autoStart = useRestTimerPref('autoStart')
   const notifications = useRestTimerPref('notifications')
-  const [permission, setPermission] = useState(() => notificationPermission())
+  const [permission, requestPermission] = useRestPermission()
 
   async function setNotifications(next: boolean) {
     setRestTimerPref('notifications', next)
-    if (next && permission === 'default') {
-      try {
-        setPermission(await Notification.requestPermission())
-      } catch {
-        setPermission(notificationPermission())
-      }
-    }
+    if (next && permission === 'default') await requestPermission()
   }
 
   const hint =
     permission === 'unsupported'
       ? "This browser can't show notifications. The timer still runs in the app."
       : permission === 'denied'
-        ? "Notifications are blocked for FitLog. Allow them in your phone's settings for FitLog to use this."
+        ? "Notifications are off for FitLog. Turn them on in your phone's settings to use this."
         : null
 
   return (

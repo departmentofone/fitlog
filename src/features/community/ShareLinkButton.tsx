@@ -1,4 +1,6 @@
+import { Share } from '@capacitor/share'
 import { useToast } from '../../components/ToastProvider'
+import { isNativeApp } from '../../lib/platform'
 import { shareUrl, type ShareKind } from '../../lib/shareLink'
 
 function ShareIcon() {
@@ -20,6 +22,16 @@ export function ShareLinkButton({ kind, id, name, variant = 'text' }: { kind: Sh
 
   async function share() {
     const url = shareUrl({ kind, id })
+    // The app has the phone's own share sheet; Android's WebView has no navigator.share.
+    if (isNativeApp()) {
+      try {
+        await Share.share({ title: name, text: `${name} on FitLog`, url, dialogTitle: 'Share link' })
+        return
+      } catch (err) {
+        // Closing the share sheet rejects with "Share canceled"; nothing to do.
+        if (String(err).toLowerCase().includes('cancel')) return
+      }
+    }
     if (typeof navigator.share === 'function') {
       try {
         await navigator.share({ title: name, text: `${name} on FitLog`, url })

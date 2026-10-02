@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import type { VercelRequest, VercelResponse } from '../_vercel.js'
 import webpush from 'web-push'
+import { fcmConfigured, sendFcm } from '../_fcm.js'
 import { computeDayStreaks, todayDayNumber, toDayNumber } from '../../src/lib/streaks.js'
 
 /**
@@ -50,16 +51,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return current
   }
 
+  const streakMessage = (streak: number) => ({
+    title: `${streak}-day streak ends at midnight`,
+    body: 'Log a workout or a rest day to keep it going.',
+    url: '/',
+  })
+
   const results = await Promise.allSettled(
     (subscriptions ?? []).map(async (sub) => {
       const streak = await isAtRisk(sub.user_id)
       if (streak == null) return 'not-at-risk' as const
 
-      const payload = JSON.stringify({
-        title: `${streak}-day streak ends at midnight`,
-        body: 'Log a workout or a rest day to keep it going.',
-        url: '/',
-      })
+      const payload = JSON.stringify(streakMessage(streak))
       try {
         await webpush.sendNotification({ endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } }, payload)
         return 'sent' as const
@@ -73,7 +76,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }),
   )
 
+  // The app's devices, through Firebase (native_push_tokens), once FIREBASE_SERVICE_ACCOUNT is set.
+  let appSent = 0
+  let appFailed = 0
+  if (fcmConfigured()) {
+    const { data: tokens } = await supabase.from('native_push_tokens').select('token, user_id')
+    const appResults = await Promise.allSettled(
+      (tokens ?? []).map(async (t) => {
+        const streak = await isAtRisk(t.user_id as string)
+        if (streak == null) return 'not-at-risk' as const
+        const result = await sendFcm(t.token as string, streakMessage(streak))
+        if (result === 'gone') await supabase.from('native_push_tokens').delete().eq('token', t.token)
+        return result
+      }),
+    )
+    appSent = appResults.filter((r) => r.status === 'fulfilled' && r.value === 'sent').length
+    appFailed = appResults.filter((r) => r.status === 'rejected').length
+  }
+
   const sent = results.filter((r) => r.status === 'fulfilled' && r.value === 'sent').length
   const failed = results.filter((r) => r.status === 'rejected').length
-  return res.status(200).json({ users: userIds.length, sent, failed })
+  return res.status(200).json({ users: userIds.length, sent, failed, appSent, appFailed })
 }

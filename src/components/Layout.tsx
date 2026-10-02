@@ -136,7 +136,7 @@ export function Layout({
       <div className="aurora-a pointer-events-none fixed z-0 rounded-full" />
       <div className="aurora-b pointer-events-none fixed z-0 rounded-full" />
 
-      <header className="relative z-10 border-b border-white/10 bg-slate-950/40 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
+      <header className="relative z-10 border-b border-white/10 bg-slate-950/40 pt-[var(--safe-area-inset-top,env(safe-area-inset-top))] backdrop-blur-xl">
         <div className={`flex min-h-14 items-center justify-between gap-2 pr-2 ${detail ? 'pl-1' : 'pb-2.5 pl-4 pt-2'}`}>
           {detail ? (
             <div className="flex min-w-0 items-center">
@@ -218,14 +218,14 @@ export function Layout({
       <main className="relative flex-1 overflow-y-auto overscroll-none pb-24">{children}</main>
 
       {!quickAddHidden && quickAddActions && quickAddActions.length > 0 && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-20">
+        <div className="pointer-events-none absolute inset-x-0 bottom-[calc(4.5rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom)))] z-20">
           <QuickAddFab actions={quickAddActions} />
         </div>
       )}
 
       <nav
         aria-label="Main"
-        className="relative z-10 flex shrink-0 border-t border-white/10 bg-slate-950/60 px-2 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl"
+        className="relative z-10 flex shrink-0 border-t border-white/10 bg-slate-950/60 px-2 pb-[var(--safe-area-inset-bottom,env(safe-area-inset-bottom))] backdrop-blur-xl"
       >
         {AREAS.map((a) => {
           const isActive = area === a.key

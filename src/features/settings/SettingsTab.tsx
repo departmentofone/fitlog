@@ -7,6 +7,7 @@ import { useUpdateSettings, useUserSettings } from '../../hooks/useUserSettings'
 import { formatBuildTime } from '../../lib/buildInfo'
 import { exportUserData } from '../../lib/exportData'
 import { replayOnboarding } from '../../lib/onboarding'
+import { signOut } from '../../lib/signOut'
 import { tipStore } from '../../lib/tipJar'
 import { supabase } from '../../lib/supabase'
 import { DeleteAccountCard } from './DeleteAccountCard'
@@ -225,7 +226,7 @@ export function SettingsTab({ onOpen }: { onOpen: (route: Route) => void }) {
         </button>
 
         <button
-          onClick={() => supabase.auth.signOut()}
+          onClick={() => void signOut()}
           className="flex min-h-11 w-full items-center justify-between border-t border-white/5 text-left text-sm font-medium text-slate-200 disabled:opacity-50"
         >
           Sign out

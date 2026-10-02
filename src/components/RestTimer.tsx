@@ -1,13 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
+import { useRestPermission } from '../hooks/useRestPermission'
+import { isAppActive } from '../lib/appState'
 import { haptics } from '../lib/haptics'
+import { isNativeApp } from '../lib/platform'
 import {
   cancelRestAlert,
+  cancelsAlertOnScreen,
   clearRestNotification,
-  notificationPermission,
+  nativeRestChanged,
   refreshWorkerRestAlert,
   scheduleRestAlert,
   showRestCountdown,
 } from '../lib/restNotification'
+import { RestTimer as NativeRestTimer } from '../native/restTimer'
 import { setRestTimerPref, useRestTimerPref } from '../lib/restTimerPrefs'
 import { formatRestTime } from '../lib/restTime'
 
@@ -79,7 +84,7 @@ export function RestTimer({ restartKey }: { restartKey: number }) {
   const [defaultSeconds, setDefaultSecondsState] = useState(() => getDefaultRestSeconds())
   const [endsAt, setEndsAt] = useState(0)
   const [now, setNow] = useState(() => Date.now())
-  const [permission, setPermission] = useState(() => notificationPermission())
+  const [permission, requestPermission] = useRestPermission()
   const prevKey = useRef(restartKey)
   const runStartSeconds = useRef(defaultSeconds)
   const reducedMotion = useRef(prefersReducedMotion())
@@ -106,6 +111,43 @@ export function RestTimer({ restartKey }: { restartKey: number }) {
     prevKey.current = restartKey
     if (autoStart) start()
   }, [restartKey, autoStart])
+
+  // In the app, the notification's own +15s and Skip change the rest too, and a rest can still be
+  // counting from before the app was closed: stay in step with the native timer.
+  const endsAtRef = useRef(endsAt)
+  useEffect(() => {
+    endsAtRef.current = endsAt
+  }, [endsAt])
+  useEffect(() => {
+    if (!isNativeApp()) return
+    let cancelled = false
+    void NativeRestTimer.current()
+      .then(({ endsAt: running }) => {
+        if (cancelled || !running || running <= Date.now()) return
+        nativeRestChanged(running)
+        runStartSeconds.current = Math.ceil((running - Date.now()) / 1000)
+        setNow(Date.now())
+        setEndsAt(running)
+        setPhase('running')
+      })
+      .catch(() => undefined)
+    const listener = NativeRestTimer.addListener('changed', ({ endsAt: next }) => {
+      nativeRestChanged(next)
+      if (next) {
+        runStartSeconds.current += Math.round((next - endsAtRef.current) / 1000)
+        setNow(Date.now())
+        setEndsAt(next)
+        setPhase('running')
+      } else if (endsAtRef.current - Date.now() > 1500) {
+        // Skipped from the notification; a rest that simply ran out ends here on its own.
+        setPhase('idle')
+      }
+    })
+    return () => {
+      cancelled = true
+      void listener.then((l) => l.remove())
+    }
+  }, [])
 
   useEffect(() => {
     if (phase !== 'running') return
@@ -139,7 +181,7 @@ export function RestTimer({ restartKey }: { restartKey: number }) {
   // ends; a push can't be held back once it's sent, and iOS would show it on top of the app. If
   // FitLog leaves the screen in those last seconds, the alert is arranged again.
   useEffect(() => {
-    if (phase !== 'running' || !notify) return
+    if (phase !== 'running' || !notify || !cancelsAlertOnScreen()) return
     if (remaining <= ON_SCREEN_CANCEL_SECONDS && remaining > 0 && !cancelledOnScreen.current && document.visibilityState === 'visible') {
       cancelledOnScreen.current = true
       void cancelRestAlert()
@@ -158,9 +200,12 @@ export function RestTimer({ restartKey }: { restartKey: number }) {
 
   useEffect(() => {
     if (phase === 'running' && remaining === 0) {
-      haptics.success()
-      // On screen, this card says "Rest over"; off screen, the alert does.
-      if (document.visibilityState === 'visible') void clearRestNotification()
+      // In the background, the app's own "Rest over" alert buzzes; don't buzz twice.
+      if (isAppActive()) haptics.success()
+      // On screen, this card says "Rest over"; off screen, the alert does. In the app, the native
+      // timer decides that itself from Android's own record of what's on screen, so it's left
+      // alone here: the page can count as visible while the app isn't.
+      if (document.visibilityState === 'visible' && cancelsAlertOnScreen()) void clearRestNotification()
       setPhase('done')
     }
   }, [phase, remaining])
@@ -188,11 +233,7 @@ export function RestTimer({ restartKey }: { restartKey: number }) {
   }
 
   async function allowNotifications() {
-    try {
-      setPermission(await Notification.requestPermission())
-    } catch {
-      setPermission(notificationPermission())
-    }
+    await requestPermission()
   }
 
   if (phase === 'idle') {

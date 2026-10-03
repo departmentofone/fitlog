@@ -173,6 +173,7 @@ export function SettingsTab({ onOpen }: { onOpen: (route: Route) => void }) {
             <input
               type="password"
               placeholder="New password"
+              aria-label="New password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               className="w-full field px-3 py-2"
@@ -180,6 +181,7 @@ export function SettingsTab({ onOpen }: { onOpen: (route: Route) => void }) {
             <input
               type="password"
               placeholder="Confirm new password"
+              aria-label="Confirm new password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full field px-3 py-2"

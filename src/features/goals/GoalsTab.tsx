@@ -119,6 +119,7 @@ function BodyMeasurementsCard() {
               <input
                 key={f.key}
                 placeholder={`${f.label} (${lengthUnit})`}
+                aria-label={`${f.label} (${lengthUnit})`}
                 type="text"
                 inputMode="decimal"
                 value={values[f.key]}
@@ -385,6 +386,7 @@ function GoalList() {
                   type="text"
                   inputMode="decimal"
                   placeholder={`Target weight (${weightUnitLabel(unit)})`}
+                  aria-label={`Target weight (${weightUnitLabel(unit)})`}
                   value={targetWeight}
                   onChange={(e) => setTargetWeight(e.target.value)}
                   className="field px-3 py-2 text-sm"
@@ -393,6 +395,7 @@ function GoalList() {
                   type="text"
                   inputMode="decimal"
                   placeholder="Reps (optional)"
+                  aria-label="Reps (optional)"
                   value={targetReps}
                   onChange={(e) => setTargetReps(e.target.value)}
                   className="field px-3 py-2 text-sm"
@@ -406,6 +409,7 @@ function GoalList() {
               onChange={(e) => setTitleInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
               placeholder="Goal…"
+              aria-label="Goal"
               className="w-full field px-3 py-2"
             />
           )}

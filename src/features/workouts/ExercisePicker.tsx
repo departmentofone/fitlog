@@ -107,6 +107,7 @@ export function ExercisePicker({
         <input
           autoFocus
           placeholder="Exercise name (e.g. Incline DB Press)"
+          aria-label="Exercise name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="mb-4 w-full field px-3 py-2.5"

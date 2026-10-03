@@ -204,16 +204,21 @@ export function FastingTab({ quickAction }: { quickAction?: number }) {
             ))}
           </div>
           <div className="flex gap-2">
-            <input
-              type="text"
-              inputMode="decimal"
-              value={customHours}
-              min={0.5}
-              max={MAX_FAST_HOURS}
-              aria-label="Custom fast length in hours"
-              onChange={(e) => setCustomHours(e.target.value)}
-              className="w-20 field px-3 py-2 text-sm"
-            />
+            <label className="relative w-20 shrink-0">
+              <input
+                type="text"
+                inputMode="decimal"
+                value={customHours}
+                min={0.5}
+                max={MAX_FAST_HOURS}
+                aria-label="Custom fast length in hours"
+                onChange={(e) => setCustomHours(e.target.value)}
+                className="w-full field py-2 pl-3 pr-6 text-sm"
+              />
+              <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-2.5 flex items-center text-sm text-slate-500">
+                h
+              </span>
+            </label>
             <button
               onClick={() => startFast.mutate(clampFastHours(customHours))}
               className="btn btn-primary flex-1 py-2 text-sm"

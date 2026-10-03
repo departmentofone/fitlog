@@ -98,12 +98,14 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
       <div className="mb-3 space-y-2.5">
         <input
           placeholder="Program name"
+          aria-label="Program name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="w-full field px-3 py-2.5"
         />
         <textarea
           placeholder="Description (optional)"
+          aria-label="Description (optional)"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={2}
@@ -141,6 +143,7 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
               type="text"
               inputMode="decimal"
               placeholder="Calorie goal"
+              aria-label="Calorie goal"
               value={calorieGoal}
               onChange={(e) => setCalorieGoal(e.target.value)}
               className="field px-3 py-2 text-sm"
@@ -149,6 +152,7 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
               type="text"
               inputMode="decimal"
               placeholder={`Water goal (${volumeUnitLabel(unit)})`}
+              aria-label={`Water goal (${volumeUnitLabel(unit)})`}
               value={waterGoal}
               onChange={(e) => setWaterGoal(e.target.value)}
               className="field px-3 py-2 text-sm"

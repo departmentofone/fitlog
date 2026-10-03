@@ -75,6 +75,7 @@ export function FoodRow({ food, labels }: { food: Food; labels: string[] }) {
                   setLabelDraft('')
                 }}
                 placeholder="+ label, Enter"
+                aria-label="+ label, Enter"
                 className="w-28 rounded-full border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
               />
             </div>

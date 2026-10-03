@@ -187,7 +187,7 @@ function PlanCard({ plan, dietName, open, onToggle }: { plan: MealPlanWithItems;
           {!adding &&
             (newMeal !== null ? (
               <div className="flex gap-2">
-                <input autoFocus value={newMeal} onChange={(e) => setNewMeal(e.target.value)} placeholder="Meal name, e.g. Pre-workout" className={INPUT} maxLength={60} />
+                <input autoFocus value={newMeal} onChange={(e) => setNewMeal(e.target.value)} placeholder="Meal name, e.g. Pre-workout" aria-label="Meal name" className={INPUT} maxLength={60} />
                 <button onClick={() => startMeal(newMeal)} disabled={!newMeal.trim()} className="btn btn-primary shrink-0 px-4 text-sm">
                   Add
                 </button>
@@ -295,7 +295,7 @@ export function MealPlansView() {
             <h2 className="card-title">Combine into a week</h2>
             <p className="text-xs text-slate-400">Tap day plans in the order you want them (up to 7). The originals stay as they are.</p>
           </div>
-          <input value={weekName} onChange={(e) => setWeekName(e.target.value)} placeholder="Week name" maxLength={100} className={`${INPUT} w-full`} />
+          <input value={weekName} onChange={(e) => setWeekName(e.target.value)} placeholder="Week name" aria-label="Week name" maxLength={100} className={`${INPUT} w-full`} />
           <div className="space-y-1.5">
             {dayPlans.map((p) => {
               const pos = picked.indexOf(p.id)

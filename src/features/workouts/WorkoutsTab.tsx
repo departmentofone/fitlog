@@ -319,11 +319,22 @@ export function WorkoutsTab({
               <button
                 onClick={() => setPreworkout.mutate({ sessionId: session.id, preworkout: !session.preworkout })}
                 aria-pressed={session.preworkout}
-                className={`chip min-h-8 px-3 transition ${
-                  session.preworkout ? 'chip-accent' : 'border border-dashed border-slate-700 text-slate-400'
-                }`}
+                className={`chip min-h-8 gap-1.5 px-3 transition ${session.preworkout ? 'chip-accent' : 'chip-neutral'}`}
               >
-                {session.preworkout ? '✓ Preworkout' : '+ Preworkout'}
+                {/* A toggle, so it shows a box to tick rather than a "+" that reads as "create". */}
+                <span
+                  aria-hidden="true"
+                  className={`flex h-3.5 w-3.5 items-center justify-center rounded-[4px] ${
+                    session.preworkout ? 'bg-emerald-500 text-on-accent' : 'ring-1 ring-slate-500'
+                  }`}
+                >
+                  {session.preworkout && (
+                    <svg viewBox="0 0 24 24" className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12.5l4.5 4.5L19 7.5" />
+                    </svg>
+                  )}
+                </span>
+                Preworkout
               </button>
             </div>
             <div className="mt-2 flex items-center justify-between border-t border-white/5 pt-1.5">

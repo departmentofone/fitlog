@@ -124,6 +124,7 @@ export function ExerciseDetailModal({ exercise, onClose }: { exercise: Exercise;
                 value={noteDraft}
                 onChange={(e) => setNoteDraft(e.target.value)}
                 placeholder="Seat height, grip width, cues…"
+                aria-label="Seat height, grip width, cues"
                 rows={3}
                 className="mb-2 w-full resize-none field px-3 py-2 text-sm"
               />

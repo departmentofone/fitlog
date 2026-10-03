@@ -110,6 +110,7 @@ export function RecipeBuilderView({
         <div className="mb-3 space-y-2.5">
           <input
             placeholder="Recipe name"
+            aria-label="Recipe name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="w-full field px-3 py-2.5"
@@ -129,6 +130,7 @@ export function RecipeBuilderView({
 
         <input
           placeholder="Search foods…"
+          aria-label="Search foods"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="mb-3 w-full field px-3 py-2.5"

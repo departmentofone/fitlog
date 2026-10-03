@@ -73,6 +73,7 @@ export function PresetsView({
             <input
               autoFocus
               placeholder="Preset name (e.g. Leg Day)"
+              aria-label="Preset name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="mb-3 w-full field px-3 py-2"

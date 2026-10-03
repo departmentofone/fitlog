@@ -131,6 +131,7 @@ export function AlcoholSection() {
           <input
             autoFocus
             placeholder="Drink name"
+            aria-label="Drink name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="mb-2 w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
@@ -159,6 +160,7 @@ export function AlcoholSection() {
               type="text"
               inputMode="decimal"
               placeholder="Calories"
+              aria-label="Calories"
               value={manualCalories}
               onChange={(e) => setManualCalories(e.target.value)}
               className="mb-2 w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
@@ -169,6 +171,7 @@ export function AlcoholSection() {
                 type="text"
                 inputMode="decimal"
                 placeholder={`Volume (${volumeUnitLabel(unit)})`}
+                aria-label={`Volume (${volumeUnitLabel(unit)})`}
                 value={volume}
                 onChange={(e) => setVolume(e.target.value)}
                 className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
@@ -177,6 +180,7 @@ export function AlcoholSection() {
                 type="text"
                 inputMode="decimal"
                 placeholder="ABV %"
+                aria-label="ABV %"
                 value={abvPercent}
                 onChange={(e) => setAbvPercent(e.target.value)}
                 className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"

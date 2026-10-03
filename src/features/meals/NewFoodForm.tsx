@@ -89,6 +89,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
       <div className="space-y-2.5">
         <input
           placeholder="Name"
+          aria-label="Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="w-full field px-3 py-2.5"
@@ -97,6 +98,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
         <div className="grid grid-cols-2 gap-2.5">
           <input
             placeholder="Calories"
+            aria-label="Calories"
             type="text"
             inputMode="decimal"
             value={calories}
@@ -105,6 +107,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
           />
           <input
             placeholder="Protein (g)"
+            aria-label="Protein (g)"
             type="text"
             inputMode="decimal"
             value={protein}
@@ -113,6 +116,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
           />
           <input
             placeholder="Carbs (g)"
+            aria-label="Carbs (g)"
             type="text"
             inputMode="decimal"
             value={carbs}
@@ -121,6 +125,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
           />
           <input
             placeholder="Fat (g)"
+            aria-label="Fat (g)"
             type="text"
             inputMode="decimal"
             value={fat}
@@ -132,12 +137,14 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
         <div className="grid grid-cols-2 gap-2.5">
           <input
             placeholder="Label"
+            aria-label="Label"
             value={servingLabel}
             onChange={(e) => setServingLabel(e.target.value)}
             className="field px-3 py-2"
           />
           <input
             placeholder={unit === 'imperial' ? 'Ounces' : 'Grams'}
+            aria-label={unit === 'imperial' ? 'Ounces' : 'Grams'}
             type="text"
             inputMode="decimal"
             value={servingAmount}
@@ -157,6 +164,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
           <div className="grid grid-cols-2 gap-2.5">
             <input
               placeholder="Fiber (g)"
+              aria-label="Fiber (g)"
               type="text"
               inputMode="decimal"
               value={fiber}
@@ -165,6 +173,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
             />
             <input
               placeholder="Sugar (g)"
+              aria-label="Sugar (g)"
               type="text"
               inputMode="decimal"
               value={sugar}
@@ -173,6 +182,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
             />
             <input
               placeholder="Sodium (mg)"
+              aria-label="Sodium (mg)"
               type="text"
               inputMode="decimal"
               value={sodium}
@@ -181,6 +191,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
             />
             <input
               placeholder="Cholesterol (mg)"
+              aria-label="Cholesterol (mg)"
               type="text"
               inputMode="decimal"
               value={cholesterol}
@@ -189,6 +200,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
             />
             <input
               placeholder="Potassium (mg)"
+              aria-label="Potassium (mg)"
               type="text"
               inputMode="decimal"
               value={potassium}
@@ -197,6 +209,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
             />
             <input
               placeholder="Calcium (mg)"
+              aria-label="Calcium (mg)"
               type="text"
               inputMode="decimal"
               value={calcium}
@@ -205,6 +218,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
             />
             <input
               placeholder="Iron (mg)"
+              aria-label="Iron (mg)"
               type="text"
               inputMode="decimal"
               value={iron}
@@ -213,6 +227,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
             />
             <input
               placeholder="Vitamin C (mg)"
+              aria-label="Vitamin C (mg)"
               type="text"
               inputMode="decimal"
               value={vitaminC}
@@ -221,6 +236,7 @@ export function NewFoodForm({ food, onSaved, onCancel }: { food?: Food; onSaved:
             />
             <input
               placeholder="Vitamin A (mcg)"
+              aria-label="Vitamin A (mcg)"
               type="text"
               inputMode="decimal"
               value={vitaminA}

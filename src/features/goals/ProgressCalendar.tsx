@@ -93,12 +93,14 @@ function EntryEditor({
         type="text"
         inputMode="decimal"
         placeholder={`Weight (${unit})`}
+        aria-label={`Weight (${unit})`}
         value={weight}
         onChange={(e) => setWeight(e.target.value)}
         className="mb-2 w-full field px-3 py-2"
       />
       <textarea
         placeholder="Notes (optional)"
+        aria-label="Notes (optional)"
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
         rows={2}

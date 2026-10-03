@@ -73,6 +73,7 @@ export function AddToPresetSheet({ food, onClose }: { food: Food; onClose: () =>
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               placeholder="Preset name"
+              aria-label="Preset name"
               className="min-w-0 flex-1 field px-3 py-2.5"
             />
             <button

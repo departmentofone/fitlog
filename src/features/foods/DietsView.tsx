@@ -211,6 +211,7 @@ export function DietsView() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="What it's about (optional)"
+            aria-label="What it's about (optional)"
             rows={2}
             maxLength={1000}
             className={`${INPUT} resize-none`}

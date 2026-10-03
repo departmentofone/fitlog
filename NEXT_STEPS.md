@@ -30,19 +30,12 @@ build next.
   migration v34.
 - For tips: the payments profile and the 18 products in TIP_JAR_PLAN.md.
 
-## Calls only you can make
+## Decided on 3 October
 
-These came up in the review. Each would change how the app is organised, so I left them alone.
-
-| # | What the review found | Options | My pick |
-|---|---|---|---|
-| 1 | **Diet and Diets.** Eat > Diet is your calorie goal; Eat > Foods > Diets is lists of foods like Mediterranean. People will mix them up. | Rename the tab to "Goal", or rename the food lists to "Food lists" | Rename Foods > Diets to "Food lists" and keep "Diet" for the goal. Smaller change, and "follow a diet" still reads naturally in Community |
-| 2 | **Meal presets live in two places**: Meals > Presets and Foods > Presets. | Keep both, or keep one | Keep the one in Meals (where you use them) and make Foods > Presets a link to it |
-| 3 | **The + button on Log and Meals** repeats the big Add exercise and Add food buttons right above it, and sits over list rows. | Keep it everywhere, or hide it on Log and Meals | Hide it on those two screens. It earns its place on the others, where it's the quickest way to log something from elsewhere |
-| 4 | **No protein target.** Most lifters track protein first; the app only has a calorie goal. | Add a protein goal (one settings column) shown next to calories on Meals and Diet | Yes. Small migration, big payoff for the people this app is for |
-| 5 | **First run asks nothing.** The tour explains the app but doesn't ask for units, weight or a goal, so a new account starts blank. Tonight's empty-state cards cover most of this. | Add one setup step to the tour, or leave it | One optional step: units, current weight and goal weight, all skippable |
-| 6 | **"Community" while everything in it is official.** Every item in it is FitLog's own (20 today, 31 once migration v35 runs). | Keep the name, or call it "Library" until people share | Keep the name. Sharing is built and the guidelines are in place; the first few shares change the picture |
-| 7 | **Loading a preset logs every set as done**, with the preset's weights. Templates now fill in your own last weights, but the sets still count before you lift them. | Keep it, or add "planned" sets you tick off as you go | Planned sets. It's the bigger change on this list, and it's how Strong and Hevy work, so lifters will expect it |
+Built the same day: Foods > Diets is now Food lists, meal presets live in Meals (with Edit presets
+there), the + button is gone from Log and Meals, there's an optional protein goal, the welcome
+tour asks for units and weights, and starting a preset plans its sets to tick off. Community keeps
+its name. The protein goal and planned sets need migration v36.
 
 ## Ready to build next
 

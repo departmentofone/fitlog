@@ -32,7 +32,7 @@ export const COMMUNITY_EXPLAINERS: Record<'all' | 'diet' | 'plan' | 'meal' | 're
   },
   diet: {
     title: "What's a diet?",
-    body: "A diet is the list of foods you want to eat. Follow one and its foods come first when you log, with a small flag on anything that's off the list. Make your own in Foods → Diets and share it here.",
+    body: "A diet is the list of foods you want to eat. Follow one and its foods come first when you log, with a small flag on anything that's off the list. Make your own in Eat → Foods → Food lists and share it here.",
     example: {
       name: 'Mediterranean',
       lines: ['Vegetables, fruit, whole grains, beans and lentils', 'Olive oil, nuts, fish and seafood', 'Some poultry, eggs, cheese and yogurt; little red meat'],
@@ -55,7 +55,7 @@ export const COMMUNITY_EXPLAINERS: Record<'all' | 'diet' | 'plan' | 'meal' | 're
   },
   meal: {
     title: "What's a meal preset?",
-    body: 'Foods you often eat together, saved as one item so the whole meal logs in one tap. Save one in Foods → Presets and share it here.',
+    body: 'Foods you often eat together, saved as one item so the whole meal logs in one tap. Save one in Eat → Meals → Presets and share it here.',
     example: CHICKEN_RICE,
   },
   recipe: {

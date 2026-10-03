@@ -6,7 +6,7 @@ import { PlateLoad } from '../calculator/PlateLoad'
 import { useUserSettings } from '../../hooks/useUserSettings'
 import { summarizeLastSets, useLastSessionSetsForExercise } from '../../hooks/useWorkouts'
 import { fromDisplayWeight, toDisplayWeight, weightStep, weightUnitLabel } from '../../lib/units'
-import type { Exercise, UnitSystem, WorkoutSet } from '../../types'
+import type { Exercise, PlannedSet, UnitSystem, WorkoutSet } from '../../types'
 
 /** RPE (rate of perceived exertion) - the 1-10 effort scale lifters already know. */
 const RPE_LABELS: Record<number, string> = {
@@ -106,6 +106,10 @@ interface SetFormProps {
   restTrigger: number
   /** e.g. "A" - shown as a "Superset A" badge next to the exercise name when part of one. */
   supersetLabel?: string
+  /** Sets planned from a started preset, ticked off below the logged ones. */
+  planned?: PlannedSet[]
+  /** `weightKg`: the planned weight, or the form's when the plan has none (a template). */
+  onLogPlanned?: (set: PlannedSet, difficulty: number, weightKg: number) => void
 }
 
 function EditableSetRow({
@@ -185,6 +189,8 @@ export function SetForm({
   adding,
   restTrigger,
   supersetLabel,
+  planned = [],
+  onLogPlanned,
 }: SetFormProps) {
   useHideQuickAdd()
   const [weight, setWeight] = useState('')
@@ -215,9 +221,9 @@ export function SetForm({
   // so a typical set is just "check the numbers, tap Add". The weight field holds the user's unit
   // (kg or lb), so wait for settings before pre-filling, or an lb user could get a kg number under
   // an "lb" label.
-  const suggestedKg = existingSets.at(-1)?.weight ?? lastSets.at(-1)?.weight
+  const suggestedKg = planned[0]?.weight || (existingSets.at(-1)?.weight ?? lastSets.at(-1)?.weight)
   const suggestedWeight = suggestedKg == null || settingsPending ? undefined : toDisplayWeight(suggestedKg, unit)
-  const suggestedReps = existingSets.at(-1)?.reps ?? lastSets.at(-1)?.reps
+  const suggestedReps = planned[0]?.reps ?? existingSets.at(-1)?.reps ?? lastSets.at(-1)?.reps
   useEffect(() => {
     if (suggestedWeight != null) setWeight((w) => (w === '' ? String(suggestedWeight) : w))
   }, [suggestedWeight])
@@ -262,7 +268,7 @@ export function SetForm({
 
       <RestTimer restartKey={restTrigger} />
 
-      {existingSets.length > 0 && (
+      {existingSets.length + planned.length > 0 && (
         // A compact table, one row per set - it used to be a stack of wrapping bubbles.
         <div className="inset mb-3 divide-y divide-white/5 overflow-hidden">
           <div className="grid grid-cols-[2.75rem_1fr_1fr_3rem] px-3 py-1.5 text-xs font-semibold text-slate-500">
@@ -308,11 +314,42 @@ export function SetForm({
               </button>
             ),
           )}
+          {/* Planned sets (from a started preset): tick one when it's done and it's logged as is. */}
+          {planned.map((p, i) => {
+            // A template's planned set has no weight yet: it takes the one in the form below.
+            const formKg = Number.isFinite(parseDecimal(weight)) ? fromDisplayWeight(parseDecimal(weight), unit) : 0
+            const kg = p.weight || formKg
+            return (
+            <div
+              key={`planned-${i}`}
+              className="grid min-h-11 w-full grid-cols-[2.75rem_1fr_1fr_3rem] items-center px-3 text-[15px] text-slate-400"
+            >
+              <span className="flex items-center gap-1">
+                {existingSets.length + i + 1}
+                {p.isWarmup && <span className="rounded bg-amber-400/15 px-1 text-[11px] font-bold text-amber-400">W</span>}
+              </span>
+              <span className={p.weight ? '' : 'italic'}>{toDisplayWeight(kg, unit)}</span>
+              <span>{p.reps}</span>
+              <span className="flex justify-end">
+                <button
+                  onClick={() => onLogPlanned?.(p, difficulty, kg)}
+                  disabled={adding}
+                  aria-label={`Done: set ${existingSets.length + i + 1}, ${toDisplayWeight(kg, unit)} ${weightUnitLabel(unit)} × ${p.reps}`}
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-slate-500 ring-1 ring-slate-600 transition active:bg-emerald-600 active:text-on-accent disabled:opacity-50"
+                >
+                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M5 12.5l4.5 4.5L19 7.5" />
+                  </svg>
+                </button>
+              </span>
+            </div>
+            )
+          })}
         </div>
       )}
 
       <div className="mb-2 flex items-center justify-between gap-2">
-        <p className="text-xs text-slate-500">Set {nextSetNumber}</p>
+        <p className="text-xs text-slate-500">{planned.length > 0 ? 'Extra set' : `Set ${nextSetNumber}`}</p>
         <div className="flex gap-1.5">
           <button
             onClick={togglePlates}
@@ -361,7 +398,7 @@ export function SetForm({
         disabled={!weight || !reps || adding}
         className="btn btn-primary min-h-12 w-full scroll-mb-4"
       >
-        Add set {nextSetNumber}
+        {planned.length > 0 ? 'Add an extra set' : `Add set ${nextSetNumber}`}
       </button>
     </div>
   )

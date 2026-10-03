@@ -24,12 +24,14 @@ import {
   useSessionSets,
   useSetPreworkout,
   useStartSession,
+  useSetPlan,
   useStartWorkoutTimer,
   useUpdateSet,
 } from '../../hooks/useWorkouts'
+import { useExercises } from '../../hooks/useExercises'
 import { estimate1RM } from '../../lib/oneRepMax'
 import { toDisplayTotal, weightUnitLabel } from '../../lib/units'
-import type { Exercise, MuscleGroup } from '../../types'
+import type { Exercise, MuscleGroup, PlannedSet } from '../../types'
 import { ExerciseDetailModal } from './ExerciseDetailModal'
 import { ExercisePicker } from './ExercisePicker'
 import { ExerciseSummaryBox } from './ExerciseSummaryBox'
@@ -137,6 +139,27 @@ export function WorkoutsTab({
     setPicking(true)
     setPendingPick(false)
   }, [pendingPick, session, isToday])
+
+  // Planned sets from a started preset, by exercise, in the preset's order.
+  const plan = useMemo(() => session?.plan ?? [], [session?.plan])
+  const setPlan = useSetPlan(session?.id)
+  const { data: allExercises = [] } = useExercises()
+  const plannedByExercise = useMemo(() => {
+    const map = new Map<string, PlannedSet[]>()
+    for (const p of plan) map.set(p.exerciseId, [...(map.get(p.exerciseId) ?? []), p])
+    return map
+  }, [plan])
+
+  function exerciseForPlan(p: PlannedSet): Exercise {
+    return allExercises.find((e) => e.id === p.exerciseId) ?? { id: p.exerciseId, name: p.exerciseName, muscle_group: p.muscleGroup, user_id: null, created_at: '' }
+  }
+
+  /** Ticking a planned set off: logs it as a real set and takes it out of the plan. */
+  function logPlanned(p: PlannedSet, difficulty: number, weightKg: number) {
+    handleAddSet({ weight: weightKg, reps: p.reps, difficulty, isWarmup: p.isWarmup })
+    const i = plan.indexOf(p)
+    if (i >= 0) setPlan.mutate([...plan.slice(0, i), ...plan.slice(i + 1)])
+  }
 
   const groupedByExercise = useMemo(() => {
     const map = new Map<string, (typeof sets)[number][]>()
@@ -345,12 +368,12 @@ export function WorkoutsTab({
 
           {/* With the preworkout question off (the default), the workout starts on its own, so the
               rest-day option that lives in that prompt needs a home here too. */}
-          {sets.length === 0 && !activeExercise && !activeSuperset && (
-            <div className="-my-2 text-center">
+          {sets.length === 0 && plan.length === 0 && !activeExercise && !activeSuperset && (
+            <div className="-my-2 flex justify-center">
               <button
                 onClick={() => logRestDay.mutate(date, { onSuccess: () => haptics.success() })}
                 disabled={logRestDay.isPending}
-                className="min-h-10 text-xs font-medium text-slate-500 underline decoration-dotted transition hover:text-emerald-400 disabled:opacity-50"
+                className="flex min-h-10 items-center px-2 text-xs font-medium text-slate-500 underline decoration-dotted transition hover:text-emerald-400 disabled:opacity-50"
               >
                 {logRestDay.isPending ? 'Logging rest day…' : 'Not training today? Log a rest day instead'}
               </button>
@@ -367,6 +390,8 @@ export function WorkoutsTab({
                 adding={addSet.isPending}
                 restTrigger={restTrigger}
                 supersetLabel={activeSuperset ? labelForGroup(activeSuperset.groupId) : undefined}
+                planned={plannedByExercise.get(activeExercise.id) ?? []}
+                onLogPlanned={logPlanned}
                 onAdd={handleAddSet}
                 onDeleteSet={handleDeleteSet}
                 onUpdateSet={(input) => updateSet.mutate(input)}
@@ -535,7 +560,7 @@ export function WorkoutsTab({
             />
           </div>
 
-          {isToday && sets.length === 0 && !activeExercise && !activeSuperset && (
+          {isToday && sets.length === 0 && plan.length === 0 && !activeExercise && !activeSuperset && (
             <StartWorkoutCard sessionId={session.id} onShowPresets={() => setShowPresets(true)} onBrowseWorkouts={onBrowseWorkouts} />
           )}
 
@@ -545,7 +570,9 @@ export function WorkoutsTab({
             if (activeSuperset) for (const ex of activeSuperset.exercises) hiddenIds.add(ex.id)
 
             const entries = Array.from(groupedByExercise.entries()).filter(([id]) => !hiddenIds.has(id))
-            if (entries.length === 0) return null
+            // Exercises that are only planned so far come after the ones already under way.
+            const plannedOnly = Array.from(plannedByExercise.entries()).filter(([id]) => !groupedByExercise.has(id) && !hiddenIds.has(id))
+            if (entries.length === 0 && plannedOnly.length === 0) return null
 
             return (
               <div className="card divide-y divide-white/5 overflow-hidden">
@@ -557,6 +584,7 @@ export function WorkoutsTab({
                       name={exerciseSets[0].exercise?.name ?? 'Exercise'}
                       sets={exerciseSets}
                       supersetLabel={groupId != null ? labelForGroup(groupId) : undefined}
+                      planned={plannedByExercise.get(exerciseId)?.length}
                       onClick={() => {
                         const exercise = exerciseSets[0].exercise
                         if (exercise) resumeExercise(exercise)
@@ -565,6 +593,16 @@ export function WorkoutsTab({
                     />
                   )
                 })}
+                {plannedOnly.map(([exerciseId, planned]) => (
+                  <ExerciseSummaryBox
+                    key={exerciseId}
+                    name={planned[0].exerciseName}
+                    sets={[]}
+                    planned={planned.length}
+                    onClick={() => resumeExercise(exerciseForPlan(planned[0]))}
+                    onOpenDetail={() => setDetailExercise(exerciseForPlan(planned[0]))}
+                  />
+                ))}
               </div>
             )
           })()}

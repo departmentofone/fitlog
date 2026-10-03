@@ -72,6 +72,21 @@ export interface WorkoutSession {
   started_at: string | null
   duration_seconds: number | null
   created_at: string
+  /** Sets loaded from a preset but not done yet (migration_v36); absent before it runs. */
+  plan?: PlannedSet[] | null
+}
+
+/**
+ * A set waiting to be done, the way Strong and Hevy show a started template: ticking it off in the
+ * set form logs it as a real set. Until then it counts toward nothing (volume, PRs, streaks).
+ */
+export interface PlannedSet {
+  exerciseId: string
+  exerciseName: string
+  muscleGroup: MuscleGroup
+  weight: number
+  reps: number
+  isWarmup: boolean
 }
 
 export interface WorkoutSet {
@@ -174,6 +189,8 @@ export interface UserSettings {
   ask_preworkout: boolean
   diet_goal: DietGoal
   calorie_goal: number | null
+  /** Daily protein target in grams (migration_v36); absent before it runs. */
+  protein_goal?: number | null
   water_goal_ml: number
   weight_goal: number | null
   current_weight: number | null

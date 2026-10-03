@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { formatWeight } from '../lib/units'
-import type { Exercise, UnitSystem, WorkoutSession, WorkoutSet } from '../types'
+import type { Exercise, PlannedSet, UnitSystem, WorkoutSession, WorkoutSet } from '../types'
 import { useAuth } from './useAuth'
 import { localISO } from '../lib/localDate'
 
@@ -121,6 +121,27 @@ export function useAutoStartSession(date: string, shouldAutoStart: boolean) {
   }, [shouldAutoStart, isLoading, session, user, date])
 
   return { session, isLoading: isLoading || (shouldAutoStart && !session) }
+}
+
+/**
+ * Replaces the session's planned sets (ticking one off removes it; Clear removes all). Optimistic,
+ * so a ticked row leaves the list the moment its real set appears.
+ */
+export function useSetPlan(sessionId: string | undefined) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (plan: PlannedSet[]) => {
+      if (!sessionId) throw new Error('No active session')
+      const { error } = await supabase.from('workout_sessions').update({ plan: plan.length > 0 ? plan : null }).eq('id', sessionId)
+      if (error) throw error
+    },
+    onMutate: (plan) => {
+      qc.setQueriesData<WorkoutSession | null>({ queryKey: ['session'] }, (old) =>
+        old && old.id === sessionId ? { ...old, plan: plan.length > 0 ? plan : null } : old,
+      )
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: ['session'] }),
+  })
 }
 
 /**

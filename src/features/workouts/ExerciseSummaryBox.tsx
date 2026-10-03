@@ -8,6 +8,7 @@ export function ExerciseSummaryBox({
   onClick,
   onOpenDetail,
   supersetLabel,
+  planned,
 }: {
   name: string
   sets: SetWithExercise[]
@@ -15,14 +16,17 @@ export function ExerciseSummaryBox({
   onOpenDetail?: () => void
   /** e.g. "A" - when set, this exercise's sets belong to a superset and get a distinct tint/badge. */
   supersetLabel?: string
+  /** Sets still planned for it (from a started preset). */
+  planned?: number
 }) {
   const { data: settings } = useUserSettings()
-  const topSet = sets.reduce((max, s) => (s.weight > max.weight ? s : max), sets[0])
+  const topSet = sets.reduce<SetWithExercise | undefined>((max, s) => (!max || s.weight > max.weight ? s : max), undefined)
 
   const working = sets.filter((s) => !s.is_warmup).length
   // Bodyweight work (and a template not filled in yet) has no weight: the best set is the most reps.
-  const best =
-    topSet.weight > 0
+  const best = !topSet
+    ? null
+    : topSet.weight > 0
       ? `${formatWeight(topSet.weight, settings?.unit_system)} × ${topSet.reps}`
       : `${Math.max(...sets.map((s) => s.reps))} reps`
 
@@ -33,7 +37,16 @@ export function ExerciseSummaryBox({
         {supersetLabel && <p className="eyebrow mb-0.5 text-emerald-400">Superset {supersetLabel}</p>}
         <p className="break-words text-[15px] font-semibold leading-snug text-white">{name}</p>
         <p className="mt-0.5 text-sm text-slate-400">
-          {working || sets.length} {(working || sets.length) === 1 ? 'set' : 'sets'} · best {best}
+          {best ? (
+            <>
+              {working || sets.length} {(working || sets.length) === 1 ? 'set' : 'sets'} · best {best}
+              {planned ? <span className="text-emerald-400"> · {planned} to go</span> : null}
+            </>
+          ) : (
+            <span className="text-emerald-400">
+              {planned} {planned === 1 ? 'set' : 'sets'} planned
+            </span>
+          )}
         </p>
       </button>
       {onOpenDetail && (

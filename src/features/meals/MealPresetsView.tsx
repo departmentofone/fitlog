@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { PresetsManagerView } from '../foods/PresetsManagerView'
 import { useShareGate } from '../../hooks/useShareGate'
 import { UNAVAILABLE_FOOD_NAME } from '../../types'
 import {
@@ -39,14 +40,34 @@ export function MealPresetsView({
 
   const [savingMealId, setSavingMealId] = useState<string | null>(null)
   const [name, setName] = useState('')
+  // Editing presets (foods in them, names) used to be a separate Foods > Presets screen.
+  const [managing, setManaging] = useState(false)
 
   const savableMeals = currentMeals.filter((m) => m.meal_items.length > 0)
 
+  if (managing) {
+    return (
+      <div className="space-y-4 p-4">
+        <button onClick={() => setManaging(false)} className="min-h-11 text-sm text-slate-400 hover:text-slate-200">
+          ← Back to presets
+        </button>
+        <PresetsManagerView />
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-4 p-4">
-      <button onClick={onBack} className="text-sm text-slate-400 hover:text-slate-200">
-        ← Back
-      </button>
+      <div className="flex items-center justify-between">
+        <button onClick={onBack} className="min-h-11 text-sm text-slate-400 hover:text-slate-200">
+          ← Back
+        </button>
+        {presets.length > 0 && (
+          <button onClick={() => setManaging(true)} className="min-h-11 px-1 text-sm font-medium text-emerald-400">
+            Edit presets
+          </button>
+        )}
+      </div>
 
       {savableMeals.length > 0 && (
         <div className="card p-4">

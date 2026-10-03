@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
-import type { Exercise, WorkoutPreset, WorkoutPresetItem } from '../types'
+import type { Exercise, PlannedSet, WorkoutPreset, WorkoutPresetItem } from '../types'
 import { useAuth } from './useAuth'
 import type { SetWithExercise } from './useWorkouts'
 
@@ -118,12 +118,24 @@ export function useRestorePreset() {
   })
 }
 
-/** Loads a preset's items into a session as real logged sets, continuing set numbering per exercise. */
+/**
+ * Starts a preset: its sets become the session's plan, ticked off one by one in the set form
+ * (migration_v36). Before that migration runs, falls back to logging them all at once as done.
+ */
 export function useLoadPreset(sessionId: string | undefined) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (preset: PresetWithItems) => {
       if (!sessionId) throw new Error('No active session')
+
+      const planned = await plannedFromPreset(preset)
+      const { data: current, error: planError } = await supabase.from('workout_sessions').select('plan').eq('id', sessionId).single()
+      if (!planError) {
+        const existing = ((current as { plan: PlannedSet[] | null }).plan ?? []) as PlannedSet[]
+        const { error } = await supabase.from('workout_sessions').update({ plan: [...existing, ...planned] }).eq('id', sessionId)
+        if (error) throw error
+        return
+      }
 
       const { data: existing, error: existingError } = await supabase
         .from('workout_sets')
@@ -170,6 +182,40 @@ export function useLoadPreset(sessionId: string | undefined) {
       const { error } = await supabase.from('workout_sets').insert(rows)
       if (error) throw error
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['sets', sessionId] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['sets', sessionId] })
+      qc.invalidateQueries({ queryKey: ['session'] })
+    },
   })
+}
+
+/**
+ * A preset's items as planned sets. Templates (the official workouts, a shared program) leave
+ * weights at 0 since they can't know what you lift, so those start from the weight you last logged.
+ */
+async function plannedFromPreset(preset: PresetWithItems): Promise<PlannedSet[]> {
+  const lastWeight = new Map<string, number>()
+  const blankIds = [...new Set(preset.workout_preset_items.filter((i) => !i.weight).map((i) => i.exercise_id))]
+  if (blankIds.length > 0) {
+    const { data: recent } = await supabase
+      .from('workout_sets')
+      .select('exercise_id, weight')
+      .in('exercise_id', blankIds)
+      .eq('is_warmup', false)
+      .gt('weight', 0)
+      .order('created_at', { ascending: false })
+      .limit(300)
+    for (const r of recent ?? []) if (!lastWeight.has(r.exercise_id)) lastWeight.set(r.exercise_id, r.weight)
+  }
+  return [...preset.workout_preset_items]
+    .sort((a, b) => a.set_number - b.set_number)
+    .sort((a, b) => preset.workout_preset_items.findIndex((x) => x.exercise_id === a.exercise_id) - preset.workout_preset_items.findIndex((x) => x.exercise_id === b.exercise_id))
+    .map((item) => ({
+      exerciseId: item.exercise_id,
+      exerciseName: item.exercise?.name ?? 'Exercise',
+      muscleGroup: item.exercise?.muscle_group ?? 'cardio',
+      weight: item.weight || (item.is_warmup ? 0 : (lastWeight.get(item.exercise_id) ?? 0)),
+      reps: item.reps,
+      isWarmup: item.is_warmup ?? false,
+    }))
 }

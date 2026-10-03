@@ -84,7 +84,7 @@ export function StartWorkoutCard({
                 loadPreset.mutate(preset, {
                   onSuccess: () => {
                     haptics.success()
-                    show(`${preset.name} loaded. Edit any set to match today.`)
+                    show(`${preset.name} is planned. Tick each set off as you do it.`)
                   },
                   onError: () => show(`Couldn't load ${preset.name}. Try again.`),
                 })

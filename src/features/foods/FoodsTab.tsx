@@ -13,7 +13,6 @@ import { NewFoodForm } from '../meals/NewFoodForm'
 import { FoodRow } from './FoodRow'
 import { DietsView } from './DietsView'
 import { MealPlansView } from './MealPlansView'
-import { PresetsManagerView } from './PresetsManagerView'
 
 const PACK_LABELS: Record<string, string> = { serbia: 'Serbian products' }
 
@@ -72,7 +71,7 @@ export function FoodsTab({ onOpenScanner }: { onOpenScanner: () => void }) {
     return (
       <div className="space-y-4 p-4">
         {switcher}
-        {view === 'presets' ? <PresetsManagerView /> : view === 'plans' ? <MealPlansView /> : <DietsView />}
+        {view === 'plans' ? <MealPlansView /> : <DietsView />}
       </div>
     )
   }
@@ -203,13 +202,12 @@ function FoodSection({ title, children }: { title: string | null; children: Reac
   )
 }
 
-type FoodsView = 'library' | 'presets' | 'plans' | 'diets'
+type FoodsView = 'library' | 'plans' | 'diets'
 
 const FOODS_VIEWS: { value: FoodsView; label: string }[] = [
   { value: 'library', label: 'Library' },
-  { value: 'presets', label: 'Presets' },
   { value: 'plans', label: 'Plans' },
-  { value: 'diets', label: 'Diets' },
+  { value: 'diets', label: 'Food lists' },
 ]
 
 function TabButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: string }) {

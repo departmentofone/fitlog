@@ -71,7 +71,7 @@ const SAVED_WHERE: Record<CommunityKind, string> = {
   workout: 'Train → Log → Presets',
   program: 'Train → Programs',
   plan: 'Eat → Foods → Plans',
-  diet: 'Eat → Foods → Diets',
+  diet: 'Eat → Foods → Food lists',
 }
 
 function kcal(n: number) {

@@ -2,6 +2,11 @@ import { useEffect, useState } from 'react'
 import { ONBOARDING_REPLAY_EVENT, ONBOARDING_STORAGE_KEY } from '../lib/onboarding'
 import type { Tab } from '../types'
 import { TabIcon } from './TabIcon'
+import { useUpsertProgressEntry } from '../hooks/useProgressEntries'
+import { useUpdateSettings, useUserSettings } from '../hooks/useUserSettings'
+import { localISO } from '../lib/localDate'
+import { parseDecimal } from '../lib/number'
+import { fromDisplayWeight, toDisplayWeight } from '../lib/units'
 
 const STORAGE_KEY = ONBOARDING_STORAGE_KEY
 
@@ -22,7 +27,7 @@ function markTourSeen() {
   }
 }
 
-const STEPS = 3
+const STEPS = 4
 
 const AREA_TOUR: { icon: Tab | 'progress'; label: string; text: string }[] = [
   { icon: 'workouts', label: 'Train', text: 'Log sets, run programs, look back at past workouts' },
@@ -31,13 +36,75 @@ const AREA_TOUR: { icon: Tab | 'progress'; label: string; text: string }[] = [
   { icon: 'community', label: 'Community', text: 'Diets, plans and workouts others shared' },
 ]
 
+/** Step 2: units, current weight and goal weight, so a new account doesn't start blank. All optional. */
+function SetupStep({ draft, onChange }: { draft: SetupDraft; onChange: (next: SetupDraft) => void }) {
+  const unit = draft.imperial ? 'lb' : 'kg'
+  return (
+    <div>
+      <h2 id="onboarding-title" className="text-xl font-semibold text-white">
+        A few numbers to start with
+      </h2>
+      <p className="mt-2 text-sm leading-relaxed text-slate-300">They set up your weight trend and calorie numbers. Skip any of them.</p>
+      <div className="mt-4 grid grid-cols-2 gap-1.5" role="group" aria-label="Units">
+        {[false, true].map((imperial) => (
+          <button
+            key={String(imperial)}
+            onClick={() => onChange({ ...draft, imperial })}
+            aria-pressed={draft.imperial === imperial}
+            className={`min-h-10 rounded-xl text-sm font-medium ${draft.imperial === imperial ? 'bg-emerald-600 text-on-accent' : 'bg-slate-800 text-slate-300'}`}
+          >
+            {imperial ? 'lb, in' : 'kg, cm'}
+          </button>
+        ))}
+      </div>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <label className="flex min-w-0 flex-col gap-1 text-xs text-slate-400">
+          Weight now ({unit})
+          <input type="text" inputMode="decimal" value={draft.weight} onChange={(e) => onChange({ ...draft, weight: e.target.value })} className="h-11 w-full min-w-0 field px-3 text-base" />
+        </label>
+        <label className="flex min-w-0 flex-col gap-1 text-xs text-slate-400">
+          Goal weight ({unit})
+          <input type="text" inputMode="decimal" value={draft.goal} onChange={(e) => onChange({ ...draft, goal: e.target.value })} className="h-11 w-full min-w-0 field px-3 text-base" />
+        </label>
+      </div>
+    </div>
+  )
+}
+
+interface SetupDraft {
+  imperial: boolean
+  weight: string
+  goal: string
+}
+
 /**
- * First-run tour, kept to three short steps: what FitLog is, the four areas on the bottom bar,
- * and a nudge toward Community so new people know they
+ * First-run tour, kept to four short steps: what FitLog is, a few starting numbers (all optional),
+ * the four areas on the bottom bar, and a nudge toward Community so new people know they
  * don't have to build every meal and workout from scratch.
  */
 export function OnboardingTour({ onOpenCommunity }: { onOpenCommunity: () => void }) {
   const [dismissed, setDismissed] = useState(() => hasSeenTour())
+  const { data: settings } = useUserSettings()
+  const updateSettings = useUpdateSettings()
+  const logWeight = useUpsertProgressEntry()
+  const [draft, setDraft] = useState<SetupDraft | null>(null)
+  const setup: SetupDraft = draft ?? {
+    imperial: settings?.unit_system === 'imperial',
+    weight: settings?.current_weight != null ? String(toDisplayWeight(settings.current_weight, settings.unit_system)) : '',
+    goal: settings?.weight_goal != null ? String(toDisplayWeight(settings.weight_goal, settings.unit_system)) : '',
+  }
+
+  /** Saves whatever was filled in on the setup step; empty fields are left alone. */
+  function saveSetup() {
+    if (!draft) return
+    const unit_system = draft.imperial ? 'imperial' : 'metric'
+    const toKg = (v: string) => fromDisplayWeight(parseDecimal(v), unit_system)
+    const goal = parseDecimal(draft.goal)
+    updateSettings.mutate({ unit_system, ...(Number.isFinite(goal) && goal > 0 ? { weight_goal: toKg(draft.goal) } : {}) })
+    const weight = parseDecimal(draft.weight)
+    // A weigh-in for today, which also becomes the current weight (useUpsertProgressEntry).
+    if (Number.isFinite(weight) && weight > 0) logWeight.mutate({ date: localISO(), weight: toKg(draft.weight), notes: null })
+  }
   const [step, setStep] = useState(0)
 
   useEffect(() => {
@@ -57,6 +124,7 @@ export function OnboardingTour({ onOpenCommunity }: { onOpenCommunity: () => voi
   }
 
   function next() {
+    if (step === 1) saveSetup()
     if (step === STEPS - 1) return finish()
     setStep(step + 1)
   }
@@ -99,7 +167,9 @@ export function OnboardingTour({ onOpenCommunity }: { onOpenCommunity: () => voi
           </div>
         )}
 
-        {step === 1 && (
+        {step === 1 && <SetupStep draft={setup} onChange={setDraft} />}
+
+        {step === 2 && (
           <div>
             <h2 id="onboarding-title" className="text-xl font-semibold text-white">
               Four places, everything in them
@@ -120,7 +190,7 @@ export function OnboardingTour({ onOpenCommunity }: { onOpenCommunity: () => voi
           </div>
         )}
 
-        {step === 2 && (
+        {step === 3 && (
           <div>
             <div className="mb-4 flex flex-wrap gap-1.5" aria-hidden="true">
               {['Mediterranean', 'Push Pull Legs', 'Keto', 'Greek Yogurt Berry Bowl'].map((chip, i) => (
@@ -141,9 +211,9 @@ export function OnboardingTour({ onOpenCommunity }: { onOpenCommunity: () => voi
 
         <div className="mt-6 space-y-2">
           <button onClick={next} className="min-h-12 w-full rounded-2xl bg-emerald-600 text-sm font-semibold text-on-accent">
-            {step === 0 ? 'Get started' : step === 1 ? 'Continue' : 'Start logging'}
+            {step === 0 ? 'Get started' : step === 1 ? (draft ? 'Save and continue' : 'Continue') : step === 2 ? 'Continue' : 'Start logging'}
           </button>
-          {step === 2 && (
+          {step === 3 && (
             <button
               onClick={() => {
                 finish()

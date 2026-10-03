@@ -18,7 +18,7 @@ const SCREENS: { route: Route; title: string; where: string; words: string }[] =
   { route: 'meals', title: 'Meals', where: 'Eat', words: 'food breakfast lunch dinner snack water' },
   { route: 'diet', title: 'Diet', where: 'Eat', words: 'calorie goal target micronutrients projection alcohol' },
   { route: 'fasting', title: 'Fasting', where: 'Eat', words: 'fast intermittent 16:8 omad' },
-  { route: 'foods', title: 'Foods', where: 'Eat', words: 'library presets plans diets' },
+  { route: 'foods', title: 'Foods', where: 'Eat', words: 'library plans food lists diets' },
   { route: 'goals', title: 'Body', where: 'Progress', words: 'weight weigh-in measurements photos goals' },
   { route: 'achievements', title: 'Awards', where: 'Progress', words: 'medals records pr personal best challenge' },
   { route: 'community', title: 'Community', where: 'Community', words: 'shared official diets workouts' },

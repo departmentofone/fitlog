@@ -65,7 +65,8 @@ const QUICK_ADD_ICONS = {
 }
 
 const QUICK_PARAM_TABS: Record<string, Tab> = { set: 'workouts', meal: 'meals', fast: 'fasting' }
-const LOGGING_TABS: Tab[] = ['workouts', 'meals', 'diet', 'fasting']
+// Not Log or Meals: their own Add exercise / Add food buttons sit right above where it floated.
+const LOGGING_TABS: Tab[] = ['diet', 'fasting']
 
 /**
  * Achievement watching reads the user's whole training/diet history, so it only mounts once the

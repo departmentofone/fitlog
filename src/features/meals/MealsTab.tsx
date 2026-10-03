@@ -87,7 +87,7 @@ export function MealsTab({ quickAction, onOpenDiet }: { quickAction?: number; on
               </span>
             </span>
             {goalInfo && <span className={`mt-0.5 block text-sm font-medium ${TONE_CLASSES[goalInfo.tone]}`}>{goalInfo.text}</span>}
-            <MacroLine macros={totals} as="span" className="mt-2 block text-sm" />
+            <MacroLine macros={totals} proteinGoal={settings?.protein_goal} as="span" className="mt-2 block text-sm" />
           </span>
           {calorieGoal != null ? (
             <CircularProgress percent={(totals.calories / calorieGoal) * 100} tone={goalInfo?.tone ?? 'good'} />

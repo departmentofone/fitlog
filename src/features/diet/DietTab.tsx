@@ -40,11 +40,14 @@ export function DietTab({ onOpenCalculator }: { onOpenCalculator: () => void }) 
   const [editing, setEditing] = useState(false)
   const [goalDraft, setGoalDraft] = useState(dietGoal)
   const [calorieDraft, setCalorieDraft] = useState(calorieGoal != null ? String(calorieGoal) : '')
+  const proteinGoal = settings?.protein_goal ?? null
+  const [proteinDraft, setProteinDraft] = useState(proteinGoal != null ? String(proteinGoal) : '')
   const [showBreakdown, setShowBreakdown] = useState(false)
 
   function startEditing() {
     setGoalDraft(dietGoal)
     setCalorieDraft(calorieGoal != null ? String(calorieGoal) : '')
+    setProteinDraft(proteinGoal != null ? String(proteinGoal) : '')
     setEditing(true)
   }
 
@@ -52,7 +55,11 @@ export function DietTab({ onOpenCalculator }: { onOpenCalculator: () => void }) 
     const parsed = parseDecimal(calorieDraft)
     // 0 (or a negative) is not a goal - storing it divided by zero on the progress ring.
     const calorie_goal = Number.isFinite(parsed) && parsed > 0 ? parsed : null
-    updateSettings.mutate({ diet_goal: goalDraft, calorie_goal })
+    const protein = parseDecimal(proteinDraft)
+    const protein_goal = Number.isFinite(protein) && protein > 0 ? Math.round(protein) : null
+    // protein_goal only goes along when there is one: before migration_v36 the column doesn't exist,
+    // and sending it would fail the whole save.
+    updateSettings.mutate({ diet_goal: goalDraft, calorie_goal, ...(protein_goal != null || proteinGoal != null ? { protein_goal } : {}) })
     setEditing(false)
   }
 
@@ -109,6 +116,18 @@ export function DietTab({ onOpenCalculator }: { onOpenCalculator: () => void }) 
               onChange={(e) => setCalorieDraft(e.target.value)}
               className="w-full field px-3 py-2"
             />
+            <label className="relative block">
+              <input
+                type="text"
+                inputMode="numeric"
+                placeholder="Daily protein target (optional)"
+                aria-label="Daily protein target in grams"
+                value={proteinDraft}
+                onChange={(e) => setProteinDraft(e.target.value)}
+                className="w-full field px-3 py-2 pr-8"
+              />
+              <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-slate-500">g</span>
+            </label>
             <button onClick={onOpenCalculator} className="-my-1 min-h-11 text-left text-xs font-medium text-emerald-400">
               Not sure? Work out your maintenance calories
             </button>
@@ -136,7 +155,10 @@ export function DietTab({ onOpenCalculator }: { onOpenCalculator: () => void }) 
             <p className="text-3xl font-bold text-white">
               {formatWhole(calorieGoal)} <span className="text-lg font-medium text-slate-400">kcal a day</span>
             </p>
-            <p className="mb-3 text-xs text-slate-500">{dietGoal.charAt(0).toUpperCase() + dietGoal.slice(1)} target</p>
+            <p className="mb-3 text-xs text-slate-500">
+              {dietGoal.charAt(0).toUpperCase() + dietGoal.slice(1)} target
+              {proteinGoal != null && ` · ${proteinGoal} g protein`}
+            </p>
             <WeekBars goal={calorieGoal} type={dietGoal} />
           </div>
         )}
@@ -148,7 +170,7 @@ export function DietTab({ onOpenCalculator }: { onOpenCalculator: () => void }) 
                 <CountUp value={totals.calories} /> kcal
               </span>
               {info && <span className={`text-xs font-medium ${TONE_CLASSES[info.tone]}`}> · {info.text.replace(/ today$/, '')}</span>}
-              <MacroLine macros={totals} className="text-xs" />
+              <MacroLine macros={totals} proteinGoal={proteinGoal} className="text-xs" />
             </div>
             <button
               type="button"

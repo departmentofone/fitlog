@@ -3,6 +3,8 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useToast } from '../../components/ToastProvider'
 import { useCreateFood } from '../../hooks/useFoods'
 import { useBarcodeLookup, type OpenFoodFactsProduct } from '../../hooks/useOpenFoodFacts'
+import type { Food } from '../../types'
+import { LogScannedFood } from './LogScannedFood'
 
 // `BarcodeDetector` isn't in TypeScript's DOM lib yet and most browsers don't
 // implement it — this just gives us types for the feature-detected happy path.
@@ -129,6 +131,8 @@ export function ScannerTab() {
   const [reviewing, setReviewing] = useState(false)
   const [notFound, setNotFound] = useState(false)
   const [form, setForm] = useState<ReviewForm>(EMPTY_FORM)
+  // The food just saved, while offering to log it into today's meals.
+  const [saved, setSaved] = useState<Food | null>(null)
 
   const handleLookup = useCallback(
     async (code: string) => {
@@ -176,7 +180,7 @@ export function ScannerTab() {
     if (!form.name.trim() || !form.calories) return
     try {
       const trimmedBarcode = barcode.trim()
-      await createFood.mutateAsync({
+      const food = await createFood.mutateAsync({
         name: form.name.trim(),
         caloriesPer100g: parseDecimal(form.calories) || 0,
         proteinPer100g: parseDecimal(form.protein) || 0,
@@ -187,8 +191,8 @@ export function ScannerTab() {
         // manually" saves keep working exactly as before - see CreateFoodInput.barcode.
         ...(trimmedBarcode ? { barcode: trimmedBarcode } : {}),
       })
-      show('Added to your food library')
       reset()
+      setSaved(food)
     } catch {
       show('Could not save this food. Please try again.', { tone: 'error' })
     }
@@ -198,20 +202,20 @@ export function ScannerTab() {
     <div className="space-y-4 p-4">
       <div className="card card-glow p-4">
         <p className="mb-3 text-sm text-slate-400">
-          Look up a packaged food by its barcode against the Open Food Facts database, review the nutrition
-          numbers, and save it to your food library.
+          Look up a packaged food by its barcode in the Open Food Facts database, check the nutrition numbers,
+          then save it to your food library and log it straight into today's meals.
         </p>
 
         <div className="flex gap-2">
           <input
             inputMode="numeric"
-            placeholder="Barcode number"
+            placeholder="Barcode number" aria-label="Barcode number"
             value={barcode}
             onChange={(e) => setBarcode(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter') void handleLookup(barcode)
             }}
-            className="flex-1 field px-3 py-2.5"
+            className="min-w-0 flex-1 field px-3 py-2.5"
           />
           <button
             onClick={() => void handleLookup(barcode)}
@@ -265,6 +269,8 @@ export function ScannerTab() {
         )}
       </div>
 
+      {saved && <LogScannedFood food={saved} onDone={() => setSaved(null)} />}
+
       {reviewing && (
         <div className="card p-4">
           <div className="mb-3 flex items-center justify-between">
@@ -282,7 +288,7 @@ export function ScannerTab() {
 
           <div className="space-y-2.5">
             <input
-              placeholder="Name"
+              placeholder="Name" aria-label="Food name"
               value={form.name}
               onChange={(e) => updateField('name', e.target.value)}
               className="w-full field px-3 py-2.5"
@@ -290,7 +296,7 @@ export function ScannerTab() {
             <p className="text-xs text-slate-500">Per 100g:</p>
             <div className="grid grid-cols-2 gap-2.5">
               <input
-                placeholder="Calories"
+                placeholder="Calories" aria-label="Calories per 100 g"
                 type="text"
                 inputMode="decimal"
                 value={form.calories}
@@ -298,7 +304,7 @@ export function ScannerTab() {
                 className="field px-3 py-2"
               />
               <input
-                placeholder="Protein (g)"
+                placeholder="Protein (g)" aria-label="Protein per 100 g"
                 type="text"
                 inputMode="decimal"
                 value={form.protein}
@@ -306,7 +312,7 @@ export function ScannerTab() {
                 className="field px-3 py-2"
               />
               <input
-                placeholder="Carbs (g)"
+                placeholder="Carbs (g)" aria-label="Carbs per 100 g"
                 type="text"
                 inputMode="decimal"
                 value={form.carbs}
@@ -314,7 +320,7 @@ export function ScannerTab() {
                 className="field px-3 py-2"
               />
               <input
-                placeholder="Fat (g)"
+                placeholder="Fat (g)" aria-label="Fat per 100 g"
                 type="text"
                 inputMode="decimal"
                 value={form.fat}

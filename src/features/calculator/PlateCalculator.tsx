@@ -1,19 +1,11 @@
 import { parseDecimal } from '../../lib/number'
 import { useState } from 'react'
 import { useUserSettings } from '../../hooks/useUserSettings'
-import { calculatePlates } from './plateMath'
+import { BarSleeve } from './PlateLoad'
+import { calculatePlates, formatPlate as formatWeight, IMPERIAL_BAR, IMPERIAL_PLATES, METRIC_BAR, METRIC_PLATES } from './plateMath'
 
 const fieldClass =
   'field px-3 py-2 '
-
-// Standard plate sets. Imperial follows the common lb equivalents rather than a literal kg->lb
-// conversion, matching how gyms actually stock plates.
-const METRIC_PLATES = [25, 20, 15, 10, 5, 2.5, 1.25]
-const IMPERIAL_PLATES = [45, 35, 25, 10, 5, 2.5]
-
-function formatWeight(n: number): string {
-  return Number.isInteger(n) ? String(n) : n.toFixed(2).replace(/0+$/, '').replace(/\.$/, '')
-}
 
 export function PlateCalculator() {
   const { data: settings } = useUserSettings()
@@ -22,7 +14,7 @@ export function PlateCalculator() {
   const availablePlates = imperial ? IMPERIAL_PLATES : METRIC_PLATES
 
   const [target, setTarget] = useState('')
-  const [barWeight, setBarWeight] = useState(imperial ? '45' : '20')
+  const [barWeight, setBarWeight] = useState(String(imperial ? IMPERIAL_BAR : METRIC_BAR))
 
   const targetNum = target ? parseDecimal(target) : null
   const barNum = barWeight ? parseDecimal(barWeight) : null
@@ -82,20 +74,12 @@ export function PlateCalculator() {
               {result.perSide.length === 0 ? (
                 <p className="text-sm text-slate-400">No plates needed, just the bar</p>
               ) : (
-                <div className="flex flex-wrap items-end gap-1.5">
-                  {result.perSide.map((p, i) => {
-                    const size = 34 + Math.min(p, 25) * 1.4
-                    return (
-                      <div
-                        key={i}
-                        className="flex items-center justify-center rounded-lg bg-emerald-600/90 font-semibold text-white ring-1 ring-white/10"
-                        style={{ width: `${size}px`, height: `${size}px`, fontSize: p >= 10 ? '0.8rem' : '0.7rem' }}
-                      >
-                        {formatWeight(p)}
-                      </div>
-                    )
-                  })}
-                </div>
+                <>
+                  <BarSleeve perSide={result.perSide} unit={unit} />
+                  <p className="mt-1 text-sm font-medium text-slate-200">
+                    {result.perSide.map(formatWeight).join(' + ')} {unit}
+                  </p>
+                </>
               )}
             </div>
 

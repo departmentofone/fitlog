@@ -78,7 +78,7 @@ export function ExerciseDetailModal({ exercise, onClose }: { exercise: Exercise;
                 <p className="text-xs text-slate-500">Heaviest set</p>
               </div>
               <div className="rounded-2xl bg-slate-800/60 p-3 text-center">
-                <p className="text-lg font-semibold text-white">{Math.round(toDisplayTotal(bestOneRm, unit))}{weightUnitLabel(unit)}</p>
+                <p className="text-lg font-semibold text-white">{Math.round(toDisplayTotal(bestOneRm, unit))} {weightUnitLabel(unit)}</p>
                 <p className="text-xs text-slate-500">Est. 1RM</p>
               </div>
             </div>

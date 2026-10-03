@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
+import { per100gLine } from '../../lib/nutrition'
 import { useHideQuickAdd } from '../../components/QuickAddVisibility'
+import { TabIcon } from '../../components/TabIcon'
 import { useActiveDiet } from '../../hooks/useDiets'
 import { useFoodLibrary, useFoodSearch } from '../../hooks/useFoods'
 import { useFrequentFoods } from '../../hooks/useFrequentFoods'
@@ -24,10 +26,12 @@ interface FoodSearchPanelProps {
   onSelectFood: (food: Food) => void
   onCreateNew: () => void
   onCancel: () => void
+  /** Opens the barcode scanner (for a packaged food that isn't in the library yet). */
+  onScan?: () => void
 }
 
 /** Search box + frequently-used pills + ranked results, with an entry point to create a new food. */
-export function FoodSearchPanel({ search, onSearchChange, onSelectFood, onCreateNew, onCancel }: FoodSearchPanelProps) {
+export function FoodSearchPanel({ search, onSearchChange, onSelectFood, onCreateNew, onCancel, onScan }: FoodSearchPanelProps) {
   useHideQuickAdd()
   const { data: results = [], isLoading } = useFoodSearch(search)
   const { data: library = [] } = useFoodLibrary()
@@ -61,16 +65,24 @@ export function FoodSearchPanel({ search, onSearchChange, onSelectFood, onCreate
           Cancel
         </button>
       </div>
-      <input
-        autoFocus
-        type="search"
-        enterKeyHint="search"
-        aria-label="Search foods"
-        placeholder={library.length > 0 ? `Search ${library.length} foods…` : 'Search foods…'}
-        value={search}
-        onChange={(e) => onSearchChange(e.target.value)}
-        className="mb-3 h-12 w-full field px-3"
-      />
+      <div className="mb-3 flex gap-2">
+        <input
+          autoFocus
+          type="search"
+          enterKeyHint="search"
+          aria-label="Search foods"
+          placeholder={library.length > 0 ? `Search ${library.length} foods…` : 'Search foods…'}
+          value={search}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="h-12 min-w-0 flex-1 field px-3"
+        />
+        {onScan && (
+          <button onClick={onScan} className="btn btn-secondary h-12 shrink-0 px-3 text-sm">
+            <TabIcon tab="scanner" className="h-5 w-5" />
+            Scan
+          </button>
+        )}
+      </div>
 
       {diet && (
         <div className="mb-3 flex items-center justify-between gap-2">
@@ -82,7 +94,7 @@ export function FoodSearchPanel({ search, onSearchChange, onSelectFood, onCreate
             aria-pressed={onlyDiet}
             className={`min-h-8 shrink-0 rounded-full px-3 text-xs font-semibold ${onlyDiet ? 'bg-emerald-600 text-on-accent' : 'bg-slate-800 text-slate-300'}`}
           >
-            Only {diet.name} foods
+            Only its foods
           </button>
         </div>
       )}
@@ -108,8 +120,7 @@ export function FoodSearchPanel({ search, onSearchChange, onSelectFood, onCreate
                   <span>{food.name}</span>
                 </span>
                 <span className="block text-xs text-slate-500">
-                  P {Math.round(food.protein_per_100g)} · C {Math.round(food.carbs_per_100g)} · F{' '}
-                  {Math.round(food.fat_per_100g)} per 100 g
+                  {per100gLine(food, false)}
                 </span>
               </span>
               <span className="shrink-0 text-sm font-medium text-slate-300">

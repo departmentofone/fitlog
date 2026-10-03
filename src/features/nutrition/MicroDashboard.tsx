@@ -1,36 +1,6 @@
 import { useState } from 'react'
-import { DAILY_VALUES, formatAmount, percentDV } from '../../lib/nutrition'
+import { DAILY_VALUES, formatAmount, MICRO_TONE_BAR as TONE_BAR, MICRO_TONE_TEXT as TONE_TEXT, microTone as toneFor, percentDV } from '../../lib/nutrition'
 import type { MicroTotals } from '../../types'
-
-// Nutrients you want to *limit* read as a warning once you're over 100% DV; nutrients you want
-// to *get enough of* read as a warning only while you're clearly short of it.
-const LIMIT_KEYS = new Set<keyof MicroTotals>(['sodium', 'cholesterol', 'sugar'])
-
-function toneFor(key: keyof MicroTotals, value: number, pct: number): 'none' | 'good' | 'neutral' | 'warn' {
-  // Nothing logged yet isn't a warning - a red "0g" fiber before breakfast just read as an alarm.
-  if (value <= 0) return 'none'
-  if (LIMIT_KEYS.has(key)) {
-    if (pct >= 100) return 'warn'
-    if (pct >= 70) return 'neutral'
-    return 'good'
-  }
-  if (pct >= 60) return 'good'
-  if (pct >= 25) return 'neutral'
-  return 'warn'
-}
-
-const TONE_BAR: Record<string, string> = {
-  none: 'bg-slate-600',
-  good: 'bg-emerald-500',
-  neutral: 'bg-amber-400',
-  warn: 'bg-red-500',
-}
-const TONE_TEXT: Record<string, string> = {
-  none: 'text-slate-400',
-  good: 'text-emerald-400',
-  neutral: 'text-amber-400',
-  warn: 'text-red-400',
-}
 
 /** Always-visible micro-nutrient summary for "today" - the fuller breakdown modal is still the
  * place for the pie chart and food-level flags; this is the at-a-glance version so fiber/sodium/

@@ -3,7 +3,7 @@ import { useBackToClose } from '../../hooks/useHashRoute'
 const RULES: { title: string; text: string }[] = [
   { title: 'Real and honest', text: 'Real meals, workouts and diets, with amounts you actually use.' },
   { title: 'Respectful', text: 'No offensive, hateful or sexual names or content.' },
-  { title: 'Private', text: "No personal details - phone numbers, addresses, or other people's names." },
+  { title: 'Private', text: "No personal details: phone numbers, addresses or other people's names." },
   { title: 'No ads', text: 'No spam, promotions or links.' },
   { title: 'Safe', text: 'No medical claims, and nothing extreme presented as advice, like crash diets.' },
 ]
@@ -56,7 +56,7 @@ export function GuidelinesSheet({ onAgree, onClose, agreeing }: { onAgree?: () =
               disabled={agreeing}
               className="btn btn-primary min-h-12 flex-1 text-sm"
             >
-              I agree - share it
+              I agree, share it
             </button>
           </div>
         ) : (

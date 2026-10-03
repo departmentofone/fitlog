@@ -48,7 +48,7 @@ export function FeedbackForm() {
     } catch (err) {
       setStatus({
         tone: 'error',
-        text: navigator.onLine ? (err instanceof Error ? err.message : 'Something went wrong.') : "You're offline - try again once you're connected.",
+        text: navigator.onLine ? (err instanceof Error ? err.message : 'Something went wrong.') : "You're offline. Try again once you're connected.",
       })
     } finally {
       setSending(false)
@@ -59,7 +59,7 @@ export function FeedbackForm() {
   if (sentTo) {
     return (
       <div className="pop-in rounded-2xl bg-emerald-500/10 p-4 text-center ring-1 ring-emerald-500/25">
-        <p className="text-sm font-semibold text-white">Thanks - message sent</p>
+        <p className="text-sm font-semibold text-white">Thanks, message sent</p>
         <p className="mt-1 text-sm text-slate-300">
           I read every one. If it needs an answer, the reply goes to <span className="font-medium text-white">{sentTo}</span>.
         </p>

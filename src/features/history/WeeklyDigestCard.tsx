@@ -4,6 +4,12 @@ import { useUserSettings } from '../../hooks/useUserSettings'
 import { useWeeklyDigest } from '../../hooks/useWeeklyDigest'
 import { toDisplayTotal, toDisplayWeight, weightUnitLabel } from '../../lib/units'
 
+function weightTone(change: number, goal: string | undefined): string {
+  if (goal === 'deficit') return change < 0 ? 'text-emerald-400' : 'text-amber-400'
+  if (goal === 'surplus') return change > 0 ? 'text-emerald-400' : 'text-amber-400'
+  return 'text-slate-200'
+}
+
 export function WeeklyDigestCard() {
   const { data } = useWeeklyDigest()
   const { data: settings } = useUserSettings()
@@ -43,7 +49,7 @@ export function WeeklyDigestCard() {
           <p className="text-xs text-slate-500">
             Workouts
             {workoutTrend !== 0 && (
-              <span className={workoutTrend > 0 ? 'ml-1 text-emerald-400' : 'ml-1 text-red-400'}>
+              <span className={workoutTrend > 0 ? 'ml-1 text-emerald-400' : 'ml-1 text-slate-400'}>
                 {workoutTrend > 0 ? '↑' : '↓'}
                 {Math.abs(workoutTrend)}
               </span>
@@ -72,22 +78,21 @@ export function WeeklyDigestCard() {
 
       {adherence.data && adherence.data.daysWithData > 0 && (
         <p className="mt-3 text-center text-sm text-slate-400">
-          On target{' '}
+          On target on{' '}
           <span className="font-medium text-emerald-400">
-            {adherence.data.daysOnTarget}/{adherence.data.daysWithData}
+            {adherence.data.daysOnTarget} of {adherence.data.daysWithData}
           </span>{' '}
-          logged {adherence.data.daysWithData === 1 ? 'day' : 'days'} this week
+          logged {adherence.data.daysWithData === 1 ? 'day' : 'days'}
         </p>
       )}
 
       {data.weightChange !== null && Math.abs(data.weightChange) > 0.05 && (
         <p className="mt-1 text-center text-sm text-slate-400">
           Weight {data.weightChange < 0 ? 'down' : 'up'}{' '}
-          <span className={data.weightChange < 0 ? 'font-medium text-emerald-400' : 'font-medium text-amber-400'}>
-            {Math.abs(toDisplayWeight(data.weightChange, unit)).toFixed(1)}
-            {weightUnitLabel(unit)}
-          </span>{' '}
-          this week
+          {/* Good or bad depends on the goal: down is progress on a cut, up on a bulk. */}
+          <span className={`font-medium ${weightTone(data.weightChange, settings?.diet_goal)}`}>
+            {Math.abs(toDisplayWeight(data.weightChange, unit)).toFixed(1)} {weightUnitLabel(unit)}
+          </span>
         </p>
       )}
     </div>

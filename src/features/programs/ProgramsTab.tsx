@@ -117,7 +117,7 @@ function NewProgramForm({ onDone }: { onDone: () => void }) {
 
       {workoutPresets.length === 0 && recipes.length === 0 && mealPresets.length === 0 && (
         <p className="mb-3 text-sm text-slate-500">
-          You don't have any workout presets, recipes, or meal presets yet - build some first, then bundle them into a program.
+          You don't have any workout presets, recipes or meal presets yet. Build some first, then bundle them into a program.
         </p>
       )}
 

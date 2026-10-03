@@ -128,7 +128,7 @@ function PlanCard({ plan, dietName, open, onToggle }: { plan: MealPlanWithItems;
             </div>
           )}
 
-          {current.meals.length === 0 && !adding && <p className="text-xs text-slate-500">Nothing planned for this day yet - add a meal below.</p>}
+          {current.meals.length === 0 && !adding && <p className="text-xs text-slate-500">Nothing planned for this day yet. Add a meal below.</p>}
 
           {current.meals.map((meal) => (
             <div key={meal.name} className="rounded-xl bg-slate-800/50 p-2.5">

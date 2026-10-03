@@ -215,6 +215,7 @@ export function MealCard({ meal }: { meal: MealWithItems }) {
 
       {adding ? (
         <FoodPicker
+          mealName={meal.name}
           onCancel={() => setAdding(false)}
           onAdd={(input) => {
             haptics.tap()

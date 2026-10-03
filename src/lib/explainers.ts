@@ -69,7 +69,7 @@ export const COMMUNITY_EXPLAINERS: Record<'all' | 'diet' | 'plan' | 'meal' | 're
   },
   workout: {
     title: "What's a workout preset?",
-    body: 'A saved list of exercises with their sets, weights and reps. Load it into any day to start from last time instead of from scratch. Save one in Workouts → Presets and share it here.',
+    body: 'A saved list of exercises with their sets, weights and reps. Load it into any day to start from last time instead of from scratch. Save one in Train → Log → Presets and share it here.',
     example: {
       name: 'Push day',
       lines: ['Bench press · 3 × 8', 'Overhead press · 3 × 8', 'Incline dumbbell press · 3 × 10', 'Lateral raise · 3 × 15', 'Triceps pushdown · 3 × 12'],

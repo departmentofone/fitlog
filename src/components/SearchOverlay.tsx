@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { per100gLine } from '../lib/nutrition'
 import { useBackToClose } from '../hooks/useHashRoute'
 import { useExercises } from '../hooks/useExercises'
 import { useFoodSearch } from '../hooks/useFoods'
@@ -32,7 +33,7 @@ export function SearchOverlay({ onClose }: { onClose: () => void }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search exercises & foods…"
-          className="flex-1 bg-transparent text-white placeholder:text-slate-500 focus:outline-none"
+          className="min-w-0 flex-1 bg-transparent text-white placeholder:text-slate-500 focus:outline-none"
         />
         <button onClick={onClose} className="text-sm font-medium text-slate-400 hover:text-slate-200">
           Cancel
@@ -73,9 +74,7 @@ export function SearchOverlay({ onClose }: { onClose: () => void }) {
                 <div key={food.id} className="rounded-xl bg-slate-800/60 px-3 py-2.5">
                   <p className="text-sm font-medium text-white">{food.name}</p>
                   <p className="text-xs text-slate-500">
-                    {Math.round(food.calories_per_100g)} kcal · P{Math.round(food.protein_per_100g)}g · C
-                    {Math.round(food.carbs_per_100g)}g · F{Math.round(food.fat_per_100g)}g{' '}
-                    <span className="text-slate-600">/ 100g</span>
+                    {per100gLine(food)}
                   </p>
                 </div>
               ))}

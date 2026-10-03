@@ -22,8 +22,8 @@ export function GoalProjectionChart() {
   const tdee = estimateTDEE(settings)
   const missing: string[] = []
   if (settings.calorie_goal == null) missing.push('a calorie goal (above)')
-  if (settings.current_weight == null || settings.weight_goal == null) missing.push('current & goal weight (Goals tab)')
-  if (tdee == null) missing.push('height, age, sex & activity level (Goals tab)')
+  if (settings.current_weight == null || settings.weight_goal == null) missing.push('current and goal weight (Progress → Body)')
+  if (tdee == null) missing.push('height, age, sex and activity level (Progress → Body)')
 
   if (missing.length > 0) {
     return (

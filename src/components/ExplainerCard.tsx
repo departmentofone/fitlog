@@ -29,7 +29,7 @@ export function ExplainerCard({ explainer }: { explainer: Explainer }) {
       <div className="mt-2.5 rounded-xl border border-dashed border-slate-600 bg-slate-900/60 px-3 py-2.5">
         <div className="flex items-center justify-between gap-2">
           <p className="text-[13px] font-medium text-white">{example.name}</p>
-          <span className="shrink-0 rounded-full bg-slate-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+          <span className="shrink-0 rounded-full bg-slate-800 px-2 py-0.5 text-[11px] font-semibold text-slate-400">
             Example
           </span>
         </div>

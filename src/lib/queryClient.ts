@@ -9,7 +9,7 @@ import { emitError } from './toastBus'
 export function describeError(error: unknown): string {
   const e = (error ?? {}) as { code?: string; message?: string }
   if (e.code === 'PGRST205' || e.code === 'PGRST204' || e.code === '42703' || e.code === '42P01') {
-    return "This feature isn't set up on the server yet - the database needs an update."
+    return "This feature isn't set up on the server yet. The database needs an update."
   }
   return typeof e.message === 'string' && e.message ? e.message : 'Something went wrong'
 }

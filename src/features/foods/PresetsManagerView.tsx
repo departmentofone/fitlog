@@ -109,7 +109,7 @@ export function PresetsManagerView() {
                       setRenamingId(null)
                     }}
                     onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
-                    className="flex-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-sm text-white focus:border-emerald-500 focus:outline-none"
+                    className="min-w-0 flex-1 rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-sm text-white focus:border-emerald-500 focus:outline-none"
                   />
                 ) : (
                   <h3 className="text-sm font-medium text-white">{preset.name}</h3>

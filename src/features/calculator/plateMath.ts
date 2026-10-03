@@ -41,3 +41,14 @@ export function calculatePlates(targetTotal: number, barWeight: number, availabl
 
   return { perSide, achievedTotal, target: targetTotal, barWeight }
 }
+
+// Standard plate sets. Imperial follows the common lb equivalents rather than a literal kg->lb
+// conversion, matching how gyms actually stock plates.
+export const METRIC_PLATES = [25, 20, 15, 10, 5, 2.5, 1.25]
+export const IMPERIAL_PLATES = [45, 35, 25, 10, 5, 2.5]
+export const METRIC_BAR = 20
+export const IMPERIAL_BAR = 45
+
+export function formatPlate(n: number): string {
+  return Number.isInteger(n) ? String(n) : n.toFixed(2).replace(/0+$/, '').replace(/\.$/, '')
+}

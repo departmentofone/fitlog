@@ -73,7 +73,7 @@ export function DateNav({
             max={max}
             onChange={(e) => e.target.value && onChange(e.target.value)}
             onClick={openPicker}
-            aria-label={`${label} - pick a date`}
+            aria-label={`${label}, pick a date`}
             className="absolute inset-0 h-full w-full cursor-pointer appearance-none opacity-0"
           />
         </span>

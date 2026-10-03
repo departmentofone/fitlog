@@ -23,7 +23,7 @@ const STAGES: FastingStage[] = [
     title: '4-12h · Using stored glycogen',
     summary: 'Once digestion finishes, insulin drops and the body starts drawing on stored liver glycogen to keep blood sugar steady.',
     detail:
-"Once the meal is fully absorbed, blood insulin levels fall and the liver begins releasing stored glycogen - a stored form of glucose - to maintain blood sugar. This is the ordinary overnight state most people are already in by the time they wake up, even without deliberately fasting.",
+"Once the meal is fully absorbed, blood insulin levels fall and the liver begins releasing stored glycogen (a stored form of glucose) to maintain blood sugar. This is the ordinary overnight state most people are already in by the time they wake up, even without deliberately fasting.",
   },
   {
     id: 'switch',
@@ -47,7 +47,7 @@ const STAGES: FastingStage[] = [
     title: '24h+ · Cellular cleanup increases',
     summary: "Around the one-day mark, cellular 'cleanup' processes known as autophagy are thought to become more active.",
     detail:
-      'Autophagy is a process where cells break down and recycle damaged internal components. Research - much of it in animal models, with more limited human data - suggests fasting can increase autophagy, but the precise human timeline and magnitude are still an active area of study rather than settled fact.',
+      'Autophagy is a process where cells break down and recycle damaged internal components. Research, much of it in animal models with more limited human data, suggests fasting can increase autophagy, but the precise human timeline and magnitude are still an active area of study rather than settled fact.',
   },
   {
     id: 'extended',
@@ -55,7 +55,7 @@ const STAGES: FastingStage[] = [
     title: '48h+ · Extended fasting',
     summary: 'In multi-day fasts, growth hormone levels can rise notably and the body continues to rely heavily on fat stores.',
     detail:
-      'Some studies show growth hormone secretion increasing substantially during multi-day fasts, which may help the body preserve lean tissue while it draws on fat reserves. Fasts this long put more strain on the body and are generally approached with more caution - this section is general background, not medical advice.',
+      'Some studies show growth hormone secretion increasing substantially during multi-day fasts, which may help the body preserve lean tissue while it draws on fat reserves. Fasts this long put more strain on the body and are generally approached with more caution. This section is general background, not medical advice.',
   },
 ]
 

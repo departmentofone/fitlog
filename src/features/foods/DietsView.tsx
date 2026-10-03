@@ -85,7 +85,7 @@ function DietCard({ diet, samples, following, open, onToggle }: { diet: DietWith
 
           <div>
             <p className="mb-1.5 text-xs font-medium text-slate-400">Foods on this diet</p>
-            {foods.length === 0 && <p className="text-xs text-slate-500">No foods yet - add some below.</p>}
+            {foods.length === 0 && <p className="text-xs text-slate-500">No foods yet. Add some below.</p>}
             <div className="flex flex-wrap gap-1.5">
               {foods.map((f) => (
                 <button

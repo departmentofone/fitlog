@@ -66,12 +66,12 @@ const SAVE_LABEL: Record<CommunityKind, string> = {
 
 /** Where a saved copy shows up, for the confirmation toast. */
 const SAVED_WHERE: Record<CommunityKind, string> = {
-  meal: 'Meals → Presets',
-  recipe: 'Meals → Recipes',
-  workout: 'Workouts → Presets',
-  program: 'your lists',
-  plan: 'Foods → Plans',
-  diet: 'Foods → Diets',
+  meal: 'Eat → Meals → Presets',
+  recipe: 'Eat → Meals → Recipes',
+  workout: 'Train → Log → Presets',
+  program: 'Train → Programs',
+  plan: 'Eat → Foods → Plans',
+  diet: 'Eat → Foods → Diets',
 }
 
 function kcal(n: number) {
@@ -194,9 +194,9 @@ function Preview({ item, unit }: { item: CommunityItem; unit: UnitSystem | undef
         {days.map((day) => (
           <div key={day.index}>
             {days.length > 1 && (
-              <p className="mb-1 flex justify-between text-xs font-semibold uppercase tracking-wide text-slate-400">
+              <p className="mb-1 flex justify-between text-xs font-semibold text-slate-400">
                 <span>Day {day.index + 1}</span>
-                <span className="font-normal normal-case tracking-normal">{kcal(day.totals.calories)} kcal</span>
+                <span className="font-normal">{kcal(day.totals.calories)} kcal</span>
               </p>
             )}
             {day.meals.map((meal) => (
@@ -313,7 +313,7 @@ function CommunityCard({
           onSuccess: () => {
             haptics.success()
             setImported(true)
-            show(`Imported "${item.name}" - its presets and recipes are in your lists now`)
+            show(`Imported "${item.name}". Its presets and recipes are in your lists now.`)
           },
           onError: () => show("Couldn't import that program. Try again.", { tone: 'error' }),
         },
@@ -332,8 +332,8 @@ function CommunityCard({
           haptics.success()
           show(
             follow
-              ? `Following ${item.name} - its foods now come first when you add food`
-              : `Saved "${item.name}" - find it in ${SAVED_WHERE[item.kind]}`,
+              ? `Following ${item.name}. Its foods now come first when you add food.`
+              : `Saved "${item.name}". Find it in ${SAVED_WHERE[item.kind]}.`,
           )
         },
         onError: () => show("Couldn't save that. Try again.", { tone: 'error' }),
@@ -370,7 +370,8 @@ function CommunityCard({
       </div>
 
       <h2 className="card-title">{item.name}</h2>
-      {item.description && <p className="mt-0.5 text-sm text-slate-400">{item.description}</p>}
+      {/* Three lines in the feed (the official diets' descriptions ran to eight); all of it once open. */}
+      {item.description && <p className={`mt-0.5 text-sm text-slate-400 ${open ? '' : 'line-clamp-3'}`}>{item.description}</p>}
       <div className="mt-2">
         <Summary item={item} />
       </div>
@@ -442,7 +443,7 @@ function CommunityCard({
 
           {!item.isOfficial &&
             (reported ? (
-              <p className="text-center text-xs text-slate-500">Reported - thanks for flagging it.</p>
+              <p className="text-center text-xs text-slate-500">Reported. Thanks for flagging it.</p>
             ) : reporting ? (
               <div className="space-y-2 rounded-xl bg-slate-800/50 p-3">
                 <label htmlFor={`report-${item.id}`} className="block text-xs font-medium text-slate-400">
@@ -574,6 +575,10 @@ export function CommunityTab() {
   // Another screen can open Community on one kind (Train's "Browse workouts"); read once, then cleared.
   const [filter, setFilter] = useState<CommunityKind | 'all'>(() => peekCommunityLanding() ?? 'all')
   useEffect(() => clearCommunityLanding(), [])
+  // The chip row scrolls sideways; keep the selected one in view (Workouts and Programs start off-screen).
+  useEffect(() => {
+    document.querySelector('[data-community-filter="active"]')?.scrollIntoView({ block: 'nearest', inline: 'center' })
+  }, [filter])
   const [search, setSearch] = useState('')
   const [showGuidelines, setShowGuidelines] = useState(false)
   const { data: isOwner = false } = useIsSiteOwner()
@@ -584,7 +589,7 @@ export function CommunityTab() {
   function hidePerson(ownerId: string) {
     const previous = hidden
     undoable(
-"Hidden - you won't see items from this person",
+"Hidden. You won't see items from this person.",
       () => updateSettings.mutate({ hidden_community_users: [...new Set([...previous, ownerId])] }),
       () => updateSettings.mutate({ hidden_community_users: previous }),
     )
@@ -651,7 +656,7 @@ export function CommunityTab() {
 
       <div>
         <p className="text-sm text-slate-400">
-          Diets, meal plans, recipes and workouts people have shared. Saving makes your own copy - change it however you like.{' '}
+          Diets, meal plans, recipes and workouts people have shared. Saving makes your own copy, so you can change it however you like.{' '}
           <button onClick={() => setShowGuidelines(true)} className="font-medium text-emerald-400 underline decoration-dotted underline-offset-2">
             Guidelines
           </button>
@@ -668,6 +673,7 @@ export function CommunityTab() {
               key={f.value}
               role="tab"
               aria-selected={active}
+              data-community-filter={active ? 'active' : undefined}
               onClick={() => setFilter(f.value)}
               className={`min-h-9 shrink-0 rounded-full px-3.5 text-sm font-medium transition ${
                 active ? 'bg-emerald-600 text-on-accent' : 'bg-slate-900 text-slate-300 ring-1 ring-white/5'

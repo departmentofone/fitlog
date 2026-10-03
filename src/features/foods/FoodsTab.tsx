@@ -3,6 +3,8 @@ import { TabIcon } from '../../components/TabIcon'
 import { normalizeFoodText, rankFoods } from '../../lib/foodSearch'
 import { useFoodLabels } from '../../hooks/useFoodLabels'
 import { useFoodLibrary } from '../../hooks/useFoods'
+import { useFrequentFoods } from '../../hooks/useFrequentFoods'
+import { useAuth } from '../../hooks/useAuth'
 import { useUpdateSettings, useUserSettings } from '../../hooks/useUserSettings'
 import { EmptyState } from '../../components/EmptyState'
 import { SkeletonRow } from '../../components/Skeleton'
@@ -34,6 +36,8 @@ export function FoodsTab({ onOpenScanner }: { onOpenScanner: () => void }) {
   const updateSettings = useUpdateSettings()
   const library = useFoodLibrary()
   const { byFood, allLabels } = useFoodLabels()
+  const { user } = useAuth()
+  const { data: frequent = [] } = useFrequentFoods()
 
   const enabledPacks = settings?.enabled_food_packs ?? []
   const availablePacks = useMemo(() => Array.from(new Set((library.data ?? []).map((f) => f.pack).filter((p): p is string => !!p))), [library.data])
@@ -44,6 +48,12 @@ export function FoodsTab({ onOpenScanner }: { onOpenScanner: () => void }) {
     if (activeLabel) list = list.filter((f) => byFood.get(f.id)?.includes(activeLabel))
     return rankFoods(list, search, 300)
   }, [library.data, search, activeLabel, byFood])
+
+  const browsing = !normalizeFoodText(search) && !activeLabel
+  const yours = useMemo(
+    () => (library.data ?? []).filter((f) => f.user_id === user?.id).sort((a, b) => a.name.localeCompare(b.name)),
+    [library.data, user?.id],
+  )
 
   const switcher = (
     <div className="flex rounded-full bg-slate-900 p-1 ring-1 ring-white/5" role="tablist" aria-label="Foods">
@@ -156,12 +166,37 @@ export function FoodsTab({ onOpenScanner }: { onOpenScanner: () => void }) {
           }
         />
       )}
-      <div className="space-y-2">
+      {/* Before a search, what you use and what you made come first; the whole library follows. */}
+      {browsing && frequent.length > 0 && (
+        <FoodSection title="Frequently used">
+          {frequent.map((food) => (
+            <FoodRow key={food.id} food={food} labels={byFood.get(food.id) ?? []} />
+          ))}
+        </FoodSection>
+      )}
+      {browsing && yours.length > 0 && (
+        <FoodSection title={`Your foods (${yours.length})`}>
+          {yours.map((food) => (
+            <FoodRow key={food.id} food={food} labels={byFood.get(food.id) ?? []} />
+          ))}
+        </FoodSection>
+      )}
+      <FoodSection title={browsing && (frequent.length > 0 || yours.length > 0) ? 'All foods, A to Z' : null}>
         {filtered.map((food) => (
           <FoodRow key={food.id} food={food} labels={byFood.get(food.id) ?? []} />
         ))}
-      </div>
+      </FoodSection>
     </div>
+  )
+}
+
+function FoodSection({ title, children }: { title: string | null; children: React.ReactNode }) {
+  return (
+    <section>
+      {title && <h2 className="mb-2 px-1 text-xs font-semibold text-slate-400">{title}</h2>}
+      {/* content-visibility lets the browser skip laying out rows far below the screen. */}
+      <div className="space-y-2 [&>*]:[content-visibility:auto] [&>*]:[contain-intrinsic-size:auto_64px]">{children}</div>
+    </section>
   )
 }
 

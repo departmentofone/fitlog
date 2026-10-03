@@ -37,7 +37,7 @@ const CATEGORY_LABEL: Record<AwardCategory, string> = {
   fasting: 'Fasting',
 }
 const CATEGORY_ORDER: AwardCategory[] = ['consistency', 'strength', 'nutrition', 'fasting']
-const RECENT_DAYS = 14
+const RECENT_DAYS = 7
 const RECORDS_SHOWN = 5
 
 const card = 'card p-4 '
@@ -230,7 +230,7 @@ export function AchievementsTab() {
                     <span className="flex items-center gap-2">
                       <span className="truncate text-sm font-medium text-white">{r.exerciseName}</span>
                       {isNew && (
-                        <span className="shrink-0 rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-emerald-400">
+                        <span className="shrink-0 rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[11px] font-semibold text-emerald-400">
                           New
                         </span>
                       )}
@@ -286,7 +286,7 @@ export function AchievementsTab() {
           })}
         </div>
         {data.currentWeightKg == null && (
-          <p className="mt-4 text-xs text-slate-500">Add your weight in Goals to unlock the bodyweight strength medals.</p>
+          <p className="mt-4 text-xs text-slate-500">Add your weight in Progress → Body to unlock the bodyweight strength medals.</p>
         )}
       </div>
 

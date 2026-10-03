@@ -123,7 +123,7 @@ export function OnboardingTour({ onOpenCommunity }: { onOpenCommunity: () => voi
         {step === 2 && (
           <div>
             <div className="mb-4 flex flex-wrap gap-1.5" aria-hidden="true">
-              {['Mediterranean', 'Keto', 'DASH', 'Greek Yogurt Berry Bowl'].map((chip, i) => (
+              {['Mediterranean', 'Push Pull Legs', 'Keto', 'Greek Yogurt Berry Bowl'].map((chip, i) => (
                 <span key={chip} className={`rounded-full px-2.5 py-1 text-xs ${i === 0 ? 'bg-emerald-500/15 text-emerald-400' : 'bg-slate-800 text-slate-300'}`}>
                   {chip}
                 </span>
@@ -133,8 +133,8 @@ export function OnboardingTour({ onOpenCommunity }: { onOpenCommunity: () => voi
               You don't have to start from scratch
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-slate-300">
-              Browse diets, meal plans and workouts in <span className="font-semibold text-white">Community</span> - official ones and
-              ones other people shared. Save any of them in one tap.
+              <span className="font-semibold text-white">Community</span> has ready-made diets, meal plans and workouts, plus
+              anything other people choose to share. Save any of them in one tap.
             </p>
           </div>
         )}

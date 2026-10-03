@@ -33,6 +33,6 @@ export async function sendFeedback(input: { subject: string; email: string; mess
   })
   if (!res.ok) {
     const body = (await res.json().catch(() => null)) as { error?: string } | null
-    throw new Error(body?.error ?? "Couldn't send right now - please try again in a minute.")
+    throw new Error(body?.error ?? "Couldn't send right now. Please try again in a minute.")
   }
 }

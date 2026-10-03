@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { CopyDayButton } from '../../components/CopyDayButton'
 import { DateNav } from '../../components/DateNav'
+import { useBackToClose } from '../../hooks/useHashRoute'
 import { dayPhrase, onDayPhrase } from '../../lib/dayLabel'
 import { FireStreak } from '../../components/FireStreak'
 import { useToast } from '../../components/ToastProvider'
@@ -115,6 +116,8 @@ export function WorkoutsTab({
   const [pendingPick, setPendingPick] = useState(false)
   const [summarySeconds, setSummarySeconds] = useState<number | null>(null)
   const resumeTimer = useStartWorkoutTimer(session?.id)
+  // Back closes the exercise picker (its Cancel scrolls away with a long list) instead of leaving Train.
+  useBackToClose(picking, () => setPicking(false))
 
   useEffect(() => {
     if (quickAction == null) return
@@ -304,9 +307,11 @@ export function WorkoutsTab({
               <div>
                 <p className="text-sm font-medium text-slate-300">{isToday ? 'Volume today' : 'Volume'}</p>
                 <p className="mt-1 text-3xl font-bold tracking-tight text-white">
-                  {toDisplayTotal(
-                    sets.reduce((sum, s) => (s.is_warmup ? sum : sum + s.weight * s.reps), 0),
-                    settings?.unit_system,
+                  {Math.round(
+                    toDisplayTotal(
+                      sets.reduce((sum, s) => (s.is_warmup ? sum : sum + s.weight * s.reps), 0),
+                      settings?.unit_system,
+                    ),
                   ).toLocaleString()}{' '}
                   <span className="text-sm font-medium text-slate-400">{weightUnitLabel(settings?.unit_system)}</span>
                 </p>
@@ -362,7 +367,7 @@ export function WorkoutsTab({
               return (
                 <div className="rounded-3xl border-2 border-emerald-500/30 bg-emerald-950/10 p-3 shadow-lg shadow-black/20 space-y-3">
                   <div className="flex items-center justify-between px-1">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-emerald-400">
+                    <p className="text-xs font-semibold text-emerald-400">
                       Superset {labelForGroup(activeSuperset.groupId)} · {activeSuperset.exercises.length} exercises
                     </p>
                     <button

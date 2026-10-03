@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { per100gLine } from '../../lib/nutrition'
 import { useAuth } from '../../hooks/useAuth'
 import { useAddFoodLabel, useRemoveFoodLabel } from '../../hooks/useFoodLabels'
 import { useCreateFood, useDeleteFood } from '../../hooks/useFoods'
@@ -32,7 +33,7 @@ export function FoodRow({ food, labels }: { food: Food; labels: string[] }) {
         <div className="min-w-0">
           <p className="truncate text-sm font-medium text-white">{food.name}</p>
           <p className="text-xs text-slate-500">
-            {Math.round(food.calories_per_100g)} kcal · {food.protein_per_100g}p / {food.carbs_per_100g}c / {food.fat_per_100g}f per 100g
+            {per100gLine(food)}
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
@@ -99,7 +100,7 @@ export function FoodRow({ food, labels }: { food: Food; labels: string[] }) {
                     const snapshot = food
                     deleteFood.mutate(food.id, {
                       onError: () =>
-                        show("Can't delete - it's used in a logged meal, recipe, or preset.", { tone: 'error' }),
+                        show("Can't delete it: it's used in a logged meal, recipe or preset.", { tone: 'error' }),
                       onSuccess: () =>
                         undoable(
 `Deleted "${snapshot.name}"`,

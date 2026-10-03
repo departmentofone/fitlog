@@ -2,6 +2,7 @@ import { parseDecimal } from '../../lib/number'
 import { useHideQuickAdd } from '../../components/QuickAddVisibility'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { RestTimer } from '../../components/RestTimer'
+import { PlateLoad } from '../calculator/PlateLoad'
 import { useUserSettings } from '../../hooks/useUserSettings'
 import { summarizeLastSets, useLastSessionSetsForExercise } from '../../hooks/useWorkouts'
 import { fromDisplayWeight, toDisplayWeight, weightStep, weightUnitLabel } from '../../lib/units'
@@ -22,6 +23,16 @@ const RPE_LABELS: Record<number, string> = {
 }
 
 const REPS_STEP = 1
+const SHOW_PLATES_KEY = 'fitlog-show-plates'
+
+/** Whether the plate loading shows under the weight; remembered on this phone. */
+function readShowPlates(): boolean {
+  try {
+    return localStorage.getItem(SHOW_PLATES_KEY) === '1'
+  } catch {
+    return false
+  }
+}
 
 function roundStep(value: number) {
   return Math.round(value * 100) / 100
@@ -182,6 +193,17 @@ export function SetForm({
   // Effort carries over from the last set this session; a fresh exercise starts at a middling 6.
   const [difficulty, setDifficulty] = useState(() => existingSets.at(-1)?.difficulty ?? 6)
   const addButtonRef = useRef<HTMLButtonElement>(null)
+  const [showPlates, setShowPlates] = useState(readShowPlates)
+
+  function togglePlates() {
+    const next = !showPlates
+    setShowPlates(next)
+    try {
+      localStorage.setItem(SHOW_PLATES_KEY, next ? '1' : '0')
+    } catch {
+      // Not remembered next time - fine.
+    }
+  }
   const [isWarmup, setIsWarmup] = useState(false)
   const [editingSetId, setEditingSetId] = useState<string | null>(null)
   const { data: settings, isPending: settingsPending } = useUserSettings()
@@ -289,20 +311,35 @@ export function SetForm({
         </div>
       )}
 
-      <div className="mb-2 flex items-center justify-between">
+      <div className="mb-2 flex items-center justify-between gap-2">
         <p className="text-xs text-slate-500">Set {nextSetNumber}</p>
-        <button
-          onClick={() => setIsWarmup((w) => !w)}
-          aria-pressed={isWarmup}
-          className={`chip min-h-8 px-3 transition ${isWarmup ? 'chip-warn' : 'border border-dashed border-slate-700 text-slate-400'}`}
-        >
-          {isWarmup ? '✓ Warm-up' : 'Warm-up'}
-        </button>
+        <div className="flex gap-1.5">
+          <button
+            onClick={togglePlates}
+            aria-pressed={showPlates}
+            className={`chip min-h-8 px-3 transition ${showPlates ? 'chip-accent' : 'border border-dashed border-slate-700 text-slate-400'}`}
+          >
+            Plates
+          </button>
+          <button
+            onClick={() => setIsWarmup((w) => !w)}
+            aria-pressed={isWarmup}
+            className={`chip min-h-8 px-3 transition ${isWarmup ? 'chip-warn' : 'border border-dashed border-slate-700 text-slate-400'}`}
+          >
+            {isWarmup ? '✓ Warm-up' : 'Warm-up'}
+          </button>
+        </div>
       </div>
       <div className="mb-3 grid grid-cols-2 gap-3">
         <Stepper label="Weight" unit={weightUnitLabel(unit)} value={weight} onChange={setWeight} step={weightStep(unit)} inputMode="decimal" />
         <Stepper label="Reps" value={reps} onChange={setReps} step={REPS_STEP} inputMode="numeric" />
       </div>
+      {/* What to load for the weight above, so nobody does plate math between sets. */}
+      {showPlates && parseDecimal(weight) > 0 && (
+        <div className="inset mb-3 px-3 py-2.5">
+          <PlateLoad total={parseDecimal(weight)} unit={unit === 'imperial' ? 'lb' : 'kg'} />
+        </div>
+      )}
       <label className="mb-1 flex justify-between text-xs text-slate-400">
         <span>Effort (RPE)</span>
         <span className="text-slate-300">

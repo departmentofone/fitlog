@@ -28,7 +28,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-09-26',
     title: 'A simpler layout',
     changes: [
-      'Four places on the bottom bar - Train, Eat, Progress and Community - with their sections as tabs at the top, instead of a menu of 15 screens',
+      'Four places on the bottom bar (Train, Eat, Progress and Community) with their sections as tabs at the top, instead of a menu of 15 screens',
       'Each screen now says where you are in the header',
       'The barcode scanner opens from Foods, the calorie calculator from Diet, and the plate calculator from your workout',
       "What's new, About, and Feedback & support are in Settings",
@@ -50,7 +50,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-09-26',
     title: 'Send feedback from the app',
     changes: [
-      'New Feedback tab (More menu): write to the developer without leaving FitLog - bug reports, ideas or questions, with a reply to your email',
+      'New Feedback tab (More menu): write to the developer about a bug, an idea or a question without leaving FitLog, and get a reply by email',
     ],
   },
   {
@@ -58,7 +58,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     title: 'Clearer Community, lots of polish',
     changes: [
       'Empty Community sections explain what belongs there, with a real example, instead of looking blank',
-      'Tap a finished meal to see it or add something you forgot - it stays finished',
+      'Tap a finished meal to see it or add something you forgot. It stays finished',
       'New accounts skip the preworkout question (switch it on in Settings), with a rest-day link right on the workout',
       'Community now leads with diets, and its buttons are calmer',
       'Exercise names on workout cards show in full instead of being cut off',
@@ -87,7 +87,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     title: 'Community, a Foods tab, and clearer rest days',
     changes: [
       'New Community tab: browse meal presets, recipes, workouts and programs people have shared, and save your own copy in one tap',
-      'Official meal presets to start with - real meals with standard portions, from Greek yogurt bowls to salmon dinners',
+      'Official meal presets to start with: real meals with standard portions, from Greek yogurt bowls to salmon dinners',
       '"Share to Community" replaces "Shared with friend", and your own lists now only show your own presets',
       'New Foods tab: manage your food library, label any food, and build meal presets directly',
       'Logging a rest day now shows a clear confirmation card with Undo, instead of a greyed-out line',
@@ -102,7 +102,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       'The Diet tab now shows your micronutrients at all times, outside the breakdown modal',
       'A rest timer that counts down between sets, with a notification when it hits zero',
       "A \"last time\" hint while logging a set, so you're not guessing your previous numbers",
-      'Weekly nutrition adherence score - how many of the last 7 logged days hit your goal',
+      'Weekly nutrition adherence score: how many of the last 7 logged days hit your goal',
       "This What's New tab",
     ],
   },
@@ -110,7 +110,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-09-16',
     title: 'Aurora Glass redesign',
     changes: [
-      'Switched the whole app from a flat black canvas to a glassmorphism look - translucent cards, ambient glow, deep navy background',
+      'Switched the whole app from a flat black canvas to a glassmorphism look: translucent cards, ambient glow and a deep navy background',
       'Grouped the menu into Track / Progress / Tools instead of one long list',
       'History promoted to a real tab; added unified search and a floating quick-add button',
       'Illustrated empty states, skeleton loaders, swipe-to-delete, and a lot of small polish across every screen',

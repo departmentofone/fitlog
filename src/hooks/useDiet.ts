@@ -4,6 +4,7 @@ import type { DietGoal, Food } from '../types'
 import { useAuth } from './useAuth'
 import { computeDayStreaks } from '../lib/streaks'
 import { localISO } from '../lib/localDate'
+import { formatWhole } from '../lib/number'
 
 function meetsGoal(consumed: number, goal: number, type: DietGoal): boolean {
   if (type === 'deficit') return consumed <= goal
@@ -95,18 +96,18 @@ export interface RemainingInfo {
 export function remainingCaloriesInfo(consumed: number, goal: number, type: DietGoal): RemainingInfo {
   const remaining = goal - consumed
   if (type === 'deficit') {
-    if (remaining >= 0) return { remaining, text: `${Math.round(remaining)} kcal left today`, tone: 'good' }
-    return { remaining, text: `${Math.round(-remaining)} kcal over budget`, tone: 'warn' }
+    if (remaining >= 0) return { remaining, text: `${formatWhole(remaining)} kcal left today`, tone: 'good' }
+    return { remaining, text: `${formatWhole(-remaining)} kcal over budget`, tone: 'warn' }
   }
   if (type === 'surplus') {
-    if (remaining > 0) return { remaining, text: `${Math.round(remaining)} kcal to go`, tone: 'neutral' }
-    return { remaining, text: `Goal reached, +${Math.round(-remaining)} kcal over`, tone: 'good' }
+    if (remaining > 0) return { remaining, text: `${formatWhole(remaining)} kcal to go`, tone: 'neutral' }
+    return { remaining, text: `Goal reached, +${formatWhole(-remaining)} kcal over`, tone: 'good' }
   }
   // maintenance
   const band = goal * 0.1
-  if (Math.abs(remaining) <= band) return { remaining, text: `On target (±${Math.round(band)} kcal)`, tone: 'good' }
+  if (Math.abs(remaining) <= band) return { remaining, text: `On target (±${formatWhole(band)} kcal)`, tone: 'good' }
   // Under target is where every day starts, so it's informational; only going over is a warning.
   return remaining > 0
-    ? { remaining, text: `${Math.round(remaining)} kcal under target`, tone: 'neutral' }
-    : { remaining, text: `${Math.round(-remaining)} kcal over target`, tone: 'warn' }
+    ? { remaining, text: `${formatWhole(remaining)} kcal under target`, tone: 'neutral' }
+    : { remaining, text: `${formatWhole(-remaining)} kcal over target`, tone: 'warn' }
 }

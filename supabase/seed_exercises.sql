@@ -74,7 +74,7 @@ insert into exercises (user_id, name, muscle_group) values
 (null, 'Barbell Wrist Curl', 'forearms'),
 (null, 'Dumbbell Reverse Wrist Curl', 'forearms'),
 (null, 'Cable Reverse Curl', 'forearms'),
-(null, "Farmer's Carry", 'forearms'),
+(null, 'Farmer''s Carry', 'forearms'),
 
 -- Abs
 (null, 'Cable Crunch', 'abs'),

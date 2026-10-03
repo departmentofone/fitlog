@@ -1,7 +1,7 @@
 import { useBackToClose } from '../../hooks/useHashRoute'
 import { CHART_FONT, useThemeChartColors } from '../../lib/useChartColors'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
-import { DAILY_VALUES, formatAmount, percentDV } from '../../lib/nutrition'
+import { DAILY_VALUES, formatAmount, MICRO_TONE_BAR, microTone, percentDV } from '../../lib/nutrition'
 import { macrosForGrams, microsForGrams, sumMacros, sumMicros, type MacroTotals, type MicroTotals } from '../../types'
 import type { MealWithItems } from '../../hooks/useMeals'
 
@@ -134,7 +134,7 @@ export function NutritionBreakdownModal({ meals, onClose }: { meals: MealWithIte
                       </div>
                       <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
                         <div
-                          className={`h-full rounded-full ${pct >= 100 ? 'bg-amber-400' : 'bg-emerald-500'}`}
+                          className={`h-full rounded-full ${MICRO_TONE_BAR[microTone(d.key, value, percentDV(value, d.dv))]}`}
                           style={{ width: `${pct}%` }}
                         />
                       </div>

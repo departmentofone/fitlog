@@ -192,3 +192,8 @@ begin
             clock_timestamp());
   end if;
 end $$;
+
+-- 3. One exercise name in the shared library may have been stored with literal double quotes
+--    ("Farmer's Carry"), from a typo in seed_exercises.sql. Does nothing if it isn't there.
+update exercises set name = 'Farmer''s Carry'
+ where user_id is null and name = '"Farmer''s Carry"';

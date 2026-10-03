@@ -367,9 +367,10 @@ export function WorkoutsTab({
           </div>
 
           {/* With the preworkout question off (the default), the workout starts on its own, so the
-              rest-day option that lives in that prompt needs a home here too. */}
+              rest-day option that lives in that prompt needs a home here too. Equal 8px gaps above and
+              below: a -my-2 here also cancelled space-y's gap underneath, so it overlapped the buttons. */}
           {sets.length === 0 && plan.length === 0 && !activeExercise && !activeSuperset && (
-            <div className="-my-2 flex justify-center">
+            <div className="-mt-2 mb-2 flex justify-center">
               <button
                 onClick={() => logRestDay.mutate(date, { onSuccess: () => haptics.success() })}
                 disabled={logRestDay.isPending}

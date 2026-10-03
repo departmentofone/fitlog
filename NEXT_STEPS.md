@@ -74,17 +74,12 @@ Smaller findings I didn't get to, roughly in order of impact.
 
 - Medals for personal records, bench, squat and deadlift all use the same dumbbell icon, and
   "13 earned" sits above 8 medal tiles (each tile holds several tiers). `features/achievements`.
-- The "+ Preworkout" chip on the workout card looks like a create button but is a toggle.
-  `features/workouts/WorkoutsTab.tsx`.
-- Fasting's custom-length field has no "h" next to the 16.
 - The weekly volume body map takes about 700px on every visit to Log. It could start folded once
   the day has sets.
 - Recipes open with the create form above your saved recipes. `features/meals/RecipeBuilder.tsx`.
 - Workout presets show three identical green Load buttons with a red × and a share checkbox each.
   The new Start card on an empty day covers the common case; the list itself could be calmer.
   `features/workouts/PresetsView.tsx`.
-- Some older forms still use the placeholder as the only label (goal and measurement editors,
-  new food). Screen readers read them, but the label disappears while typing.
 - Feedback: the amber Buy me a coffee button outweighs Send on a support page.
 
 ## Where the review notes are

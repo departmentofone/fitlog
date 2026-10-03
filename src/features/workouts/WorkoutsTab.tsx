@@ -308,19 +308,25 @@ export function WorkoutsTab({
       {sessionLoading ? (
         <SkeletonCard lines={2} />
       ) : !session || (restDayLogged && sets.length === 0) ? (
-        <>
-        <FireStreak count={streaks?.currentStreak ?? 0} label="day streak" />
-        {restDayLogged ? (
-          <RestDayCard undoing={deleteRestDay.isPending} onUndo={() => deleteRestDay.mutate(date)} />
+        restDayLogged ? (
+          // The streak sits inside the rest-day card instead of floating above it.
+          <RestDayCard
+            date={date}
+            streak={streaks?.currentStreak ?? 0}
+            undoing={deleteRestDay.isPending}
+            onUndo={() => deleteRestDay.mutate(date)}
+          />
         ) : (
+          <>
+          <FireStreak count={streaks?.currentStreak ?? 0} label="day streak" />
           <PreworkoutGate
             loading={startSession.isPending}
             onAnswer={(pw) => startSession.mutate({ preworkout: pw, date })}
             logRestDayPending={logRestDay.isPending}
             onLogRestDay={() => logRestDay.mutate(date, { onSuccess: () => haptics.success() })}
           />
-        )}
-        </>
+          </>
+        )
       ) : (
         <>
           {/* One session card: what you've moved, the session clock and the streak together, instead of

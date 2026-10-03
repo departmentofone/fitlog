@@ -21,23 +21,26 @@ export function RestTimerSettings() {
         : null
 
   return (
-    <div className="divide-y divide-white/5 card px-4">
-      <div className="flex items-center justify-between gap-4 py-3">
-        <div>
-          <h2 className="card-title">Start rest timer after each set</h2>
-          <p className="text-xs text-slate-500">When off, tap Start on the timer instead</p>
-        </div>
-        <Toggle label="Start rest timer after each set" checked={autoStart} onChange={(next) => setRestTimerPref('autoStart', next)} />
-      </div>
-      <div className="py-3">
-        <div className="flex items-center justify-between gap-4">
+    <div className="card px-4 pt-4">
+      <h2 className="card-title">Rest timer</h2>
+      <div className="divide-y divide-white/5">
+        <div className="flex items-center justify-between gap-4 py-3">
           <div>
-            <h2 className="card-title">Rest timer notifications</h2>
-            <p className="text-xs text-slate-500">An alert when rest is over, even with your phone locked</p>
+            <p className="text-sm font-medium text-white">Start after each set</p>
+            <p className="text-xs text-slate-500">When off, tap Start on the timer instead</p>
           </div>
-          <Toggle label="Rest timer notifications" checked={notifications} onChange={(next) => void setNotifications(next)} />
+          <Toggle label="Start rest timer after each set" checked={autoStart} onChange={(next) => setRestTimerPref('autoStart', next)} />
         </div>
-        {notifications && hint && <p className="mt-2 text-xs text-amber-400">{hint}</p>}
+        <div className="py-3">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-medium text-white">Notifications</p>
+              <p className="text-xs text-slate-500">An alert when rest is over, even with your phone locked</p>
+            </div>
+            <Toggle label="Rest timer notifications" checked={notifications} onChange={(next) => void setNotifications(next)} />
+          </div>
+          {notifications && hint && <p className="mt-2 text-xs text-amber-400">{hint}</p>}
+        </div>
       </div>
     </div>
   )

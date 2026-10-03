@@ -165,16 +165,16 @@ export function DietTab({ onOpenCalculator }: { onOpenCalculator: () => void }) 
       </div>
 
       {calorieGoal == null && (
-      <button
-        onClick={onOpenCalculator}
-        className="flex min-h-12 w-full items-center justify-between gap-3 tile px-4 text-left text-sm"
-      >
-        <span>
-          <span className="font-medium text-white">Not sure what target to set?</span>{' '}
-          <span className="text-slate-400">Work out your maintenance calories.</span>
-        </span>
-        <span aria-hidden="true" className="text-lg text-slate-500">›</span>
-      </button>
+        <button
+          onClick={onOpenCalculator}
+          className="flex min-h-12 w-full items-center justify-between gap-3 tile px-4 text-left text-sm"
+        >
+          <span>
+            <span className="font-medium text-white">Not sure what target to set?</span>{' '}
+            <span className="text-slate-400">Work out your maintenance calories.</span>
+          </span>
+          <span aria-hidden="true" className="text-lg text-slate-500">›</span>
+        </button>
       )}
 
       <MicroDashboard micros={micros} />

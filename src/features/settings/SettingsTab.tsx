@@ -68,29 +68,32 @@ export function SettingsTab({ onOpen }: { onOpen: (route: Route) => void }) {
   return (
     <div className="space-y-4 p-4">
       {/* Settings are grouped into a few cards of short rows - it used to be one card per switch, each
-          with a paragraph of explanation. */}
-      <div className="divide-y divide-white/5 card px-4">
-        <div className="flex items-center justify-between gap-4 py-3">
-          <div>
-            <h2 className="card-title">Ask about preworkout</h2>
-            <p className="text-xs text-slate-500">Once a day, when you start a workout</p>
+          with a paragraph of explanation. Each card has a heading; the rows are its options. */}
+      <div className="card px-4 pt-4">
+        <h2 className="card-title">Workouts</h2>
+        <div className="divide-y divide-white/5">
+          <div className="flex items-center justify-between gap-4 py-3">
+            <div>
+              <p className="text-sm font-medium text-white">Ask about preworkout</p>
+              <p className="text-xs text-slate-500">Once a day, when you start a workout</p>
+            </div>
+            <Toggle
+              label="Ask about preworkout"
+              checked={settings?.ask_preworkout ?? false}
+              onChange={(next) => updateSettings.mutate({ ask_preworkout: next })}
+            />
           </div>
-          <Toggle
-            label="Ask about preworkout"
-            checked={settings?.ask_preworkout ?? false}
-            onChange={(next) => updateSettings.mutate({ ask_preworkout: next })}
-          />
-        </div>
-        <div className="flex items-center justify-between gap-4 py-3">
-          <div>
-            <h2 className="card-title">Haptics</h2>
-            <p className="text-xs text-slate-500">Small vibrations for sets, PRs and streaks</p>
+          <div className="flex items-center justify-between gap-4 py-3">
+            <div>
+              <p className="text-sm font-medium text-white">Haptics</p>
+              <p className="text-xs text-slate-500">Small vibrations for sets, PRs and streaks</p>
+            </div>
+            <Toggle
+              label="Haptics"
+              checked={settings?.haptics_enabled ?? true}
+              onChange={(next) => updateSettings.mutate({ haptics_enabled: next })}
+            />
           </div>
-          <Toggle
-            label="Haptics"
-            checked={settings?.haptics_enabled ?? true}
-            onChange={(next) => updateSettings.mutate({ haptics_enabled: next })}
-          />
         </div>
       </div>
 

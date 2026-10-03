@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useQuickAddHidden } from './QuickAddVisibility'
 import { useBackToClose, type Route } from '../hooks/useHashRoute'
 import { AREAS, areaOf, isDetailPage, titleOf, type Area } from '../lib/navigation'
 import type { Tab } from '../types'
 import { OfflineBanner } from './OfflineBanner'
-import { SearchOverlay } from './SearchOverlay'
 import { TabIcon } from './TabIcon'
 
 export type { Tab }
@@ -15,6 +14,10 @@ export interface QuickAddAction {
   icon: ReactNode
   onSelect: () => void
 }
+
+// Loaded on first use: search pulls in the exercise chart (recharts), which nothing on the first
+// screen needs.
+const SearchOverlay = lazy(() => import('./SearchOverlay').then((m) => ({ default: m.SearchOverlay })))
 
 const AREA_ICONS: Record<Area, Tab | 'progress'> = {
   train: 'workouts',
@@ -260,7 +263,11 @@ export function Layout({
         })}
       </nav>
 
-      {searchOpen && <SearchOverlay onClose={() => setSearchOpen(false)} />}
+      {searchOpen && (
+        <Suspense fallback={null}>
+          <SearchOverlay onClose={() => setSearchOpen(false)} />
+        </Suspense>
+      )}
     </div>
   )
 }

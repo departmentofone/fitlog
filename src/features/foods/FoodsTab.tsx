@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { clearLanding, peekLanding } from '../../lib/landing'
 import { TabIcon } from '../../components/TabIcon'
 import { normalizeFoodText, rankFoods } from '../../lib/foodSearch'
 import { useFoodLabels } from '../../hooks/useFoodLabels'
@@ -28,7 +29,9 @@ function packLabel(pack: string): string {
  */
 export function FoodsTab({ onOpenScanner }: { onOpenScanner: () => void }) {
   const [view, setView] = useState<FoodsView>('library')
-  const [search, setSearch] = useState('')
+  // A food tapped in global search opens the library on it.
+  const [search, setSearch] = useState(() => peekLanding('foodSearch') ?? '')
+  useEffect(() => clearLanding('foodSearch'), [])
   const [activeLabel, setActiveLabel] = useState<string | null>(null)
   const [creating, setCreating] = useState(false)
 

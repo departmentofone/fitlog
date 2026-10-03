@@ -4,7 +4,7 @@ import { useAddMealItem, useCreateMeal, useMealsForDate } from '../../hooks/useM
 import { todayISO } from '../../hooks/useWorkouts'
 import { haptics } from '../../lib/haptics'
 import { parseDecimal } from '../../lib/number'
-import { clearScanMeal, peekScanMeal } from '../../lib/scanLanding'
+import { clearLanding, peekLanding } from '../../lib/landing'
 import type { Food } from '../../types'
 
 const DEFAULT_MEALS = ['Breakfast', 'Lunch', 'Dinner', 'Snack']
@@ -31,8 +31,8 @@ export function LogScannedFood({ food, onDone }: { food: Food; onDone: () => voi
   const [grams, setGrams] = useState('100')
   const names = [...new Set([...meals.map((m) => m.name), ...DEFAULT_MEALS])]
   // The meal Scan was tapped from, if it came from a meal's Add food; otherwise by the clock.
-  const [meal, setMeal] = useState(() => peekScanMeal() ?? mealForNow())
-  useEffect(() => clearScanMeal(), [])
+  const [meal, setMeal] = useState(() => peekLanding('scanMeal') ?? mealForNow())
+  useEffect(() => clearLanding('scanMeal'), [])
   const busy = createMeal.isPending || addItem.isPending
 
   async function log() {

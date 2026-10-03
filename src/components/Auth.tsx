@@ -64,7 +64,7 @@ function AuthShell({ children }: { children: ReactNode }) {
           </span>
           <div className="min-w-0">
             <p className="text-xl font-bold leading-tight tracking-tight text-white">FitLog</p>
-            <p className="text-sm text-slate-400">Workouts, meals and fasts in one log.</p>
+            <p className="text-balance text-sm text-slate-400">Workouts, meals and fasts in one log.</p>
           </div>
         </div>
         {children}

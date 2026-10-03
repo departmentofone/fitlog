@@ -8,6 +8,25 @@ export interface ChangelogEntry {
 // "What's new" reads from, and it's the only place that content lives (no other data source).
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: '2026-10-03',
+    title: 'Finishing a workout, ready-made programs, and a lot of polish',
+    changes: [
+      'Finish a workout to see how it went: time, volume, sets, your new personal records and the muscles you worked. Resume picks the clock up where it stopped',
+      'Ready-made programs under Train, in Programs: full body, push/pull/legs and upper/lower. Add one and its workouts become presets you start in one tap',
+      'A day with nothing logged yet offers your presets as one-tap starts',
+      'Reps and effort carry over from your last set, and the Plates button shows what to load for the weight you are about to lift',
+      'The exercise list puts your recent exercises first, filters by muscle, and understands shorthand like "db bench" or "rdl"',
+      "Log today's weight from the top of Body. It also updates the weight your calorie numbers use",
+      'Scan a barcode from a meal and log the food straight into it',
+      'Copy day can fill today from yesterday, and copied meals join the ones already there instead of doubling up',
+      'History lists your recent workouts under the calendar, and Diet shows your last 7 days against your goal',
+      'Fasting shows the stage you are in and a chart of your recent fasts, and asks before you end a fast early',
+      'Search can take you to any screen',
+      'Fixed streaks and weekly totals that counted the wrong day in the first hours after midnight',
+      'The back button closes sheets and menus instead of leaving the screen behind them',
+    ],
+  },
+  {
     date: '2026-09-29',
     title: 'Share links and a smarter rest timer',
     changes: [

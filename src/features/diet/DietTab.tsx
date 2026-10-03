@@ -1,6 +1,5 @@
 import { parseDecimal, formatWhole } from '../../lib/number'
 import { useState } from 'react'
-import { CircularProgress } from '../../components/CircularProgress'
 import { CountUp } from '../../components/CountUp'
 import { FireStreak } from '../../components/FireStreak'
 import { MacroLine } from '../../components/MacroLine'
@@ -13,6 +12,7 @@ import { MicroDashboard } from '../nutrition/MicroDashboard'
 import { NutritionBreakdownModal } from '../nutrition/NutritionBreakdownModal'
 import { AlcoholSection } from './AlcoholSection'
 import { GoalProjectionChart } from './GoalProjectionChart'
+import { WeekBars } from './WeekBars'
 
 const GOAL_OPTIONS: { value: DietGoal; label: string }[] = [
   { value: 'deficit', label: 'Deficit' },
@@ -109,6 +109,9 @@ export function DietTab({ onOpenCalculator }: { onOpenCalculator: () => void }) 
               onChange={(e) => setCalorieDraft(e.target.value)}
               className="w-full field px-3 py-2"
             />
+            <button onClick={onOpenCalculator} className="-my-1 min-h-11 text-left text-xs font-medium text-emerald-400">
+              Not sure? Work out your maintenance calories
+            </button>
             <div className="flex gap-2">
               <button
                 onClick={() => setEditing(false)}
@@ -127,30 +130,24 @@ export function DietTab({ onOpenCalculator }: { onOpenCalculator: () => void }) 
         ) : calorieGoal == null ? (
           <p className="text-sm text-slate-400">No calorie goal set yet. Tap here to set one, or work it out with the calculator below.</p>
         ) : (
-          <div className="flex items-center gap-4">
-            <div className="flex-1">
-              <p className="text-3xl font-bold text-white">
-                {formatWhole(calorieGoal)} <span className="text-lg font-medium text-slate-400">kcal</span>
-              </p>
-              <p className="mb-3 text-xs text-slate-500">{dietGoal.charAt(0).toUpperCase() + dietGoal.slice(1)} target</p>
-              {info && <p className={`text-sm font-medium ${TONE_CLASSES[info.tone]}`}>{info.text}</p>}
-            </div>
-            {info && (
-              <CircularProgress
-                percent={(totals.calories / calorieGoal) * 100}
-                tone={info.tone === 'warn' ? 'warn' : info.tone === 'neutral' ? 'neutral' : 'good'}
-                label="of goal"
-              />
-            )}
+          // Meals already shows today against the goal as a ring; here it's the goal itself and how the
+          // last week went against it.
+          <div>
+            <p className="text-3xl font-bold text-white">
+              {formatWhole(calorieGoal)} <span className="text-lg font-medium text-slate-400">kcal a day</span>
+            </p>
+            <p className="mb-3 text-xs text-slate-500">{dietGoal.charAt(0).toUpperCase() + dietGoal.slice(1)} target</p>
+            <WeekBars goal={calorieGoal} type={dietGoal} />
           </div>
         )}
         {!editing && (
           <div className="mt-3 flex items-center justify-between gap-2 border-t border-white/5 pt-2.5">
             <div className="min-w-0 text-sm">
+              <span className="text-slate-400">Today </span>
               <span className="font-semibold text-white">
                 <CountUp value={totals.calories} /> kcal
-              </span>{' '}
-              <span className="text-slate-400">eaten</span>
+              </span>
+              {info && <span className={`text-xs font-medium ${TONE_CLASSES[info.tone]}`}> · {info.text.replace(/ today$/, '')}</span>}
               <MacroLine macros={totals} className="text-xs" />
             </div>
             <button
@@ -167,6 +164,7 @@ export function DietTab({ onOpenCalculator }: { onOpenCalculator: () => void }) 
         )}
       </div>
 
+      {calorieGoal == null && (
       <button
         onClick={onOpenCalculator}
         className="flex min-h-12 w-full items-center justify-between gap-3 tile px-4 text-left text-sm"
@@ -177,6 +175,7 @@ export function DietTab({ onOpenCalculator }: { onOpenCalculator: () => void }) 
         </span>
         <span aria-hidden="true" className="text-lg text-slate-500">›</span>
       </button>
+      )}
 
       <MicroDashboard micros={micros} />
 

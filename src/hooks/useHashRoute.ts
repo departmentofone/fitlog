@@ -77,6 +77,19 @@ export function useHashRoute() {
 }
 
 /**
+ * Opens a screen from code that has no `navigate` to hand (a sheet, a deeply nested form). Same
+ * history rules as navigate: a new entry, or the open layer's entry reused so back returns in one
+ * step. The popstate it sends is what the router (and any open layer, which then closes) listen to.
+ */
+export function openRoute(next: Route) {
+  if (parseRoute(window.location.hash) === next) return
+  const state = { fitlogRoute: true }
+  if (history.state?.fitlogLayer) history.replaceState(state, '', `#/${next}`)
+  else history.pushState(state, '', `#/${next}`)
+  window.dispatchEvent(new PopStateEvent('popstate', { state }))
+}
+
+/**
  * Lets the system back gesture close a transient layer (drawer, search sheet) instead of leaving
  * the screen under it. Pushes a same-URL history entry while `open`; closing by any other means
  * pops that entry again so history never accumulates dead steps. Escape closes it too, for a

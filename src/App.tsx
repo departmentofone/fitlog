@@ -4,7 +4,7 @@ import { HealthConsentScreen } from './components/HealthConsentScreen'
 import { TabErrorBoundary } from './components/TabErrorBoundary'
 import { Layout, type QuickAddAction } from './components/Layout'
 import { OnboardingTour } from './components/OnboardingTour'
-import { landCommunityOn } from './lib/communityLanding'
+import { land } from './lib/landing'
 import { QuickAddVisibilityProvider } from './components/QuickAddVisibility'
 import { SkeletonCard } from './components/Skeleton'
 import { useToast } from './components/ToastProvider'
@@ -213,7 +213,7 @@ function App() {
                 <WorkoutsTab
                   onOpenPlates={() => navigate('plates')}
                   onBrowseWorkouts={() => {
-                    landCommunityOn('workout')
+                    land('communityFilter', 'workout')
                     navigate('community')
                   }}
                   quickAction={nonceFor('workouts')}

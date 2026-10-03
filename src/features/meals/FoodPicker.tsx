@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { preferScanMeal } from '../../lib/scanLanding'
+import { openRoute } from '../../hooks/useHashRoute'
+import { land } from '../../lib/landing'
 import { consumeSharedText } from '../../lib/shareTarget'
 import type { Food } from '../../types'
 import { FoodAmountForm } from './FoodAmountForm'
@@ -45,8 +46,8 @@ export function FoodPicker({ onAdd, onCancel, mealName }: FoodPickerProps) {
       onCreateNew={() => setCreating(true)}
       onCancel={onCancel}
       onScan={() => {
-        if (mealName) preferScanMeal(mealName)
-        window.location.hash = '#/scanner'
+        if (mealName) land('scanMeal', mealName)
+        openRoute('scanner')
       }}
     />
   )

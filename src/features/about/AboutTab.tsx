@@ -45,7 +45,7 @@ export function AboutTab() {
         </span>
         <div className="min-w-0">
           <h2 className="text-xl font-bold tracking-tight text-white">FitLog</h2>
-          <p className="text-sm text-slate-400">Workouts, meals and fasts in one log.</p>
+          <p className="text-balance text-sm text-slate-400">Workouts, meals and fasts in one log.</p>
         </div>
       </div>
 

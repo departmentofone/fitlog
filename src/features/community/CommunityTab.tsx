@@ -2,7 +2,7 @@ import { formatWhole } from '../../lib/number'
 import { useEffect, useMemo, useState } from 'react'
 import { EmptyState } from '../../components/EmptyState'
 import { ExplainerCard } from '../../components/ExplainerCard'
-import { clearCommunityLanding, peekCommunityLanding } from '../../lib/communityLanding'
+import { clearLanding, peekLanding } from '../../lib/landing'
 import { COMMUNITY_EXPLAINERS } from '../../lib/explainers'
 import { MacroLine } from '../../components/MacroLine'
 import { SkeletonCard } from '../../components/Skeleton'
@@ -573,8 +573,8 @@ export function CommunityTab() {
   const { data: myPlans = [] } = useMealPlans()
   const { diet: activeDiet } = useActiveDiet()
   // Another screen can open Community on one kind (Train's "Browse workouts"); read once, then cleared.
-  const [filter, setFilter] = useState<CommunityKind | 'all'>(() => peekCommunityLanding() ?? 'all')
-  useEffect(() => clearCommunityLanding(), [])
+  const [filter, setFilter] = useState<CommunityKind | 'all'>(() => peekLanding('communityFilter') ?? 'all')
+  useEffect(() => clearLanding('communityFilter'), [])
   // The chip row scrolls sideways; keep the selected one in view (Workouts and Programs start off-screen).
   useEffect(() => {
     document.querySelector('[data-community-filter="active"]')?.scrollIntoView({ block: 'nearest', inline: 'center' })

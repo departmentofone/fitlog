@@ -66,6 +66,9 @@ export default defineConfig(({ mode }) => {
   },
   server: {
     host: true,
+    // The demo rig writes screenshots (and once wrote Chrome's profile) under tools/; none of it is
+    // app source, and a locked file there crashed the watcher.
+    watch: { ignored: ['**/tools/**'] },
     // Lets a preview harness run a second dev server alongside one already on 5173.
     port: process.env.PORT ? Number(process.env.PORT) : undefined,
   },

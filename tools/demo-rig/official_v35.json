@@ -1,0 +1,967 @@
+{
+ "workouts": [
+  {
+   "name": "Full Body A",
+   "description": "Squat, bench press and barbell row, three sets of five. Alternate with Full Body B.",
+   "items": [
+    [
+     "Barbell Back Squat",
+     3,
+     5
+    ],
+    [
+     "Barbell Bench Press",
+     3,
+     5
+    ],
+    [
+     "Barbell Row",
+     3,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "Full Body B",
+   "description": "Squat, overhead press and one heavy set of deadlifts. Alternate with Full Body A.",
+   "items": [
+    [
+     "Barbell Back Squat",
+     3,
+     5
+    ],
+    [
+     "Overhead Barbell Press",
+     3,
+     5
+    ],
+    [
+     "Deadlift",
+     1,
+     5
+    ]
+   ]
+  },
+  {
+   "name": "Push",
+   "description": "Chest, shoulders and triceps: two pressing lifts, then lighter accessories.",
+   "items": [
+    [
+     "Barbell Bench Press",
+     3,
+     8
+    ],
+    [
+     "Overhead Barbell Press",
+     3,
+     8
+    ],
+    [
+     "Incline Dumbbell Press",
+     3,
+     10
+    ],
+    [
+     "Dumbbell Lateral Raise",
+     3,
+     15
+    ],
+    [
+     "Triceps Pushdown (Rope)",
+     3,
+     12
+    ]
+   ]
+  },
+  {
+   "name": "Pull",
+   "description": "Back and biceps: deadlifts first, then pull-ups, rows and arm work.",
+   "items": [
+    [
+     "Deadlift",
+     3,
+     5
+    ],
+    [
+     "Pull-Up",
+     3,
+     8
+    ],
+    [
+     "Barbell Row",
+     3,
+     8
+    ],
+    [
+     "Face Pull (Cable Rope)",
+     3,
+     15
+    ],
+    [
+     "Barbell Curl",
+     3,
+     10
+    ]
+   ]
+  },
+  {
+   "name": "Legs",
+   "description": "Quads, hamstrings and calves, with squats as the main lift.",
+   "items": [
+    [
+     "Barbell Back Squat",
+     3,
+     6
+    ],
+    [
+     "Romanian Deadlift (Barbell)",
+     3,
+     8
+    ],
+    [
+     "Leg Press (Machine)",
+     3,
+     10
+    ],
+    [
+     "Lying Leg Curl (Machine)",
+     3,
+     12
+    ],
+    [
+     "Standing Calf Raise (Machine)",
+     3,
+     12
+    ]
+   ]
+  },
+  {
+   "name": "Upper",
+   "description": "Presses, rows and pulldowns for the whole upper body, plus a little arm work.",
+   "items": [
+    [
+     "Barbell Bench Press",
+     3,
+     8
+    ],
+    [
+     "Barbell Row",
+     3,
+     8
+    ],
+    [
+     "Seated Dumbbell Shoulder Press",
+     3,
+     10
+    ],
+    [
+     "Lat Pulldown (Wide Grip)",
+     3,
+     10
+    ],
+    [
+     "Dumbbell Bicep Curl",
+     2,
+     12
+    ],
+    [
+     "Triceps Pushdown (Rope)",
+     2,
+     12
+    ]
+   ]
+  },
+  {
+   "name": "Lower",
+   "description": "Squats, Romanian deadlifts and split squats, then hamstrings, calves and abs.",
+   "items": [
+    [
+     "Barbell Back Squat",
+     3,
+     6
+    ],
+    [
+     "Romanian Deadlift (Barbell)",
+     3,
+     8
+    ],
+    [
+     "Bulgarian Split Squat (Dumbbell)",
+     3,
+     10
+    ],
+    [
+     "Seated Leg Curl (Machine)",
+     3,
+     12
+    ],
+    [
+     "Standing Calf Raise (Machine)",
+     3,
+     15
+    ],
+    [
+     "Hanging Leg Raise",
+     3,
+     12
+    ]
+   ]
+  },
+  {
+   "name": "Dumbbells only",
+   "description": "A full-body session for home or a crowded gym: one pair of dumbbells and the floor.",
+   "items": [
+    [
+     "Goblet Squat (Dumbbell)",
+     3,
+     10
+    ],
+    [
+     "Push-Up",
+     3,
+     12
+    ],
+    [
+     "Dumbbell Row",
+     3,
+     10
+    ],
+    [
+     "Romanian Deadlift (Dumbbell)",
+     3,
+     10
+    ],
+    [
+     "Seated Dumbbell Shoulder Press",
+     3,
+     10
+    ],
+    [
+     "Dumbbell Lunge",
+     2,
+     10
+    ]
+   ]
+  }
+ ],
+ "programs": [
+  {
+   "name": "Beginner full body",
+   "description": "Three days a week, alternating Full Body A and B (A, B, A one week, B, A, B the next). Start light and add 2.5 kg to a lift each time you finish all its sets.",
+   "workouts": [
+    {
+     "name": "Full Body A",
+     "items": [
+      {
+       "exerciseName": "Barbell Back Squat",
+       "muscleGroup": "quads",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 5
+      },
+      {
+       "exerciseName": "Barbell Back Squat",
+       "muscleGroup": "quads",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 5
+      },
+      {
+       "exerciseName": "Barbell Back Squat",
+       "muscleGroup": "quads",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 5
+      },
+      {
+       "exerciseName": "Barbell Bench Press",
+       "muscleGroup": "chest",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 5
+      },
+      {
+       "exerciseName": "Barbell Bench Press",
+       "muscleGroup": "chest",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 5
+      },
+      {
+       "exerciseName": "Barbell Bench Press",
+       "muscleGroup": "chest",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 5
+      },
+      {
+       "exerciseName": "Barbell Row",
+       "muscleGroup": "back",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 5
+      },
+      {
+       "exerciseName": "Barbell Row",
+       "muscleGroup": "back",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 5
+      },
+      {
+       "exerciseName": "Barbell Row",
+       "muscleGroup": "back",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 5
+      }
+     ]
+    },
+    {
+     "name": "Full Body B",
+     "items": [
+      {
+       "exerciseName": "Barbell Back Squat",
+       "muscleGroup": "quads",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 5
+      },
+      {
+       "exerciseName": "Barbell Back Squat",
+       "muscleGroup": "quads",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 5
+      },
+      {
+       "exerciseName": "Barbell Back Squat",
+       "muscleGroup": "quads",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 5
+      },
+      {
+       "exerciseName": "Overhead Barbell Press",
+       "muscleGroup": "shoulders",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 5
+      },
+      {
+       "exerciseName": "Overhead Barbell Press",
+       "muscleGroup": "shoulders",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 5
+      },
+      {
+       "exerciseName": "Overhead Barbell Press",
+       "muscleGroup": "shoulders",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 5
+      },
+      {
+       "exerciseName": "Deadlift",
+       "muscleGroup": "back",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Push Pull Legs",
+   "description": "Push, Pull and Legs in order. Run it once a week for three days of training, or twice for six.",
+   "workouts": [
+    {
+     "name": "Push",
+     "items": [
+      {
+       "exerciseName": "Barbell Bench Press",
+       "muscleGroup": "chest",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Barbell Bench Press",
+       "muscleGroup": "chest",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Barbell Bench Press",
+       "muscleGroup": "chest",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Overhead Barbell Press",
+       "muscleGroup": "shoulders",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Overhead Barbell Press",
+       "muscleGroup": "shoulders",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Overhead Barbell Press",
+       "muscleGroup": "shoulders",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Incline Dumbbell Press",
+       "muscleGroup": "chest",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 10
+      },
+      {
+       "exerciseName": "Incline Dumbbell Press",
+       "muscleGroup": "chest",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 10
+      },
+      {
+       "exerciseName": "Incline Dumbbell Press",
+       "muscleGroup": "chest",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 10
+      },
+      {
+       "exerciseName": "Dumbbell Lateral Raise",
+       "muscleGroup": "shoulders",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 15
+      },
+      {
+       "exerciseName": "Dumbbell Lateral Raise",
+       "muscleGroup": "shoulders",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 15
+      },
+      {
+       "exerciseName": "Dumbbell Lateral Raise",
+       "muscleGroup": "shoulders",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 15
+      },
+      {
+       "exerciseName": "Triceps Pushdown (Rope)",
+       "muscleGroup": "triceps",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 12
+      },
+      {
+       "exerciseName": "Triceps Pushdown (Rope)",
+       "muscleGroup": "triceps",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 12
+      },
+      {
+       "exerciseName": "Triceps Pushdown (Rope)",
+       "muscleGroup": "triceps",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 12
+      }
+     ]
+    },
+    {
+     "name": "Pull",
+     "items": [
+      {
+       "exerciseName": "Deadlift",
+       "muscleGroup": "back",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 5
+      },
+      {
+       "exerciseName": "Deadlift",
+       "muscleGroup": "back",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 5
+      },
+      {
+       "exerciseName": "Deadlift",
+       "muscleGroup": "back",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 5
+      },
+      {
+       "exerciseName": "Pull-Up",
+       "muscleGroup": "back",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Pull-Up",
+       "muscleGroup": "back",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Pull-Up",
+       "muscleGroup": "back",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Barbell Row",
+       "muscleGroup": "back",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Barbell Row",
+       "muscleGroup": "back",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Barbell Row",
+       "muscleGroup": "back",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Face Pull (Cable Rope)",
+       "muscleGroup": "back",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 15
+      },
+      {
+       "exerciseName": "Face Pull (Cable Rope)",
+       "muscleGroup": "back",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 15
+      },
+      {
+       "exerciseName": "Face Pull (Cable Rope)",
+       "muscleGroup": "back",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 15
+      },
+      {
+       "exerciseName": "Barbell Curl",
+       "muscleGroup": "biceps",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 10
+      },
+      {
+       "exerciseName": "Barbell Curl",
+       "muscleGroup": "biceps",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 10
+      },
+      {
+       "exerciseName": "Barbell Curl",
+       "muscleGroup": "biceps",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 10
+      }
+     ]
+    },
+    {
+     "name": "Legs",
+     "items": [
+      {
+       "exerciseName": "Barbell Back Squat",
+       "muscleGroup": "quads",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 6
+      },
+      {
+       "exerciseName": "Barbell Back Squat",
+       "muscleGroup": "quads",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 6
+      },
+      {
+       "exerciseName": "Barbell Back Squat",
+       "muscleGroup": "quads",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 6
+      },
+      {
+       "exerciseName": "Romanian Deadlift (Barbell)",
+       "muscleGroup": "hamstrings",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Romanian Deadlift (Barbell)",
+       "muscleGroup": "hamstrings",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Romanian Deadlift (Barbell)",
+       "muscleGroup": "hamstrings",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Leg Press (Machine)",
+       "muscleGroup": "quads",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 10
+      },
+      {
+       "exerciseName": "Leg Press (Machine)",
+       "muscleGroup": "quads",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 10
+      },
+      {
+       "exerciseName": "Leg Press (Machine)",
+       "muscleGroup": "quads",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 10
+      },
+      {
+       "exerciseName": "Lying Leg Curl (Machine)",
+       "muscleGroup": "hamstrings",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 12
+      },
+      {
+       "exerciseName": "Lying Leg Curl (Machine)",
+       "muscleGroup": "hamstrings",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 12
+      },
+      {
+       "exerciseName": "Lying Leg Curl (Machine)",
+       "muscleGroup": "hamstrings",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 12
+      },
+      {
+       "exerciseName": "Standing Calf Raise (Machine)",
+       "muscleGroup": "calves",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 12
+      },
+      {
+       "exerciseName": "Standing Calf Raise (Machine)",
+       "muscleGroup": "calves",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 12
+      },
+      {
+       "exerciseName": "Standing Calf Raise (Machine)",
+       "muscleGroup": "calves",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 12
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Upper Lower",
+   "description": "Four days a week: Upper, Lower, a rest day, then Upper and Lower again.",
+   "workouts": [
+    {
+     "name": "Upper",
+     "items": [
+      {
+       "exerciseName": "Barbell Bench Press",
+       "muscleGroup": "chest",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Barbell Bench Press",
+       "muscleGroup": "chest",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Barbell Bench Press",
+       "muscleGroup": "chest",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Barbell Row",
+       "muscleGroup": "back",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Barbell Row",
+       "muscleGroup": "back",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Barbell Row",
+       "muscleGroup": "back",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Seated Dumbbell Shoulder Press",
+       "muscleGroup": "shoulders",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 10
+      },
+      {
+       "exerciseName": "Seated Dumbbell Shoulder Press",
+       "muscleGroup": "shoulders",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 10
+      },
+      {
+       "exerciseName": "Seated Dumbbell Shoulder Press",
+       "muscleGroup": "shoulders",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 10
+      },
+      {
+       "exerciseName": "Lat Pulldown (Wide Grip)",
+       "muscleGroup": "back",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 10
+      },
+      {
+       "exerciseName": "Lat Pulldown (Wide Grip)",
+       "muscleGroup": "back",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 10
+      },
+      {
+       "exerciseName": "Lat Pulldown (Wide Grip)",
+       "muscleGroup": "back",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 10
+      },
+      {
+       "exerciseName": "Dumbbell Bicep Curl",
+       "muscleGroup": "biceps",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 12
+      },
+      {
+       "exerciseName": "Dumbbell Bicep Curl",
+       "muscleGroup": "biceps",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 12
+      },
+      {
+       "exerciseName": "Triceps Pushdown (Rope)",
+       "muscleGroup": "triceps",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 12
+      },
+      {
+       "exerciseName": "Triceps Pushdown (Rope)",
+       "muscleGroup": "triceps",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 12
+      }
+     ]
+    },
+    {
+     "name": "Lower",
+     "items": [
+      {
+       "exerciseName": "Barbell Back Squat",
+       "muscleGroup": "quads",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 6
+      },
+      {
+       "exerciseName": "Barbell Back Squat",
+       "muscleGroup": "quads",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 6
+      },
+      {
+       "exerciseName": "Barbell Back Squat",
+       "muscleGroup": "quads",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 6
+      },
+      {
+       "exerciseName": "Romanian Deadlift (Barbell)",
+       "muscleGroup": "hamstrings",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Romanian Deadlift (Barbell)",
+       "muscleGroup": "hamstrings",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Romanian Deadlift (Barbell)",
+       "muscleGroup": "hamstrings",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 8
+      },
+      {
+       "exerciseName": "Bulgarian Split Squat (Dumbbell)",
+       "muscleGroup": "quads",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 10
+      },
+      {
+       "exerciseName": "Bulgarian Split Squat (Dumbbell)",
+       "muscleGroup": "quads",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 10
+      },
+      {
+       "exerciseName": "Bulgarian Split Squat (Dumbbell)",
+       "muscleGroup": "quads",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 10
+      },
+      {
+       "exerciseName": "Seated Leg Curl (Machine)",
+       "muscleGroup": "hamstrings",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 12
+      },
+      {
+       "exerciseName": "Seated Leg Curl (Machine)",
+       "muscleGroup": "hamstrings",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 12
+      },
+      {
+       "exerciseName": "Seated Leg Curl (Machine)",
+       "muscleGroup": "hamstrings",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 12
+      },
+      {
+       "exerciseName": "Standing Calf Raise (Machine)",
+       "muscleGroup": "calves",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 15
+      },
+      {
+       "exerciseName": "Standing Calf Raise (Machine)",
+       "muscleGroup": "calves",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 15
+      },
+      {
+       "exerciseName": "Standing Calf Raise (Machine)",
+       "muscleGroup": "calves",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 15
+      },
+      {
+       "exerciseName": "Hanging Leg Raise",
+       "muscleGroup": "abs",
+       "setNumber": 1,
+       "weight": 0,
+       "reps": 12
+      },
+      {
+       "exerciseName": "Hanging Leg Raise",
+       "muscleGroup": "abs",
+       "setNumber": 2,
+       "weight": 0,
+       "reps": 12
+      },
+      {
+       "exerciseName": "Hanging Leg Raise",
+       "muscleGroup": "abs",
+       "setNumber": 3,
+       "weight": 0,
+       "reps": 12
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

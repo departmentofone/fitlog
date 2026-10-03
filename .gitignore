@@ -46,3 +46,8 @@ signing-key-info.txt
 # The app's bundled web build (npm run build:native) and its Android release config.
 dist-native/
 android/keystore.properties
+
+# Demo rig (tools/demo-rig): screenshots, Chrome profiles, logs
+tools/demo-rig/out*/
+tools/demo-rig/profile*/
+tools/demo-rig/*.log
